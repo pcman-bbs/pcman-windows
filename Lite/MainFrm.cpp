@@ -3476,7 +3476,7 @@ void CMainFrame::OnSelAll()
 		return;	
 	}
 	SCROLLINFO info;
-	GetScrollInfo(SB_VERT,&info);
+	view.GetScrollInfo(SB_VERT,&info);
 
 	CTelnetConn *telnet = view.telnet;
 	telnet->sel_start.x=0;
