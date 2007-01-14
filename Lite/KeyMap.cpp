@@ -17,7 +17,7 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-char CKeyMap::default_kmname[12]="";
+char CKeyMap::default_kmname[12]="Default";
 /*
 const char* CKeyMap::default_left	="\x1bOD\x1bOD";
 const char* CKeyMap::default_right	="\x1bOC\x1bOC";
