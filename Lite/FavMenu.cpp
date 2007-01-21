@@ -208,6 +208,7 @@ void CFavMenu::LoadFavorites(HMENU &fav_menu, char type)
 		data->Add(add_to_home);
 		AppendMenu(fav_menu, MF_OWNERDRAW, ID_ADDTOHOME, LPCTSTR(id), menu_height);
 	}
+	favmenus.Add( fav_menu );
 }
 
 
