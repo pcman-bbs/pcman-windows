@@ -18,8 +18,8 @@ friend class CTermView;
 friend class CMainFrame;
 public:
 	HMENU DoLoadFavorites( CArchive& ar, CStringArray& data, UINT& id, int& menu_height );
-	static CString GetIEFavDir();
 #ifdef	_COMBO_
+	static CString GetIEFavDir();
 	void LoadIEFav(HMENU &fav_menu);
 #endif
 	void SaveHistory(CFile &file);
