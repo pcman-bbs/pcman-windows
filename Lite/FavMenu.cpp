@@ -105,6 +105,7 @@ HMENU CFavMenu::DoLoadFavorites( CArchive& ar, CStringArray& data, UINT& id, int
 		else
 			AppendMenu( menu, MF_OWNERDRAW, id, LPCTSTR(id), menu_height );
 	}
+	favmenus.Add( menu );
 	return menu;
 }
 
@@ -208,7 +209,6 @@ void CFavMenu::LoadFavorites(HMENU &fav_menu, char type)
 		data->Add(add_to_home);
 		AppendMenu(fav_menu, MF_OWNERDRAW, ID_ADDTOHOME, LPCTSTR(id), menu_height);
 	}
-	favmenus.Add( fav_menu );
 }
 
 
