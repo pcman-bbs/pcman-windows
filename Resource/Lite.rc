@@ -362,7 +362,7 @@ BEGIN
     "P",            ID_PASTE,               VIRTKEY, ALT, NOINVERT
     "Q",            ID_CONNECT_NEW,         VIRTKEY, ALT, NOINVERT
     "R",            ID_RECONNECT,           VIRTKEY, ALT, NOINVERT
-    "S",            ID_SITE_LIST,       VIRTKEY, ALT, NOINVERT
+    "S",            ID_SITE_LIST,           VIRTKEY, ALT, NOINVERT
     VK_BACK,        ID_BACKNODBCS,          VIRTKEY, ALT, NOINVERT
     VK_DELETE,      ID_CONNECT_CLOSE,       VIRTKEY, CONTROL, NOINVERT
     VK_DOWN,        ID_DOWN,                VIRTKEY, ALT, NOINVERT
