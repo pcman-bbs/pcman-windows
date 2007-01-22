@@ -671,8 +671,5 @@ void CListDlg::OnUpdateSitesList()
 	{
 		AfxMessageBox ( LoadString(IDS_SITELIST_UPDATE_FAIL), MB_ICONINFORMATION );
 	}
-
-	
-	//UpdateCmdUI();
 }
 
