@@ -36,6 +36,7 @@ BOOL CAddressDlg::OnInitDialog()
 {
 	CComboBox* combo=(CComboBox*)GetDlgItem(IDC_ADDRESS);
 	combo->SetWindowText(address);
+	GetDlgItem(IDC_PORT)->SetWindowText("23");
 
 	POSITION pos=AppConfig.history.GetHeadPosition();
 	CString str;
