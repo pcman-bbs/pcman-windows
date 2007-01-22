@@ -18,6 +18,7 @@
 
 LPBYTE enc_str(LPCTSTR _src,LPCTSTR key,long& rlen);
 CString dec_str(LPBYTE src,LPCTSTR key,long len);
+const char SITESLIST_UPDATE_URL[] = "http://free.ym.edu.tw/pcman/site_list.big5";
 
 class CListDlg : public CDialog
 {
@@ -79,6 +80,7 @@ protected:
 	afx_msg void OnPaste(UINT id);
 	afx_msg void OnKeyDownSites(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnRclickSites(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnUpdateSitesList();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -275,8 +275,9 @@ BEGIN
     PUSHBUTTON      "加到我的最愛 (&F)",ID_SITES_ADDFAVORITE,263,124,70,15
     PUSHBUTTON      "加到首頁 (&H)",ID_SITES_ADDHOME,263,141,70,15
     LTEXT           "用滑鼠直接拖曳改變順序，按住 Ctrl 拖曳可以複製，右鍵選單尚有功能。 要將某站台或資料夾移到其他資料夾內，只要拖曳到目標資料夾上停留一秒，資料夾就會自動展開",
-                    IDC_STATIC2,264,169,69,82
+                    IDC_STATIC2,264,177,69,82
     PUSHBUTTON      "刪除 (&D)",ID_SITES_DEL,263,107,70,15
+    PUSHBUTTON      "更新列表 (&U)",ID_SITES_UPDATE,263,159,70,15
 END
 
 IDD_OTHER DIALOG DISCARDABLE  0, 0, 274, 169
@@ -589,73 +590,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_ANSIBAR, DIALOG
-    BEGIN
-    END
-
-    IDD_COLOR, DIALOG
-    BEGIN
-    END
-
-    IDD_CONNECT, DIALOG
-    BEGIN
-    END
-
-    IDD_GENERAL, DIALOG
-    BEGIN
-    END
-
-    IDD_HYPERLINK, DIALOG
-    BEGIN
-    END
-
-    IDD_INPUTNAME, DIALOG
-    BEGIN
-    END
-
-    IDD_KEYMAP, DIALOG
-    BEGIN
-    END
-
-    IDD_LIST, DIALOG
-    BEGIN
-    END
-
-    IDD_OTHER, DIALOG
-    BEGIN
-    END
-
-    IDD_PASSWD, DIALOG
-    BEGIN
-    END
-
-    IDD_SETBK, DIALOG
-    BEGIN
-    END
-
-    IDD_SITE, DIALOG
-    BEGIN
-    END
-
-    IDD_STRINGS, DIALOG
-    BEGIN
-    END
-
-    IDD_CUSTOMIZEKEY, DIALOG
-    BEGIN
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Toolbar
 //
 
@@ -679,7 +613,7 @@ IDR_CLOSEBTN            BITMAP  DISCARDABLE     "res\\toolbar1.bmp"
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_SITE_LIST        "\n開啟站台列表"
+    ID_SITE_LIST            "\n開啟站台列表"
     ID_CONNECT_CLOSE        "\n關閉這個連線"
     ID_FILE_EXIT            "\n結束"
     ID_COPY                 "\n複製"
@@ -832,6 +766,12 @@ BEGIN
     IDS_COPY_URL            "複製連結位址"
     IDS_ABOUT_INFO          "PCMan 第一次發行，是在 2001 年高三畢業升大一的暑假\r\n本 2004 版為升大四暑假製作，開學後完成。但醫學系課業繁重，\r\n日後除非發現嚴重錯誤，很難再有更新版。\r\n\r\n特別感謝 (以下按照字母筆畫順序排列)：\r\nhttp://www.foood.net/ 設計的工具列圖示，LYM 幫我取得圖示授權 \r\nGeorge Anescu 提供免費 Rijndael 加密程式碼 (PCMan內部有使用)\r\nMyIE 3.2 作者 ( PCMan Combo 瀏覽器支援有參考 MyIE 程式碼 )\r\nPengtu 等對岸網友維護全球華語 BBS 列表\r\nPtt 台大批踢踢實業坊: http://ptt.cc/ 贊助 PCMan 網頁空間\r\nTakeTime 等人熱心提供最新版 BBS 站台列表資料\r\n\r\n請參觀PCMan網頁，有更多免費軟體 (特別強力推薦以下軟體)：\r\nPCMan 2004 ( 不支援瀏覽器的純 BBS 輕巧精簡版 )\r\nPCMan 2004 Combo ( 有支援瀏覽器的 BBS / Web 兩用版 )\r\nMatrix 駭客任務螢幕保護程式 (螢幕上有綠色亂碼流動)\r\n熱鍵超速啟動 v1.0 (超快速操作電腦的小工具)\r\n譯不容遲 2001 XE\r\nQuickMenu 2001 CV4\r\n"
     IDS_WAV_FILTER          "WAV音效檔 (*.wav)|*.wav|"
+    IDS_SITELIST_UPDATE_SUCCESS "更新完成!"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_SITELIST_UPDATE_FAIL "更新失敗!"
 END
 
 #endif    // Chinese (Taiwan) resources

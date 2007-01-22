@@ -55,6 +55,7 @@ BEGIN_MESSAGE_MAP(CListDlg, CDialog)
 	ON_COMMAND(ID_SITES_DEL,OnDelSite)
 	ON_COMMAND(ID_SITES_EDIT,OnEditSite)
 	ON_NOTIFY(NM_RCLICK, IDC_SITES, OnRclickSites)
+	ON_COMMAND(ID_SITES_UPDATE,OnUpdateSitesList)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -136,6 +137,7 @@ static DLGLAYOUT CListDlg_layout[]={
 	{IDC_CONNECT,DLA_RIGHT|DLA_BOTTOM},
 	{IDCANCEL,DLA_RIGHT|DLA_BOTTOM},
 	{IDC_STATIC2,DLA_TOP|DLA_RIGHT},
+	{ID_SITES_UPDATE,DLA_RIGHT|DLA_TOP}
 };
 
 extern CFont fnt;
@@ -650,5 +652,27 @@ void CListDlg::OnRclickSites(NMHDR* pNMHDR, LRESULT* pResult)
 		mnu.GetSubMenu(1)->TrackPopupMenu(TPM_LEFTALIGN,point.x,point.y,this);
 	}
 	*pResult = 0;
+}
+
+void CListDlg::OnUpdateSitesList()
+{
+	HRESULT hr = URLDownloadToFile ( NULL,      // ptr to ActiveX container
+                             SITESLIST_UPDATE_URL,      // URL to get
+                             ::AppPath+BBS_LIST_FILENAME,     // file to store data in
+                             0,         // reserved
+                             NULL  // ptr to IBindStatusCallback
+                           );
+	if ( SUCCEEDED(hr) )
+    {
+		LoadSites();
+        AfxMessageBox ( LoadString(IDS_SITELIST_UPDATE_SUCCESS), MB_ICONINFORMATION );
+    }
+	else
+	{
+		AfxMessageBox ( LoadString(IDS_SITELIST_UPDATE_FAIL), MB_ICONINFORMATION );
+	}
+
+	
+	//UpdateCmdUI();
 }
 
