@@ -664,6 +664,9 @@ void CListDlg::OnUpdateSitesList()
                            );
 	if ( SUCCEEDED(hr) )
     {
+		sites.DeleteItem(sites.bbsfavorite, false);
+		sites.DeleteItem(sites.bbslist, false);
+		sites.DeleteItem(sites.home, false);
 		LoadSites();
         AfxMessageBox ( LoadString(IDS_SITELIST_UPDATE_SUCCESS), MB_ICONINFORMATION );
     }
