@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "StrUtils.h"
 
+//case sensitive
 char* strrstr(const char* str,const char* sub)
 {	return strnrstr(str,sub,strlen(str));	}
-
-char* strrstri(const char* str,const char* sub)
-{	return strnrstri(str,sub,strlen(str));	}
 
 char* strnrstr(const char* str,const char* sub,int len)
 {
@@ -20,6 +18,10 @@ char* strnrstr(const char* str,const char* sub,int len)
 	return NULL;
 }
 
+//case insensitive
+char* strrstri(const char* str,const char* sub)
+{	return strnrstri(str,sub,strlen(str));	}
+
 char* strnrstri(const char* str,const char* sub,int len)
 {
 	const char* pend=str+len;
@@ -33,8 +35,6 @@ char* strnrstri(const char* str,const char* sub,int len)
 	return NULL;
 }
 
-
-//case insensitive
 char* strstri(const char* str,const char* sub)
 {	return strnstri(str,sub,strlen(str));	}
 
@@ -43,7 +43,7 @@ char* strnstri(const char* str,const char* sub,int len)
 	const char* pend=str+len;
 	const char* pstr;
 	int sl=strlen(sub);
-	for( pstr=pend-sl; pstr>=str; pstr--)
+	for( pstr=str; pstr<=pend-sl; pstr++)
 	{
 		if(!strnicmp(pstr,sub,sl))
 			return (char*)pstr;

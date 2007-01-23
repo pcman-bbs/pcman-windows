@@ -1,13 +1,18 @@
 #if !defined(_MYSTRING_H_INCLUDED_)
 #define _MYSTRING_H_INCLUDED_
 #include <string.h>
-//case insensitive
+//str[nr]str[i]說明
+//r: 找最後一個
+//n: 限制搜尋範圍從開頭到len長
+//i: case insensitive
+//case sensitive
 char* strrstr(const char* str,const char* sub);
-char* strrstri(const char* str,const char* sub);
 char* strnrstr(const char* str,const char* sub,int len);
+
+//case insensitive
+char* strrstri(const char* str,const char* sub);
 char* strnrstri(const char* str,const char* sub,int len);
 
-//case sensitive
 char* strstri(const char* str,const char* sub);
 char* strnstri(const char* str,const char* sub,int len);
 
