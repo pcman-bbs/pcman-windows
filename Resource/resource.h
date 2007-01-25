@@ -67,6 +67,7 @@
 #define ID_NEW_WWW2                     111
 #define IDC_CUT                         111
 #define IDC_SAVE                        112
+#define ID_SITES_UPDATE                 112
 #define IDC_CANCEL                      113
 #define IDC_WWWBAR                      116
 #define IDC_TOOLBAR                     117
@@ -570,14 +571,16 @@
 #define IDS_COPY_URL                    33020
 #define IDS_ABOUT_INFO                  33021
 #define IDS_WAV_FILTER                  33022
+#define IDS_SITELIST_UPDATE_SUCCESS     33023
+#define IDS_SITELIST_UPDATE_FAIL        33024
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        176
-#define _APS_NEXT_COMMAND_VALUE         32923
+#define _APS_NEXT_RESOURCE_VALUE        182
+#define _APS_NEXT_COMMAND_VALUE         32927
 #define _APS_NEXT_CONTROL_VALUE         1137
-#define _APS_NEXT_SYMED_VALUE           151
+#define _APS_NEXT_SYMED_VALUE           152
 #endif
 #endif
