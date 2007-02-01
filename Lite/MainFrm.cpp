@@ -2853,7 +2853,7 @@ void CMainFrame::OnViewFullscr()
 	{
 		ModifyStyle(WS_POPUP,WS_OVERLAPPEDWINDOW);
 		ShowWindow(SW_HIDE);
-		ModifyStyleEx(0,WS_EX_CLIENTEDGE);
+		view.ModifyStyleEx(0,WS_EX_CLIENTEDGE);
 		AppConfig.is_full_scr=0;
 		ShowWindow(SW_SHOWNORMAL);
 		ShowWindow(SW_HIDE);
@@ -2867,7 +2867,7 @@ void CMainFrame::OnViewFullscr()
 
 		ShowWindow(SW_SHOWNORMAL);
 		ModifyStyle(GetStyle(),WS_POPUP);
-		ModifyStyleEx(WS_EX_CLIENTEDGE,0);
+		view.ModifyStyleEx(WS_EX_CLIENTEDGE,0);
 		AppConfig.is_full_scr=1;
 		ShowWindow(SW_SHOWMAXIMIZED);
 		CRect rc;
