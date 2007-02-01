@@ -2523,6 +2523,8 @@ void CTermView::OnEditOpenURL(UINT id)
 		url="ftp://"+url;
 		break;
 	case ID_EDIT_OPENURL_TELNET:
+		if( 0 != strnicmp( url, "telnet:", 7) )
+			url="telnet://"+url;
 		parent->OnNewConnectionAds(url);
 		return;
 	}
