@@ -2428,11 +2428,12 @@ BOOL CMainFrame::LoadUI()
 #if defined(_COMBO_)
 	auto_dbcs_menu=GetSubMenu(GetSubMenu(main_menu,2),8);
 	web_fav_menu=::GetSubMenu(main_menu,4);
+	ansi_menu=::GetSubMenu(main_menu,6);
 #else
 	auto_dbcs_menu=GetSubMenu(GetSubMenu(main_menu,2),7);
+	ansi_menu=::GetSubMenu(main_menu,5);
 #endif
 	bbs_fav_menu=::GetSubMenu(main_menu,3);
-	ansi_menu=::GetSubMenu(main_menu,5);
 
 	MENUITEMINFO inf;
 	inf.cbSize=sizeof(inf);
