@@ -33,6 +33,7 @@ int main( int argc, char* argv[] )
 	}
 */
 	// Generate condensed Big5 to UCS2 table
+	printf("Generating condensed B2U...\n");
 	for( ch1 = 0x81; ch1 <= 0xA0; ++ch1 )	// 0x8140 - 0xA0FE
 	{
 		for( ch2 = 0x40; ch2 <= 0x7E; ++ch2 )
@@ -94,6 +95,31 @@ int main( int argc, char* argv[] )
 	}
 
 	fclose( fo );
+
+
+	// Generate condensed UCS2 to Big5 table
+	printf("Generating condensed U2B...\n");
+
+	fo = fopen( "U2B", "wb" );
+	if( !fo )
+		return 1;
+
+	wchar_t ucs2[2] = {0};
+	for( ucs2[0] = 0x0081; ucs2[0] <= 0xFFFE; ++ucs2[0] )
+	{
+		char big5[3] = {0}, sys[3] = {0};
+		conv.Ucs22Big5( ucs2, big5 );
+		big5[2] = '\0';
+		WideCharToMultiByte( 950, 0, ucs2, 1, sys, 3, "\xff\xfd", NULL);
+		if( 0 == strcmp( big5, sys ) || 0 == strcmp(big5, "\xff\xfd") )
+			continue;
+		printf( "ucs2(UAO) = 0x%04X ==> big5 = 0x%02X%02X, windows=0x%02X%02X\n", (int)ucs2[0], BYTE(big5[0]), BYTE(big5[1]), BYTE(sys[0]), BYTE(sys[1]) );
+		fwrite( ucs2, 1, 2, fo );
+		fwrite( big5, 1, 2, fo );
+	}
+
+	fclose( fo );
+
 	printf( "Press \"Enter\" to continue" );
 	getchar();
 	return 0;
