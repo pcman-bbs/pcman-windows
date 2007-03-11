@@ -285,46 +285,48 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "其他BBS設定"
 FONT 9, "新細明體"
 BEGIN
+    CONTROL         "BBS畫面不使用逐字輸出 (速度快一倍但遇亂碼會發生文字對齊錯誤)",
+                    IDC_OLD_TEXTOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,
+                    7,254,10
     CONTROL         "字體大小隨視窗大小動態調整",IDC_AUTOFONT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,8,7,120,10
-    CONTROL         "選取文字之後放開滑鼠即自動複製",IDC_AUTOCOPY,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,132,7,136,10
-    CONTROL         "斷線後按Enter重新連線",IDC_ENTER_RECONNECT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,8,23,97,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,23,120,10
     CONTROL         "沒有連線時按Enter開啟上次連線",
                     IDC_NOCON_ENTER_RECONNECT,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,132,23,129,10
-    CONTROL         "BBS畫面不使用逐字輸出 (速度快一倍但遇亂碼會發生文字對齊錯誤)",
-                    IDC_OLD_TEXTOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,
-                    39,254,10
+    CONTROL         "斷線後按Enter重新連線",IDC_ENTER_RECONNECT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,39,97,10
     CONTROL         "斷線之後自動關閉BBS畫面",IDC_AUTOCLOSE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,8,55,111,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,132,39,111,10
     CONTROL         "複製完畢自動取消選取",IDC_AUTOCANCELSEL,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,8,71,96,10
-    EDITTEXT        IDC_ONEPAGE_COL,71,104,35,14,ES_AUTOHSCROLL | ES_NUMBER
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,55,96,10
+    CONTROL         "選取文字之後放開滑鼠即自動複製",IDC_AUTOCOPY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,132,55,136,10
+    CONTROL         "連點兩下後自動選取",IDC_DBLCLKSELECT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,71,88,10
+    EDITTEXT        IDC_ONEPAGE_COL,71,120,35,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPINONEPAGE_COL,"msctls_updown32",
                     UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
-                    UDS_ARROWKEYS,97,97,11,14
-    EDITTEXT        IDC_ONEPAGE_LINE,71,120,35,14,ES_AUTOHSCROLL | ES_NUMBER
+                    UDS_ARROWKEYS,97,113,11,14
+    EDITTEXT        IDC_ONEPAGE_LINE,71,136,35,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPINONEPAGE_LINE,"msctls_updown32",
                     UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
-                    UDS_ARROWKEYS,98,120,11,14
+                    UDS_ARROWKEYS,98,136,11,14
     CONTROL         "靜音",IDC_MUTE,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
-                    WS_TABSTOP,128,71,29,10
+                    WS_TABSTOP,128,87,29,10
     CONTROL         "PC喇叭",IDC_PCSPEAKER,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,159,71,40,10
+                    WS_TABSTOP,159,87,40,10
     CONTROL         "撥放WAV檔案",IDC_WAVE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,202,71,66,10
-    EDITTEXT        IDC_WAVEPATH,129,87,105,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "瀏覽",IDC_SETWAVE,236,86,26,14
+                    WS_TABSTOP,202,87,66,10
+    EDITTEXT        IDC_WAVEPATH,129,103,105,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "瀏覽",IDC_SETWAVE,236,102,26,14
     CONTROL         "來訊閃爍視窗標題",IDC_FLASHWINDOW,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,129,106,80,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,129,122,80,10
     CONTROL         "自動切換到有來訊的連線 (不建議)",IDC_AUTOSWITCH,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,129,122,135,10
-    GROUPBOX        "來訊音效設定",IDC_STATIC,123,57,145,80,WS_GROUP
-    LTEXT           "每列最大字數：",IDC_STATIC,12,106,57,8
-    LTEXT           "每頁顯示列數：",IDC_STATIC,12,122,57,8
-    GROUPBOX        "ANSI彩色編輯器設定",IDC_STATIC,8,91,110,46
+                    BS_AUTOCHECKBOX | WS_TABSTOP,129,138,135,10
+    GROUPBOX        "來訊音效設定",IDC_STATIC,123,73,145,80,WS_GROUP
+    LTEXT           "每列最大字數：",IDC_STATIC,12,122,57,8
+    LTEXT           "每頁顯示列數：",IDC_STATIC,12,138,57,8
+    GROUPBOX        "ANSI彩色編輯器設定",IDC_STATIC,8,107,110,46
 END
 
 IDD_PASSWD DIALOG DISCARDABLE  0, 0, 140, 49
@@ -522,6 +524,34 @@ BEGIN
     LTEXT           "請在此輸入新的熱鍵：",IDC_STATIC,224,90,81,8
 END
 
+IDD_ABOUTBOX DIALOGEX 0, 0, 284, 229
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTROLPARENT
+CAPTION "關於 PCMan"
+FONT 9, "新細明體", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "建議或錯誤回報",IDC_MAIL,7,208,61,14
+    PUSHBUTTON      "參觀原作者網頁",IDC_WEB,82,208,61,14
+    PUSHBUTTON      "軟體說明",IDB_HELP,240,208,37,14
+    LTEXT           "授權方式： GNU General Public License 第二版\nCopyright (C) 2001-2007 原作者：陽明大學醫學系 洪任諭\nCopyright (C) 2007 cole945, neopro, rocet, Open PCMan 開發團隊",
+                    IDC_STATIC,41,19,220,27
+    EDITTEXT        IDC_EDIT,7,47,270,157,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
+    ICON            IDR_MAINFRAME,IDC_STATIC,10,9,20,20
+    CTEXT           "Open PCMan 2007 - 開放原始碼的全方位 BBS 瀏覽軟體",
+                    IDC_STATIC,39,7,207,8
+    PUSHBUTTON      "參觀開發專案網頁",IDC_WEB2,157,208,69,14
+END
+
+IDD_DOWNLOADING DIALOG DISCARDABLE  0, 0, 142, 44
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "下載中..."
+FONT 9, "新細明體"
+BEGIN
+    DEFPUSHBUTTON   "取消 (&C)",IDCANCEL,46,23,50,14
+    LTEXT           "正在下載...",IDC_STATIC,7,7,128,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -605,6 +635,25 @@ END
 //
 
 IDR_CLOSEBTN            BITMAP  DISCARDABLE     "res\\toolbar1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 277
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 222
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -764,7 +813,6 @@ BEGIN
     IDS_BBS_FAVORITE_NAME   "BBS我的最愛"
     IDS_WWW_FAVORITE_NAME   "Web我的最愛"
     IDS_COPY_URL            "複製連結位址"
-    IDS_ABOUT_INFO          "PCMan 第一次發行，是在 2001 年高三畢業升大一的暑假\r\n本 2004 版為升大四暑假製作，開學後完成。但醫學系課業繁重，\r\n日後除非發現嚴重錯誤，很難再有更新版。\r\n\r\n特別感謝 (以下按照字母筆畫順序排列)：\r\nhttp://www.foood.net/ 設計的工具列圖示，LYM 幫我取得圖示授權 \r\nGeorge Anescu 提供免費 Rijndael 加密程式碼 (PCMan內部有使用)\r\nMyIE 3.2 作者 ( PCMan Combo 瀏覽器支援有參考 MyIE 程式碼 )\r\nPengtu 等對岸網友維護全球華語 BBS 列表\r\nPtt 台大批踢踢實業坊: http://ptt.cc/ 贊助 PCMan 網頁空間\r\nTakeTime 等人熱心提供最新版 BBS 站台列表資料\r\n\r\n請參觀PCMan網頁，有更多免費軟體 (特別強力推薦以下軟體)：\r\nPCMan 2004 ( 不支援瀏覽器的純 BBS 輕巧精簡版 )\r\nPCMan 2004 Combo ( 有支援瀏覽器的 BBS / Web 兩用版 )\r\nMatrix 駭客任務螢幕保護程式 (螢幕上有綠色亂碼流動)\r\n熱鍵超速啟動 v1.0 (超快速操作電腦的小工具)\r\n譯不容遲 2001 XE\r\nQuickMenu 2001 CV4\r\n"
     IDS_WAV_FILTER          "WAV音效檔 (*.wav)|*.wav|"
     IDS_SITELIST_UPDATE_SUCCESS "更新完成!"
 END

@@ -377,7 +377,7 @@ LRESULT CWebBrowser::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		wb_ctrl.Stop();
 	}
-	return DefDlgProc(m_hWnd,message,wParam,lParam);
+	return ::DefWindowProc/*DefDlgProc*/(m_hWnd,message,wParam,lParam);
 }
 
 LRESULT CWebBrowser::OnAsyncTitleChange(WPARAM wp, LPARAM lp)

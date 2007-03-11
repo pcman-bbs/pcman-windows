@@ -63,102 +63,6 @@ void CTriggerList::RemoveAll()
 	count=0;
 }
 
-
-BOOL CTriggerList::LoadFromFile(CFile &file)
-{
-	//讀取字串觸發...
-	CString tmp;
-	RemoveAll();
-	int c=0;
-	file.Read(&c,sizeof(int));
-
-	CAES crypto;
-	while(c)
-	{
-		tmp=LoadString(file);
-		CTriggerItem* ntitem=Add();
-		ntitem->msg=UnescapeControlChars(tmp);
-		//讀取可能加密的字串
-		DWORD l;
-		file.Read(&l,sizeof(DWORD));	//	l=strlen(respond);
-		char* tmpbuf=new char[l+1];
-		file.Read(tmpbuf,l);
-		if( *tmpbuf=='*' )	//如果有加密
-		{
-			l--;
-			if(!crypto.IsInitialized())
-			{
-				if(!AppConfig.QueryPassword(FALSE))
-					return FALSE;
-				crypto.EnterPassword(AppConfig.passwd);
-			}
-			char* decbuf = new char[l+2];
-			memset(decbuf,0,l+2);
-			crypto.Decrypt(tmpbuf+1,decbuf,l);
-			memcpy(tmpbuf+1,decbuf,l);
-			delete []decbuf;
-
-			char* ppasswd = tmpbuf+strlen(tmpbuf)+1;
-			if( memcmp(LPCTSTR(AppConfig.passwd),ppasswd,AppConfig.passwd.GetLength()) )
-			{
-				AppConfig.passwd.Empty();
-				delete []tmpbuf;
-				return FALSE;
-			}
-			*ppasswd=0;
-		}
-		else
-			tmpbuf[l]=0;
-		//------------讀取加密字串完畢
-		ntitem->respond=tmpbuf;
-		delete []tmpbuf;
-
-		file.Read(&ntitem->first,sizeof(WORD));
-		file.Read(&ntitem->count,sizeof(WORD));
-		c--;
-	}
-	return TRUE;
-}
-
-void CTriggerList::SaveToFile(CFile &file)
-{
-	file.Write(&count,sizeof(count));
-	CAES crypt;
-	for(CTriggerItem* pi=pfirst;pi;pi=pi->pnext)
-	{
-		//儲存要偵測的字串
-		SaveString(file,pi->msg);
-		//儲存回應字串，視情況加密
-		if(pi->respond[0]=='*')	//需要加密
-		{
-			if(!crypt.IsInitialized())
-				crypt.EnterPassword(AppConfig.passwd);
-			DWORD len=pi->respond.GetLength()+1;
-			DWORD len2=len+AppConfig.passwd.GetLength();	//連密碼一起儲存
-			len2 = (len2/16 + (len2%16?1:0))*16+1;
-			file.Write(&len2,sizeof(len2));
-			len2--;
-			char* buf=new char[len2+2];
-			memset(buf,0,len2);
-			memcpy(buf,LPCTSTR(pi->respond),len);
-			memcpy(buf+len,LPCTSTR(AppConfig.passwd),AppConfig.passwd.GetLength());
-			char *buf2 = new char[len2+2];
-			memset(buf2,0,len2+2);
-			crypt.Encrypt(buf+1,buf2+1,len2);
-			*buf2 = *buf;
-			file.Write(buf2,len2+1);
-			delete []buf2;
-			delete []buf;
-		}
-		else
-			SaveString(file,pi->respond);
-		//儲存第一次開始觸發的次數
-		file.Write(&pi->first,sizeof(WORD));
-		//儲存總共要觸發的次數
-		file.Write(&pi->count,sizeof(WORD));
-	}
-}
-
 void CTriggerList::CopyFrom(CTriggerList &newval)
 {
 	RemoveAll();
@@ -171,3 +75,150 @@ void CTriggerList::CopyFrom(CTriggerList &newval)
 		ni->count=pi->count;
 	}
 }
+
+static void SetTriggerItem( CTriggerItem& item, char* line, CAES& crypto )
+{
+    char* eq = strchr( line, '=' );
+    if( !eq )
+        return;
+    *eq = '\0';
+	char* key = line;
+	char* val = eq + 1;
+	if( 0 == strcmp( key, "first" ) )
+		item.first = atoi( val );
+	else if( 0 == strcmp( key, "count" ) )
+		item.count = atoi( val );
+	else if( 0 == strcmp( key, "recv" ) )
+		item.msg = UnescapeControlChars( val );
+	else if( 0 == strcmp( key, "send" ) )
+	{
+		if( *val == '+' )	// encrypted string
+		{
+			++val;
+ 			if( !crypto.IsInitialized() )
+ 			{
+ 				if(!AppConfig.QueryPassword(FALSE))
+ 					return;
+ 				crypto.EnterPassword( AppConfig.passwd );
+ 			}
+			int base64_len = strlen(val);
+			int enc_len = Base64Decode( (BYTE*)val, base64_len, NULL, 0 );
+			char* enc_buf = new char[enc_len];
+			enc_len = Base64Decode( (BYTE*)val, base64_len, (BYTE*)enc_buf, enc_len );
+ 			char* dec_buf = new char[enc_len + 2];
+ 			memset(dec_buf, 0, enc_len + 2);
+ 			crypto.Decrypt( enc_buf, dec_buf, enc_len );
+			delete enc_buf;
+			int dec_len = strlen( dec_buf );
+ 			char* ppasswd = dec_buf + dec_len + 1;
+ 			if( memcmp(LPCTSTR(AppConfig.passwd), ppasswd, AppConfig.passwd.GetLength()) )
+ 			{
+ 				AppConfig.passwd.Empty();
+ 				delete []dec_buf;
+ 				return;
+ 			}
+			item.respond = '+';
+			item.respond += dec_buf;
+ 			delete []dec_buf;
+		}
+		else
+		{
+			item.respond = val;
+		}
+	}
+}
+
+void CTriggerList::Load( char* section )
+{
+    SKIP_SPACES( section );
+    if( *section )
+    {
+		CAES crypto;
+
+        RemoveAll();
+        char* line = section;
+		char* nextline = NULL;
+        for( ; line; line = nextline )
+        {
+			nextline = strnextline( line );
+            // format of each trigger item:
+			// <item>
+			// first=int
+			// count=int
+			// recv=str
+			// send=str
+			//   If str[0] == '-', it's a normal string.
+			//   If str[0] == '+', it's a base64 encoded binary string
+			// </item>
+			SKIP_SPACES(line);
+			if( strcmp( line, "<item>") )
+				continue;
+
+			CTriggerItem* item = Add();
+			while( (line = nextline) )
+			{
+				nextline = strnextline( line );
+				if( 0 == strcmp( line, "</item>" ) )
+					break;
+				SetTriggerItem( *item, line, crypto );
+			}
+        }
+    }
+
+}
+
+void CTriggerList::Save( CString& section )
+{
+	CAES crypto;
+    for( CTriggerItem* item = pfirst; item; item = item->pnext )
+    {
+		char buf[16];
+		section += "<item>\r\n";
+		section += "first=";
+		sprintf( buf, "%d\r\n", item->first );
+		section += buf;
+
+		section += "count=";
+		sprintf( buf, "%d\r\n", item->count );
+		section += buf;
+
+		section += "recv=";
+		section += item->msg;
+		section += "\r\n";
+
+		section += "send=";
+		if( item->respond[0] == '+' )	// encrypted
+		{
+			section += '+';
+			if( !crypto.IsInitialized() )
+				crypto.EnterPassword( AppConfig.passwd );
+
+			int len = item->respond.GetLength();
+			int dec_len = len + AppConfig.passwd.GetLength() + 1;	//連密碼一起儲存
+			dec_len = (dec_len / 16 + (dec_len % 16 ? 1 : 0)) * 16;
+			char* dec_buf = new char[ dec_len ];
+			memset( dec_buf, 0, dec_len );
+			memcpy( dec_buf, LPCTSTR(item->respond) + 1, len );
+			memcpy( dec_buf + len, LPCTSTR(AppConfig.passwd), AppConfig.passwd.GetLength() + 1);
+			char* enc_buf = new char[ dec_len ];
+			memset( enc_buf, 0, dec_len );
+			crypto.Encrypt( dec_buf, enc_buf, dec_len );
+			delete []dec_buf;
+
+			int base64_len = Base64Encode( (BYTE*)enc_buf, dec_len, NULL,0 );
+			char* base64 = new char[ base64_len + 1 ];
+			base64_len = Base64Encode( (BYTE*)enc_buf, dec_len, (BYTE*)base64, base64_len );
+			base64[ base64_len ] = '\0';
+			delete []enc_buf;
+
+			section += base64;
+			delete base64;
+		}
+		else
+		{
+			section += item->respond;
+		}
+		section += "\r\n</item>\r\n\r\n";
+    }
+}
+

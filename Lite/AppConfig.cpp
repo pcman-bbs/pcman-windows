@@ -116,31 +116,11 @@ void CAppConfig::Load(LPCTSTR config_path)
 {
 	GetIEPath();
 	CFile f;
-	if(f.Open(config_path,CFile::modeRead))
-	{
-//General settings pure value
-		f.Read(this,((DWORD)&site_settings-(DWORD)this));
-//		f.Read(this,((DWORD)&termtype-(DWORD)this));
-//General settings object data
-		site_settings.ReadFile(f);
 
-		bkpath=LoadString(f);
-		wavepath=LoadString(f);
-		last_bbslist_item=LoadString(f);
-
-		main_toolbar_inf.LoadFromFile(f);
-		hyper_links.Load(f);
-
-//		LoadHistory(f);
-//	WWW Settings
-	#if defined _COMBO_
-		webbar_inf.LoadFromFile(f);
-		f.Read(&ads_open_new,((DWORD)&webpage_filter-(DWORD)&ads_open_new));
-	#endif
-		f.Close();
-	}
-	else
-		Default();
+    Default();  // set default value before loading ini
+    SetFilePath( config_path );
+    if( ! CConfigFile::Load() ) // the ini file cannot be loaded
+        Save(ConfigPath+CONFIG_FILENAME);   // save default value as ini
 
 #if defined _COMBO_
 	LoadWebPageFilter();
@@ -151,30 +131,8 @@ void CAppConfig::Load(LPCTSTR config_path)
 
 void CAppConfig::Save(LPCTSTR config_path)
 {
-	CFile f;
-	if(f.Open(config_path,CFile::modeWrite|CFile::modeCreate))
-	{
-//General settings pure value
-		f.Write(this,((DWORD)&site_settings-(DWORD)this));
-//General settings object data
-//		site_settings.Save(f);
-		site_settings.WriteFile(f);
-		SaveString(f,bkpath);
-		SaveString(f,wavepath);
-		SaveString(f,last_bbslist_item);
-
-		main_toolbar_inf.SaveToFile(f);
-		hyper_links.Save(f);
-
-//		SaveHistory(f);
-//	WWW Settings
-	#if defined _COMBO_
-		webbar_inf.SaveToFile(f);
-		f.Write(&ads_open_new,((DWORD)&webpage_filter-(DWORD)&ads_open_new));
-	#endif
-
-		f.Close();
-	}
+    SetFilePath( config_path );
+    CConfigFile::Save();
 
 #if defined _COMBO_
 	SaveWebPageFilter();
@@ -305,105 +263,212 @@ inline void CAppConfig::SaveWebPageFilter()
 }
 #endif
 
-// FIXME: The format of all config files should be converted to plain text in the 
-//        future for easier maintainance and compatibility during upgrade.
-// NOTE:  The performance of Win32 API GetPrivateProfileInt is not good enough, and
-//        it only deals with files smaller than 64K.  We should write our own ini loader.
+bool CAppConfig::OnDataExchange( bool load )
+{
+    CString lfFaceName;
+    if( !load )
+        lfFaceName = font_info.lfFaceName;
 
-//DEL void CAppConfig::LoadIni()
-//DEL {
-//DEL 	CString ini = ConfigPath + "Config.ini";
-//DEL 	multiple_instance = GetPrivateProfileInt("General","multiple_instance",0,ini);
-//DEL 	scrolltab = GetPrivateProfileInt("General","scrolltab",0,ini);
-//DEL 	close_query = GetPrivateProfileInt("General","close_query",0,ini);
-//DEL 	dblclk_close = GetPrivateProfileInt("General","dblclk_close",0,ini);
-//DEL 	tab_add_number = GetPrivateProfileInt("General","tab_add_number",0,ini);
-//DEL 	tab_button = GetPrivateProfileInt("General","tab_button",0,ini);
-//DEL 	showtb = GetPrivateProfileInt("General","showtb",0,ini);
-//DEL 	showsb = GetPrivateProfileInt("General","showsb",0,ini);
-//DEL 	showtab = GetPrivateProfileInt("General","showtab",0,ini);
-//DEL 	showads = GetPrivateProfileInt("General","showads",0,ini);
-//DEL 	use_ansi_bar = GetPrivateProfileInt("General","use_ansi_bar",0,ini);
-//DEL 	kktab = GetPrivateProfileInt("General","kktab",0,ini);
-//DEL 	is_full_scr = GetPrivateProfileInt("General","is_full_scr",0,ini);
-//DEL 	fullscr_showtb = GetPrivateProfileInt("General","fullscr_showtb",0,ini);
-//DEL 	fullscr_showsb = GetPrivateProfileInt("General","fullscr_showsb",0,ini);
-//DEL 	fullscr_showtab = GetPrivateProfileInt("General","fullscr_showtab",0,ini);
-//DEL 	fullscr_showads = GetPrivateProfileInt("General","fullscr_showads",0,ini);
-//DEL 	full_use_ansi_bar = GetPrivateProfileInt("General","full_use_ansi_bar",0,ini);
-//DEL 	minimize_to_tray = GetPrivateProfileInt("General","minimize_to_tray",0,ini);
-//DEL 	pcman_hotkey = GetPrivateProfileInt("General","pcman_hotkey",0,ini);
-//DEL 	pcman_hotkey_mod = GetPrivateProfileInt("General","pcman_hotkey_mod",0,ini);
-//DEL 	max_history = GetPrivateProfileInt("General","max_history",0,ini);
-//DEL 	max_history_menu = GetPrivateProfileInt("General","max_history_menu",0,ini);
-//DEL 	ed_cols_per_page = GetPrivateProfileInt("AnsiEditor","",0,ini);
-//DEL 	ed_lines_per_page = GetPrivateProfileInt("AnsiEditor","",0,ini);
-//DEL 
-//DEL //Main window
-//DEL 	GetPrivateProfileStruct("Position","mainwnd_state",&mainwnd_state,sizeof(mainwnd_state),ini);
-//DEL 	GetPrivateProfileStruct("Position","sitelist_state",&sitelist_state,sizeof(sitelist_state),ini);
-//DEL 	GetPrivateProfileStruct("Position","freqstr_state",&freqstr_state,sizeof(freqstr_state),ini);
-//DEL //ReBar Position
-//DEL 	GetPrivateProfileStruct("Position","rebar_bands",rebar_bands,sizeof(rebar_bands),ini);
-//DEL 
-//DEL //	HyperLink Settings
-//DEL 	link_underline = GetPrivateProfileInt("HyperLink","link_underline",0,ini);
-//DEL 
-//DEL //	BBS Setttings
-//DEL 	auto_cancelsel = GetPrivateProfileInt("BBS","auto_cancelsel",0,ini);
-//DEL 	auto_copy = GetPrivateProfileInt("BBS","auto_copy",0,ini);
-//DEL 	enter_reconnect = GetPrivateProfileInt("BBS","enter_reconnect",0,ini);
-//DEL 	nocon_enter_reconnect = GetPrivateProfileInt("BBS","nocon_enter_reconnect",0,ini);
-//DEL 	auto_close = GetPrivateProfileInt("BBS","auto_close",0,ini);
-//DEL 	auto_font = GetPrivateProfileInt("BBS","auto_font",0,ini);
-//DEL 	bbs_close_query = GetPrivateProfileInt("BBS","bbs_close_query",0,ini);
-//DEL 	auto_switch = GetPrivateProfileInt("BBS","auto_switch",0,ini);
-//DEL 	flash_window = GetPrivateProfileInt("BBS","flash_window",0,ini);
-//DEL 	smooth_draw = GetPrivateProfileInt("BBS","smooth_draw",0,ini);
-//DEL 
-//DEL 	GetPrivateProfileStruct("BBS","colormap",colormap,sizeof(colormap),ini);
-//DEL 	GetPrivateProfileStruct("BBS","font_info",&font_info,sizeof(font_info),ini);
-//DEL 
-//DEL 	bktype = GetPrivateProfileInt("BBS","bktype",0,ini);
-//DEL 	bkratio = GetPrivateProfileInt("BBS","bkratio",0,ini);
-//DEL 	sound = GetPrivateProfileInt("BBS","sound",0,ini);
-//DEL 	old_textout = GetPrivateProfileInt("BBS","old_textout",0,ini);
-//DEL 	active_tab_textcolor = GetPrivateProfileInt("BBS","active_tab_textcolor",0,ini);
-//DEL 	save_session = GetPrivateProfileInt("BBS","save_session",0,ini);
-//DEL 
-//DEL //	Site Settings
-//DEL //	pure data section
-//DEL 	long line_count;
-//DEL 	DWORD idle_interval;
-//DEL 	UINT connect_interval;
-//DEL 	UINT reconnect_interval;
-//DEL 	UINT paste_autowrap_col;
-//DEL 	WORD cols_per_page;
-//DEL 	WORD lines_per_page;
-//DEL 
-//DEL 	BYTE prevent_idle;
-//DEL 	BYTE auto_reconnect;
-//DEL 
-//DEL 	BYTE showscroll;
-//DEL 	BYTE line_wrap;
-//DEL 	BYTE paste_autowrap;
-//DEL 	BYTE auto_dbcs_mouse;
-//DEL 	BYTE auto_dbcs_arrow;
-//DEL 	BYTE auto_dbcs_del;
-//DEL 	BYTE auto_dbcs_backspace;
-//DEL 	BYTE localecho;
-//DEL 
-//DEL 	char KeyMapName[12];
-//DEL 
-//DEL //	object section of Site Settings
-//DEL 	CString termtype;
-//DEL 	CString idle_str;
-//DEL 	CString esc_convert;
-//DEL 
-//DEL //	BBS Setttings
-//DEL 	CString bkpath;	//背景圖路徑
-//DEL 	CString passwd;
-//DEL 	CString wavepath;
-//DEL 	CString last_bbslist_item;
-//DEL 
-//DEL }
+//	General Setting
+	BEGIN_CFG_SECTION(General)
+	    CFG_BYTE( multiple_instance )
+	    CFG_BYTE( scrolltab )
+	    CFG_BYTE( close_query )
+	    CFG_BYTE( dblclk_close )
+	    CFG_BYTE( tab_add_number )
+	    CFG_BYTE( tab_button )
+	    CFG_BYTE( showtb )
+	    CFG_BYTE( showsb )
+	    CFG_BYTE( showtab )
+	    CFG_BYTE( showads )
+	    CFG_BYTE( showclose )
+	    CFG_BYTE( use_ansi_bar )
+	    CFG_BYTE( kktab )
+	    CFG_BYTE( is_full_scr )
+
+	    CFG_BYTE( fullscr_showtb )
+	    CFG_BYTE( fullscr_showsb )
+	    CFG_BYTE( fullscr_showtab )
+	    CFG_BYTE( fullscr_showads )
+	    CFG_BYTE( fullscr_showclose )
+	    CFG_BYTE( full_use_ansi_bar )
+
+	    CFG_BYTE( minimize_to_tray )
+	    CFG_SHORT( pcman_hotkey )
+	    CFG_SHORT( pcman_hotkey_mod )
+
+	    CFG_INT( max_history )
+
+    END_CFG_SECTION()
+
+//	BBS Setttings
+	BEGIN_CFG_SECTION(BBS)
+
+	    CFG_BYTE( auto_cancelsel )
+	    CFG_BYTE( auto_copy )
+	    CFG_BYTE( enter_reconnect )
+	    CFG_BYTE( nocon_enter_reconnect )
+	    CFG_BYTE( auto_close )
+	    CFG_BYTE( auto_font )
+	    CFG_BYTE( bbs_close_query )
+	    CFG_BYTE( auto_switch )
+	    CFG_BYTE( flash_window )
+	    CFG_BYTE( smooth_draw )
+
+    //	LOGFONT font_info;
+	    CFG_INT( bktype )
+	    CFG_INT( bkratio )		//	ratio/10*100%
+	    CFG_BYTE( sound )		//type of beep
+	    CFG_BYTE( old_textout )
+	    CFG_BYTE( save_session )
+	    CFG_BYTE( switch_back_on_close )
+	    CFG_BYTE( dblclk_select )
+	    CFG_STR( bkpath )	//背景圖路徑
+	    CFG_STR( wavepath )
+
+//	AnsiEditor Settings
+	    CFG_INT( ed_cols_per_page )
+	    CFG_INT( ed_lines_per_page )
+
+//	HyperLink Settings
+	    CFG_INT( link_underline )
+	    CFG_INT( link_autoswitch )
+
+    END_CFG_SECTION()
+
+	BEGIN_CFG_SECTION(Font)
+	   _CFG_STR( "face", lfFaceName ) 
+	   _CFG_INT ( "height", font_info.lfHeight )
+	   _CFG_INT ( "width", font_info.lfWidth ) 
+	   _CFG_INT ( "esc", font_info.lfEscapement ) 
+	   _CFG_INT ( "orient", font_info.lfOrientation ) 
+	   _CFG_INT ( "weight", font_info.lfWeight ) 
+	   _CFG_BYTE( "italic", font_info.lfItalic ) 
+	   _CFG_BYTE( "underline", font_info.lfUnderline ) 
+//	   _CFG_BYTE( font_info.lfStrikeOut ) 
+//	   _CFG_BYTE( "font_info.lfCharSet ) 
+	   _CFG_BYTE( "oprec", font_info.lfOutPrecision ) 
+	   _CFG_BYTE( "cprec", font_info.lfClipPrecision ) 
+	   _CFG_BYTE( "quality", font_info.lfQuality ) 
+	   _CFG_BYTE( "pitch", font_info.lfPitchAndFamily ) 
+	END_CFG_SECTION()
+
+	BEGIN_CFG_SECTION(Site)
+	    _CFG_LONG( "line_count", site_settings.line_count )
+	    _CFG_LONG( "idle_interval", site_settings.idle_interval )
+	    _CFG_INT( "connect_interval", site_settings.connect_interval )
+	    _CFG_INT( "reconnect_interval", site_settings.reconnect_interval  )
+	    _CFG_INT( "paste_autowrap_col", site_settings.paste_autowrap_col  )
+	    _CFG_SHORT( "cols_per_page", site_settings.cols_per_page )
+	    _CFG_SHORT( "lines_per_page", site_settings.lines_per_page )
+
+	    _CFG_BYTE( "prevent_idle", site_settings.prevent_idle )
+	    _CFG_BYTE( "auto_reconnect", site_settings.auto_reconnect )
+
+	    _CFG_BYTE( "showscroll", site_settings.showscroll )
+	    _CFG_BYTE( "line_wrap", site_settings.line_wrap )
+	    _CFG_BYTE( "paste_autowrap", site_settings.paste_autowrap )
+	    _CFG_BYTE( "auto_dbcs_mouse", site_settings.auto_dbcs_mouse )
+	    _CFG_BYTE( "auto_dbcs_arrow", site_settings.auto_dbcs_arrow )
+	    _CFG_BYTE( "auto_dbcs_del", site_settings.auto_dbcs_del )
+	    _CFG_BYTE( "auto_dbcs_backspace", site_settings.auto_dbcs_backspace )
+	    _CFG_BYTE( "localecho", site_settings.localecho )
+
+	    _CFG_BYTE( "text_output_conv", site_settings.text_output_conv )	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
+	    _CFG_BYTE( "text_input_conv", site_settings.text_input_conv )		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
+
+	    _CFG_STR( "key_map_name", site_settings.key_map_name )
+	    _CFG_STR( "termtype", site_settings.termtype )
+	    _CFG_STR( "idle_str", site_settings.idle_str )
+	    _CFG_ESTR( "esc_convert", site_settings.esc_convert )
+	    // CTriggerList triggers;	//觸發字串
+	END_CFG_SECTION()
+
+    BEGIN_CFG_SECTION(Color)
+		_CFG_COLOR( "black", colormap[0] )
+		_CFG_COLOR( "dark_red", colormap[1] )
+		_CFG_COLOR( "dark_green", colormap[2] )
+		_CFG_COLOR( "brown", colormap[3] )
+		_CFG_COLOR( "dark_blue", colormap[4] )
+		_CFG_COLOR( "dark_magenta", colormap[5] )
+		_CFG_COLOR( "dark_cyan", colormap[6] )
+		_CFG_COLOR( "light_gray", colormap[7] )
+		_CFG_COLOR( "gray", colormap[8] )
+		_CFG_COLOR( "red", colormap[9] )
+		_CFG_COLOR( "green", colormap[10] )
+		_CFG_COLOR( "yellow", colormap[11] )
+		_CFG_COLOR( "blue", colormap[12] )
+		_CFG_COLOR( "magenta", colormap[13] )
+		_CFG_COLOR( "cyan", colormap[14] )
+		_CFG_COLOR( "white", colormap[15] )
+
+		CFG_COLOR( active_tab_textcolor )
+	END_CFG_SECTION()
+
+	BEGIN_CFG_SECTION(Window)
+// Window position
+        CFG_CUSTOM( "main", mainwnd_state )
+        CFG_CUSTOM( "site_list", sitelist_state )
+        CFG_CUSTOM( "freq_str", freqstr_state )
+
+// Customize toolbar buttons
+		CFG_CUSTOM( "main_toolbar", main_toolbar_inf )
+#if defined _COMBO_
+		CFG_CUSTOM( "web_bar", webbar_inf )
+#endif
+
+// ReBar Position
+        CFG_CUSTOM( "rebar0", rebar_bands[0] )
+        CFG_CUSTOM( "rebar1", rebar_bands[1] )
+        CFG_CUSTOM( "rebar2", rebar_bands[2] )
+        CFG_CUSTOM( "rebar3", rebar_bands[3] )
+#if defined _COMBO_
+        CFG_CUSTOM( "rebar4", rebar_bands[4] )
+        CFG_CUSTOM( "rebar5", rebar_bands[5] )
+#endif
+	    CFG_STR( last_bbslist_item )
+	END_CFG_SECTION()
+
+//	WWW Settings
+#if defined (_COMBO_)
+	BEGIN_CFG_SECTION(Web)
+	    CFG_BYTE( ads_open_new )
+	    CFG_BYTE( disable_popup )
+	    CFG_BYTE( showwb )
+	    CFG_BYTE( fullscr_showwb )
+	    CFG_BYTE( showsearchbar )
+	    CFG_BYTE( fullscr_showsearchbar )
+	    CFG_BYTE( autosort_favorite )
+	    CFG_BYTE( disable_script_error )
+	    CFG_BYTE( use_ie_fav )
+	    CFG_BYTE( autowrap_favorite )
+	END_CFG_SECTION()
+// Object Section
+//	CStringArray webpage_filter;
+#endif
+
+	BEGIN_CFG_FILE( table )
+		CFG_SECTION( General )
+		CFG_SECTION( BBS )
+		CFG_SECTION( Color )
+		CFG_SECTION( Font )
+		CFG_SECTION( Site )
+		CFG_CUSTOM_SECTION( "HyperLink", hyper_links )
+#if defined (_COMBO_)
+        CFG_SECTION( Web )
+#endif
+		CFG_SECTION( Window )
+	END_CFG_FILE()
+
+    bool ret = DoDataExchange( load, table );
+
+    if( load )
+        strcpy( font_info.lfFaceName, lfFaceName );
+
+    return ret;
+}
+
+void CAppConfig::CfgWindowState(bool load, void* val, void* user_data)
+{
+    CWindowState& ws = *(CWindowState*)user_data;
+}

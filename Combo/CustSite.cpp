@@ -18,8 +18,8 @@
 
 #include "..\Lite\AppConfig.h"
 
-// DEFINE_GUID(CGID_DocHostCommandHandler,0xf38bc242,0xb950,0x11d1,0x89,0x18,0x00,0xc0,0x4f,0xc2,0xc8,0x36);
-static CLSID const CGID_DocHostCommandHandler
+// DEFINE_GUID(_CGID_DocHostCommandHandler,0xf38bc242,0xb950,0x11d1,0x89,0x18,0x00,0xc0,0x4f,0xc2,0xc8,0x36);
+static CLSID const _CGID_DocHostCommandHandler
 	= { 0xf38bc242, 0xb950, 0x11d1, { 0x89,0x18,0x00,0xc0,0x4f,0xc2,0xc8,0x36 } };
 
 BEGIN_INTERFACE_MAP(CCustomControlSite, COleControlSite)
@@ -60,7 +60,7 @@ STDMETHODIMP CCustomControlSite::XOleCommandTarget::Exec(
 
      HRESULT hr = S_OK;
 	 BOOL bActiveX = FALSE;
-     if ( pguidCmdGroup && IsEqualGUID(*pguidCmdGroup, CGID_DocHostCommandHandler))
+     if ( pguidCmdGroup && IsEqualGUID(*pguidCmdGroup, _CGID_DocHostCommandHandler))
       {
          if((nCmdID == 40 || nCmdID == 41) && AppConfig.disable_script_error )	//OLECMDID_SHOWSCRIPTERROR
          {

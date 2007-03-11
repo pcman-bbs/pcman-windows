@@ -1,0 +1,15 @@
+﻿<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+	<ShortName>教育部國語辭典</ShortName>
+	<Description>教育部國語辭典</Description>
+	<InputEncoding>big5</InputEncoding>
+	<Image width="16" height="16"></Image>
+	<Url type="application/x-suggestions+json" method="GET" template="http://suggestqueries.google.com/complete/search?output=firefox&amp;client=firefox&amp;qu={searchTerms}"/>
+	<Url type="text/html" method="GET" template="http://140.111.34.46/cgi-bin/dict/newsearch.cgi">
+		<Param name="QueryScope" value="Name"/>
+		<Param name="QueryCommand" value="find"/>
+		<Param name="GraphicWord" value="yes"/>
+		<Param name="Database" value="dict"/>
+		<Param name="QueryString" value="{searchTerms}"/>
+	</Url>
+	<SearchForm>http://140.111.34.46/dict</SearchForm>
+</SearchPlugin>

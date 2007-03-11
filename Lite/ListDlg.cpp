@@ -13,6 +13,8 @@
 #include "GeneralPage.h"
 #include "ConnectPage.h"
 
+#include <wininet.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -156,7 +158,7 @@ BOOL CListDlg::OnInitDialog()
 
 	LoadSites();
 	sites.SetItemHeight(20);
-	sites.SetImageList(&parent->img,TVSIL_NORMAL);
+	sites.SetImageList(&parent->img_icons,TVSIL_NORMAL);
 	sites.SetFocus();
 
 	HTREEITEM item=sites.PathToItem(m_InitPath,TVI_ROOT,';');
@@ -360,11 +362,11 @@ void CListDlg::OnEditSite()
 		CConnectPage page0;
 		CString name=page0.name=str.Left(pos);
 		page0.address=str.Mid(pos+1);
-		page0.port= "23";
+		page0.port= 23;
 		pos=page0.address.ReverseFind(':');
 		if(pos!=-1)
 		{
-			page0.port=page0.address.Mid(pos+1);
+			page0.port = (unsigned short)atoi(page0.address.Mid(pos+1));
 			page0.address=page0.address.Left(pos);
 		}
 
@@ -390,8 +392,12 @@ void CListDlg::OnEditSite()
 			sites.changed=TRUE;
 
 			CString text=page0.name+'\t'+page0.address;
-			if(page0.port!="23" && !page0.port.IsEmpty())
-				text+=(':'+page0.port);
+			if( page0.port != 23 && page0.port > 0 )
+			{
+				char port_str[10];
+				sprintf( port_str, "%d", page0.port );
+				text+=(':' + port_str);
+			}
 			sites.SetItemText(item,text);
 
 			CString path2=sites.GetItemFilePath(item);
@@ -557,7 +563,7 @@ void CListDlg::OnPaste(UINT id)
 	HTREEITEM after=TVI_LAST;
 	bool bcut=!!sites.GetItemState(copyitem,TVIS_CUT) && target!=copyitem;
 
-	if( !sites.isDefaultItem(target) && id!=IDC_PASTE_INTO_FOLDER)
+	if( !sites.IsDefaultItem(target) && id!=IDC_PASTE_INTO_FOLDER)
 	{	after=target;	target=sites.GetParentItem(target);	}
 
 	HTREEITEM newitem=sites.CopyTo(copyitem,target,after);
@@ -589,8 +595,8 @@ void CListDlg::UpdateCmdUI()
 {
 	HTREEITEM item=sites.GetSelectedItem();
 	HTREEITEM pitem=sites.GetParentItem(item);
-	BOOL bdef=sites.isDefaultItem(item);
-	BOOL bdir=sites.isItemDir(item);
+	BOOL bdef=sites.IsDefaultItem(item);
+	BOOL bdir=sites.IsItemDir(item);
 	BOOL is_in_home=(pitem==sites.home);
 	BOOL is_in_bbsfavorite=(pitem==sites.bbsfavorite);
 #if defined(_COMBO_)
@@ -629,8 +635,8 @@ void CListDlg::OnRclickSites(NMHDR* pNMHDR, LRESULT* pResult)
 		mnu.LoadMenu(IDR_POPUP);
 
 		HTREEITEM pitem=sites.GetParentItem(item);
-		BOOL bdef=sites.isDefaultItem(item);
-		BOOL bdir=sites.isItemDir(item);
+		BOOL bdef=sites.IsDefaultItem(item);
+		BOOL bdir=sites.IsItemDir(item);
 		BOOL is_in_home=(pitem==sites.home);
 		BOOL is_in_bbsfavorite=(pitem==sites.bbsfavorite);
 	#if defined(_COMBO_)
@@ -654,16 +660,78 @@ void CListDlg::OnRclickSites(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+/*
+class CDownloadingDlg : CDialog
+{
+public:
+	CDownloadingDlg(HINTERNET& ifile)
+		: CDialog(IDD_DOWNLOADING), file(ifile)
+	{
+	}
+
+	BOOL OnInitDialog()
+	{
+		CDialog::OnInitDialog();
+		return TRUE;
+	}
+
+	void OnCancel()
+	{
+		InternetCloseHandle( file );
+	}
+protected:
+	HINTERNET& file;
+
+	DECLARE_MESSAGE_MAP()
+};
+BEGIN_MESSAGE_MAP(CDownloadingDlg, CDialog)
+END_MESSAGE_MAP()
+*/
+
+bool DownLoadURL( LPCTSTR url, LPCTSTR out_path, bool show_ui = false )
+{
+    HINTERNET inet = InternetOpen( "PCMan", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    if( !inet )
+        return false;
+
+	DWORD retry = 2;
+	InternetSetOption( inet, INTERNET_OPTION_CONNECT_RETRIES, &retry, sizeof(retry) );
+
+	bool ret = false;
+
+    HINTERNET ifile = InternetOpenUrl( inet, url, NULL, 0, INTERNET_FLAG_NO_CACHE_WRITE, 0 );
+    if( ifile )
+    {
+		CFile ofile;
+		if( ofile.Open( out_path, CFile::modeCreate|CFile::modeWrite ) )
+		{
+			char buf[4096];
+			DWORD len = 0;
+			while( InternetReadFile( ifile, buf, sizeof(buf), &len) )
+			{
+				ofile.Write( buf, len );
+			}
+			ret = true;
+		}
+        InternetCloseHandle(ifile);
+    }
+    InternetCloseHandle(inet);
+	return ret;
+}
+
 void CListDlg::OnUpdateSitesList()
 {
-	HRESULT hr = URLDownloadToFile ( NULL,      // ptr to ActiveX container
-                             SITESLIST_UPDATE_URL,      // URL to get
-                             ::AppPath+BBS_LIST_FILENAME,     // file to store data in
-                             0,         // reserved
-                             NULL  // ptr to IBindStatusCallback
-                           );
-	if ( SUCCEEDED(hr) )
+	// URLDownloadToFile is not support before Windows xp/2000.
+	CString tmp;
+	GetTempPath( _MAX_PATH, tmp.GetBuffer(_MAX_PATH) );
+	tmp.ReleaseBuffer();
+	tmp += BBS_LIST_FILENAME;
+	tmp += ".tmp";
+	if ( DownLoadURL( SITESLIST_UPDATE_URL, tmp, true ) )
     {
+		CString path = ::AppPath+BBS_LIST_FILENAME;
+		DeleteFile( path );
+		MoveFile( tmp, path );
 		sites.DeleteItem(sites.bbsfavorite, false);
 		sites.DeleteItem(sites.bbslist, false);
 		sites.DeleteItem(sites.home, false);

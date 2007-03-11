@@ -21,32 +21,54 @@ CBBSHyperLink::CBBSHyperLink()
 {
 }
 
-void CBBSHyperLink::Load(CFile &file)
+void CBBSHyperLink::Load(char* section)
 {
-	email=-1;
-	WORD c=0;
-	file.Read(&c,sizeof(c));
-	links.SetSize(c);
-	for(int i=0;i<c;i++)
-	{
-		links[i].scheme=LoadString(file);
-		if(links[i].scheme=='@')
-			email=i;
-		links[i].program=LoadString(file);
-		file.Read(&links[i].color,sizeof(links[i].color));
-	}
+    SKIP_SPACES( section );
+    if( *section )
+    {
+        links.RemoveAll();
+        char* line = strtok( section, "\r\n" );
+        for( ; line; line = strtok( NULL, "\r\n" ) )
+        {
+            // format of each line: schema=program|color
+            CBBSHyperLinkData data;
+            char* eq = strchr( line, '=' );
+            if( !eq )
+                continue;
+            *eq = '\0';
+            data.scheme = line;
+            line = eq + 1;
+            eq = strchr( line, '|' );
+            if( !eq )
+                continue;
+            *eq = '\0';
+            data.program = line;
+            line = eq + 1;
+            int r, g, b;
+            if( sscanf( line, "%d,%d,%d", &r, &g, &b) < 3 )
+                continue;
+            data.color = RGB(r, g, b);
+            int i = links.Add( data );
+		    if(links[i].scheme=='@')
+			    email=i;
+        }
+    }
 }
 
-void CBBSHyperLink::Save(CFile &file)
+void CBBSHyperLink::Save(CString& section)
 {
-	WORD c=links.GetSize();
-	file.Write(&c,sizeof(c));
-	for(int i=0;i<c;i++)
-	{
-		SaveString(file,links[i].scheme);
-		SaveString(file,links[i].program);
-		file.Write(&links[i].color,sizeof(links[i].color));
-	}
+    for( int i = 0, c = links.GetSize(); i < c; ++i )
+    {
+        section += links[i].scheme;
+        section += '=';
+        section += links[i].program;
+        section += '|';
+        char color_str[32];
+        COLORREF color = links[i].color;
+        sprintf( color_str, "%d,%d,%d\r\n",
+                 GetRValue(color), GetGValue(color), GetBValue(color) );
+        section += color_str;
+    }
 }
 
 //	const char URL_unsafe[]="{}|\\^~[]`%#\"<>";

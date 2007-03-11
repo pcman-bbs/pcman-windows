@@ -17,6 +17,7 @@
 #include "BBSHyperLink.h"	// Added by ClassView
 #include "SiteSettings.h"	// Added by ClassView
 
+#include "ConfigFile.h"
 
 //Application Private Messages
 #define WM_NOTIFYICON		(WM_APP+'G')
@@ -28,7 +29,7 @@
 #define WM_WBTITLECHANGE	(WM_APP+ 128)
 
 #define	CONFIG_DIR		"Config\\";
-const char CONFIG_FILENAME[]="Config";
+const char CONFIG_FILENAME[]="Config.ini";
 const char TOOLBAR_BMP_FILENAME[]="Toolbar.bmp";
 const char ICON_BMP_FILENAME[]="Icons.bmp";
 const char FUS_FILENAME[]="FUS";
@@ -55,16 +56,17 @@ void SaveString(CFile& file,LPCTSTR str);
 
 CString GetIEPath();
 
-class CAppConfig
+class CAppConfig : public CConfigFile
 {
 public:
+	static void CfgWindowState(bool load, void* val, void* user_data);
 	inline void LoadHistory(CFile& f);
 	inline void SaveHistory(CFile& f);
 	BOOL QueryPassword(BOOL confirm,LPCTSTR title=NULL);
 	void BackupConfig(CString dir1,CString dir2);
 
 #if defined	(_COMBO_)
-	enum{max_rebar_band_count=5};
+	enum{max_rebar_band_count=6};
 #else
 	enum{max_rebar_band_count=4};
 #endif
@@ -143,6 +145,7 @@ public:
 	COLORREF active_tab_textcolor;
 	BYTE save_session;
 	BYTE switch_back_on_close;
+	BYTE dblclk_select;
 
 //	Site Settings
 	CSiteSettings site_settings;
@@ -167,6 +170,8 @@ public:
 	BYTE disable_popup;
 	BYTE showwb;
 	BYTE fullscr_showwb;
+	BYTE showsearchbar;
+	BYTE fullscr_showsearchbar;
 	BYTE autosort_favorite;
 	BYTE disable_script_error;
 	BYTE use_ie_fav;
@@ -182,6 +187,8 @@ public:
 	CBBSHyperLink hyper_links;
 //	const static char* personal_files[];
 	bool lock_pcman;
+protected:
+	bool OnDataExchange( bool load );
 };
 
 inline void CAppConfig::Default()
@@ -267,6 +274,7 @@ inline void CAppConfig::Default()
 	font_info.lfPitchAndFamily=49;
 //	font_info.lfPitchAndFamily=FIXED_PITCH|FF_DONTCARE;
 	strcpy(font_info.lfFaceName, LoadString(IDS_DEFAULT_FONT_FACE));
+	dblclk_select=1;
 
 	bktype=0;
 	bkratio=4;		//	ratio/10*100%
@@ -286,7 +294,9 @@ inline void CAppConfig::Default()
 //	WWW Settings
 #if defined (_COMBO_)
 	showwb = 1;
+	showsearchbar=1;
 	fullscr_showwb = 1;
+	fullscr_showsearchbar=1;
 	webbar_inf.LoadDefault();
 	ads_open_new=0;
 	disable_popup=1;
@@ -295,7 +305,6 @@ inline void CAppConfig::Default()
 	use_ie_fav = 1;
 	autowrap_favorite = 1;
 #endif
-	Save(ConfigPath+CONFIG_FILENAME);
 };
 
 

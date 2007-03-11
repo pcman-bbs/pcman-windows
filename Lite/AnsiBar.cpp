@@ -302,7 +302,7 @@ void CAnsiBar::Send(DWORD type)
 			attr|=128;	//10000000b=128d
 
 		//01110111b=119d
-		escstr+=LPCTSTR(CTermView::AttrToStr( (~attr)&119,attr))+2;
+		escstr+=LPCTSTR(AttrToStr( (~attr)&119,attr))+2;
 	}
 	::SetForegroundWindow(view->parent->m_hWnd);
 	view->SetFocus();

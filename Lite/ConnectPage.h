@@ -26,7 +26,7 @@ public:
 	enum { IDD = IDD_CONNECT };
 	CString	address;
 	CString	name;
-	CString	port;
+	UINT	port;
 	//}}AFX_DATA
 
 

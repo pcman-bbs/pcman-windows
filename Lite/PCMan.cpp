@@ -9,6 +9,7 @@
 #include <wininet.h>
 #include "WinUtils.h"
 
+#include "SearchPlugin.h"
 #ifdef	_COMBO_
 //	#include <..\src\occimpl.h>
 	#include "..\Combo\CustSite.h"
@@ -125,6 +126,16 @@ BOOL CApp::InitInstance()
 		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
 		NULL);
 
+	CFileFind searchFind;
+	BOOL searchFound;
+	int pluginId;
+	searchFound = searchFind.FindFile( AppPath + "\\searchplugins\\*.xml" );
+	while( searchFound)
+	{
+		searchFound = searchFind.FindNextFile();
+		pluginId = SearchPluginCollection.Load( searchFind.GetFilePath() );
+	}
+
 	//Register Hotkey
 	BOOL r = RegisterHotKey(pFrame->m_hWnd,1,AppConfig.pcman_hotkey_mod,AppConfig.pcman_hotkey);
 
@@ -173,9 +184,11 @@ public:
 protected:
 	static char web[];
 	//{{AFX_MSG(CAboutDlg)
-	afx_msg void OnMail();
+	afx_msg void OnReport();
 	afx_msg void OnWeb();
+	afx_msg void OnWeb2();
 	afx_msg void OnHelp();
+    afx_msg HBRUSH OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor );
 	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
@@ -191,9 +204,11 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-	ON_BN_CLICKED(IDC_MAIL, OnMail)
+	ON_BN_CLICKED(IDC_MAIL, OnReport)
 	ON_BN_CLICKED(IDC_WEB, OnWeb)
+	ON_BN_CLICKED(IDC_WEB2, OnWeb2)
 	ON_BN_CLICKED(IDB_HELP, OnHelp)
+    ON_WM_CTLCOLOR()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -208,9 +223,9 @@ void CApp::OnAppAbout()
 // CApp message handlers
 
 
-void CAboutDlg::OnMail() 
+void CAboutDlg::OnReport() 
 {
-	ShellExecute(m_hWnd,"open","mailto:hzysoft@sina.com.tw",NULL,NULL,SW_SHOW);	
+	ShellExecute(m_hWnd,"open","http://rt.openfoundry.org/Foundry/Project/Tracker/?Queue=744",NULL,NULL,SW_SHOW);	
 }
 
 void CAboutDlg::OnWeb() 
@@ -222,6 +237,16 @@ void CAboutDlg::OnWeb()
 	ShellExecute(m_hWnd,"open",web,NULL,NULL,SW_SHOW);	
 #endif
 	web[20]='p';
+}
+
+void CAboutDlg::OnWeb2() 
+{
+	const char url[] = "http://rt.openfoundry.org/Foundry/Project/?Queue=744";
+#ifdef	_COMBO_
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(url, TRUE);
+#else
+	ShellExecute(m_hWnd, "open", url ,NULL, NULL, SW_SHOW);
+#endif
 }
 
 void CAboutDlg::OnHelp() 
@@ -243,9 +268,29 @@ int CApp::ExitInstance()
 BOOL CAboutDlg::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	CString about;
-	about.LoadString(IDS_ABOUT_INFO);
-	GetDlgItem(IDC_EDIT)->SetWindowText( about );
+    CFile story;
+    if( story.Open( (AppPath + "story.txt"), CFile::modeRead ) )
+    {
+        DWORD size = story.GetLength();
+        char* buf = new char[size+1];
+        story.Read( buf, size );
+        buf[size] = '\0';
+        story.Close();
+	    GetDlgItem(IDC_EDIT)->SetWindowText( buf );
+        delete []buf;
+    }
 	return TRUE;
+}
+
+HBRUSH CAboutDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor )
+{
+    if( nCtlColor == CTLCOLOR_STATIC && IDC_EDIT == pWnd->GetDlgCtrlID() )
+    {
+        pDC->SetBkColor( GetSysColor(COLOR_WINDOW) );
+//        pDC->SetBkColor( 0 );
+//        pDC->SetTextColor( RGB(255, 255, 255) );
+        return HBRUSH(COLOR_WINDOW+1);
+    }
+    return CDialog::OnCtlColor(pDC, pWnd, nCtlColor );
 }
 

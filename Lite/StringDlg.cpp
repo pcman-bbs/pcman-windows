@@ -202,34 +202,7 @@ BOOL CStringDlg::OnInitDialog()
 	list.SetColumnWidth(0,crc.Width()-150);
 	list.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 
-	CMemIniFile f;
-	if(f.Open(ConfigPath+FUS_FILENAME,CFile::modeRead))
-	{
-		WORD tc;
-		WORD c;
-		TCITEM item;
-		item.mask=TCIF_PARAM|TCIF_TEXT;
-		f.Read(&tc,sizeof(WORD));
-		for(int p=0;p<tc;p++)
-		{
-			CString tmp=LoadString(f);
-			item.pszText=(LPSTR)(LPCTSTR)tmp;	//Add Page
-			stra=new MyStringArray;
-			item.lParam=(LPARAM)stra;
-			tab.InsertItem(p,&item);
-
-			f.Read(&c,sizeof(WORD));	//Load StringArray
-			stra->SetSize(c,8);
-			stra->inf.SetSize(c,8);
-			for(int i=0;i<c;i++)
-			{
-				f.Read(&inf,sizeof(DWORD));
-				stra->inf.SetAt(i,inf);
-				stra->SetAt(i,LoadString(f));
-			}
-		}
-		f.Close();
-	}
+    LoadList();
 //ÁÙ­ìµøµ¡ª¬ºA
 	AppConfig.freqstr_state.Restore(m_hWnd);
 	UpdateDisplay();
@@ -632,4 +605,36 @@ void CStringDlg::OnClose()
 	control.Detach();
 	tab.Detach();
 #endif	
+}
+
+void CStringDlg::LoadList()
+{
+	CMemIniFile f;
+	if(f.Open(ConfigPath+FUS_FILENAME,CFile::modeRead))
+	{
+		WORD tc;
+		WORD c;
+		TCITEM item;
+		item.mask=TCIF_PARAM|TCIF_TEXT;
+		f.Read(&tc,sizeof(WORD));
+		for(int p=0;p<tc;p++)
+		{
+			CString tmp=LoadString(f);
+			item.pszText=(LPSTR)(LPCTSTR)tmp;	//Add Page
+			stra=new MyStringArray;
+			item.lParam=(LPARAM)stra;
+			tab.InsertItem(p,&item);
+
+			f.Read(&c,sizeof(WORD));	//Load StringArray
+			stra->SetSize(c,8);
+			stra->inf.SetSize(c,8);
+			for(int i=0;i<c;i++)
+			{
+				f.Read(&inf,sizeof(DWORD));
+				stra->inf.SetAt(i,inf);
+				stra->SetAt(i,LoadString(f));
+			}
+		}
+		f.Close();
+	}
 }

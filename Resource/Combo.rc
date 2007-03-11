@@ -118,6 +118,13 @@ BEGIN
     BEGIN
         MENUITEM "複製 (只有純文字) (&C)\tAlt+O", ID_COPY
         MENUITEM "複製 (包含ANSI彩色) (&Y)",    ID_ANSICOPY
+        POPUP "下載正在閱讀的文章 (&R)"
+        BEGIN
+            MENUITEM "複製到剪貼簿 (&C)",           ID_COPYARTICLE
+            MENUITEM "複製到剪貼簿 (包含 ANSI 彩色) (&Y)", 
+                                                    ID_COPYARTICLE_WITH_ANSI
+            MENUITEM "在 ANSI 編輯器中檢視 (&N)",   ID_DOWNLOAD_ARTICLE
+        END
         MENUITEM "貼上 (&P)\tAlt+P",            ID_PASTE
         MENUITEM SEPARATOR
         POPUP "選取文字當成超連結開啟 (&O)"
@@ -129,13 +136,23 @@ BEGIN
             MENUITEM "當成 ftp://",                 ID_EDIT_OPENURL_FTP
         END
         MENUITEM "尋找這個畫面的資料 (&F)\tAlt+I", ID_EDIT_FIND
+        POPUP "語言及字元編碼"
+        BEGIN
+            MENUITEM "Default",                     ID_SET_CHARSET_DEFAULT
+            MENUITEM SEPARATOR
+            MENUITEM "Traditional Chinese (Big5)",  ID_SET_CHARSET_CP950
+            MENUITEM "Simplified Chinese (GB2312)", ID_SET_CHARSET_CP936
+            MENUITEM "Japanese (Shift_JIS)",        ID_SET_CHARSET_CP932
+        END
         MENUITEM SEPARATOR
         MENUITEM "複製並貼上 (&S)",             ID_COPYPASTE
         MENUITEM "從檔案貼上 (&I)",             ID_PASTEFILE
+        MENUITEM "貼上短網址 (&T)",             ID_PASTETINYURL
         MENUITEM "全選這個畫面 (&A)\tAlt+L",    ID_SELECTALL
         MENUITEM "全選整個緩衝區 (&L)",         ID_SELALL_BUF
         MENUITEM SEPARATOR
         MENUITEM "快速輸入常用文字 (&Q)\tCtrl+Enter", ID_FREQ_STR
+        MENUITEM "播放動畫 (&M)",               ID_PLAY_ANSIMOVIE
         MENUITEM "複製連結位址",                ID_EDIT_COPYURL
         , CHECKED, INACTIVE, MENUBARBREAK
         MENUITEM "向右移動忽略全形自動偵測",    ID_RIGHTNODBCS
@@ -145,6 +162,8 @@ BEGIN
         MENUITEM "Backspace 忽略全形自動偵測\tAlt+Backspace", ID_BACKNODBCS
         , CHECKED, INACTIVE
         MENUITEM "輸入焦點移到位址列\tAlt+D",   ID_ADSFOCUS
+        , CHECKED, INACTIVE
+        MENUITEM "輸入焦點移到搜尋列\tAlt+K",   ID_SEARCHBAR_FOCUS
         , CHECKED, INACTIVE
         MENUITEM "快速輸入WWW網址\tAlt+W",      ID_ADSHTTP
         , CHECKED, INACTIVE
@@ -197,6 +216,7 @@ BEGIN
             MENUITEM "Web工具列 (&W)",              ID_WEBBAR
             MENUITEM "狀態列 (&S)",                 ID_STATUSBAR
             MENUITEM "位址列 (&D)",                 ID_ADS
+            MENUITEM "搜尋列 (&K)",                 ID_SEARCHBAR
             MENUITEM "連線標籤列 (&B)",             ID_TAB
             MENUITEM "將連線標籤放在底部 (&M)",     ID_KKTAB
             MENUITEM "關閉分頁按鈕 (&P)",           ID_CLOSEBTN
@@ -289,7 +309,7 @@ BEGIN
     BEGIN
         MENUITEM "軟體使用說明 (&H)\tAlt+F1",   IDM_HELP
         MENUITEM SEPARATOR
-        MENUITEM "關於 PCMan 2004 Combo (&A)...", ID_ABOUT
+        MENUITEM "關於 Open PCMan 2007 Combo (&A)...", ID_ABOUT
     END
 END
 #endif
@@ -341,22 +361,6 @@ BEGIN
     PUSHBUTTON      "確定 (&O)",IDOK,230,134,50,14
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 265, 223
-STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
-EXSTYLE WS_EX_CONTROLPARENT
-CAPTION "關於 PCMan"
-FONT 9, "新細明體", 0, 0, 0x1
-BEGIN
-    PUSHBUTTON      "寄信給作者",IDC_MAIL,7,202,62,14
-    PUSHBUTTON      "參觀作者網頁",IDC_WEB,101,202,62,14
-    PUSHBUTTON      "軟體說明",IDB_HELP,196,202,62,14
-    CTEXT           "PCMan 2004 Combo ( 2005/03/02 加強版 )\n\n2004/09/13 由 洪任諭 製作於陽明大學醫學系三年級",
-                    IDC_STATIC,41,7,183,27
-    EDITTEXT        IDC_EDIT,7,36,251,161,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
-    ICON            128,IDC_STATIC,10,9,20,20
-END
-
 IDD_WEB DIALOG DISCARDABLE  0, 0, 241, 129
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Web 設定"
@@ -385,8 +389,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 7,0,0,0
- PRODUCTVERSION 7,0,0,0
+ FILEVERSION 8,0,0,0
+ PRODUCTVERSION 8,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -401,17 +405,17 @@ BEGIN
     BEGIN
         BLOCK "040404b0"
         BEGIN
-            VALUE "Comments", "本軟體由洪任諭製作\0"
-            VALUE "CompanyName", "洪任諭\0"
-            VALUE "FileDescription", "PCMan 2004 Combo\0"
-            VALUE "FileVersion", "7. 0. 0. 0\0"
-            VALUE "InternalName", "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2004 由洪任諭製作\0"
-            VALUE "LegalTrademarks", "由洪任諭製作\0"
-            VALUE "OriginalFilename", "\0"
+            VALUE "Comments", "本軟體由洪任諭及 Open PCMan Team 共同製作\0"
+            VALUE "CompanyName", "Open PCMan Project\0"
+            VALUE "FileDescription", "PCMan 2007 Combo\0"
+            VALUE "FileVersion", "8. 0. 0. 0\0"
+            VALUE "InternalName", "Open PCMan 8.0 Combo\0"
+            VALUE "LegalCopyright", "Copyright (C) 2001 - 2007 由 洪任諭及 Open PCMan Team 共同製作\0"
+            VALUE "LegalTrademarks", "Copyright (C) 2001 - 2007 由 洪任諭及 Open PCMan Team 共同製作\0"
+            VALUE "OriginalFilename", "PCMan.exe\0"
             VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "PCMan 2004 Combo\0"
-            VALUE "ProductVersion", "7. 0. 0. 0\0"
+            VALUE "ProductName", "PCMan 2007 Combo\0"
+            VALUE "ProductVersion", "8. 0. 0. 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -454,14 +458,6 @@ BEGIN
         RIGHTMARGIN, 280
         TOPMARGIN, 7
         BOTTOMMARGIN, 166
-    END
-
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 258
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 216
     END
 
     IDD_WEB, DIALOG
@@ -510,6 +506,7 @@ BEGIN
     "D",            ID_ADSFOCUS,            VIRTKEY, ALT, NOINVERT
     "F",            ID_PREVIOUS_CON,        VIRTKEY, ALT, NOINVERT
     "I",            ID_EDIT_FIND,           VIRTKEY, ALT, NOINVERT
+    "K",            ID_SEARCHBAR_FOCUS,     VIRTKEY, ALT, NOINVERT
     "L",            ID_SELECTALL,           VIRTKEY, ALT, NOINVERT
     "L",            ID_TOOL_LOCK,           VIRTKEY, CONTROL, ALT, NOINVERT
     "N",            ID_NEW_WWW,             VIRTKEY, ALT, NOINVERT
@@ -595,6 +592,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     ID_WEBPAGE_ADDAD        "\n將目前瀏覽網頁標題網址加到防廣告過濾"
+    IDS_SEARCH_BAR_TITLE    "搜尋："
 END
 
 #endif    // Chinese (Taiwan) resources

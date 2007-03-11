@@ -18,11 +18,13 @@
 /////////////////////////////////////////////////////////////////////////////
 
 class CTermView;
+class CDownloadArticleDlg;
 
 int find_sub_str(char* str,char* sub);
 
 class CTelnetConn : public CConn
 {
+friend class CDownloadArticleDlg;
 // Attributes
 public:
 	enum{
@@ -34,7 +36,7 @@ public:
 		MIN_LINE_COUNT=24
 	};
 
-	short	port;
+	unsigned short	port;
 	CString cfg_filepath;	//站台進階設定檔路徑
 	CKeyMap* key_map;	//鍵盤對映
 
@@ -75,8 +77,14 @@ public:
 	BYTE ansi_mode:1;
 	BYTE insert_mode:1;
 
+	BYTE is_getting_article : 1;
+	BYTE get_article_with_ansi : 1;
+	BYTE get_article_in_editor : 1;
+
 //	Delay Send Data
 	CList<CTelnetConnDelayedSend,CTelnetConnDelayedSend> delay_send;
+
+	static CString downloaded_article;
 
 public:
 	CTelnetConn();
@@ -84,6 +92,10 @@ public:
 
 // Operations
 public:
+	void CopyArticleComplete(bool cancel = false);
+	void CopyArticle( bool with_color, bool in_editor );
+	CString GetLineWithAnsi( long line );
+	bool IsEndOfArticleReached();
 	void SendNaws();
 	void SendMacroString(CString str);
 	inline int GetLineBufLen();
@@ -274,6 +286,27 @@ inline int CTelnetConn::GetLineBufLen()
 
 inline int CTelnetConn::GetLineBufLen(int _cols_per_page)
 {	return _cols_per_page*2+10;	}
+
+inline BYTE GetAttrBkColor(BYTE attr)
+{
+	BYTE bk=(attr&112)>>4;		//0111,0000b=112d;
+	return bk;
+}
+
+inline BYTE GetAttrFgColor(BYTE attr)
+{
+	BYTE fg=attr&7;		//0000,0111b=7;
+	if(attr&8)
+		fg+=8;		//0000,1000b=8d;
+	return fg;
+}
+
+inline bool IsAttrBlink( BYTE attr)
+{
+	return !!(attr&128);	//1000,0000b=128d
+}
+
+CString AttrToStr(BYTE prevatb,BYTE attr);
 
 /////////////////////////////////////////////////////////////////////////////
 

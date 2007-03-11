@@ -28,7 +28,11 @@ CAdList::CAdList(CWnd* pParent /*=NULL*/)
 BEGIN_MESSAGE_MAP(CAdList, CDialog)
 	//{{AFX_MSG_MAP(CAdList)
 	ON_BN_CLICKED(IDC_ADD, OnAdd)
+#if _MSC_VER >= 1310    // vs2003/vc71
+	ON_BN_CLICKED(IDC_EDIT, ((AFX_PMSG)OnEdit))
+#else
 	ON_BN_CLICKED(IDC_EDIT, OnEdit)
+#endif
 	ON_BN_CLICKED(IDC_DEL, OnDel)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()

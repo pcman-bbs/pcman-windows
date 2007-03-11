@@ -41,6 +41,27 @@ BOOL CClipboard::GetText(CString &str)
 	return TRUE;
 }
 
+BOOL CClipboard::GetTextW(wchar_t** ppwstr)
+{
+	if(!OpenClipboard(NULL))
+		return FALSE;
+
+	HANDLE hmem=GetClipboardData(CF_UNICODETEXT);
+	if(hmem)
+	{
+		wchar_t* data=(wchar_t*)GlobalLock(hmem);
+		*ppwstr = new wchar_t[ wcslen(data) +1];
+		wcscpy(*ppwstr, data);
+		GlobalUnlock(hmem);
+		CloseClipboard();
+		return TRUE;
+	}
+	else {
+		CloseClipboard();
+		return FALSE;
+	}
+}
+
 BOOL CClipboard::SetText(HWND owner, LPCTSTR str, int len)
 {
 	if(str && *str && OpenClipboard(owner))
@@ -59,6 +80,25 @@ BOOL CClipboard::SetText(HWND owner, LPCTSTR str, int len)
 			GlobalUnlock(hlocmem);
 			SetClipboardData(CF_TEXT,hmem);
 			SetClipboardData(CF_LOCALE,hlocmem);
+		}
+		CloseClipboard();
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL CClipboard::SetTextW(HWND owner, const wchar_t* str, int len)
+{
+	if(str && *str && OpenClipboard(owner))
+	{
+		EmptyClipboard();
+		HANDLE hmem=GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE,len+4);
+		if(hmem)
+		{
+			wchar_t* buf=(wchar_t*)GlobalLock(hmem);
+			memcpy(buf,str,len+4);
+			GlobalUnlock(hmem);
+			SetClipboardData(CF_UNICODETEXT,hmem);
 		}
 		CloseClipboard();
 		return TRUE;

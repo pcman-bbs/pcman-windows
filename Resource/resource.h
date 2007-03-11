@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Combo.rc
+// Used by Lite.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -117,7 +117,9 @@
 #define IDC_AUTO_SORT                   150
 #define IDB_WWWB                        151
 #define IDC_AUTO_WRAP                   151
+#define IDR_SEARCHBAR                   151
 #define IDD_HOTSTR                      153
+#define ID_MOVIETIMER                   153
 #define IDD_CUSTOMIZEKEY                154
 #define IDD_STRINGS                     159
 #define IDI_SITE                        160
@@ -127,6 +129,9 @@
 #define IDR_TABPOPUP2                   170
 #define IDR_CLOSEBTN                    171
 #define IDD_WEB                         173
+#define IDI_PCMAN_16                    178
+#define IDI_PCMAN_96                    179
+#define IDD_DOWNLOADING                 182
 #define IDI_ANSFILE                     200
 #define IDD_AUTO_REPLY                  200
 #define IDC_ANSIBAR_FG                  328
@@ -178,6 +183,7 @@
 #define IDC_URL                         1020
 #define IDC_MAIL                        1025
 #define IDC_WEB                         1026
+#define IDC_WEB2                        1027
 #define IDC_SIZER                       1031
 #define IDC_CTRLU                       1042
 #define IDC_DBESC                       1043
@@ -267,6 +273,7 @@
 #define IDC_COLOR                       1097
 #define IDC_IDLEHELP                    1097
 #define IDC_FIND                        1097
+#define IDC_DBLCLKSELECT                1097
 #define IDC_BUTTON2                     1098
 #define IDC_AUTOCANCELSEL               1098
 #define IDC_DELPAGE                     1098
@@ -477,9 +484,17 @@
 #define ID_WEBPAGE_PRINT                32920
 #define ID_WEBPAGE_ADDAD                32921
 #define ID_NEW_IE_CURPAGE               32922
+#define IDS_SEARCH_BAR_TITLE            32922
 #define ID_SWITCH_BACK                  32923
+#define ID_SEARCHBAR_FOCUS              32924
+#define ID_PASTETINYURL                 32926
+#define ID_SEARCHBAR                    32927
+#define ID_COPYARTICLE                  32928
+#define ID_PLAY_ANSIMOVIE               32929
 #define IDS_CONFIM_PASSWD2              32930
+#define ID_DOWNLOAD_ARTICLE             32930
 #define IDS_DIFF_PASSWD                 32931
+#define ID_COPYARTICLE_WITH_ANSI        32931
 #define IDS_ERR                         32932
 #define IDS_INCOMPLETE_AUTO_SETTINGS    32933
 #define IDS_SAVE_BTN                    32934
@@ -573,14 +588,18 @@
 #define IDS_WAV_FILTER                  33022
 #define IDS_SITELIST_UPDATE_SUCCESS     33023
 #define IDS_SITELIST_UPDATE_FAIL        33024
+#define ID_SET_CHARSET_DEFAULT          33025
+#define ID_SET_CHARSET_CP950            33026
+#define ID_SET_CHARSET_CP936            33027
+#define ID_SET_CHARSET_CP932            33028
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        182
-#define _APS_NEXT_COMMAND_VALUE         32927
+#define _APS_NEXT_RESOURCE_VALUE        183
+#define _APS_NEXT_COMMAND_VALUE         32932
 #define _APS_NEXT_CONTROL_VALUE         1137
-#define _APS_NEXT_SYMED_VALUE           152
+#define _APS_NEXT_SYMED_VALUE           154
 #endif
 #endif

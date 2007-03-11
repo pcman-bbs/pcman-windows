@@ -42,6 +42,7 @@ void COtherPage::OnOK()
 	AppConfig.auto_copy		=IsDlgButtonChecked(IDC_AUTOCOPY	);	
 	AppConfig.enter_reconnect=IsDlgButtonChecked(IDC_ENTER_RECONNECT);
 	AppConfig.nocon_enter_reconnect=IsDlgButtonChecked(IDC_NOCON_ENTER_RECONNECT);
+	AppConfig.dblclk_select =IsDlgButtonChecked(IDC_DBLCLKSELECT);	
 
 	AppConfig.ed_cols_per_page	=GetDlgItemInt(IDC_ONEPAGE_COL	,NULL,FALSE);
 	AppConfig.ed_lines_per_page	=GetDlgItemInt(IDC_ONEPAGE_LINE	,NULL,FALSE);
@@ -80,6 +81,7 @@ BOOL COtherPage::OnInitDialog()
 	CheckDlgButton(IDC_AUTOCOPY		,AppConfig.auto_copy		);
 	CheckDlgButton(IDC_ENTER_RECONNECT,AppConfig.enter_reconnect	);
 	CheckDlgButton(IDC_NOCON_ENTER_RECONNECT,AppConfig.nocon_enter_reconnect);
+	CheckDlgButton(IDC_DBLCLKSELECT,AppConfig.dblclk_select);
 
 	SetDlgItemInt(IDC_ONEPAGE_COL	,AppConfig.ed_cols_per_page	,FALSE);
 	SetDlgItemInt(IDC_ONEPAGE_LINE	,AppConfig.ed_lines_per_page	,FALSE);

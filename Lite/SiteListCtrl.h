@@ -17,8 +17,8 @@ class CSiteListCtrl : public CDragTreeCtrl
 {
 public:
 	HTREEITEM GetTopParent(HTREEITEM item);
-	BOOL isItemDir(HTREEITEM item);
-	BOOL isDefaultItem(HTREEITEM item);
+	BOOL IsItemDir(HTREEITEM item);
+	BOOL IsDefaultItem(HTREEITEM item);
 	BOOL CanPaste(HTREEITEM item);
 	BOOL CanCopy(HTREEITEM item);
 	HTREEITEM FindChildItem(HTREEITEM parent, LPCTSTR key);
@@ -54,17 +54,17 @@ inline BOOL CSiteListCtrl::CanCopy(HTREEITEM item)
 
 inline BOOL CSiteListCtrl::CanPaste(HTREEITEM item)
 {
-	return item && !((GetParentItem(item)==home || item==home) && isItemDir(item));
+	return item && !((GetParentItem(item)==home || item==home) && IsItemDir(item));
 }
 
-inline BOOL CSiteListCtrl::isItemDir(HTREEITEM item)
+inline BOOL CSiteListCtrl::IsItemDir(HTREEITEM item)
 {
 	int image;	GetItemImage(item,image,image);
 	return image==3;
 }
 
 
-inline BOOL CSiteListCtrl::isDefaultItem(HTREEITEM item)
+inline BOOL CSiteListCtrl::IsDefaultItem(HTREEITEM item)
 {
 	return (item==bbsfavorite ||
 			item==bbslist ||

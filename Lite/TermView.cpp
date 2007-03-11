@@ -22,6 +22,7 @@
 
 #include "Clipboard.h"
 #include "InputNameDlg.h"
+#include "SearchPlugin.h"
 
 #if defined	_COMBO_
 	#include "../Combo/WebPageDlg.h"
@@ -32,6 +33,13 @@
 #include <wininet.h>
 #include <afxtempl.h>
 
+#if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible
+#include <atlimage.h>
+#endif
+
+#include <malloc.h>
+#include <Imm.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -39,6 +47,10 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 extern CFont fnt;
+extern CUcs2Conv g_ucs2conv;
+
+#pragma comment(lib, "wininet.lib")
+#pragma comment(lib, "Imm32.lib")
 
 // The debugger can't handle symbols more than 255 characters long.
 // STL often creates symbols longer than that.
@@ -58,6 +70,7 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_WM_ERASEBKGND()
 	ON_WM_CHAR()
 	ON_WM_KEYDOWN()
+	ON_WM_LBUTTONDBLCLK()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_DESTROY()
 	ON_WM_VSCROLL()
@@ -92,11 +105,14 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_COMMAND(ID_ANSI_INS, OnAnsiIns)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_IME_CHAR,OnImeChar)
+	ON_MESSAGE(WM_IME_COMPOSITION,OnImeComposition)
+	ON_MESSAGE(WM_INPUTLANGCHANGE,OnInputLangChange)
 	ON_MESSAGE(WM_DNSLOOKUP_END,OnDNSLookupEnd)
 	ON_WM_MOUSEWHEEL()
 	ON_COMMAND_RANGE(ID_EDIT_OPENURL, ID_EDIT_OPENURL_FTP, OnEditOpenURL)
 	ON_COMMAND_RANGE(ID_FIRST_HISTORY,ID_LAST_HISTORY,OnHistory)	//連線紀錄
     ON_REGISTERED_MESSAGE( WM_FINDREPLACE, OnFind )
+	ON_COMMAND_RANGE(ID_SEARCHPLUGIN00, ID_SEARCHPLUGIN31, OnSearchPlugin)
 END_MESSAGE_MAP()
 
 CFont fnt;
@@ -140,6 +156,10 @@ CTermView::CTermView()
 
 	pfinddlg=NULL;
 
+	cp_id = ::GetACP();
+	ime_prop = ImmGetProperty(GetKeyboardLayout(0), IGP_PROPERTY);
+	os_ver_nt = ::GetVersion() < 0x80000000 ? TRUE: FALSE;
+
 #if defined _COMBO_
 	con = NULL;
 	autosort_favorite = 0;
@@ -167,7 +187,7 @@ BOOL CTermView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	cs.style|=WS_VSCROLL;
 	cs.dwExStyle|=WS_EX_CLIENTEDGE;
-	RegWndClass(ctviewcls,AfxGetAfxWndProc(),NULL,NULL,AfxGetApp()->LoadStandardCursor(IDC_ARROW),CS_HREDRAW|CS_VREDRAW);
+	RegWndClass(ctviewcls,AfxGetAfxWndProc(),NULL,NULL,AfxGetApp()->LoadStandardCursor(IDC_ARROW),CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS);
 	cs.lpszClass=ctviewcls;
 	return TRUE;
 }
@@ -438,6 +458,87 @@ bool find_link(char* type,char* str,int& start,int& end)
 }
 
 
+void CTermView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	if(!telnet || !AppConfig.dblclk_select)
+		return;
+
+	int x,y;
+	PtToLineCol(point,x,y,false);
+	y+=telnet->scroll_pos;
+
+	if(telnet->sel_end.x!=telnet->sel_start.x || telnet->sel_end.y!=telnet->sel_start.y)
+	{
+		telnet->sel_end.x=telnet->sel_start.x;
+		telnet->sel_end.y=telnet->sel_start.y;
+		Invalidate(FALSE);
+	}
+
+	telnet->sel_start.x=x;
+	telnet->sel_start.y=y;
+	telnet->sel_end.x=x;
+	telnet->sel_end.y=y;
+	LPSTR curstr=telnet->screen[y];
+	int tmpx;
+	if (IsBig5(curstr, x) || IsBig5(curstr, x-1))
+	{
+		if (IsBig5(curstr, x-1)) x--;
+		tmpx = x;
+		while (tmpx >= 0)
+		{
+			if (IsBig5(curstr, tmpx))
+			{
+				telnet->sel_start.x=tmpx;
+				tmpx-=2;
+			}
+			else
+				break;
+		}
+		tmpx = x;
+		while (tmpx < telnet->site_settings.cols_per_page)
+		{
+			if (IsBig5(curstr, tmpx))
+			{
+				telnet->sel_end.x=tmpx+2;
+				tmpx+=2;
+			}
+			else
+				break;
+		}
+	}
+	else
+	{
+		tmpx = x;
+		while (tmpx >= 0)
+		{
+			if (((curstr[tmpx]>='0' && curstr[tmpx]<='9')||
+				(curstr[tmpx]>='A' && curstr[tmpx]<='Z')||
+				(curstr[tmpx]>='a' && curstr[tmpx]<='z')) && !IsBig5(curstr, tmpx-1))
+			{
+				telnet->sel_start.x=tmpx;
+				tmpx--;
+			}
+			else
+				break;
+		}
+		tmpx = x;
+		while (tmpx < telnet->site_settings.cols_per_page)
+		{
+			if ((curstr[tmpx]>='0' && curstr[tmpx]<='9')||
+				(curstr[tmpx]>='A' && curstr[tmpx]<='Z')||
+				(curstr[tmpx]>='a' && curstr[tmpx]<='z'))
+			{
+				telnet->sel_end.x=tmpx+1;
+				tmpx++;
+			}
+			else
+				break;
+		}
+	}
+	Invalidate(FALSE);
+}
+
+
 void CTermView::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	SetFocus();
@@ -488,6 +589,7 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point)
 void CTermView::OnDestroy() 
 {
 	KillTimer(ID_MAINTIMER);
+	KillTimer(ID_MOVIETIMER);
 	DestroyCaret();
 	parent->ansi_bar.DestroyWindow();
 	CWnd::OnDestroy();
@@ -610,6 +712,14 @@ void CTermView::OnTimer(UINT nIDEvent)
 				}
 			}
 		}
+	}
+	else if( nIDEvent == ID_MOVIETIMER && telnet && telnet->is_connected )
+	{
+		CString txt = telnet->screen[telnet->last_line];
+		if ( telnet->IsEndOfArticleReached() )
+			KillTimer(ID_MOVIETIMER);
+		else
+			telnet->SendString(" ");
 	}
 }
 
@@ -786,6 +896,48 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 	HMENU sub=inf.hSubMenu;	UINT wID=inf.wID;
 */
 
+
+	MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
+	HMENU search_menu = CreateMenu();
+	CString sel;
+	try
+	{
+		sel =GetSelText();
+	}
+	catch (...)
+	{
+		sel = _T("");
+	}
+	if( sel.GetLength() > 0 )
+	{
+#if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible, MFC 4.2 has no CImage
+		CImage image;
+#endif
+		for(int i=0;i< SearchPluginCollection.GetCount(); i++)
+		{
+			//int imageSize = (int)SearchPluginCollection.GetField( i, CSearchPluginCollection::IMAGEBYTES);
+			//IStream *fStream=0;
+			//HRESULT hr=CreateStreamOnHGlobal(0,true,&fStream);
+			//fStream->Write( SearchPluginCollection.GetField( i, CSearchPluginCollection::IMAGE), imageSize, (ULONG*)&imageSize);
+			//hr = image.Load( fStream );
+			InsertMenu( search_menu, i, MF_BYPOSITION | MF_STRING, ID_SEARCHPLUGIN00 + i, _T( SearchPluginCollection.GetField( i, CSearchPluginCollection::SHORTNAME )) );
+			//if( hr==S_OK)
+			//	SetMenuItemBitmaps( search_menu, i, MF_BYPOSITION, (HBITMAP)image, (HBITMAP)image);
+			//fStream->Release();
+			/**
+			 * Since mfc7(vs2002), CImage supports .png and other formats that it didn't support in the early version,
+			 * and CxImage may no longer need for display png images.
+			 * !! Now that problem is, how to display .ico and how to set menuitem height to at least 16px. !!
+			 **/
+		}
+		search_menuiteminfo.fMask =  MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
+		search_menuiteminfo.wID = ID_SEARCHPLUGIN_MENU;
+		search_menuiteminfo.hSubMenu = search_menu;
+		// FIXME: strings should be stored in string table rather than hard-coded.
+		search_menuiteminfo.dwTypeData = _T("搜尋網頁");
+		InsertMenuItem ( parent->edit_menu, 5, TRUE, &search_menuiteminfo );
+	}
+	
 	char* link=NULL;
 	int len;
 	if(telnet)
@@ -824,6 +976,8 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 			return;
 		}
 	}
+	if(sel.GetLength() > 0 )
+		RemoveMenu( parent->edit_menu, 5, MF_BYPOSITION );
 	if(cmd >0)
 		AfxGetMainWnd()->SendMessage(WM_COMMAND,cmd,0);
 }
@@ -941,25 +1095,6 @@ void CTermView::OnKillFocus(CWnd* pNewWnd)
 }
 
 
-BYTE CTermView::GetAttrBkColor(BYTE attr)
-{
-	BYTE bk=(attr&112)>>4;		//0111,0000b=112d;
-	return bk;
-}
-
-BYTE CTermView::GetAttrFgColor(BYTE attr)
-{
-	BYTE fg=attr&7;		//0000,0111b=7;
-	if(attr&8)
-		fg+=8;		//0000,1000b=8d;
-	return fg;
-}
-
-bool CTermView::IsAttrBlink( BYTE attr)
-{
-	return !!(attr&128);	//1000,0000b=128d
-}
-
 LRESULT CTermView::OnImeChar(WPARAM wparam, LPARAM lparam)
 {
 	if(!telnet)
@@ -993,8 +1128,131 @@ LRESULT CTermView::OnImeChar(WPARAM wparam, LPARAM lparam)
 	return 0;
 }
 
+LRESULT CTermView::OnInputLangChange(WPARAM wparam, LPARAM lparam)
+{
+		if(!telnet)
+		return 0;
+ 
+	ime_prop = ImmGetProperty((HKL)lparam, IGP_PROPERTY);
+	return 0;
+}
 
-BOOL CTermView::Connect(CString address, CString name, short port, LPCTSTR cfg_filepath)
+LRESULT CTermView::OnImeComposition(WPARAM wparam, LPARAM lparam)
+{
+	if (lparam & GCS_RESULTSTR)
+	{
+		if(!telnet)
+			return 0;
+
+		if (ime_prop & IME_PROP_UNICODE)
+			return _OnImeCompositionW(wparam, lparam);
+		else
+			return _OnImeCompositionA(wparam, lparam);
+	}
+
+	else{		
+		return DefWindowProc(WM_IME_COMPOSITION, wparam, lparam);
+	}
+}
+
+LRESULT CTermView::_OnImeCompositionW(WPARAM wparam, LPARAM lparam)
+{
+		HIMC hIMC;
+		if(!(hIMC = ImmGetContext(GetSafeHwnd())))
+			return 0;
+
+		DWORD size =
+			ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, NULL, 0) + (sizeof(wchar_t)); 
+
+		if ( size < 1 || size > 1024 )
+			return 0;
+
+		wchar_t* pwcsData = NULL;
+		pwcsData = (wchar_t*)_alloca(size);
+		memset(pwcsData, 0, size);
+
+		unsigned char* pszData = NULL;
+		pszData = (unsigned char*)_alloca(size);
+		memset(pszData, 0, size);
+
+		if ( pwcsData && pszData )
+		{
+			ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, pwcsData, size);
+//			ImmSetCompositionStringW(hIMC, SCS_SETSTR, L"", NULL, L"", NULL);
+
+			if (*pwcsData)
+			{
+				UINT cp_id = GetCodePage();
+				if (cp_id == 950){
+					g_ucs2conv.Ucs22Big5(pwcsData, (char*)pszData);
+				}
+				else{
+					::WideCharToMultiByte(cp_id, 0, pwcsData, -1,
+						(char*)pszData, size, NULL, NULL);
+				}
+
+				for ( ; *pszData; ++pszData )
+				{
+					UINT in = 0;
+					unsigned char ch1 = BYTE(*pszData);
+					if (ch1 > 0x7e){
+						in = ch1 <<8 | (*(pszData+1));
+						++pszData;
+					}
+					else{
+						in = ch1;
+					}
+					this->OnImeChar(in, 0);
+				}
+			}
+		}
+	ImmReleaseContext(GetSafeHwnd(), hIMC);
+	return 0;
+}
+
+LRESULT CTermView::_OnImeCompositionA(WPARAM wparam, LPARAM lparam)
+{
+		HIMC hIMC;
+		if(!(hIMC = ImmGetContext(GetSafeHwnd())))
+			return 0;
+
+		DWORD size =
+			ImmGetCompositionStringA(hIMC, GCS_RESULTSTR, NULL, 0) + (sizeof(char)); 
+
+		if ( size < 1 || size > 1024 )
+			return 0;
+
+		unsigned char* pszData = NULL;
+		pszData = (unsigned char*)_alloca(size);
+		memset(pszData, 0, size);
+
+		if ( pszData )
+		{
+			ImmGetCompositionStringA(hIMC, GCS_RESULTSTR, pszData, size);
+//			ImmSetCompositionStringA(hIMC, SCS_SETSTR, "", NULL, "", NULL);			
+
+			if (*pszData)
+			{
+				for ( ; *pszData; ++pszData )
+				{
+					UINT in = 0;
+					unsigned char ch1 = BYTE(*pszData);
+					if (ch1 > 0x7e){
+						in = ch1 <<8 | (*(pszData+1));
+						++pszData;
+					}
+					else{
+						in = ch1;
+					}
+					this->OnImeChar(in, 0);
+				}
+			}
+		}
+	ImmReleaseContext(GetSafeHwnd(), hIMC);
+	return 0;
+}
+
+BOOL CTermView::Connect(CString address, CString name, unsigned short port, LPCTSTR cfg_filepath)
 {
 	if(name.IsEmpty())
 		return FALSE;
@@ -1003,7 +1261,7 @@ BOOL CTermView::Connect(CString address, CString name, short port, LPCTSTR cfg_f
 			address = "telnet://"+address;
 	#endif
 
-	CConn* ncon=NewConn(address, name, port, cfg_filepath);	//產生了新的連線畫面，完成所有設定
+	CConn* ncon = NewConn(address, name, port, cfg_filepath);	//產生了新的連線畫面，完成所有設定
 	if(!ncon)
 		return FALSE;
 
@@ -1140,80 +1398,6 @@ void CTermView::OnAnsiCopy()
 		Invalidate(FALSE);
 	}
 }
-
-CString CTermView::AttrToStr(BYTE prevatb,BYTE attr)
-{
-	CString ret="\x1b[";
-	if(attr==7)
-	{
-		ret+='m';
-		return ret;
-	}
-
-	BYTE fg=attr&7;
-	BYTE bk=GetAttrBkColor(attr);
-	BYTE blink=attr&128;
-	BYTE hilight=attr&8;
-
-	BYTE hilight_changed=0;
-	BYTE blink_changed=0;
-	BYTE fg_changed=0;
-	BYTE bk_changed=0;
-
-	if(fg!= (prevatb&7))	//如果前景色改變
-		fg_changed=1;
-	if(bk!=GetAttrBkColor(prevatb))	//如果背景色改變
-		bk_changed=1;
-
-	if( hilight != (prevatb&8) )	//如果高亮度改變
-	{
-		hilight_changed=1;
-		if(!hilight)	//如果變成不亮,要重設所有屬性
-		{
-			blink_changed=fg_changed=bk_changed=1;
-			ret+=';';
-		}
-	}
-
-	if( blink != (prevatb&128))	//如果閃爍改變
-	{
-		blink_changed=1;
-		if(!blink)	//如果變成不閃爍,要重設所有屬性
-		{
-			if( !(hilight_changed && !hilight) )	//如果所有屬性還沒重設過才重設
-			{
-				ret+=';';
-				hilight_changed=fg_changed=bk_changed=1;
-			}
-		}
-	}
-
-	if(hilight_changed && hilight)
-		ret+="1;";
-	if(blink_changed && blink)
-		ret+="5;";
-	char num[4]={0,0,';',0};
-	if(fg_changed)
-	{
-		*num='3';
-		*(num+1)='0'+fg;
-		ret+=num;
-	}
-	if(bk_changed)
-	{
-		*num='4';
-		*(num+1)='0'+bk;
-		ret+=num;
-	}
-
-	char* pret=LPSTR(LPCTSTR(ret));
-	if(pret[ret.GetLength()-1]==';')
-		pret[ret.GetLength()-1]='m';
-	else
-		ret+='m';
-	return ret;
-}
-
 
 void CTermView::OnAnsiEditor()
 {
@@ -1680,7 +1864,7 @@ void CTermView::OnBackspaceNoDBCS()
 	}
 }
 
-CConn* CTermView::NewConn(CString address, CString name, short port, LPCTSTR cfg_filepath)
+CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_filepath)
 {
 	CConn* newcon=NULL;
 	newcon=new CTelnetConn;
@@ -1702,7 +1886,7 @@ CConn* CTermView::NewConn(CString address, CString name, short port, LPCTSTR cfg
 			delete new_telnet;
 			return NULL;
 		}
-		new_telnet->key_map=CKeyMap::Load(new_telnet->site_settings.KeyMapName);
+		new_telnet->key_map=CKeyMap::Load(new_telnet->site_settings.key_map_name);
 
 		if( new_telnet->site_settings.text_input_conv || new_telnet->site_settings.text_output_conv )
 			chi_conv.AddRef();
@@ -2113,11 +2297,11 @@ inline void CTermView::DrawBlink()
 
 inline LPBYTE find_blink(LPBYTE atbline,LPBYTE eoatb,int& len)
 {
-	LPBYTE patb; for(patb=atbline;!CTermView::IsAttrBlink(*patb) && patb<eoatb; patb++);
+	LPBYTE patb; for(patb=atbline;!IsAttrBlink(*patb) && patb<eoatb; patb++);
 	if(patb>=eoatb)
 		return NULL;
 	atbline=patb;
-	while(CTermView::IsAttrBlink(*patb) && *patb==*atbline && patb<eoatb)
+	while(IsAttrBlink(*patb) && *patb==*atbline && patb<eoatb)
 		patb++;
 	len=int(patb-atbline);
 	return atbline;
@@ -2492,11 +2676,11 @@ void CTermView::OnCurConSettings()
 		//重新載入字串觸發
 		telnet->site_settings.triggers.CopyFrom(tmpset.triggers);
 
-		if( strncmp(telnet->site_settings.KeyMapName,tmpset.KeyMapName,10) )	//如果鍵盤對映更改
+		if( strncmp(telnet->site_settings.key_map_name,tmpset.key_map_name,10) )	//如果鍵盤對映更改
 		{
 			telnet->key_map->Release();
-			telnet->key_map=CKeyMap::Load(tmpset.KeyMapName);
-			strcpy(telnet->site_settings.KeyMapName,tmpset.KeyMapName);
+			telnet->key_map=CKeyMap::Load(tmpset.key_map_name);
+			telnet->site_settings.key_map_name = tmpset.key_map_name;
 		}
 		CRect rc;	GetClientRect(rc);
 		telnet->ReSizeBuffer(tmpset.line_count,tmpset.cols_per_page,tmpset.lines_per_page);
@@ -2679,7 +2863,7 @@ void CTermView::AdjustFont(int cx,int cy)
 void CTermView::ConnectStr(CString name, CString dir)
 {
 	CString address;
-	short port;
+	unsigned short port;
 	int i=name.Find('\t');
 	address=name.Mid(i+1);
 	char type=name[0];
@@ -2698,11 +2882,11 @@ void CTermView::ConnectStr(CString name, CString dir)
 		port = 23;
 	else
 	{
-		port = (short)atoi( LPCTSTR( address.Mid(i+1) ) );
+		port = (unsigned short)atoi( LPCTSTR( address.Mid(i+1) ) );
 		address=address.Left(i);
 	}
 	SetFocus();
-	Connect( address, name, port, dir + name );
+	Connect( address, name, port, dir + name + ".ini" );
 }
 
 
@@ -2884,6 +3068,8 @@ inline void CTermView::DrawLineBlinkOld(CDC &dc, LPSTR line, int y)
 BOOL CTermView::ExtTextOut(CDC& dc, int x, int y, UINT nOptions, LPCRECT lpRect, LPCTSTR lpszString, UINT nCount)
 {
 	char buf[161];	// maximum of every line on the bbs screen.
+	wchar_t wbuf[161]/* = {0}*/;
+
 	if( nCount > 1 )
 	{
 		// FIXME: support unicode addon here?
@@ -2904,7 +3090,18 @@ BOOL CTermView::ExtTextOut(CDC& dc, int x, int y, UINT nOptions, LPCRECT lpRect,
 			lpszString = buf;
 		};
 	}
-	return dc.ExtTextOut(x,y,nOptions,lpRect,lpszString,nCount,NULL);
+	UINT cp_id = this->GetCodePage();
+	if (cp_id != 950)
+	{
+		// in全為dbcs, in[n]=out[n/2+1]; in全為acsii, in[n]=out[n+1]
+		memset(wbuf, 0, (nCount+1)*sizeof(wchar_t) ); // <-- in bytes
+		::MultiByteToWideChar(cp_id, 0, lpszString, nCount, wbuf, nCount+1);
+		return ::ExtTextOutW(dc.GetSafeHdc(), x,y,nOptions,lpRect,wbuf, wcslen(wbuf) ,NULL);
+	}
+
+	size_t size = g_ucs2conv.Big52Ucs2(lpszString, wbuf, nCount);
+	wbuf[size]=0;
+	return ::ExtTextOutW(dc.GetSafeHdc(), x,y,nOptions,lpRect,wbuf, wcslen(wbuf) ,NULL);
 }
 
 
@@ -2914,8 +3111,33 @@ void CTermView::CopySelText()
 
 	if(!seltext.IsEmpty() )
 	{
-		CClipboard::SetText(m_hWnd,seltext);
-		paste_block=telnet->sel_block;
+		if (IsWinNT())
+		{
+			UINT cp_id = GetCodePage();
+			int len = seltext.GetLength() +1 ;
+			wchar_t* pwbuf = new wchar_t[len];
+			memset(pwbuf, 0, len * sizeof(wchar_t));
+
+			if ( cp_id == 950){
+				g_ucs2conv.Big52Ucs2((const char*)seltext , pwbuf);
+				CClipboard::SetTextW(m_hWnd, pwbuf);
+				paste_block=telnet->sel_block;	
+			}
+			else {
+				::MultiByteToWideChar(cp_id, 0, seltext,
+					len, pwbuf, len);
+
+				CClipboard::SetTextW(m_hWnd, pwbuf);
+				paste_block=telnet->sel_block;	
+			}
+			if (pwbuf)
+				delete [] pwbuf;
+		}
+		// !WinNT
+		else{
+			CClipboard::SetText(m_hWnd, seltext);
+			paste_block=telnet->sel_block;
+		}
 	}
 
 	if(AppConfig.auto_cancelsel)
@@ -2923,4 +3145,9 @@ void CTermView::CopySelText()
 		telnet->sel_end=telnet->sel_start;
 		Invalidate(FALSE);
 	}
+}
+
+void CTermView::OnSearchPlugin(UINT id)
+{
+	AppConfig.hyper_links.OpenURL(SearchPluginCollection.UrlForSearch( id-ID_SEARCHPLUGIN00, GetSelText() ));
 }

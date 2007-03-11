@@ -13,7 +13,7 @@
 #include"TelnetConn.h"
 #include"addressdlg.h"
 #include "AnsiBar.h"	// Added by ClassView
-
+#include "Ucs2Conv.h"
 #include <afxtempl.h>
 
 /*
@@ -100,15 +100,20 @@ public:
 
 // Implementation
 public:
-	inline static bool IsAttrBlink( BYTE atb);
 	inline UINT SetDCColors(CDC* dc,BYTE color,BOOL invirt=0);
-	inline static BYTE GetAttrFgColor(BYTE atb);
-	inline static BYTE GetAttrBkColor(BYTE atb);
 	void OnDisConnect();
 	void SetScrollBar();
 	virtual ~CTermView();
 
 	LRESULT OnImeChar(WPARAM wparam,LPARAM lparam);
+	LRESULT OnImeComposition(WPARAM wparam,LPARAM lparam);
+	LRESULT _OnImeCompositionW(WPARAM wparam,LPARAM lparam);
+	LRESULT _OnImeCompositionA(WPARAM wparam,LPARAM lparam);
+	LRESULT OnInputLangChange(WPARAM wparam,LPARAM lparam);	
+	inline UINT GetCodePage(){ return cp_id; }
+	void SetCodePage(UINT nCodePageId){ cp_id = nCodePageId; }
+	inline BOOL IsWinNT(){ return os_ver_nt; }
+	DWORD ime_prop;
 
 inline void ShowCaret()
 {
@@ -165,7 +170,7 @@ public:
 	BOOL OpenAnsFile(LPCTSTR filepath);
 	UINT mouse_sel_timer;
 	static DWORD DNSLookupThread(LPVOID param);
-	inline CConn* NewConn(CString address, CString name, short port, LPCTSTR cfg);
+	inline CConn* NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg);
 	void OnInitialUpdate();
 	inline void FillBk(CDC& dc);
 	void UpdateBkgnd();
@@ -173,16 +178,16 @@ public:
 	BOOL doflash;
 	CString GetSelAnsi();
 
-	static CString AttrToStr(BYTE prevatb,BYTE atb);
 	void OnAnsiCopy();
 	void ReConnect(CTelnetConn* retelnet);
 	LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam);
-	BOOL Connect(CString address, CString name, short port, LPCTSTR cfg=NULL);
+	BOOL Connect(CString address, CString name, unsigned short port, LPCTSTR cfg=NULL);
 	//{{AFX_MSG(CTermView)
 	afx_msg LRESULT OnFind(WPARAM w, LPARAM l);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnDestroy();
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -216,15 +221,56 @@ public:
 	afx_msg void OnAnsiEditor();
 	//}}AFX_MSG
 	afx_msg void OnEditOpenURL(UINT id);
+	afx_msg void OnSearchPlugin(UINT id);
 
 	DECLARE_MESSAGE_MAP()
 protected:
 	CChiConv chi_conv;
+	UINT cp_id;
+	BOOL os_ver_nt;
 	void ConnectSocket(CTelnetConn* new_telnet);
 	LRESULT OnSocket(WPARAM wparam,LPARAM lparam);
 
 	inline void DrawLineBlinkOld(CDC &dc, LPSTR line, int y);
 	inline void DrawLineOld(CDC &dc, LPSTR line,BYTE* pline_selstart,BYTE* pline_selend, int y);
+
+	
+private:
+	enum {
+		ID_SEARCHPLUGIN_MENU = 65535,
+		ID_SEARCHPLUGIN31 = ID_SEARCHPLUGIN_MENU-1,
+		ID_SEARCHPLUGIN30 = ID_SEARCHPLUGIN31-1,
+		ID_SEARCHPLUGIN29 = ID_SEARCHPLUGIN30-1,
+		ID_SEARCHPLUGIN28 = ID_SEARCHPLUGIN29-1,
+		ID_SEARCHPLUGIN27 = ID_SEARCHPLUGIN28-1,
+		ID_SEARCHPLUGIN26 = ID_SEARCHPLUGIN27-1,
+		ID_SEARCHPLUGIN25 = ID_SEARCHPLUGIN26-1,
+		ID_SEARCHPLUGIN24 = ID_SEARCHPLUGIN25-1,
+		ID_SEARCHPLUGIN23 = ID_SEARCHPLUGIN24-1,
+		ID_SEARCHPLUGIN22 = ID_SEARCHPLUGIN23-1,
+		ID_SEARCHPLUGIN21 = ID_SEARCHPLUGIN22-1,
+		ID_SEARCHPLUGIN20 = ID_SEARCHPLUGIN21-1,
+		ID_SEARCHPLUGIN19 = ID_SEARCHPLUGIN20-1,
+		ID_SEARCHPLUGIN18 = ID_SEARCHPLUGIN19-1,
+		ID_SEARCHPLUGIN17 = ID_SEARCHPLUGIN18-1,
+		ID_SEARCHPLUGIN16 = ID_SEARCHPLUGIN17-1,
+		ID_SEARCHPLUGIN15 = ID_SEARCHPLUGIN16-1,
+		ID_SEARCHPLUGIN14 = ID_SEARCHPLUGIN15-1,
+		ID_SEARCHPLUGIN13 = ID_SEARCHPLUGIN14-1,
+		ID_SEARCHPLUGIN12 = ID_SEARCHPLUGIN13-1,
+		ID_SEARCHPLUGIN11 = ID_SEARCHPLUGIN12-1,
+		ID_SEARCHPLUGIN10 = ID_SEARCHPLUGIN11-1,
+		ID_SEARCHPLUGIN09 = ID_SEARCHPLUGIN10-1,
+		ID_SEARCHPLUGIN08 = ID_SEARCHPLUGIN09-1,
+		ID_SEARCHPLUGIN07 = ID_SEARCHPLUGIN08-1,
+		ID_SEARCHPLUGIN06 = ID_SEARCHPLUGIN07-1,
+		ID_SEARCHPLUGIN05 = ID_SEARCHPLUGIN06-1,
+		ID_SEARCHPLUGIN04 = ID_SEARCHPLUGIN05-1,
+		ID_SEARCHPLUGIN03 = ID_SEARCHPLUGIN04-1,
+		ID_SEARCHPLUGIN02 = ID_SEARCHPLUGIN03-1,
+		ID_SEARCHPLUGIN01 = ID_SEARCHPLUGIN02-1,
+		ID_SEARCHPLUGIN00 = ID_SEARCHPLUGIN01-1,
+	};
 };
 
 

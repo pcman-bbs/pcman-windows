@@ -43,7 +43,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX- /O2 /Ob2 /I "..\SimpXmlParser" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FD /c
+# SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "NDEBUG"
@@ -74,7 +75,8 @@ PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan\Config
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "BUILD_UI" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\SimpXmlParser" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "BUILD_UI" /FR /FD /GZ /c
+# SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "_DEBUG"
@@ -148,6 +150,10 @@ SOURCE=.\ColorConfigDlg.cpp
 
 SOURCE=..\Resource\Common.rc
 # PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConfigFile.cpp
 # End Source File
 # Begin Source File
 
@@ -251,7 +257,15 @@ SOURCE=.\Rijndael.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SearchPlugin.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SetBkDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\SimpXmlParser\SimpXmlParser.cpp
 # End Source File
 # Begin Source File
 
@@ -288,6 +302,10 @@ SOURCE=.\TermView.cpp
 # Begin Source File
 
 SOURCE=.\TriggerList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Ucs2Conv.cpp
 # End Source File
 # Begin Source File
 
@@ -344,6 +362,10 @@ SOURCE=.\Clipboard.h
 # Begin Source File
 
 SOURCE=.\ColorConfigDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConfigFile.h
 # End Source File
 # Begin Source File
 
@@ -455,7 +477,15 @@ SOURCE=.\Rijndael.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SearchPlugin.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SetBkDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\SimpXmlParser\SimpXmlParser.h
 # End Source File
 # Begin Source File
 
@@ -492,6 +522,10 @@ SOURCE=.\TermView.h
 # Begin Source File
 
 SOURCE=.\TriggerList.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Ucs2Conv.h
 # End Source File
 # Begin Source File
 

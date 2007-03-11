@@ -195,9 +195,12 @@ void CAutoReplyPage::UpdateDisplay()
 
 	CTriggerItem* item=(CTriggerItem*)list.GetItemDataPtr(sel);
 	msg.SetWindowText(item->msg);
-	respond.SetPasswordChar( *LPCTSTR(item->respond)=='*' ?'*':0 );
-	respond.SetWindowText(LPCTSTR(item->respond)+1);
-	protect.SetCheck( *LPCTSTR(item->respond)=='*' );
+	respond.SetPasswordChar( *LPCTSTR(item->respond)=='+' ? '*' : 0 );
+	CString tmp = LPCTSTR(item->respond) + 1;
+	tmp.Replace( "^M^J", "\r\n" );
+	tmp.Replace( "^M", "\r\n" );
+	respond.SetWindowText(tmp);
+	protect.SetCheck( *LPCTSTR(item->respond)=='+' );
 
 	char sfirst[8];
 	itoa(item->first,sfirst,10);
@@ -244,7 +247,8 @@ void CAutoReplyPage::OnSave()
 	item->msg=tmp;
 
 	respond.GetWindowText(tmp);
-	item->respond=protect.GetCheck()?"*":" ";
+	tmp.Replace( "\r\n", "^M" );
+	item->respond=protect.GetCheck() ? "+" : "-";
 	item->respond+=tmp;
 
 	char sfirst[8];

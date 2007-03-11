@@ -88,7 +88,7 @@ HMENU CFavMenu::DoLoadFavorites( CArchive& ar, CStringArray& data, UINT& id, int
 				++id;
 
 				// end of sub menu
-				data.Add( afxEmptyString );
+				data.Add( _T("") );		// afxEmptyString is no longer in mfc7 and above
 			}
 			break;
 		}
@@ -284,7 +284,7 @@ void CFavMenu::DrawItem(LPDRAWITEMSTRUCT pds)
 	int iimg=(str[0]=='d'?3: (str[0]=='s'?4:-1) );
 #endif
 	CMainFrame* mainfrm = (CMainFrame*)AfxGetMainWnd();
-	ImageList_Draw( mainfrm->img, iimg, dc.m_hDC, 
+	ImageList_Draw( mainfrm->img_icons, iimg, dc.m_hDC, 
 				    rc.left+2, rc.top+topmargin, 
 					ILD_NORMAL|ILD_TRANSPARENT);
 	rc.left+=24;
@@ -511,7 +511,7 @@ void CFavMenu::AddToIEFav(HMENU fmenu, CString favpath, UINT &id )
 	else
 	{
 		//  AfxGetEmptyString();
-		web_fav.Add( afxEmptyString );
+		web_fav.Add( _T("") );	// afxEmptyString is no-longer in mfc7 and above
 		++id;
 	}
 }

@@ -28,7 +28,28 @@ inline bool IsBig5(LPCTSTR str,int pos)
 
 char* strstriptail(LPSTR str);
 
+char* strnextline(char* line);
+
+char* MultiByteToMultiByte(UINT srcCodePage, UINT destCodePage, LPCSTR mbstr, int* outlen=NULL);
+#define MultiByteToUTF8(str, outlen) MultiByteToMultiByte(CP_ACP, CP_UTF8, str, outlen)
+#define UTF8ToMultiByte(str, outlen) MultiByteToMultiByte(CP_UTF8, CP_ACP, str, outlen)
+/*
+char* MultiByteToUTF8(LPCSTR mbstr, int* outlen = NULL);
+char* UTF8ToMultiByte(LPCSTR utf8str, int* outlen = NULL);
+*/
+
 CString EscapeControlChars(LPCTSTR src);
 CString UnescapeControlChars(LPCTSTR src);
+
+const char* CharToHex( int ch, char* buffer );
+
+#define SKIP_SPACES_AND_CRLF(str)	while(*str && strchr(" \t\r\n", *str))	++str;
+#define SKIP_SPACES(str)	while(*str && (*str == ' ' || *str =='\t') )	++str;
+
+// Base64 manipulating routines:
+// If out == NULL, the returned value is the required length of output buffer.
+// Otherwise, the returned value is the number of written bytes.
+UINT Base64Encode(BYTE* in, UINT inlen, BYTE* out, UINT outlen);
+UINT Base64Decode(BYTE* in, UINT inlen, BYTE* out, UINT outlen);
 
 #endif

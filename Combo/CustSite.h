@@ -5,8 +5,13 @@
 #ifndef __CUSTOMSITEH__
 #define __CUSTOMSITEH__
 
+
+#if _MSC_VER >= 1310
+	#include <afxocc.h>
+#else
+	#include <..\src\occimpl.h>
+#endif
 #include <mshtmhst.h>
-#include <..\src\occimpl.h>
 
 // 
 // NOTE: 

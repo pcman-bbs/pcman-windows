@@ -29,6 +29,8 @@
 
 const WPARAM AC_MULTIPCMAN	=0;
 const WPARAM AC_PCMANLOCKED	=1;
+const char TINY_URL[] = "http://tinyurl.com/create.php?url=";
+const char TINYURL_TEMP_FILENAME[] = "Tinyurl";
 
 #define ID_MOUSE_SEL_TIMER	100
 
@@ -96,6 +98,9 @@ public:
 	CFont bar_font;
 	CStatic status_bar;
 	CComboBox address_bar;
+#ifdef	_COMBO_
+	CComboBox search_bar;
+#endif
 
 	HMENU main_menu;
 	HMENU edit_menu;
@@ -109,8 +114,9 @@ public:
 
 	HMENU tab_popup_menu;
 
+	CImageList img_toolbar;
 	CBitmap toolbar_bkgnd;
-	CImageList img;
+	CImageList img_icons;
 	CBitmap imglist_bmp;
 	HICON icon;
 	CReBar rebar;
@@ -132,6 +138,7 @@ public:
 
 #if defined _COMBO_
 	HMENU webtab_popup_menu;
+	CImageList img_webbar;
 	CCustomToolBar	web_bar;
 	CBitmap web_bar_bkgnd;
 	CProgressCtrl progress_bar;
@@ -154,6 +161,7 @@ public:
 	void OnUpdateIsSel(CCmdUI *pCmdUI);
 	void OnUpdateIsConnnected(CCmdUI *pCmdUI);
 	void OnUpdateIsBBS(CCmdUI* pCmdUI);
+	void OnUpdateSetCharset(CCmdUI* pCmdUI);
 	void RestoreWindow();
 	void OnAddressComboEnter();
 	LRESULT OnNotifyIcon(WPARAM wp,LPARAM lp);
@@ -236,11 +244,17 @@ public:
 	afx_msg void OnHotkeySwitch(UINT id);
 	afx_msg void OnCopy();
 	afx_msg void OnCopyPaste();
+	afx_msg void OnCopyArticle();
+	afx_msg void OnCopyArticleWithAnsi();
+	afx_msg void OnDownloadArticle();
+	afx_msg void OnPlayMovie();
 	afx_msg void OnFont();
 	afx_msg void OnPaste();
+	afx_msg void OnPasteTinyUrl();
 	afx_msg void OnSelAll();
 	afx_msg void OnExit();
 	afx_msg void OnHelp();
+	afx_msg void OnSetCharset(UINT nID);
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);
@@ -282,16 +296,22 @@ public:
 	afx_msg void OnCustomizeWebBar();
 	afx_msg void OnShowWebBar();
 	afx_msg void OnUpdateShowWebBar(CCmdUI* pCmdUI);
+	afx_msg void OnShowSearchBar();
+	afx_msg void OnUpdateShowSearchBar(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateIsWebPage(CCmdUI* pCmdUI);
+	afx_msg void OnSearchBarFocus();
 
 	void ImportIEFavorites();
 
 	BOOL FindAdFilter(LPCTSTR title,LPCTSTR address );
 	CEdit edit;
 	LRESULT OnAddressBarEnter(WPARAM w,LPARAM l);
+	LRESULT OnSearchBarEnter(WPARAM w,LPARAM l);
 	LRESULT OnRemoveWebConn(WPARAM wparam,LPARAM lparam);
 	BOOL FilterWebConn(CWebConn* web_conn);
 	void OnToolbarMenuDropDown(NMHDR* pNMHDR, LRESULT* pResult);
+	void OnSearchBarEnter();
+	void OnSearchBarCancel();
 #endif
 
 	DECLARE_MESSAGE_MAP()
@@ -306,6 +326,10 @@ protected:
 	inline void MinimizeToTray();
 	static LRESULT CALLBACK AddressBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
 	WNDPROC old_address_bar_proc;
+#if defined(_COMBO_)
+	static LRESULT CALLBACK SearchBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
+	WNDPROC old_search_bar_proc;
+#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////

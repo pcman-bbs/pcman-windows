@@ -43,7 +43,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Ox /Og /Oi /Os /Ob2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_COMBO_" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /O2 /Ob2 /I "..\SimpXmlParser" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_COMBO_" /FD /c
+# SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "NDEBUG"
@@ -53,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wsock32.lib winmm.lib wininet.lib /nologo /subsystem:windows /machine:I386 /out:"Release/PCMan Combo/PCMan.exe"
+# ADD LINK32 wininet.lib wsock32.lib winmm.lib /nologo /subsystem:windows /machine:I386 /out:"Release/PCMan Combo/PCMan.exe"
 # Begin Special Build Tool
 OutDir=.\Release
 SOURCE="$(InputPath)"
@@ -74,7 +75,8 @@ PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan Combo\Config
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "_COMBO_" /D "BUILD_UI" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\SimpXmlParser" /D "_DEBUG" /D "_COMBO_" /D "BUILD_UI" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
+# SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "_DEBUG"
@@ -84,7 +86,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wsock32.lib winmm.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/PCMan Combo/PCMan.exe" /pdbtype:sept
+# ADD LINK32 wininet.lib wsock32.lib winmm.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/PCMan Combo/PCMan.exe" /pdbtype:sept
 # Begin Special Build Tool
 OutDir=.\Debug
 SOURCE="$(InputPath)"
@@ -155,6 +157,10 @@ SOURCE=..\Lite\ColorConfigDlg.cpp
 # Begin Source File
 
 SOURCE=..\Resource\Combo.rc
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\ConfigFile.cpp
 # End Source File
 # Begin Source File
 
@@ -258,7 +264,15 @@ SOURCE=..\Lite\Rijndael.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\SearchPlugin.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\SetBkDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\SimpXmlParser\SimpXmlParser.cpp
 # End Source File
 # Begin Source File
 
@@ -283,6 +297,15 @@ SOURCE=..\Lite\StringDlg.cpp
 # Begin Source File
 
 SOURCE=..\Lite\strutils.cpp
+
+!IF  "$(CFG)" == "Combo - Win32 Release"
+
+# SUBTRACT CPP /FA<none>
+
+!ELSEIF  "$(CFG)" == "Combo - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -295,6 +318,10 @@ SOURCE=..\Lite\TermView.cpp
 # Begin Source File
 
 SOURCE=..\Lite\TriggerList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\Ucs2Conv.cpp
 # End Source File
 # Begin Source File
 
@@ -375,6 +402,10 @@ SOURCE=..\Lite\Clipboard.h
 # Begin Source File
 
 SOURCE=..\Lite\ColorConfigDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\ConfigFile.h
 # End Source File
 # Begin Source File
 
@@ -490,7 +521,15 @@ SOURCE=..\Lite\Rijndael.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\SearchPlugin.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\SetBkDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\SimpXmlParser\SimpXmlParser.h
 # End Source File
 # Begin Source File
 
@@ -499,6 +538,10 @@ SOURCE=..\Lite\sitelistctrl.h
 # Begin Source File
 
 SOURCE=..\Lite\SitePage.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\SiteSettings.h
 # End Source File
 # Begin Source File
 
@@ -519,6 +562,10 @@ SOURCE=..\Lite\TelnetConn.h
 # Begin Source File
 
 SOURCE=..\Lite\TermView.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\Ucs2Conv.h
 # End Source File
 # Begin Source File
 

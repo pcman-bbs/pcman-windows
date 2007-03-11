@@ -76,6 +76,7 @@ public:
 
 // Implementation
 protected:
+	void LoadList();
 	void OnClose();
 
 	// Generated message map functions

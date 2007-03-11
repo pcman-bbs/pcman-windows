@@ -9,6 +9,7 @@
 #include "mainfrm.h"
 #include "StrUtils.h"
 #include "WinUtils.h"
+#include "Clipboard.h"
 
 #include <mmsystem.h>
 
@@ -64,6 +65,7 @@ struct ANSI_TAB ansi_tab[]={
 // CTelnetConn
 
 BYTE CTelnetConn::buffer[];
+CString CTelnetConn::downloaded_article;
 
 CTelnetConn::CTelnetConn()
 {
@@ -76,6 +78,11 @@ CTelnetConn::CTelnetConn()
 	ansi_mode=0;
 	pansi_param=ansi_param;
 	insert_mode=1;
+
+	is_getting_article = 0;
+	get_article_with_ansi = 0;
+	get_article_in_editor = 0;
+
 	old_cursor_pos.x=old_cursor_pos.y=cursor_pos.x=cursor_pos.y=0;
 
 	is_lookup_host = true;
@@ -239,6 +246,43 @@ inline void CTelnetConn::OnIAC()
 	}
 }
 
+class CDownloadArticleDlg : public CDialog
+{
+public:
+	CDownloadArticleDlg(CTelnetConn* _telnet)
+		: CDialog(IDD_DOWNLOADING), telnet(_telnet)
+	{
+	}
+
+	BOOL OnInitDialog()
+	{
+		CDialog::OnInitDialog();
+		return TRUE;
+	}
+
+	void OnCancel()
+	{
+		telnet->CopyArticleComplete( true );
+		CDialog::OnCancel();
+	}
+
+	void PostNcDestroy();
+protected:
+CTelnetConn* telnet;
+};
+
+static CDownloadArticleDlg* download_article_dlg = NULL;
+
+void CDownloadArticleDlg::PostNcDestroy()
+{
+	CDialog::PostNcDestroy();
+	if( download_article_dlg )
+	{
+		download_article_dlg = NULL;
+		delete this;
+	}
+}
+
 void CTelnetConn::OnText()
 {
 	while(buf<last_byte)
@@ -399,6 +443,28 @@ void CTelnetConn::OnText()
 		}
 		view->UpdateWindow();
 		view->ShowCaret();
+
+		if (is_getting_article)
+		{
+			if( get_article_with_ansi )
+				downloaded_article += GetLineWithAnsi( last_line - 1 );
+			else
+				downloaded_article += screen[ last_line - 1 ];
+			downloaded_article += "\r\n";
+
+			if( IsEndOfArticleReached() )
+				CopyArticleComplete();
+			else
+			{
+				const char* key = key_map->FindKey(VK_DOWN, 0);
+				SendString( key ? key : "^[[B" );
+				if( !download_article_dlg )
+				{
+					download_article_dlg = new CDownloadArticleDlg(this);
+					download_article_dlg->DoModal();
+				}
+			}
+		}
 	}
 }
 
@@ -818,7 +884,8 @@ void CTelnetConn::CheckStrTrigger()
 						if(!key_map || !(enter=key_map->FindKey(VK_RETURN,0)) )
 							enter="\x0d";
 						CString respond=UnescapeControlChars(LPCTSTR(item->respond)+1);
-						respond.Replace("\x0d\x0a",enter);
+						respond.Replace("\x0d\x0a", enter);
+						respond.Replace("\x0d", enter);
 						SendMacroString( respond);
 						if(item->count>0)	//使用觸發次數(不計算次數的count=0)
 						{
@@ -1847,3 +1914,184 @@ void CTelnetConn::SendNaws()
 	Send(naws,sizeof(naws));
 }
 
+
+bool CTelnetConn::IsEndOfArticleReached()
+{
+	char* last_line_txt = screen[last_line];
+	char* percent;
+	if( (percent = strchr(last_line_txt, '%'))
+		&& percent > last_line_txt && isdigit( percent[-1] ) )
+	{
+		char* num = percent;
+		while( num > last_line_txt && isdigit( num[-1] ) )
+			--num;
+		if( num < percent && atoi(num) < 100 )
+			return false;
+	}
+	return true;
+}
+
+CString CTelnetConn::GetLineWithAnsi(long line)
+{
+	CString data( "\x1b[m" );
+
+	LPSTR str=screen[line];
+	LPSTR strend;
+	LPBYTE attr=GetLineAttr(str);
+	BYTE tmpatb=*attr;
+	if(tmpatb!=7)
+		data+=AttrToStr(7,tmpatb);
+
+	strend = str + site_settings.cols_per_page - 1;
+	BYTE *atbend=GetLineAttr(line) + site_settings.cols_per_page - 1;
+	while(*strend==' ' && GetAttrBkColor(*atbend)==0)
+		strend--,atbend--;
+
+	while(str <= strend)
+	{
+		if(*attr!=tmpatb)
+		{
+			data+=AttrToStr(tmpatb, *attr);
+			tmpatb=*attr;
+		}
+		if(*str)
+			data+=*str;
+		str++;
+		attr++;
+	}
+	if(tmpatb!=7)
+			data+="\x1b[m";
+
+	return data;
+}
+
+CString AttrToStr(BYTE prevatb,BYTE attr)
+{
+	CString ret="\x1b[";
+	if(attr==7)
+	{
+		ret+='m';
+		return ret;
+	}
+
+	BYTE fg=attr&7;
+	BYTE bk=GetAttrBkColor(attr);
+	BYTE blink=attr&128;
+	BYTE hilight=attr&8;
+
+	BYTE hilight_changed=0;
+	BYTE blink_changed=0;
+	BYTE fg_changed=0;
+	BYTE bk_changed=0;
+
+	if(fg!= (prevatb&7))	//如果前景色改變
+		fg_changed=1;
+	if(bk!=GetAttrBkColor(prevatb))	//如果背景色改變
+		bk_changed=1;
+
+	if( hilight != (prevatb&8) )	//如果高亮度改變
+	{
+		hilight_changed=1;
+		if(!hilight)	//如果變成不亮,要重設所有屬性
+		{
+			blink_changed=fg_changed=bk_changed=1;
+			ret+=';';
+		}
+	}
+
+	if( blink != (prevatb&128))	//如果閃爍改變
+	{
+		blink_changed=1;
+		if(!blink)	//如果變成不閃爍,要重設所有屬性
+		{
+			if( !(hilight_changed && !hilight) )	//如果所有屬性還沒重設過才重設
+			{
+				ret+=';';
+				hilight_changed=fg_changed=bk_changed=1;
+			}
+		}
+	}
+
+	if(hilight_changed && hilight)
+		ret+="1;";
+	if(blink_changed && blink)
+		ret+="5;";
+	char num[4]={0,0,';',0};
+	if(fg_changed)
+	{
+		*num='3';
+		*(num+1)='0'+fg;
+		ret+=num;
+	}
+	if(bk_changed)
+	{
+		*num='4';
+		*(num+1)='0'+bk;
+		ret+=num;
+	}
+
+	char* pret=LPSTR(LPCTSTR(ret));
+	if(pret[ret.GetLength()-1]==';')
+		pret[ret.GetLength()-1]='m';
+	else
+		ret+='m';
+	return ret;
+}
+
+void CTelnetConn::CopyArticle(bool with_color, bool in_editor)
+{
+//	downloaded_article.Empty();
+	get_article_in_editor = in_editor;
+	get_article_with_ansi = with_color;
+	for ( int y = scroll_pos; y < last_line; ++y )
+	{
+		if( !with_color )
+			downloaded_article += screen[y];
+		else
+			downloaded_article += GetLineWithAnsi( y );
+		downloaded_article += "\r\n";
+	}
+
+	if( IsEndOfArticleReached() )
+		CopyArticleComplete();
+	else
+	{
+		is_getting_article = true;
+		const char* key = key_map->FindKey(VK_DOWN, 0);
+		SendString( key ? key : "^[[B" );
+	}
+}
+
+void CTelnetConn::CopyArticleComplete(bool cancel)
+{
+	is_getting_article = false;
+
+	if( !cancel )
+	{
+
+		if( get_article_in_editor )
+		{
+			view->OnAnsiEditor();
+			CTelnetConn* editor = view->telnet;
+			//FIXME: dirty hack to insert ansi string to the editor
+			view->LockWindowUpdate();
+			editor->Send( (LPCTSTR)downloaded_article, downloaded_article.GetLength() );
+			editor->scroll_pos=0;
+			editor->cursor_pos.x=editor->cursor_pos.y=0;
+			editor->UpdateCursorPos();
+			view->SetScrollBar();
+			view->UnlockWindowUpdate();
+		}
+		else
+		{
+			// FIXME: unicode???
+			CClipboard::SetText(view->m_hWnd, downloaded_article);
+		}
+
+		if( download_article_dlg )	// dismiss cancel dialog
+			download_article_dlg->OnCancel();
+	}
+	get_article_in_editor = false;
+	get_article_with_ansi = false;
+	downloaded_article.Empty();
+}

@@ -86,6 +86,13 @@ BEGIN
     BEGIN
         MENUITEM "複製 (只有純文字) (&C)\tAlt+O", ID_COPY
         MENUITEM "複製 (包含ANSI彩色) (&Y)",    ID_ANSICOPY
+        POPUP "下載正在閱讀的文章 (&R)"
+        BEGIN
+            MENUITEM "複製到剪貼簿 (&C)",           ID_COPYARTICLE
+            MENUITEM "複製到剪貼簿 (包含 ANSI 彩色) (&Y)", 
+                                                    ID_COPYARTICLE_WITH_ANSI
+            MENUITEM "在 ANSI 編輯器中檢視 (&N)",   ID_DOWNLOAD_ARTICLE
+        END
         MENUITEM "貼上 (&P)\tAlt+P",            ID_PASTE
         MENUITEM SEPARATOR
         POPUP "選取文字當成超連結開啟 (&O)"
@@ -97,13 +104,23 @@ BEGIN
             MENUITEM "當成 ftp://",                 ID_EDIT_OPENURL_FTP
         END
         MENUITEM "尋找這個畫面的資料 (&F)\tAlt+I", ID_EDIT_FIND
+        POPUP "語言及字元編碼"
+        BEGIN
+            MENUITEM "Default",                     ID_SET_CHARSET_DEFAULT
+            MENUITEM SEPARATOR
+            MENUITEM "Traditional Chinese (Big5)",  ID_SET_CHARSET_CP950
+            MENUITEM "Simplified Chinese (GB2312)", ID_SET_CHARSET_CP936
+            MENUITEM "Japanese (Shift_JIS)",        ID_SET_CHARSET_CP932
+        END
         MENUITEM SEPARATOR
         MENUITEM "複製並貼上 (&S)",             ID_COPYPASTE
         MENUITEM "從檔案貼上 (&I)",             ID_PASTEFILE
+        MENUITEM "貼上短網址 (&T)",             ID_PASTETINYURL
         MENUITEM "全選這個畫面 (&A)\tAlt+L",    ID_SELECTALL
         MENUITEM "全選整個緩衝區 (&L)",         ID_SELALL_BUF
         MENUITEM SEPARATOR
         MENUITEM "快速輸入常用文字 (&Q)\tCtrl+Enter", ID_FREQ_STR
+        MENUITEM "播放動畫 (&M)",               ID_PLAY_ANSIMOVIE
         MENUITEM "複製連結位址",                ID_EDIT_COPYURL
         , CHECKED, INACTIVE, MENUBARBREAK
         MENUITEM "向右移動忽略全形自動偵測",    ID_RIGHTNODBCS
@@ -220,105 +237,15 @@ BEGIN
         MENUITEM "取得本機 IP 位址 (&A)",       ID_GET_LOCALIP
         MENUITEM "將PCMan設為預設程式 &D)",     ID_SETDEFAULT
         MENUITEM "備份目前設定值 (&B)",         ID_BACKUP_CONFIG
-        MENUITEM SEPARATOR
-        POPUP "匯入設定值 (&I)"
-        BEGIN
-            MENUITEM "PCMan 2003 設定值",           ID_TOOL_IMPORT_2003
-        END
     END
     POPUP "說明 (&H)"
     BEGIN
         MENUITEM "軟體使用說明 (&H)\tAlt+F1",   IDM_HELP
         MENUITEM SEPARATOR
-        MENUITEM "關於 PCMan 2004 (&A)...",     ID_ABOUT
+        MENUITEM "關於 Open PCMan 2007 (&A)...", ID_ABOUT
     END
 END
 #endif
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_ABOUTBOX DIALOGEX 0, 0, 265, 223
-STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
-EXSTYLE WS_EX_CONTROLPARENT
-CAPTION "關於 PCMan"
-FONT 9, "新細明體", 0, 0, 0x1
-BEGIN
-    PUSHBUTTON      "寄信給作者",IDC_MAIL,7,202,62,14
-    PUSHBUTTON      "參觀作者網頁",IDC_WEB,101,202,62,14
-    PUSHBUTTON      "軟體說明",IDB_HELP,196,202,62,14
-    CTEXT           "PCMan 2004 ( 2005/03/02 加強版 )\n\n2004/09/13 由 洪任諭 製作於陽明大學醫學系三年級",
-                    IDC_STATIC,37,7,208,27
-    EDITTEXT        IDC_EDIT,7,36,251,161,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
-    ICON            128,IDC_STATIC,10,9,20,20
-END
-
-
-#ifndef _MAC
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 7,0,0,0
- PRODUCTVERSION 7,0,0,0
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040404b0"
-        BEGIN
-            VALUE "Comments", "本軟體由洪任諭製作\0"
-            VALUE "CompanyName", "洪任諭\0"
-            VALUE "FileDescription", "PCMan 2004\0"
-            VALUE "FileVersion", "7. 0. 0. 0\0"
-            VALUE "InternalName", "PCMan 7.00\0"
-            VALUE "LegalCopyright", "Copyright (C) 2004 由洪任諭製作\0"
-            VALUE "LegalTrademarks", "2004 由洪任諭製作\0"
-            VALUE "OriginalFilename", "PCMan.exe\0"
-            VALUE "ProductName", "PCMan 2004\0"
-            VALUE "ProductVersion", "7. 0. 0. 0\0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x404, 1200
-    END
-END
-
-#endif    // !_MAC
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 258
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 216
-    END
-END
-#endif    // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -399,6 +326,52 @@ BEGIN
     "Z",            ID_UP,                  VIRTKEY, ALT, NOINVERT
 END
 #endif
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 8,0,0,0
+ PRODUCTVERSION 8,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040404b0"
+        BEGIN
+            VALUE "Comments", "本軟體由洪任諭及 Open PCMan Team 共同製作\0"
+            VALUE "CompanyName", "Open PCMan Project\0"
+            VALUE "FileDescription", "PCMan 2007\0"
+            VALUE "FileVersion", "8. 0. 0. 0\0"
+            VALUE "InternalName", "Open PCMan 8.0\0"
+            VALUE "LegalCopyright", "Copyright (C) 2001 - 2007 由 洪任諭及 Open PCMan Team 共同製作\0"
+            VALUE "LegalTrademarks", "Copyright (C) 2001 - 2007 由 洪任諭及 Open PCMan Team 共同製作\0"
+            VALUE "OriginalFilename", "PCMan.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "PCMan 2007 Combo\0"
+            VALUE "ProductVersion", "8. 0. 0. 0\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x404, 1200
+    END
+END
+
+#endif    // !_MAC
 
 
 /////////////////////////////////////////////////////////////////////////////

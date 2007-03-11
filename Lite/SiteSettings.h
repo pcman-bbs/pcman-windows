@@ -15,7 +15,7 @@
 
 enum EncodingConv {GB2BIG5=1, BIG52GB=2};
 
-class CSiteSettings  
+class CSiteSettings 
 {
 public:
 	CSiteSettings();
@@ -44,11 +44,11 @@ public:
 	BYTE auto_dbcs_backspace;
 	BYTE localecho;
 
-	char KeyMapName[11];	// 原本是12現改為11，擠出 1 byte 放 後面這兩個設定值
-	BYTE text_output_conv:4;	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
-	BYTE text_input_conv:4;		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
+	BYTE text_output_conv;	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
+	BYTE text_input_conv;		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
 
 //	object section of Site Settings
+	CString key_map_name;
 	CString termtype;
 	CString idle_str;
 	CString esc_convert;
@@ -59,13 +59,13 @@ public:
 
 	inline bool operator==(CSiteSettings &ss)
 	{
-		return !memcmp(this,&ss,DWORD(&KeyMapName)-DWORD(this)) &&
+		return !memcmp(this,&ss,DWORD(&key_map_name)-DWORD(this)) &&
 			termtype==ss.termtype &&
 			idle_str==ss.idle_str &&
 			esc_convert==ss.esc_convert &&
 			text_output_conv==ss.text_output_conv &&
 			text_input_conv==ss.text_input_conv &&
-			!strncmp(KeyMapName,ss.KeyMapName,10);
+			!strncmp(key_map_name,ss.key_map_name,10);
 	}
 
 	inline bool operator !=(CSiteSettings &ss)
@@ -98,7 +98,7 @@ inline void CSiteSettings::Default()
 
 	cols_per_page=80;
 	lines_per_page=24;
-	strcpy(KeyMapName,CKeyMap::default_kmname);
+	key_map_name = CKeyMap::default_kmname;
 //	use_default=1;
 
 //	object section
@@ -115,7 +115,8 @@ inline void CSiteSettings::Default()
 inline CSiteSettings& CSiteSettings::operator = (CSiteSettings& newval)
 {
 	if( this != &newval ) {
-		memcpy(this,&newval,size_t(DWORD(&termtype)-DWORD(this)));
+		memcpy(this,&newval,size_t(DWORD(&key_map_name)-DWORD(this)));
+		key_map_name=newval.key_map_name;
 		termtype=newval.termtype;
 		idle_str=newval.idle_str;
 		esc_convert=newval.esc_convert;

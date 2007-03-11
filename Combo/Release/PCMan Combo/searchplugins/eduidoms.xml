@@ -1,0 +1,13 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>教育部成語辭典</ShortName>
+<Description>教育部成語辭典</Description>
+<InputEncoding>Big5</InputEncoding>
+<Url type="text/html" method="GET" template="http://140.111.34.46/cgi-bin/chengyu/searchResult.cgi">
+  <Param name="Query0" value="{searchTerms}" />
+  <Param name="page" value="0" />
+  <Param name="tf" value="pho" />
+  <Param name="stype" value="phrase" />
+  <Param name="select" value="phrase" />
+</Url>
+<SearchForm>http://140.111.34.46/chengyu/sort_pho.htm</SearchForm>
+</SearchPlugin>

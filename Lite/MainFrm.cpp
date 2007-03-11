@@ -29,13 +29,13 @@
 #include "SetBkDlg.h"
 
 #include "Clipboard.h"
+#include "StrUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
 
 #if defined(_COMBO_)
 	#include "../Combo/WebBrowser.h"
@@ -45,13 +45,14 @@ static char THIS_FILE[] = __FILE__;
 	#include "../Combo/WebPageDlg.h"
 
 LPSTR CMainFrame::mainfrm_class_name="PCManCB";
-	const char *CMainFrame::window_title=" - PCMan 2004 Combo";
+	const char *CMainFrame::window_title = " - Open PCMan 2007 Combo (preview_20070312)";
 #else
 LPSTR CMainFrame::mainfrm_class_name="PCMan";
-	const char *CMainFrame::window_title=" - PCMan 2004";
+	const char *CMainFrame::window_title = " - Open PCMan 2007 (preview_20070312)";
 #endif
 
 extern CFont fnt;
+CUcs2Conv g_ucs2conv;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
@@ -90,8 +91,13 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_LASTCON, OnLastCon)
 	ON_COMMAND(ID_ADDTOHOME, OnAddToHome)
 	ON_COMMAND(ID_COPY, OnCopy)
+	ON_COMMAND(ID_COPYARTICLE, OnCopyArticle)
+	ON_COMMAND(ID_COPYARTICLE_WITH_ANSI, OnCopyArticleWithAnsi)
+	ON_COMMAND(ID_DOWNLOAD_ARTICLE, OnDownloadArticle)
 	ON_COMMAND(ID_COPYPASTE, OnCopyPaste)
 	ON_COMMAND(ID_PASTE, OnPaste)
+	ON_COMMAND(ID_PASTETINYURL, OnPasteTinyUrl)
+	ON_COMMAND(ID_PLAY_ANSIMOVIE, OnPlayMovie)
 	ON_COMMAND(ID_SELECTALL, OnSelAll)
 	ON_COMMAND(ID_CONFIG_FONT, OnFont)
 	ON_COMMAND(ID_FILE_EXIT, OnExit)
@@ -144,8 +150,13 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_COPYPASTE, OnUpdateIsSel)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_COPYURL, OnUpdateIsBBS)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_FIND, OnUpdateIsConn)
+	ON_UPDATE_COMMAND_UI(ID_COPYARTICLE, OnUpdateIsBBSSite)
+	ON_UPDATE_COMMAND_UI(ID_COPYARTICLE_WITH_ANSI, OnUpdateIsBBSSite)
+	ON_UPDATE_COMMAND_UI(ID_DOWNLOAD_ARTICLE, OnUpdateIsBBSSite)
+	ON_UPDATE_COMMAND_UI(ID_PLAY_ANSIMOVIE, OnUpdateIsBBSSite)
 	ON_UPDATE_COMMAND_UI(ID_PASTE, OnUpdatePaste)
 	ON_UPDATE_COMMAND_UI(ID_PASTEFILE, OnUpdatePaste)
+	ON_UPDATE_COMMAND_UI(ID_PASTETINYURL, OnUpdatePaste)
 	ON_UPDATE_COMMAND_UI(ID_ANSICOPY, OnUpdateIsSel)
 	ON_UPDATE_COMMAND_UI(ID_ADDTOHOME, OnUpdateIsConn)
 	ON_UPDATE_COMMAND_UI(IDC_ANSIBAR_SEND, OnUpdateIsConnnected)	//used by ansi bar
@@ -155,6 +166,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_KKTAB, OnKKmanStyleTab)
 	ON_COMMAND(ID_ADS, OnShowAddressBar)
 	ON_COMMAND(ID_EDIT_FIND, OnEditFind)
+	ON_COMMAND_RANGE(ID_SET_CHARSET_DEFAULT,ID_SET_CHARSET_CP932, OnSetCharset) //
+	ON_UPDATE_COMMAND_UI(ID_SET_CHARSET_DEFAULT, OnUpdateSetCharset)
 	ON_UPDATE_COMMAND_UI(ID_EXITLOG, OnUpdateSaveSession)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnSelchangeTab)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
@@ -203,9 +216,12 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_ADS_OPENNEW, OnUpdateAddressBarOpenNew)
 	ON_UPDATE_COMMAND_UI(ID_BLOCK_POPUP, OnUpdateBlockPopup)
 	ON_UPDATE_COMMAND_UI(ID_WEBBAR, OnUpdateShowWebBar)
+	ON_UPDATE_COMMAND_UI(ID_SEARCHBAR, OnUpdateShowSearchBar)
 	ON_COMMAND(ID_WEBBAR, OnShowWebBar)
 	ON_COMMAND(ID_CUSTOMIZE_WB, OnCustomizeWebBar)
 	ON_MESSAGE(WM_REMOVE_WEBCONN, OnRemoveWebConn)
+	ON_COMMAND(ID_SEARCHBAR_FOCUS, OnSearchBarFocus)
+	ON_COMMAND(ID_SEARCHBAR, OnShowSearchBar)
 #endif
 
 END_MESSAGE_MAP()
@@ -232,6 +248,11 @@ CMainFrame::CMainFrame()
 
 	prev_conn = NULL;
 
+	/* FIXME */
+	g_ucs2conv.SetTablePath(AppPath);
+	g_ucs2conv.InitBig52Ucs2Tab();
+	g_ucs2conv.InitUcs22Big5Tab();
+
 #if defined(_COMBO_)
 	focus=NULL;
 #endif
@@ -255,33 +276,49 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 //	Load Image List for Site List and Tab...
 	imglist_bmp.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath+ICON_BMP_FILENAME,IMAGE_BITMAP,0,0,LR_LOADFROMFILE));
-	img.Create(16,16,ILC_COLOR8|ILC_MASK,9,0);
-	ImageList_AddMasked(img.m_hImageList,(HBITMAP)imglist_bmp.m_hObject,RGB(255,0,255));
+	img_icons.Create(16,16,ILC_COLOR32|ILC_MASK,9,0);
+	ImageList_AddMasked(img_icons.m_hImageList,(HBITMAP)imglist_bmp.m_hObject,RGB(255,0,255));
 
 //	Create font for UI
 	LOGFONT lf;	::GetObject(GetStockObject(DEFAULT_GUI_FONT),sizeof(LOGFONT),&lf);
 	lf.lfHeight=-12;	bar_font.CreateFontIndirect(&lf);
 
 //	Create Main Toolbar
-	SIZE sizebtn;	SIZE sizeimg;	BITMAP bmp;
+	SIZE sizebtn;
+	SIZE sizeimg;
+	BITMAP bmp;
 	toolbar.CreateEx(this,TBSTYLE_FLAT,CCS_ADJUSTABLE|CBRS_ALIGN_TOP|CBRS_TOOLTIPS|
 		WS_CHILD|WS_VISIBLE, tmprc, IDC_TOOLBAR );
 
 	toolbar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath+TOOLBAR_BMP_FILENAME,
 		IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_LOADMAP3DCOLORS));
-
 	toolbar_bkgnd.GetBitmap(&bmp);
-#ifdef _COMBO_
-	bmp.bmWidth/=19;
-#else
-	bmp.bmWidth/=17;
-#endif
-	sizeimg.cx=bmp.bmWidth;	sizeimg.cy=bmp.bmHeight;
-	sizebtn.cx=bmp.bmWidth+7;	sizebtn.cy=bmp.bmHeight+6;
-	toolbar.SetSizes(sizebtn,sizeimg);
-	toolbar.SetBitmap((HBITMAP)toolbar_bkgnd.m_hObject);
-	toolbar.LoadToolBar(&AppConfig.main_toolbar_inf);
 
+	//img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, ILC_COLOR32|ILC_MASK, 9,0);
+	//使用 bmBitsPixel 來當作 ILC_COLOR* 的 flags 值
+#ifdef _COMBO_
+	img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 19,0);
+#else
+	img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 17,0);
+#endif
+	ImageList_AddMasked(img_toolbar.m_hImageList, (HBITMAP)toolbar_bkgnd.m_hObject,RGB(255,0,255));
+
+
+#ifdef _COMBO_
+	toolbar.GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
+	//bmp.bmWidth/=19;
+#else
+	//bmp.bmWidth/=17;
+#endif
+	bmp.bmWidth = bmp.bmHeight;
+	sizeimg.cx=bmp.bmWidth;
+	sizeimg.cy=bmp.bmHeight;
+	sizebtn.cx=bmp.bmWidth+7;
+	sizebtn.cy=bmp.bmHeight+6;
+	toolbar.SetSizes(sizebtn,sizeimg);
+	//toolbar.SetBitmap((HBITMAP)toolbar_bkgnd.m_hObject);
+	toolbar.LoadToolBar(&AppConfig.main_toolbar_inf);
+	toolbar.GetToolBarCtrl().SetImageList(&img_toolbar);
 //	Create Tab
 	tab.parent = this;
 	tab.Create(
@@ -299,7 +336,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 //	tab.ModifyStyle(0,TCS_BOTTOM);
 //--------------------------------------------------------------------------
 	tab.SetFont(&bar_font);
-	tab.SetImageList(&img);
+	tab.SetImageList(&img_icons);
 	tab_popup_menu=::LoadMenu(AfxGetInstanceHandle(),LPSTR(IDR_POPUP));
 	tab_popup_menu=::GetSubMenu(tab_popup_menu,0);
 #ifdef	_COMBO_
@@ -318,6 +355,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 //	::SetWindowLong(hedit,GWL_STYLE,::GetWindowLong(hedit,GWL_STYLE)&~ES_NOHIDESEL);
 	auto_complete.AttachEdit(hedit, &AppConfig.history, address_bar.m_hWnd);
 
+#ifdef	_COMBO_
+// Search Bar
+//----------搜尋列------------
+	search_bar.Create(CBS_AUTOHSCROLL|CBS_DROPDOWN,CRect(0,0,0,320),this,IDR_SEARCHBAR);
+	search_bar.MoveWindow(0,0,120,24);
+	search_bar.SetFont(&bar_font);
+	hedit=::GetTopWindow(search_bar.m_hWnd);
+	old_search_bar_proc=(WNDPROC)::GetWindowLong(hedit,GWL_WNDPROC);
+	::SetWindowLong(hedit,GWL_WNDPROC,(LONG)SearchBarWndProc);
+#endif
+
 //	Create Close Button
 	close_btn.CreateEx(this,TBSTYLE_FLAT,CBRS_ALIGN_TOP|WS_CHILD|WS_VISIBLE|
 		CBRS_TOOLTIPS, tmprc, IDC_CLOSEBTNBAR);
@@ -325,13 +373,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 #if defined(_COMBO_)
 //----------Web工具列-------------
-	web_bar.CreateEx(this,TBSTYLE_FLAT,CBRS_TOOLTIPS|CCS_ADJUSTABLE|CBRS_ALIGN_TOP|WS_CHILD|
+	web_bar.CreateEx(this,TBSTYLE_FLAT,CBRS_TOOLTIPS|CBRS_ALIGN_TOP|CCS_ADJUSTABLE|WS_CHILD|
 		WS_VISIBLE,tmprc,IDC_WEBBAR);
-	web_bar.LoadToolBar(&AppConfig.webbar_inf);
 	web_bar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath+"webbar.bmp",
-		IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_LOADTRANSPARENT|LR_LOADMAP3DCOLORS));
-	web_bar.SetBitmap((HBITMAP)web_bar_bkgnd.m_hObject);
+		IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_LOADMAP3DCOLORS));
+	web_bar_bkgnd.GetBitmap( &bmp);
+	img_webbar.Create( bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 5, 0);
+	ImageList_AddMasked(img_webbar.m_hImageList, (HBITMAP)web_bar_bkgnd.m_hObject,RGB(255,0,255));
 	web_bar.SetSizes(CSize(23,22),CSize(16,16));
+	//web_bar.SetBitmap((HBITMAP)web_bar_bkgnd.m_hObject);
+	web_bar.LoadToolBar(&AppConfig.webbar_inf);
+	web_bar.GetToolBarCtrl().SetImageList(&img_webbar);
 //位址列的 combobox 資料在 LoadHistory裡面載入
 #endif
 
@@ -360,31 +412,36 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	REBARBANDINFO rbi;	rbi.cbSize=sizeof(rbi);
 	rbi.fMask=RBBIM_ID;
 	//加入主工具列	id=1
-	rebar.AddBar(&toolbar);
+	rebar.AddBar(&toolbar);	rbi.wID=1; rbc.SetBandInfo(0,&rbi);
 
-	//加入位址列	id=2
+	//加入ANSI彩色工具列	id=2
+	rebar.AddBar(&ansi_bar);
+	rbi.cx=548;
+	rbi.fMask=RBBIM_ID|RBBIM_SIZE;
+	rbi.wID=2;	rbc.SetBandInfo(1,&rbi);
+	rbi.fMask=RBBIM_ID;
+
+	//加入關閉按鈕	id=3
+	rebar.AddBar(&close_btn );	rbi.wID=3;	rbc.SetBandInfo(2,&rbi);
+
 #ifdef	_COMBO_
+	//加入位址列	id=4
 	rebar.AddBar(&address_bar);
 #else
 	rebar.AddBar(&address_bar, LoadString( IDS_ADS_BAR_TITLE ));
 #endif
-	rbi.fMask=RBBIM_ID;	rbi.wID=2;	rbc.SetBandInfo(1,&rbi);
-
-	//加入ANSI彩色工具列	id=3
-	rebar.AddBar(&ansi_bar);	rbi.wID=3;	rbc.SetBandInfo(2,&rbi);
-
-	//加入關閉按鈕	id=4
-	rebar.AddBar(&close_btn );	rbi.wID=4;	rbc.SetBandInfo(3,&rbi);
-
-	//加入Web工具列	id=5
+	rbi.fStyle=RBBS_BREAK|RBBS_GRIPPERALWAYS|RBBS_FIXEDBMP;
+	rbi.fMask=RBBIM_ID|RBBIM_STYLE;
+	rbi.wID=4;	rbc.SetBandInfo(3,&rbi);
+	rbi.fStyle=RBBS_GRIPPERALWAYS|RBBS_FIXEDBMP;
+	rbi.fMask=RBBIM_ID;
 #if defined(_COMBO_)
+	//加入Web工具列	id=5
 	rebar.AddBar(&web_bar);	rbi.wID=5;	rbc.SetBandInfo(4,&rbi);
-	toolbar.GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
+	//加入搜尋列 id=6
+	rebar.AddBar(&search_bar, LoadString( IDS_SEARCH_BAR_TITLE ));
+	rbi.wID=6; rbc.SetBandInfo(5,&rbi);
 #endif
-
-	//設定主工具列	id=1
-	rbc.GetBandInfo(0,&rbi);
-	rbi.wID=1;rbc.SetBandInfo(0,&rbi);
 
 	//ReBar Band visibility
 	RecalcLayout();
@@ -704,6 +761,9 @@ void CMainFrame::OnMove(int x, int y)
 
 void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 {
+	if( cmdline[0]=='\0')
+		return;
+
 	AddToTypedHistory(cmdline);
 
 	if( 0 == strnicmp( cmdline, "telnet:", 7) )
@@ -747,7 +807,7 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 	if(pos==-1)
 		pos=param.Find(' ');
 	CString address;
-	short port;
+	unsigned short port;
 	if(pos==-1)
 	{
 		address=param;
@@ -756,7 +816,7 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 	else
 	{
 		address = param.Left(pos);
-		port = (short)atoi( LPCTSTR(param.Mid( pos + 1 )) );
+		port = (unsigned short)atoi( LPCTSTR(param.Mid( pos + 1 )) );
 	}
 	view.Connect( address, address, port );
 	BringWindowToTop();
@@ -858,6 +918,20 @@ void CMainFrame::OnAddressFocus()
 {
 	address_bar.SetFocus();
 }
+
+#if defined(_COMBO_)
+void CMainFrame::OnShowSearchBar()
+{
+	BYTE& showsearchbar=AppConfig.is_full_scr?AppConfig.fullscr_showsearchbar:AppConfig.showsearchbar;
+	showsearchbar=!showsearchbar;
+	RecalcLayout(FALSE);
+}
+
+void CMainFrame::OnSearchBarFocus() 
+{
+	search_bar.SetFocus();
+}
+#endif
 
 /* Menu 和 Command Item的結構
 檔案內部儲存方式:
@@ -1085,6 +1159,10 @@ void CMainFrame::OnUpdateShowWebBar(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(AppConfig.is_full_scr? AppConfig.fullscr_showwb:AppConfig.showwb);
 }
+void CMainFrame::OnUpdateShowSearchBar(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck(AppConfig.is_full_scr? AppConfig.fullscr_showsearchbar:AppConfig.showsearchbar);
+}
 #endif
 
 void CMainFrame::OnUpdateShowToolbar(CCmdUI* pCmdUI) 
@@ -1204,6 +1282,27 @@ LRESULT CMainFrame::OnAddressBarEnter(WPARAM w, LPARAM l)
 		return 0;
 	}
 	OnNewConnectionAds(address);
+	return 0;
+}
+
+
+LRESULT CMainFrame::OnSearchBarEnter(WPARAM w, LPARAM l)
+{
+	CString searchword;
+	search_bar.GetWindowText(searchword);
+	CString searchurl = "http://www.google.com/search?q="+searchword;
+
+	if(view.con && !view.telnet)
+	{
+		
+		COleVariant v;
+		COleVariant url=searchurl;
+		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
+		((CWebConn*)view.con)->web_browser.SetFocus();
+		return 0;
+	}
+
+	OnNewConnectionAds(searchurl);
 	return 0;
 }
 
@@ -1434,7 +1533,7 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 {
 	BYTE showtb,showads,showtab,showsb,use_ansi_bar,showclose;
 #ifdef	_COMBO_
-	BYTE showwb;
+	BYTE showwb,showsearchbar;
 #endif
 
 	if(AppConfig.is_full_scr)
@@ -1447,6 +1546,7 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 		use_ansi_bar=AppConfig.full_use_ansi_bar;
 	#ifdef	_COMBO_
 			showwb=AppConfig.fullscr_showwb;
+			showsearchbar=AppConfig.fullscr_showsearchbar;
 	#endif
 	}
 	else
@@ -1459,6 +1559,7 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 		use_ansi_bar=AppConfig.use_ansi_bar;
 	#ifdef	_COMBO_
 			showwb=AppConfig.showwb;
+			showsearchbar=AppConfig.showsearchbar;
 	#endif
 	}
 
@@ -1477,9 +1578,9 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 
 	// Close Button RecalcLayout
 	sz = close_btn.CalcFixedLayout(FALSE,TRUE);
-	rbc.GetBandInfo(rbc.IDToIndex(4),&rbi);
+	rbc.GetBandInfo(rbc.IDToIndex(3),&rbi);
 	rbi.cxMinChild=sz.cx;	rbi.cxIdeal=sz.cx;
-	rbc.SetBandInfo(rbc.IDToIndex(4),&rbi);
+	rbc.SetBandInfo(rbc.IDToIndex(3),&rbi);
 
 #ifdef _COMBO_	// Web Bar RecalcLayout
 	sz = web_bar.CalcFixedLayout(FALSE,TRUE);
@@ -1489,11 +1590,12 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 #endif
 
 	rbc.ShowBand(rbc.IDToIndex(1),showtb);
-	rbc.ShowBand(rbc.IDToIndex(2),showads);
-	rbc.ShowBand(rbc.IDToIndex(3),use_ansi_bar || (view.telnet && view.telnet->is_ansi_editor) );
-	rbc.ShowBand(rbc.IDToIndex(4),showclose);
+	rbc.ShowBand(rbc.IDToIndex(2),use_ansi_bar || (view.telnet && view.telnet->is_ansi_editor) );
+	rbc.ShowBand(rbc.IDToIndex(3),showclose);
+	rbc.ShowBand(rbc.IDToIndex(4),showads);
 #ifdef	_COMBO_
 	rbc.ShowBand(rbc.IDToIndex(5),showwb);
+	rbc.ShowBand(rbc.IDToIndex(6),showsearchbar);
 #endif
 
 	int top=0;
@@ -1624,6 +1726,60 @@ void CMainFrame::OnAddressComboEnter()
 	OnNewConnectionAds(address);	// 內部會呼叫 view.AddToTypedHistory(address);
 }
 
+#if defined(_COMBO_)
+void CMainFrame::OnSearchBarCancel()
+{
+	if( view.con && view.con->is_web )
+		((CWebConn*)view.con)->web_browser.SetFocus();
+	else
+		view.SetFocus();
+}
+
+LRESULT CALLBACK CMainFrame::SearchBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam)
+{
+	CMainFrame* mainfrm = (CMainFrame*)AfxGetMainWnd();
+	if(msg==WM_KEYDOWN)
+	{
+		switch(wparam)
+		{
+		case VK_RETURN:
+			if( !mainfrm->search_bar.GetDroppedState() )
+			{
+				mainfrm->OnSearchBarEnter();
+				return 0;
+			}
+			break;
+		case VK_ESCAPE:
+			mainfrm->OnSearchBarCancel();
+			return 0;
+		}
+	}
+	else if( msg == WM_GETDLGCODE )
+		return DLGC_WANTALLKEYS;
+
+	return CallWindowProc( mainfrm->old_search_bar_proc, hwnd, msg, wparam, lparam );
+}
+
+void CMainFrame::OnSearchBarEnter()
+{
+	CString searchword;
+	search_bar.GetWindowText(searchword);
+	CString searchurl = "http://www.google.com/search?q="+searchword;
+
+	if(view.con && !view.telnet)
+	{
+		
+		COleVariant v;
+		COleVariant url=searchurl;
+		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
+		((CWebConn*)view.con)->web_browser.SetFocus();
+		return;
+	}
+
+	OnNewConnectionAds(searchurl);	// 內部會呼叫 view.AddToTypedHistory(address);
+}
+#endif
+
 void CMainFrame::OnAnsiBarBk()
 {
 	ansi_bar.OnBk();
@@ -1748,6 +1904,15 @@ void CMainFrame::OnUpdateEditOpenURL(CCmdUI* pCmdUI)
 	}
 }
 
+void CMainFrame::OnUpdateSetCharset(CCmdUI* pCmdUI) 
+{
+	if(pCmdUI->m_pSubMenu)
+	{
+		pCmdUI->m_pMenu->EnableMenuItem(pCmdUI->m_nIndex,MF_BYPOSITION|
+			( (view.telnet) ? MF_ENABLED:MF_GRAYED) );
+	}
+}
+
 void CMainFrame::OnBackupConfig() 
 {
 	CString title;
@@ -1849,17 +2014,27 @@ void CMainFrame::OnUpdateIsConn(CCmdUI *pCmdUI)
 	if( !pCmdUI->m_pMenu )	// don't disable toolbar
 		return;
 #if defined(_COMBO_)
-	pCmdUI->Enable( !!view.con );
+	bool enable = !!view.con;
 #else
-	pCmdUI->Enable( !!view.telnet );
+	bool enable = !!view.telnet;
 #endif
+	pCmdUI->Enable( enable );
 }
 
 void CMainFrame::OnUpdateIsBBSSite(CCmdUI *pCmdUI)
 {
 	if( !pCmdUI->m_pMenu )	// don't disable toolbar
 		return;
-	pCmdUI->Enable( view.telnet ? !view.telnet->is_ansi_editor : 0 );
+
+	bool enable = view.telnet ? !view.telnet->is_ansi_editor : false;
+
+	if( pCmdUI->m_nID == ID_COPYARTICLE && pCmdUI->m_pSubMenu )
+	{
+		pCmdUI->m_pMenu->EnableMenuItem(pCmdUI->m_nIndex, MF_BYPOSITION|
+			( enable ? MF_ENABLED:MF_GRAYED) );
+	}
+	else
+		pCmdUI->Enable( enable );
 }
 
 #ifdef	_COMBO_
@@ -2005,7 +2180,8 @@ void CMainFrame::OnToolImport2003()
 			AppConfig.bkpath=LoadString(cfg_filepath);
 
 	//讀取F1~F12熱鍵
-			for(DWORD i=0;i<12;i++)
+			DWORD i = 0;
+			for(;i<12;i++)
 				LoadString(cfg_filepath);
 	//讀取位址列紀錄
 			cfg_filepath.Read4(&dw);		//讀取紀錄筆數
@@ -3093,6 +3269,12 @@ void CMainFrame::SwitchToConn( int index )
 	prev_conn = view.con;
 #else
 	prev_conn = view.telnet;
+	if (prev_conn)
+	{
+		if( prev_conn->is_telnet )
+			reinterpret_cast<CTelnetConn*>(prev_conn)->is_getting_article = false;
+		view.KillTimer( ID_MOVIETIMER );
+	}
 #endif
 
 	if(!newcon)
@@ -3242,9 +3424,9 @@ void CMainFrame::UpdateUI()
 	{
 		CReBarCtrl& rbc=rebar.GetReBarCtrl();
 		if( AppConfig.use_ansi_bar || view.telnet->is_ansi_editor )
-			rbc.ShowBand(rbc.IDToIndex(3),TRUE);
+			rbc.ShowBand(rbc.IDToIndex(2),TRUE);
 		else
-			rbc.ShowBand(rbc.IDToIndex(3),FALSE);
+			rbc.ShowBand(rbc.IDToIndex(2),FALSE);
 	#if defined	_COMBO_
 		progress_bar.ShowWindow(SW_HIDE);
 	#endif
@@ -3253,9 +3435,9 @@ void CMainFrame::UpdateUI()
 	{
 		CReBarCtrl& rbc=rebar.GetReBarCtrl();
 		if(AppConfig.use_ansi_bar)
-			rbc.ShowBand(rbc.IDToIndex(3),TRUE);
+			rbc.ShowBand(rbc.IDToIndex(2),TRUE);
 		else
-			rbc.ShowBand(rbc.IDToIndex(3),FALSE);
+			rbc.ShowBand(rbc.IDToIndex(2),FALSE);
 
 		view.ShowScrollBar(SB_VERT,AppConfig.site_settings.showscroll);
 	#if defined	_COMBO_
@@ -3430,6 +3612,44 @@ void CMainFrame::OnFont()
 	}
 }
 
+void CMainFrame::OnPasteTinyUrl()
+{
+	CString url = TINY_URL;
+	CString text;
+	if(!CClipboard::GetText(text)) //第一次從剪貼簿取字串 (ansi字串)	
+		return;
+	url += text;
+	HRESULT hr = URLDownloadToFile ( NULL, url, ::AppPath+TINYURL_TEMP_FILENAME, 0, NULL);
+	if ( !SUCCEEDED(hr) )
+		return;
+	CFile f;
+	char* str = new char[8192];
+	char* found = NULL;
+	if(f.Open(::AppPath+TINYURL_TEMP_FILENAME, CFile::modeRead))
+	{
+		CArchive* ar;
+		ar = new CArchive(&f,CArchive::load);
+		ar->Read(str,8192);
+		if (found=strstri(str, "Open in new window"))
+		{
+			char* s = str;
+			char* t = NULL;
+			if ((s = strstri(found-150, "http")) && (t = strnstri(s, "</b>", 40)))
+			{
+				char* tinyurl = new char[t-s+1];
+				strncpy(tinyurl, s, t-s);
+				*(tinyurl+(t-s)) = '\0';
+				view.telnet->SendString(tinyurl);
+				delete []tinyurl;
+			}
+		}
+		ar->Close();
+		f.Close();
+		unlink(::AppPath+TINYURL_TEMP_FILENAME);
+	}
+	delete []str;
+}
+
 void CMainFrame::OnCopyPaste() 
 {
 	OnCopy();
@@ -3460,7 +3680,35 @@ void CMainFrame::OnPaste()
 	if(IsContainAnsiCode(text))
 		view.SendAnsiString(text);
 	else	//否則正常貼上純文字
+	{
+		//並且如果不包含色彩碼，再重新從剪貼簿取一次字串 (改取Unicode字串)
+
+		wchar_t* pwstr = NULL;
+		if (CClipboard::GetTextW(&pwstr))
+		{
+			UINT cp_id = view.GetCodePage();
+			int len = wcslen(pwstr)*sizeof(wchar_t) + 1;
+			char* pstr = new char[ len ];
+			memset(pstr, 0, len);
+
+			if ( cp_id == 950){
+				g_ucs2conv.Ucs22Big5(pwstr, pstr);
+			}
+			else{
+				::WideCharToMultiByte(cp_id, 0, pwstr, -1,pstr, len, NULL, NULL);
+			}
+
+			text.Empty();
+			text = pstr;
+			if (pstr)
+				delete [] pstr;
+			if (pwstr)
+				delete [] pwstr;
+			//考慮到 server 端實際接收資料的速度不快，
+			//所以這邊試圖忽略掉從剪貼簿取兩次資料的開銷損失
+		}
 		view.telnet->SendString(text);
+	}
 }
 
 void CMainFrame::OnSelAll()
@@ -3485,6 +3733,36 @@ void CMainFrame::OnSelAll()
 	telnet->sel_end.x=telnet->site_settings.cols_per_page;
 	telnet->sel_end.y=info.nPos+telnet->site_settings.lines_per_page-1;
 	view.Invalidate(FALSE);
+}
+
+void CMainFrame::OnPlayMovie()
+{
+	if(!view.telnet)
+		return;
+	view.SetTimer(ID_MOVIETIMER, 1000, NULL);
+}
+
+static CDownloadArticleDlg* download_article_dlg = NULL;
+
+void CMainFrame::OnCopyArticle()
+{
+	if(!view.telnet)
+		return;
+	view.telnet->CopyArticle( false, false );
+}
+
+void CMainFrame::OnCopyArticleWithAnsi()
+{
+	if(!view.telnet)
+		return;
+	view.telnet->CopyArticle( true, false );
+}
+
+void CMainFrame::OnDownloadArticle()
+{
+	if(!view.telnet)
+		return;
+	view.telnet->CopyArticle( true, true );
 }
 
 void CMainFrame::OnExit()
@@ -3533,7 +3811,7 @@ void CMainFrame::OpenLastPages()
 	if(logf.Open(ConfigPath+SESSION_FILENAME,CFile::modeRead))
 	{
 		CString name,ads;
-		short port = 23;
+		unsigned short port = 23;
 		int c = tab.GetItemCount();
 		while( !(str=LoadString(logf)).IsEmpty() )
 		{
@@ -3551,7 +3829,7 @@ void CMainFrame::OpenLastPages()
 				if( -1 != (pos = ads.ReverseFind(':')) )
 #endif
 				{
-					port = (short)atoi( LPCTSTR( ads.Mid(pos+1) ) );
+					port = (unsigned short)atoi( LPCTSTR( ads.Mid(pos+1) ) );
 					ads = ads.Left(pos);
 				}
 				else
@@ -3602,8 +3880,39 @@ void CMainFrame::OnNewConn()
 		dlg.address.Empty();
 		return;
 	}
-	view.Connect(dlg.address,dlg.name,dlg.port);
+	view.Connect(dlg.address, dlg.name, dlg.port);
 	dlg.name.Empty();
 	dlg.address.Empty();
 }
 
+void CMainFrame::OnSetCharset(UINT nID)
+{
+//#ifdef	_COMBO_
+//	return;
+//#endif
+	if(!view.telnet)
+		return;
+
+	static UINT prev_id = 0;
+	
+	switch ( nID ){
+	case ID_SET_CHARSET_DEFAULT:
+		view.SetCodePage(::GetACP());
+		break;
+	case ID_SET_CHARSET_CP950:
+		view.SetCodePage(950);
+		break;
+	case ID_SET_CHARSET_CP936:
+		view.SetCodePage(936);
+		break;
+	case ID_SET_CHARSET_CP932:
+		view.SetCodePage(932);
+		break;
+	}
+
+	CMenu* menu = GetMenu();
+	menu->CheckMenuItem(prev_id, MF_UNCHECKED);
+	menu->CheckMenuItem(nID, MF_CHECKED);
+	view.Invalidate(FALSE);
+	prev_id = nID;
+}

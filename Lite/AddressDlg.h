@@ -25,7 +25,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CAddressDlg)
 	enum { IDD = IDD_QUICKCONNECT };
-	short	port;
+	UINT	port;
 	CString	name;
 	//}}AFX_DATA
 

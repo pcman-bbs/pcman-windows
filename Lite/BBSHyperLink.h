@@ -9,14 +9,16 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "ConfigFile.h"
+
 struct CBBSHyperLinkData
 {
 	CString scheme;
 	CString program;
-	DWORD color;
+	COLORREF color;
 };
 
-class CBBSHyperLink
+class CBBSHyperLink : public CConfigFile::ConfigHandler
 {
 public:
 	int GetURLType(const char* url);
@@ -24,8 +26,8 @@ public:
 	CArray<CBBSHyperLinkData,CBBSHyperLinkData&> links;
 	int email;
 	void OpenURL(LPCTSTR url);
-	void Save(CFile& file);
-	void Load(CFile& file);
+	void Save(CString& section);
+	void Load(char* section);
 	CBBSHyperLink();
 	const char* FindEMailLink(const char *src, int &len) const;
 	const char* FindHyperLink(const char *src, int &len) const;

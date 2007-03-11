@@ -73,7 +73,7 @@ void CAddressDlg::DoDataExchange(CDataExchange* pDX)
 {
 	//{{AFX_DATA_MAP(CAddressDlg)
 	DDX_Text(pDX, IDC_PORT, port);
-	DDV_MinMaxInt(pDX, port, 0, 32767);
+	DDV_MinMaxInt(pDX, port, 1, 65535);
 	DDX_Text(pDX, IDC_NAME, name);
 	//}}AFX_DATA_MAP
 	CDialog::DoDataExchange(pDX);

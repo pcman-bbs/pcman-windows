@@ -32,12 +32,13 @@ void CConnectPage::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(CConnectPage)
 	DDX_CBString(pDX, IDC_ADDRESS, address);
 	DDX_Text(pDX, IDC_NAME, name);
+	DDV_MinMaxInt(pDX, port, 1, 65535);
 	DDX_Text(pDX, IDC_PORT, port);
 	//}}AFX_DATA_MAP
 	if(name.IsEmpty())
 		name=address;
-	if(port.IsEmpty())
-		port="23";
+	if(port <= 0)
+		port=23;
 }
 
 
@@ -51,10 +52,8 @@ END_MESSAGE_MAP()
 
 BOOL CConnectPage::OnInitDialog()
 {
+	CPropertyPage::OnInitDialog();
 	CComboBox* combo=(CComboBox*)GetDlgItem(IDC_ADDRESS);
-	combo->SetWindowText(address);
-	GetDlgItem(IDC_NAME)->SetWindowText(name);
-	GetDlgItem(IDC_PORT)->SetWindowText(port);
 
 	POSITION pos=AppConfig.history.GetHeadPosition();
 	CString str;

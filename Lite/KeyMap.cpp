@@ -50,9 +50,12 @@ CKeyMap* CKeyMap::Load(LPCTSTR kmname)
 	}
 
 	pkm=new CKeyMap;
+	if( !pkm )
+		return NULL;
 	pkm->ref_count=1;
 	CFile kmf;
-	if(pkm && kmf.Open(GetKeyMapDir()+kmname,CFile::modeRead))
+	if( kmf.Open(GetKeyMapDir()+kmname,CFile::modeRead) 
+		|| kmf.Open(GetKeyMapDir()+default_kmname,CFile::modeRead) )
 	{
 		WORD sz=0;
 		kmf.Read(&sz,sizeof(sz));
@@ -102,5 +105,6 @@ BOOL CKeyMap::ReName(LPCTSTR oldname, LPCTSTR newname)
 
 CKeyMap::CKeyMap()
 {
-	::LoadString( AfxGetResourceHandle(), IDS_DEFAULT_KEYMAP, default_kmname, sizeof(default_kmname) );
+    // FIXME: File name of keymap should be in English
+//	::LoadString( AfxGetResourceHandle(), IDS_DEFAULT_KEYMAP, default_kmname, sizeof(default_kmname) );
 }

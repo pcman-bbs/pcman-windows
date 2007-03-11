@@ -173,7 +173,10 @@ CString CSiteListCtrl::GetItemFilePath(HTREEITEM item)
 	CString fp=GetItemPath(item);
 	int i=fp.Find('\t');	if(i!=-1)	fp=fp.Left(i);
 //	return ConfigPath+fp.Mid(strlen(BBS_FAVORITE_NAME)+1);
-	return ConfigPath+fp;
+	fp = ConfigPath + fp;
+	if( !IsItemDir(item) )
+		fp +=  ".ini";
+	return fp;
 }
 
 HTREEITEM CSiteListCtrl::FindChildItem(HTREEITEM parent, LPCTSTR key)

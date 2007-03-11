@@ -9,10 +9,12 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CCustomToolBar window
+#include "ConfigFile.h"
 
 class CCustomToolBar;
 
-class CCustomToolBarInfo	//目前支援最多255個按鈕
+//目前支援最多255個按鈕
+class CCustomToolBarInfo : public CConfigFile::ConfigHandler
 {
 public:
 	int count;
@@ -26,10 +28,15 @@ public:
 	~CCustomToolBarInfo()
 	{	delete index;	}
 
-	inline void SaveToFile(CFile& f)
+	void Save(CString& value)
 	{
-		f.Write(&count,sizeof(count));
-		f.Write(index,count*sizeof(*index));
+        for( int i =0; i < count; ++i ) {
+            char tmp[10];
+            if( ! value.IsEmpty() )
+                value += ',';
+            sprintf(tmp, "%d", index[i]);
+            value += tmp;
+        }
 	}
 
 	inline void LoadDefault()
@@ -40,11 +47,26 @@ public:
 			index[i]=i;
 	}
 
-	inline void LoadFromFile(CFile& f)
+	void Load(char* value)
 	{
-		f.Read(&count,sizeof(count));
-		index=new BYTE[count];
-		f.Read(index,count*sizeof(*index));
+        BYTE tmp[ 256 ];
+        BYTE* idx = tmp;
+        char* sep = value - 1;
+        do{
+            value = sep + 1;
+            *idx = atoi(value);
+            ++idx;
+        }while( (sep = strchr(value, ',')) );
+
+        count = (idx - tmp);
+        if( count < 0 || count > allcount )
+            count = allcount;
+        if( index )
+            delete []index;
+		index = new BYTE[count];
+        for( int i = 0; i < count; ++i ) {
+            index[i] = tmp[i];
+        }
 	}
 
 	int LookupIndex(int id)

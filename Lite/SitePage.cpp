@@ -110,7 +110,7 @@ BOOL CSitePage::OnInitDialog()
 				ckeymap.AddString(fd.cFileName);
 		FindClose(hf);
 	}
-	ckeymap.SelectString(0,psettings->KeyMapName);
+	ckeymap.SelectString(0,psettings->key_map_name);
 
 	cesc_convert.AddString("^U");
 	cesc_convert.AddString("^C^H^H");
@@ -172,7 +172,7 @@ void CSitePage::OnOK()
 	psettings->lines_per_page=lines_per_page;
 
 	ctermtype.GetWindowText(psettings->termtype);
-	ckeymap.GetWindowText(psettings->KeyMapName,sizeof(psettings->KeyMapName));
+	ckeymap.GetWindowText(psettings->key_map_name);
 	GetDlgItemText(IDC_STR,psettings->idle_str);
 	GetDlgItemText(IDC_ESC_CONVERT,psettings->esc_convert);
 	psettings->esc_convert=UnescapeControlChars(psettings->esc_convert);
@@ -197,12 +197,17 @@ void CSitePage::OnAddMap()
 			return;
 	CKeyMapDlg kmdlg;
 	//產生新的KeyMap
+	//and also load default
 	kmdlg.pmap=CKeyMap::Load(dlg.name);
+
+#if 0
 	//載入預設值
 	CKeyMap* defkm=CKeyMap::Load(CKeyMap::default_kmname);
 	//複製預設值到新的鍵盤對映
-	kmdlg.pmap->Copy(/*(CArray<CKeyMapEntry,CKeyMapEntry&>&)*/*defkm);
+	kmdlg.pmap->Copy(/*(CArray<CKeyMapEntry,CKeyMapEntry&>&)*/*defkm); //144版後會有bug 
 	defkm->Release();
+#endif
+
 	if(kmdlg.DoModal()==IDOK)
 	{
 		ckeymap.AddString(dlg.name);
@@ -215,8 +220,8 @@ void CSitePage::OnAddMap()
 void CSitePage::OnEditMap() 
 {
 	CKeyMapDlg kmdlg;
-	char kmname[12];
-	ckeymap.GetWindowText(kmname,12);
+	CString kmname;
+	ckeymap.GetWindowText(kmname);
 	kmdlg.pmap=CKeyMap::Load(kmname);
 	kmdlg.DoModal();
 	kmdlg.pmap->Release();
@@ -271,18 +276,3 @@ void CSitePage::OnSelchangeKeyMap()
 	::EnableWindow(::GetDlgItem(m_hWnd,IDC_RENAMEMAP),e);
 }
 
-
-//DEL void CSitePage::OnUseDefault() 
-//DEL {
-//DEL 	EnableControls(!IsDlgButtonChecked(IDC_USEDEFAULT));
-//DEL }
-
-
-//DEL void CSitePage::EnableControls(BOOL enable)
-//DEL {
-//DEL 	for( HWND ctrl=::GetTopWindow(m_hWnd); ctrl; ctrl=::GetNextWindow(ctrl,GW_HWNDNEXT) )
-//DEL 		::EnableWindow(ctrl,enable);
-//DEL 	if(enable)
-//DEL 		OnSelchangeKeyMap();
-//DEL 	::EnableWindow(::GetDlgItem(m_hWnd,IDC_USEDEFAULT),TRUE);
-//DEL }

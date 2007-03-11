@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "stdafx.h"
+#include "ConfigFile.h"
 
 class CTriggerItem
 {
@@ -28,11 +29,9 @@ public:
 	int time;
 };
 
-class CTriggerList  
+class CTriggerList : public CConfigFile::ConfigHandler
 {
 public:
-	void SaveToFile(CFile& file);
-	BOOL LoadFromFile(CFile& file);
 	CTriggerItem* pfirst;
 	CTriggerItem* plast;
 	int count;
@@ -41,6 +40,9 @@ public:
 	CTriggerList();
 	virtual ~CTriggerList();
 	void CopyFrom(CTriggerList &newval);
+
+    virtual void Load( char* section );
+    virtual void Save( CString& section );
 };
 
 #endif // !defined(AFX_TRIGGERLIST_H__D3AB6861_3446_11D7_A5E5_EE1034247E3B__INCLUDED_)

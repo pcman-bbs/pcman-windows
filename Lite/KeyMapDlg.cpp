@@ -68,11 +68,16 @@ BOOL CKeyMapDlg::OnInitDialog()
 
 	CString title;
 	title.LoadString( IDS_EDIT_KEY_MAP_TITLE );
-	char *ptitle = new char[ title.GetLength() + 12 ];
-	memcpy( ptitle, LPCTSTR(title), title.GetLength() );
-	strncpy( ptitle + title.GetLength(), pmap->name, 11 );
-	SetWindowText(ptitle);
-	delete []ptitle;
+	
+	//char *ptitle = new char[ title.GetLength() + 12 ];
+	//memcpy( ptitle, LPCTSTR(title), title.GetLength() );
+	//strncpy( ptitle + title.GetLength(), pmap->name, 11 );
+	//Bug: without NULL char at the end of ptitle[]
+	//SetWindowText(ptitle);
+	//delete []ptitle;
+	
+	SetWindowText(title + pmap->name);
+
 	int s=pmap?pmap->GetSize():0;
 	for(int i=0;i<s;i++)
 	{

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-<assemblyIdentity version="1.0.0.0" processorArchitecture="X86" name="PCMan 2003" type="win32" />
+<assemblyIdentity version="1.0.0.0" processorArchitecture="X86" name="PCMan 2007" type="win32" />
 <description>PCMan</description>
 <dependency>
 <dependentAssembly>
