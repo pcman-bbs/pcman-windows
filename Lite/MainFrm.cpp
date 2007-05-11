@@ -783,7 +783,7 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 		while( *cmdline=='/' )
 			cmdline++;
 	}
-	else if( 0 == strnicmp( cmdline, "bbs_fav:", 4) )
+	else if( 0 == strnicmp( cmdline, "bbs:", 4) )
 	{
 		cmdline+=4;
 		while( *cmdline=='/' )
@@ -791,16 +791,22 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 	}
 	else if( IsFileExist(cmdline) )
 	{
-#if defined(_COMBO_)
 		int l = strlen(cmdline);
-		if( l > 4 && 0 != strnicmp( cmdline+(l-4),".ans",4) )
-		{
-			view.ConnectWeb(cmdline,TRUE);
-			return;
-		}
+		if( l > 4 )
+        {
+            if( 0 == strnicmp( cmdline+(l-4), ".ans", 4) )
+    		{
+    		    if(view.OpenAnsFile(cmdline))
+	    		    return;
+            }
+            else
+            {
+#if defined(_COMBO_)
+	    		view.ConnectWeb(cmdline,TRUE);
 #endif
-		if(view.OpenAnsFile(cmdline))
-			return;
+    			return;
+            }
+        }
 	}
 #if defined(_COMBO_)
 	else
