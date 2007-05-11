@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CCustomTabCtrl, CTabCtrl)
 	//{{AFX_MSG_MAP(CCustomTabCtrl)
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_MBUTTONDOWN()
 	ON_WM_CREATE()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
@@ -64,6 +65,15 @@ void CCustomTabCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		oldp=point;
 	}
 	CTabCtrl::OnLButtonDown(nFlags, point);
+}
+
+void CCustomTabCtrl::OnMButtonDown(UINT nFlags, CPoint point) 
+{
+	TCHITTESTINFO hti;
+	hti.pt=point;
+	sel=HitTest(&hti);
+	if(sel!=-1)
+		parent->PostMessage(WM_COMMAND,ID_CONNECT_CLOSE,0);
 }
 
 void CCustomTabCtrl::OnLButtonUp(UINT nFlags, CPoint point) 

@@ -45,10 +45,10 @@ static char THIS_FILE[] = __FILE__;
 	#include "../Combo/WebPageDlg.h"
 
 LPSTR CMainFrame::mainfrm_class_name="PCManCB";
-	const char *CMainFrame::window_title = " - Open PCMan 2007 Combo (preview_20070312)";
+	const char *CMainFrame::window_title = " - Open PCMan 2007 Combo (preview_20070512)";
 #else
 LPSTR CMainFrame::mainfrm_class_name="PCMan";
-	const char *CMainFrame::window_title = " - Open PCMan 2007 (preview_20070312)";
+	const char *CMainFrame::window_title = " - Open PCMan 2007 (preview_20070512)";
 #endif
 
 extern CFont fnt;
@@ -2942,6 +2942,7 @@ void CMainFrame::OnViewConfig()
 	BYTE tab_add_num=AppConfig.tab_add_number;
 
 	CPropertySheet configdlg(IDS_PCMAN_ALL_SETTINGS,NULL);
+    configdlg.m_psh.dwFlags |= PSH_NOAPPLYNOW;
 	CGeneralPage page0;
 	CSitePage page1;
 //	page1.use_default=-1;
