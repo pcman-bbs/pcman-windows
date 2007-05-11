@@ -123,7 +123,7 @@ inline CString CWebBrowser::GetLocationURL()
 	CString retVal(bstr);
 	return retVal;
 */
-	return wb_ctrl.GetLocationURL();
+	return wb_ctrl.get_LocationURL();
 }
 
 inline CString CWebBrowser::GetLocationName()
@@ -134,7 +134,7 @@ inline CString CWebBrowser::GetLocationName()
 	CString retVal(bstr);
 	return retVal;
 */
-	return wb_ctrl.GetLocationName();
+	return wb_ctrl.get_LocationName();
 }
 
 

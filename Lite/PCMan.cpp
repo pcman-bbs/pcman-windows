@@ -145,14 +145,16 @@ BOOL CApp::InitInstance()
 	AppConfig.mainwnd_state.Restore(pFrame->m_hWnd);
 	pFrame->UpdateWindow();
 
-	if(!*m_lpCmdLine)	//狦⊿Τ㏑把计玥秨币
-		pFrame->OpenHomepage();
-
 	if( AppConfig.save_session )
-		pFrame->OpenLastPages();
+		pFrame->OpenLastSession();
 
 	if(*m_lpCmdLine)
 		pFrame->OnNewConnectionAds(m_lpCmdLine);
+	else	//狦⊿Τ㏑把计玥秨币
+	{
+		if( pFrame->tab.GetItemCount() == 0 )
+			pFrame->OpenHomepage();
+	}
 
 //狦す砛磅︽ PCMan玥рUser data砞1
 	SetWindowLong(m_pMainWnd->m_hWnd,GWL_USERDATA,!AppConfig.multiple_instance);
@@ -225,7 +227,12 @@ void CApp::OnAppAbout()
 
 void CAboutDlg::OnReport() 
 {
-	ShellExecute(m_hWnd,"open","http://rt.openfoundry.org/Foundry/Project/Tracker/?Queue=744",NULL,NULL,SW_SHOW);	
+    const char tracker[] = "http://rt.openfoundry.org/Foundry/Project/Tracker/?Queue=744";
+#ifdef	_COMBO_
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tracker, TRUE);
+#else
+	ShellExecute(m_hWnd,"open",tracker,NULL,NULL,SW_SHOW);
+#endif
 }
 
 void CAboutDlg::OnWeb() 

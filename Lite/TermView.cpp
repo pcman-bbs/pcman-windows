@@ -1377,7 +1377,7 @@ void CTermView::OnHistory(UINT id)
 		int p = str.Find('\t');
 		p = str.Find('\t', p+1);
 		if( -1 == p )
-			ConnectStr(str, "");
+			ConnectStr(str, afxEmptyString );
 		else
 			ConnectStr( str.Left(p), str.Mid(p+1) );
 	}
@@ -1429,9 +1429,7 @@ void CTermView::OnAnsiOpen()
 
 void CTermView::OnAnsiSaveAs()
 {
-	if(!telnet)
-		return;
-	if( !telnet->is_ansi_editor )
+	if(!telnet || !telnet->is_ansi_editor)
 		return;
 
 	CFileDialog dlg(FALSE,"ans",NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_ENABLESIZING, LoadString(IDS_ANS_FILTER));
@@ -1603,7 +1601,10 @@ CString CTermView::GetSelAnsi()
 
 void CTermView::OnAnsiSave()
 {
-	if(telnet && !telnet->address.Compare( LoadString(IDS_NOT_SAVED) ))
+	if (!telnet)
+		return;
+
+	if(!telnet->address.Compare( LoadString(IDS_NOT_SAVED) ))
 	{
 		OnAnsiSaveAs();
 	}
@@ -2437,8 +2438,8 @@ CWebConn* CTermView::ConnectWeb(CString address, BOOL act)
 	newcon->name = newcon->address = address;
 	newcon->web_browser.parent=parent;
 	newcon->web_browser.Create(NULL,NULL,WS_CHILD,CRect(0,0,0,0),parent,0);
-	newcon->web_browser.wb_ctrl.SetRegisterAsBrowser(TRUE);
-	newcon->web_browser.wb_ctrl.SetRegisterAsDropTarget(TRUE);
+	newcon->web_browser.wb_ctrl.put_RegisterAsBrowser(TRUE);
+	newcon->web_browser.wb_ctrl.put_RegisterAsDropTarget(TRUE);
 	parent->NewTab( newcon );
 
 	if(!address.IsEmpty())
@@ -2685,6 +2686,7 @@ void CTermView::OnCurConSettings()
 		CRect rc;	GetClientRect(rc);
 		telnet->ReSizeBuffer(tmpset.line_count,tmpset.cols_per_page,tmpset.lines_per_page);
 		telnet->site_settings = tmpset;
+		SetScrollBar();
 		telnet->SendNaws();
 		AdjustFont(rc.right,rc.bottom);
 		Invalidate(FALSE);
@@ -2734,6 +2736,10 @@ CString CTermView::GetSelText()
 			tmp=telnet->sel_end.y;
 			telnet->sel_end.y=telnet->sel_start.y;
 			telnet->sel_start.y=tmp;
+			//x也需要倒過來
+			tmp=telnet->sel_end.x;
+			telnet->sel_end.x=telnet->sel_start.x;
+			telnet->sel_start.x=tmp;
 		}
 
 		long selstarty=telnet->sel_start.y;
@@ -2741,7 +2747,7 @@ CString CTermView::GetSelText()
 
 		bool single_line_sel = (selstarty == selendy);
 
-		if( (bottom2top || telnet->sel_block || single_line_sel ) && telnet->sel_end.x<telnet->sel_start.x )
+		if( ( telnet->sel_block || single_line_sel ) && telnet->sel_end.x<telnet->sel_start.x )
 		{
 			tmp=telnet->sel_end.x;
 			telnet->sel_end.x=telnet->sel_start.x;
@@ -2875,6 +2881,14 @@ void CTermView::ConnectStr(CString name, CString dir)
 		ConnectWeb(address,TRUE);
 		return;
 	}
+	if( 0 == strncmp( "telnet:", address, 7 ) )
+	{
+		LPCTSTR p = address;
+		p += 7;
+		while( *p && *p =='/' )
+			++p;
+		address = p;
+	}
 #endif
 
 	i=address.ReverseFind(':');
@@ -2886,7 +2900,18 @@ void CTermView::ConnectStr(CString name, CString dir)
 		address=address.Left(i);
 	}
 	SetFocus();
-	Connect( address, name, port, dir + name + ".ini" );
+
+	CString conf;
+	if( dir.IsEmpty() )
+		conf = afxEmptyString;
+	else
+	{
+		conf = ConfigPath;
+		conf += dir;
+		conf += name;
+		conf += ".ini";
+	}
+	Connect( address, name, port, conf );
 }
 
 

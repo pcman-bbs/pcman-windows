@@ -113,7 +113,7 @@ void CListDlg::OnOK()
 			view->parent->LoadWebFavorites();
 #endif
 		}
-		view->ConnectStr('s'+str,dir);
+		view->ConnectStr( 's' + str, dir );
 		CDialog::OnOK();
 	}
 }
@@ -393,11 +393,8 @@ void CListDlg::OnEditSite()
 
 			CString text=page0.name+'\t'+page0.address;
 			if( page0.port != 23 && page0.port > 0 )
-			{
-				char port_str[10];
-				sprintf( port_str, "%d", page0.port );
-				text+=(':' + port_str);
-			}
+				text.Format("%s:%d", page0.name+'\t'+page0.address, page0.port);
+
 			sites.SetItemText(item,text);
 
 			CString path2=sites.GetItemFilePath(item);

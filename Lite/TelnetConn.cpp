@@ -453,7 +453,15 @@ void CTelnetConn::OnText()
 			downloaded_article += "\r\n";
 
 			if( IsEndOfArticleReached() )
-				CopyArticleComplete();
+			{
+				//為了相容Firebird BBS
+				//如最後一行還是空白則等待BBS server傳送最後一行
+				char* last_line_txt = screen[ last_line ];
+				while(*last_line_txt == ' ')
+					last_line_txt++;
+				if ( (last_line_txt - screen[ last_line ]) < strlen(screen[ last_line ]) )
+					CopyArticleComplete();
+			}
 			else
 			{
 				const char* key = key_map->FindKey(VK_DOWN, 0);
@@ -823,7 +831,10 @@ void CTelnetConn::OnConnect(int nErrorCode)
 #endif
 		str += '\t';
 		if( !cfg_filepath.IsEmpty() )
-			str += cfg_filepath.Left( cfg_filepath.GetLength() - name.GetLength() );
+		{
+			int len = cfg_filepath.GetLength() - ConfigPath.GetLength() - name.GetLength() - 4;
+			str += cfg_filepath.Mid( ConfigPath.GetLength(), len );
+		}
 		view->parent->AddToHistoryMenu( str );
 		view->parent->AddToHistory( ads_port );
 	}
@@ -1183,7 +1194,7 @@ void CTelnetConn::DeleteLines(int n)	//delete n lines
 		}
 		else
 		{
-			screen[y]=tmplines[y+n-last_line-1];
+			screen[y]=tmplines[(y-cursor_pos.y)-(last_line+1-yn)];
 			InitNewLine(screen[y]);
 			SetUpdateAllLines(y);
 		}

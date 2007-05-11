@@ -99,7 +99,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_PASTETINYURL, OnPasteTinyUrl)
 	ON_COMMAND(ID_PLAY_ANSIMOVIE, OnPlayMovie)
 	ON_COMMAND(ID_SELECTALL, OnSelAll)
-	ON_COMMAND(ID_CONFIG_FONT, OnFont)
+	ON_COMMAND(ID_BBS_FONT, OnBBSFont)
+	ON_COMMAND(ID_FONT_BTN, OnFont)
 	ON_COMMAND(ID_FILE_EXIT, OnExit)
 	ON_COMMAND(IDM_HELP, OnHelp)
 	ON_COMMAND(ID_CONNECT_NEW, OnNewConn)
@@ -142,7 +143,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_RECONNECT, OnUpdateReconnect)
 	ON_COMMAND(ID_EXITLOG, OnSaveSession)
 	ON_COMMAND(ID_SWITCH_BACK, OnSwitchBack)
-	ON_COMMAND(ID_TOOL_IMPORT_2003, OnToolImport2003)
 	ON_UPDATE_COMMAND_UI(ID_SEND_ANSICODE, OnUpdateShowAnsiBar)
 	ON_UPDATE_COMMAND_UI(ID_CURCON_SETTINGS, OnUpdateIsBBSSite)
 	ON_UPDATE_COMMAND_UI(ID_CONNECT_CLOSE, OnUpdateIsConn)
@@ -568,6 +568,7 @@ void CMainFrame::OnClose()
 				line += '\t';
 				line += pcon->address;
 #ifdef	_COMBO_
+				// FIXME: should this be pcon->is_telnet? what about ansi editor?
 				if( !pcon->is_web )
 				{
 #endif
@@ -577,13 +578,23 @@ void CMainFrame::OnClose()
 						sprintf( port_str, ":%d", static_cast<CTelnetConn*>(pcon)->port );
 						line += port_str;
 					}
-					line += '\t';
-					line += static_cast<CTelnetConn*>(pcon)->cfg_filepath;
+					CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
+					CString dir;
+					if( !telnet->cfg_filepath.IsEmpty() )
+					{
+						int len = telnet->cfg_filepath.GetLength() - ConfigPath.GetLength() - telnet->name.GetLength() - 4;
+						dir = telnet->cfg_filepath.Mid( ConfigPath.GetLength(), len );
+					}
+					if( ! dir.IsEmpty() )
+					{
+						line += '\t';
+						line += dir;
+					}
 #ifdef	_COMBO_
 				}		// end if( !pcon->is_web )
 #endif
-
-				SaveString(logf, line);
+				line += "\r\n";
+				logf.Write( LPCTSTR(line), line.GetLength() );
 				delete pcon;
 			}
 			logf.Close();
@@ -1399,7 +1410,7 @@ void CMainFrame::OnWebPageViewSrc()
 {
 	if(!view.con || view.telnet)
 		return;
-	LPDISPATCH lpd=((CWebConn*)view.con)->web_browser.wb_ctrl.GetDocument();
+	LPDISPATCH lpd=((CWebConn*)view.con)->web_browser.wb_ctrl.get_Document();
 	if(!lpd)
 		return;
 	IOleCommandTarget* pcmd=NULL;
@@ -2100,131 +2111,6 @@ BOOL CMainFrame::OnToolTipNeedText(UINT id, NMHDR *nmhdr, LRESULT *r)
 	return FALSE;
 }
 
-void CMainFrame::OnToolImport2003()
-{
-	CString title;
-	title.LoadString(IDS_CHOOSE_2003_DIR);
-	CBrowseDirDlg dlg(this, title);
-	if(dlg.DoModal()==IDOK)
-	{
-		AppConfig.Default();
-		CMemIniFile cfg_filepath;
-		CString fpath=dlg.GetPath();	fpath+='\\';
-		if(cfg_filepath.Open(fpath+"Config",CFile::modeRead))
-		{
-	//讀取字型
-			cfg_filepath.Read(&AppConfig.font_info,sizeof(LOGFONT));
-	//讀取色彩對應
-			DWORD dw;
-			cfg_filepath.Read(&AppConfig.colormap,sizeof(COLORREF)*16);
-			cfg_filepath.Read4(&dw);	AppConfig.hyper_links.links.ElementAt(0).color=dw;	//http
-			cfg_filepath.Read4(&dw);	AppConfig.hyper_links.links.ElementAt(6).color=dw;	//ftp
-			cfg_filepath.Read4(&dw);	AppConfig.hyper_links.links.ElementAt(5).color=dw;	//telnet
-	//讀取主要設定
-		//視窗大小位置
-			cfg_filepath.Read(&AppConfig.mainwnd_state.rect,sizeof(RECT));
-		//狀態	
-			cfg_filepath.Read(&AppConfig.mainwnd_state.showcmd,sizeof(UINT));
-		//全螢幕?
-			cfg_filepath.Read(&dw,sizeof(BOOL));
-			AppConfig.is_full_scr=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.line_count=dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.cols_per_page=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.lines_per_page=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.ed_cols_per_page=dw;
-			cfg_filepath.Read4(&dw);	AppConfig.ed_lines_per_page=dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.prevent_idle=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.idle_interval=dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.auto_reconnect=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.auto_close=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.auto_font=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.connect_interval=dw;
-			cfg_filepath.Read4(&dw);	AppConfig.link_underline=dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.showscroll=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.site_settings.paste_autowrap=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.close_query=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.auto_cancelsel=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.scrolltab=(BYTE)dw;
-			cfg_filepath.Read4(&dw);
-			cfg_filepath.Read4(&dw);	AppConfig.smooth_draw=(BYTE)dw;
-
-			AppConfig.site_settings.idle_str=LoadString(cfg_filepath);
-			AppConfig.site_settings.termtype=LoadString(cfg_filepath);
-
-			cfg_filepath.Read4(&dw);
-			cfg_filepath.Read(&AppConfig.sound,sizeof(BYTE));
-
-			cfg_filepath.Read4(&dw);	AppConfig.auto_copy=(BYTE)dw;
-			cfg_filepath.Read(&AppConfig.sound,sizeof(BYTE));
-
-			AppConfig.hyper_links.links.ElementAt(0).program=LoadString(cfg_filepath);
-			AppConfig.hyper_links.links.ElementAt(6).program=LoadString(cfg_filepath);
-			AppConfig.wavepath=LoadString(cfg_filepath);
-
-			cfg_filepath.Read4(&dw);	cfg_filepath.Read4(&dw);	cfg_filepath.Read4(&dw);
-
-			cfg_filepath.Read4(&dw);	AppConfig.showtb=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.showsb=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.showtab=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.showads=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.kktab=(BYTE)dw;
-
-			cfg_filepath.Read4(&dw);	AppConfig.use_ansi_bar=(BYTE)dw;
-			CRect ansirc;
-			cfg_filepath.Read(&ansirc,sizeof(CRect));
-
-			SHORT sh;
-			cfg_filepath.Read(&sh,sizeof(USHORT));
-			cfg_filepath.Read4(&dw);	AppConfig.bktype=dw;
-			cfg_filepath.Read4(&dw);	AppConfig.bkratio=dw;
-			AppConfig.bkpath=LoadString(cfg_filepath);
-
-	//讀取F1~F12熱鍵
-			DWORD i = 0;
-			for(;i<12;i++)
-				LoadString(cfg_filepath);
-	//讀取位址列紀錄
-			cfg_filepath.Read4(&dw);		//讀取紀錄筆數
-			for(i=0;i<dw;i++)
-				LoadString(cfg_filepath);
-	//讀取連線紀錄
-			cfg_filepath.Read4(&dw);		//讀取紀錄筆數
-			for(i=0;i<dw;i++)
-				LoadString(cfg_filepath);
-	//讀取彩色貼上紀錄
-			cfg_filepath.Read4(&dw);		//讀取紀錄筆數
-			for(i=0;i<dw;i++)
-				LoadString(cfg_filepath);
-
-	//讀取來訊自動切換
-			cfg_filepath.Read4(&dw);	AppConfig.auto_switch=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.dblclk_close=(BYTE)dw;
-			cfg_filepath.Read4(&dw);	AppConfig.tab_add_number=(BYTE)dw;
-			cfg_filepath.Close();
-		}
-
-		CFile ff;
-		if(ff.Open(fpath+"favorites.dat",CFile::modeRead))
-		{
-			CArchive ar(&ff,CArchive::load);
-			CString tmp;	int s=AppConfig.favorites.bbs_fav.GetSize()-5;
-			while(ar.ReadString(tmp))
-				if(!tmp.IsEmpty())
-				{
-					int r=tmp.ReverseFind('\t');
-					if(r!=-1 )
-						{tmp.SetAt(r,':');
-						AppConfig.favorites.bbs_fav.InsertAt(s,'s'+tmp);
-						s++;
-					}
-				}
-			ff.Close();
-			AppConfig.favorites.SaveFavorites(TRUE);
-			LoadBBSFavorites();
-		}
-	}
-}
-
 #if defined(_COMBO_)
 
 void CMainFrame::OnBrowserFontSize(UINT id)
@@ -2511,38 +2397,14 @@ void CMainFrame::OnUpdateSaveSession(CCmdUI *pCmdUI)
 
 void CMainFrame::LoadHistory()
 {
-	CFile file;
-	if( file.Open( ConfigPath + HISTORY_FILENAME, CFile::modeRead ) )
-	{
-		DWORD c=0;
-		file.Read(&c, sizeof(c));
-		for( ; c>0; c-- )
-			address_bar.AddString( LoadString(file) );
-		AppConfig.LoadHistory(file);
-		file.Close();
-	}
+	CHistoryLoader history_loader( this );
+	history_loader.Load();
 }
 
 void CMainFrame::SaveHistory()
 {
-	CFile file;
-	if( file.Open( ConfigPath + HISTORY_FILENAME, CFile::modeWrite|CFile::modeCreate ) )
-	{
-#ifdef	_COMBO_	// Combo Version
-		DWORD c = address_bar.GetCount();
-#else	// Lite Version
-		DWORD c = 0;
-#endif
-		file.Write(&c, sizeof(c));
-		for( int i = 0 ; i < int(c); i++ )
-		{
-			CString str;
-			address_bar.GetLBText( i, str );
-			SaveString(file, str );
-		}
-		AppConfig.SaveHistory(file);
-		file.Close();
-	}
+	CHistoryLoader history_loader( this );
+	history_loader.Save();
 }
 
 
@@ -2917,7 +2779,7 @@ void CMainFrame::OnFavorite(UINT id)
 					if( view.con->is_web )
 					{
 						CWebPageDlg dlg(this);
-						dlg.m_URL = ((CWebConn*)view.con)->web_browser.wb_ctrl.GetLocationURL();
+						dlg.m_URL = ((CWebConn*)view.con)->web_browser.GetLocationURL();
 						dlg.m_Name = view.con->name;
 						if( dlg.DoModal() ==IDOK )
 						{
@@ -2926,7 +2788,14 @@ void CMainFrame::OnFavorite(UINT id)
 								LPSTR pstr=(LPSTR)(LPCTSTR)dlg.m_Name;
 								while(*pstr)
 								{
-									if(*pstr=='\\' || *pstr=='/' || *pstr==':' 
+									//check illegal filename except DBCS
+									if(*pstr >= '\x81' && *pstr <= '\xfe') //0x81 to 0xfe (Big5)
+									{	
+										pstr++;
+										if(! *pstr)
+											break;
+									}
+									else if(*pstr=='\\' || *pstr=='/' || *pstr==':' 
 									|| *pstr=='?' || *pstr=='<' || *pstr=='>' 
 									|| *pstr=='|' || *pstr=='*' || *pstr=='\"')
 										*pstr='-';
@@ -3012,7 +2881,7 @@ void CMainFrame::OnFavorite(UINT id)
 						continue;
 					}
 					if(level==0)
-						view.ConnectStr(fav->ElementAt(idir),ConfigPath+dir);
+						view.ConnectStr(fav->ElementAt(idir), dir);
 				}
 			}
 			break;
@@ -3020,7 +2889,7 @@ void CMainFrame::OnFavorite(UINT id)
 		return;
 	}
 
-	view.ConnectStr(name,ConfigPath+dir);
+	view.ConnectStr(name, dir);
 }
 
 
@@ -3107,7 +2976,7 @@ void CMainFrame::OnViewConfig()
 		if(AppConfig.auto_font)
 		{
 			CRect rc;
-			GetClientRect(rc);
+			view.GetClientRect(rc);
 			view.AdjustFont(rc.right,rc.bottom);
 		}
 		else
@@ -3552,8 +3421,6 @@ void CMainFrame::OnCopy()
 
 void CMainFrame::OnFont()
 {
-	CTelnetConn* telnet = view.telnet;
-
 #if defined(_COMBO_)
 	CConn* con = view.con;
 	if( con && con->is_web )
@@ -3562,54 +3429,13 @@ void CMainFrame::OnFont()
 		HMENU web_pop=GetSubMenu(config,7);
 		HMENU pop=GetSubMenu(web_pop,2);
 		CRect rc;
-		toolbar.GetItemRect(toolbar.CommandToIndex(ID_CONFIG_FONT),rc);
+		toolbar.GetItemRect(toolbar.CommandToIndex(ID_FONT_BTN),rc);
 		toolbar.ClientToScreen(rc);
 		TrackPopupMenu(pop,TPM_LEFTALIGN,rc.left,rc.bottom,0,m_hWnd,NULL);
 		return;
 	}
 #endif
-
-	CFontDialog dlg;
-	dlg.m_cf.lpLogFont=&AppConfig.font_info;
-	dlg.m_cf.Flags|=AppConfig.old_textout ? 
-		CF_FIXEDPITCHONLY|CF_INITTOLOGFONTSTRUCT:CF_INITTOLOGFONTSTRUCT;
-	dlg.m_cf.Flags&=~CF_EFFECTS;
-	if(dlg.DoModal()==IDOK)
-	{
-		LOGFONT &font_info = view.font_info;
-		fnt.DeleteObject();
-		dlg.GetCurrentFont(&font_info);
-		if(!*font_info.lfFaceName)
-			strcpy(font_info.lfFaceName, LoadString(IDS_DEFAULT_FONT_FACE));
-		fnt.CreateFontIndirect(&AppConfig.font_info);
-
-		int cols_per_page=telnet?telnet->site_settings.cols_per_page:AppConfig.site_settings.cols_per_page;
-		int lines_per_page=telnet?telnet->site_settings.lines_per_page:AppConfig.site_settings.lines_per_page;
-		CRect rc;
-		GetClientRect(&rc);
-		if(AppConfig.auto_font)	//如果使用動態字體調整
-		{
-			view.AdjustFont(rc.right,rc.bottom);
-		}
-		else
-		{
-			CWindowDC dc(this);
-			CGdiObject* old=dc.SelectObject(&fnt);
-			CSize& sz=dc.GetTextExtent( LoadString(IDS_DOUBLE_SPACE_CHAR) ,2);	// 全形空白
-			dc.SelectObject(&old);
-			view.chw=sz.cx/2;
-			view.lineh=sz.cy;
-			view.left_margin=(rc.right-view.chw*cols_per_page)/2;
-			view.top_margin=(rc.bottom-view.lineh*lines_per_page)/2;
-			view.CreateCaret();
-			view.ShowCaret();
-			if(telnet)
-				telnet->UpdateCursorPos();
-			else
-				SetCaretPos(CPoint(view.left_margin,view.top_margin+view.lineh-2));
-		}
-		view.Invalidate(FALSE);
-	}
+	OnBBSFont();
 }
 
 void CMainFrame::OnPasteTinyUrl()
@@ -3784,18 +3610,46 @@ void CMainFrame::OnHelp()
 void CMainFrame::OpenHomepage()
 {
 //開啟首頁
-	CString str;
-	CString adv;
+	CString str, adv;
 	CFile cfgf;
 	if(cfgf.Open(ConfigPath+HOMEPAGE_FILENAME,CFile::modeRead))
 	{
-		adv = (ConfigPath + LoadString(IDS_HOMEPAGE_NAME))+';';
+		adv = LoadString(IDS_HOMEPAGE_NAME)+';';
 		CArchive ar(&cfgf,CArchive::load);
 		while(ar.ReadString(str))
 		{
 			if(str.IsEmpty())
 				continue;
-			view.ConnectStr(str,adv);
+#if 0
+			// FIXME: prevent duplicated items
+			if( AppConfig.save_session )
+			{
+				int i;
+				int c = tab.GetItemCount();
+				for( i=0; i < c; i++)
+				{
+					CConn* pcon = tab.GetCon(i);
+					int p = str.Find( '\t' );
+					if( p < 0 )
+						break;
+					CString name = str.Left( p );
+					CString address = str.Mid( p );
+					if( pcon->name == name && pcon->address==ads )
+					{
+						if( str[0] != 's' )
+							continue;
+						CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
+						if( telnet->port != port || telnet->cfg_filepath.IsEmpty() != adv.IsEmpty() )
+							continue;
+						if( telnet->cfg_filepath.Mid(ConfigPath.GetLength()) == ((adv + name) + ".ini") )
+							break;
+					}
+				}
+				if( i < c )
+					continue;
+			}
+#endif
+			view.ConnectStr(str, adv );
 		}
 		ar.Close();
 		cfgf.Close();
@@ -3803,18 +3657,43 @@ void CMainFrame::OpenHomepage()
 }
 
 
-void CMainFrame::OpenLastPages()
+void CMainFrame::OpenLastSession()
 {
 	CString str;
 	CString adv;
-	CMemIniFile logf;
+	CFile logf;
 	if(logf.Open(ConfigPath+SESSION_FILENAME,CFile::modeRead))
 	{
-		CString name,ads;
-		unsigned short port = 23;
-		int c = tab.GetItemCount();
-		while( !(str=LoadString(logf)).IsEmpty() )
+		DWORD len = logf.GetLength();
+		char* buf = new char[len + 1];
+		logf.Read( buf, len );
+		buf[len] = '\0';
+		logf.Close();
+
+		char *line, *nextline = NULL;
+		for( line = buf; line; line = nextline )
 		{
+			nextline = strnextline( line );
+			if( !*line )
+				continue;
+			str = line;
+
+			adv.Empty();
+			if( *line == 's' )
+			{
+				if( str[str.GetLength()-1] == ';' )	// has adv info
+				{
+					int p = str.ReverseFind( '\t' );
+					adv = str.Mid( p+1 );
+					str = str.Left( p );
+				}
+			}
+			view.ConnectStr( str, adv );
+#if 0
+			CString name,ads;
+			unsigned short port = 23;
+			int c = tab.GetItemCount();
+
 			int pos = str.Find('\t');
 			name = str.Mid(1,pos-1);
 			ads = str.Mid(pos+1);
@@ -3823,6 +3702,12 @@ void CMainFrame::OpenLastPages()
 				pos = ads.ReverseFind('\t');
 				adv = ads.Mid(pos+1);
 				ads = ads.Left(pos);
+				if( ! adv.IsEmpty() )
+				{
+					adv = ConfigPath + adv;
+					adv += name;
+					adv += ".ini";
+				}
 #ifdef	_COMBO_
 				if( -1 != (pos = ads.Find(':',9)) )
 #else
@@ -3836,37 +3721,19 @@ void CMainFrame::OpenLastPages()
 					port = 23;
 			}
 
-			int i;
-			for( i=0; i < c; i++)
-			{
-				CConn* pcon = tab.GetCon(i);
-				if( pcon->name
-					&& pcon->address==ads
-					&&  (   str[0] != 's'
-							|| (static_cast<CTelnetConn*>(pcon)->port == port
-							&& static_cast<CTelnetConn*>(pcon)->cfg_filepath==adv)
-						)
-					)
-					break;
-			}
-			if( i >= c )
-			{
-				c++;
 	#ifdef	_COMBO_
-				if( str[0]=='s' )
-				{
-					if( !view.Connect(ads, name, port, adv) )
-						c--;
-				}
-				else
-					view.ConnectWeb(ads,FALSE);
-	#else
-				if( !view.Connect(ads, name, port, adv) )
-					c--;
-	#endif
+			if( str[0]=='s' )
+			{
+				view.Connect(ads, name, port, adv);
 			}
+			else
+				view.ConnectWeb(ads,FALSE);
+	#else
+			view.Connect(ads, name, port, adv);
+	#endif
+#endif
 		}
-		logf.Close();
+		delete []buf;
 	}
 }
 
@@ -3915,4 +3782,51 @@ void CMainFrame::OnSetCharset(UINT nID)
 	menu->CheckMenuItem(nID, MF_CHECKED);
 	view.Invalidate(FALSE);
 	prev_id = nID;
+}
+
+void CMainFrame::OnBBSFont()
+{
+	CTelnetConn* telnet = view.telnet;
+
+	CFontDialog dlg;
+	dlg.m_cf.lpLogFont=&AppConfig.font_info;
+	dlg.m_cf.Flags|=AppConfig.old_textout ? 
+		CF_FIXEDPITCHONLY|CF_INITTOLOGFONTSTRUCT:CF_INITTOLOGFONTSTRUCT;
+	dlg.m_cf.Flags&=~CF_EFFECTS;
+	if(dlg.DoModal()==IDOK)
+	{
+		LOGFONT &font_info = view.font_info;
+		fnt.DeleteObject();
+		dlg.GetCurrentFont(&font_info);
+		if(!*font_info.lfFaceName)
+			strcpy(font_info.lfFaceName, LoadString(IDS_DEFAULT_FONT_FACE));
+		fnt.CreateFontIndirect(&AppConfig.font_info);
+
+		int cols_per_page=telnet?telnet->site_settings.cols_per_page:AppConfig.site_settings.cols_per_page;
+		int lines_per_page=telnet?telnet->site_settings.lines_per_page:AppConfig.site_settings.lines_per_page;
+		CRect rc;
+		view.GetClientRect(&rc);
+		if(AppConfig.auto_font)	//如果使用動態字體調整
+		{
+			view.AdjustFont(rc.right,rc.bottom);
+		}
+		else
+		{
+			CWindowDC dc(this);
+			CGdiObject* old=dc.SelectObject(&fnt);
+			CSize& sz=dc.GetTextExtent( LoadString(IDS_DOUBLE_SPACE_CHAR) ,2);	// 全形空白font的size
+			dc.SelectObject(&old);
+			view.chw=sz.cx/2;//半型字寬
+			view.lineh=sz.cy;//字高
+			view.left_margin=(rc.right-view.chw*cols_per_page)/2;
+			view.top_margin=(rc.bottom-view.lineh*lines_per_page)/2;
+			view.CreateCaret();
+			view.ShowCaret();
+			if(telnet)
+				telnet->UpdateCursorPos();
+			else
+				SetCaretPos(CPoint(view.left_margin,view.top_margin+view.lineh-2));
+		}
+		view.Invalidate(FALSE);
+	}
 }

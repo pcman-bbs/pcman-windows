@@ -101,29 +101,6 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 	*this = AppConfig.site_settings;
 	CSiteSettingsLoader loader( *this, fpath );
 	loader.Load();
-
-#if 0
-	BOOL str_trigger=0;
-	CFile file;
-	if(file.Open(fpath,CFile::modeRead))
-	{
-		//檢查是否使用預設值
-		file.Read(&str_trigger,sizeof(str_trigger));
-		if(str_trigger)	//如果使用預設值
-			*this = AppConfig.site_settings;
-		else	//載入個別設定
-			ReadFile(file);
-
-		if( !triggers.LoadFromFile(file) )
-		{
-			file.Close();
-			return FALSE;
-		}
-		file.Close();
-	}
-	else
-		*this = AppConfig.site_settings;
-#endif
 	return TRUE;
 }
 
@@ -134,22 +111,4 @@ void CSiteSettings::Save(LPCTSTR fpath)
 
 	CSiteSettingsLoader loader( *this, fpath );
 	loader.Save();
-
-#if 0
-	//如果設定值和預設值相同而且沒有使用字串觸發，就把設定檔刪除
-	if(use_default && triggers.count==0 )
-	{
-		DeleteFile(fpath);
-		return;
-	}
-
-	if(file.Open(fpath,CFile::modeWrite|CFile::modeCreate))
-	{
-		file.Write(&use_default,sizeof(use_default));
-		if(!use_default)
-			WriteFile(file);
-		triggers.SaveToFile(file);
-		file.Close();
-	}
-#endif
 }

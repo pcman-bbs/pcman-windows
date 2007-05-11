@@ -22,8 +22,6 @@ public:
 	static CString GetIEFavDir();
 	void LoadIEFav(HMENU &fav_menu);
 #endif
-	void SaveHistory(CFile &file);
-	void LoadHistory(CFile& file);
 	void SaveFavorites(BOOL bBBS);
 	inline int Lookup(HMENU hm)
 	{

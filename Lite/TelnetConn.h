@@ -173,6 +173,9 @@ public:
 	{
 		CConn::ClearAllFlags();
 		is_telnet = true;
+		
+		scr_top=0;
+		scr_bottom=23;
 	}
 
 	// ClassWizard generated virtual function overrides

@@ -49,7 +49,7 @@ TBBUTTON CAppConfig::maintb_btns[]={
 	{11,ID_AUTO_DBCS,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,11},
 	{0,ID_SEPARATOR,	TBSTATE_ENABLED,TBSTYLE_SEP,	0,0},
 
-	{12,ID_CONFIG_FONT,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,12},
+	{12,ID_FONT_BTN,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,12},
 	{13,ID_VIEW_CONFIG,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,13},
 	{14,ID_VIEW_FULLSCR,TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,14},
 	{0,ID_SEPARATOR,	TBSTATE_ENABLED,TBSTYLE_SEP,	0,0},
@@ -86,7 +86,7 @@ TBBUTTON CAppConfig::maintb_btns[]={
 	{9,ID_AUTO_DBCS,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,9},
 	{0,ID_SEPARATOR,	TBSTATE_ENABLED,TBSTYLE_SEP,	0,0},
 
-	{10,ID_CONFIG_FONT,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,10},
+	{10,ID_FONT_BTN,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,10},
 	{11,ID_VIEW_CONFIG,	TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,11},
 	{12,ID_VIEW_FULLSCR,TBSTATE_ENABLED,TBSTYLE_BUTTON,	0,12},
 	{0,ID_SEPARATOR,	TBSTATE_ENABLED,TBSTYLE_SEP,	0,0},
@@ -237,15 +237,25 @@ CString LoadString(CMemIniFile& file)
 #ifdef	_COMBO_
 inline void CAppConfig::LoadWebPageFilter()
 {
-	CMemIniFile file;
+	CFile file;
 	if(file.Open(ConfigPath + WWW_ADFILTER_FILENAME, CFile::modeRead))
 	{
-		int c = 0;
-		file.Read4(&c);
-		webpage_filter.SetSize( c, 4 );
-		for(int i=0; i<c; i++)
-			webpage_filter[i] = LoadString(file);
+		DWORD len = file.GetLength();
+		char* buf = new char[ len + 1];
+		file.Read( buf, len );
 		file.Close();
+		buf[len] = '\0';
+
+		char *line;
+		char *nextline = NULL;
+		for( line = buf; line; line = nextline )
+		{
+			nextline = strnextline( line );
+			if( *line )
+				webpage_filter.Add( line );
+		}
+		delete []buf;
+		webpage_filter.FreeExtra();
 	}
 }
 
@@ -255,9 +265,12 @@ inline void CAppConfig::SaveWebPageFilter()
 	if(file.Open(ConfigPath + WWW_ADFILTER_FILENAME, CFile::modeWrite|CFile::modeCreate))
 	{
 		int c = webpage_filter.GetSize();
-		file.Write( &c, 4 );
-		for(int i=0; i<c; i++)
-			SaveString( file, LPCTSTR(webpage_filter[i]) );
+		for( int i = 0; i < c; ++i )
+		{
+			CString& line = webpage_filter[i];
+			file.Write( LPCTSTR( line ), line.GetLength() );
+			file.Write( "\r\n", 2 );
+		}
 		file.Close();
 	}
 }
@@ -471,4 +484,92 @@ bool CAppConfig::OnDataExchange( bool load )
 void CAppConfig::CfgWindowState(bool load, void* val, void* user_data)
 {
     CWindowState& ws = *(CWindowState*)user_data;
+}
+
+void CHistoryLoader::CTypedHistoryHandler::Load( char* section )
+{
+    if( *section )
+    {
+        char* line = section;
+		char* nextline = NULL;
+        for( ; line; line = nextline )
+        {
+			nextline = strnextline( line );
+			if(*line)
+				AppConfig.history.AddTail( line );
+		}
+	}
+}
+
+void CHistoryLoader::CTypedHistoryHandler::Save( CString& section )
+{
+	POSITION pos;
+	for( pos = AppConfig.history.GetHeadPosition(); pos; AppConfig.history.GetNext(pos) )
+	{
+		section += AppConfig.history.GetAt(pos);
+		section += "\r\n";
+	}
+}
+
+void CHistoryLoader::CMenuHistoryHandler::Load( char* section )
+{
+    if( *section )
+    {
+        char* line = section;
+		char* nextline = NULL;
+        for( ; line; line = nextline )
+        {
+			nextline = strnextline( line );
+			if(*line)
+				AppConfig.favorites.history.Add( line );
+		}
+	}	
+}
+
+void CHistoryLoader::CMenuHistoryHandler::Save( CString& section )
+{
+	int c = AppConfig.favorites.history.GetSize();
+	for(int i=0; i < c; ++i )
+	{
+		section += AppConfig.favorites.history.ElementAt(i);
+		section += "\r\n";
+	}
+}
+
+void CHistoryLoader::CDropDownHistoryHandler::Load( char* section )
+{
+    if( *section )
+    {
+        char* line = section;
+		char* nextline = NULL;
+        for( ; line; line = nextline )
+        {
+			nextline = strnextline( line );
+			if(*line)
+				mainfrm->address_bar.AddString( line );
+		}
+	}
+}
+
+void CHistoryLoader::CDropDownHistoryHandler::Save( CString& section )
+{
+	int c = mainfrm->address_bar.GetCount();
+	for( int i = 0 ; i < int(c); i++ )
+	{
+		CString str;
+		mainfrm->address_bar.GetLBText( i, str );
+		section += str;
+		section += "\r\n";
+	}
+}
+
+bool CHistoryLoader::OnDataExchange(bool load)
+{
+	BEGIN_CFG_FILE( table )
+		CFG_CUSTOM_SECTION( "Menu", menu )
+		CFG_CUSTOM_SECTION( "DropDown", drop )
+		CFG_CUSTOM_SECTION( "Typed", typed )
+	END_CFG_FILE()
+    bool ret = DoDataExchange( load, table );
+    return ret;
 }

@@ -27,7 +27,6 @@
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/BuildMenuLite.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
@@ -89,7 +88,6 @@
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;BUILD_UI"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/BuildMenuLite.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -171,14 +169,14 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\OpenPCMan\branches\min_tinyxml\Resource"/>
+						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\OpenPCMan\branches\min_tinyxml\Resource"/>
+						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"/>
 				</FileConfiguration>
 			</File>
 			<File

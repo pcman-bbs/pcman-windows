@@ -20,6 +20,11 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+#if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible
+#define AfxGetEmptyString()	_T("")	// FIXME: this is a waste of memory
+#define afxEmptyString AfxGetEmptyString()
+#endif
+
 #include"rfc854.h"
 
 extern CString AppPath;
@@ -36,6 +41,8 @@ inline CString LoadString(UINT id)
 #include <atlbase.h>
 
 #include "..\Resource\resource.h"
+
+#include <afxdisp.h>
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

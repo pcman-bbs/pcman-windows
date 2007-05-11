@@ -315,7 +315,7 @@ BEGIN
                     WS_TABSTOP,128,87,29,10
     CONTROL         "PC喇叭",IDC_PCSPEAKER,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,159,87,40,10
-    CONTROL         "撥放WAV檔案",IDC_WAVE,"Button",BS_AUTORADIOBUTTON | 
+    CONTROL         "播放WAV檔案",IDC_WAVE,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,202,87,66,10
     EDITTEXT        IDC_WAVEPATH,129,103,105,12,ES_AUTOHSCROLL
     PUSHBUTTON      "瀏覽",IDC_SETWAVE,236,102,26,14
@@ -670,7 +670,7 @@ BEGIN
     ID_SELECTALL            "\n選取整個畫面"
     ID_UP                   "\n切換到上一個連線"
     ID_DOWN                 "\n切換到下一個連線"
-    ID_CONFIG_FONT          "\n設定字型"
+    ID_BBS_FONT             "\n設定字型"
 END
 
 STRINGTABLE DISCARDABLE 

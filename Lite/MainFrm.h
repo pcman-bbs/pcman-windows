@@ -86,7 +86,7 @@ public:
 #endif
 
 	void OpenHomepage();
-	void OpenLastPages();
+	void OpenLastSession();
 
 	virtual ~CMainFrame();
 
@@ -249,6 +249,7 @@ public:
 	afx_msg void OnDownloadArticle();
 	afx_msg void OnPlayMovie();
 	afx_msg void OnFont();
+	afx_msg void OnBBSFont();
 	afx_msg void OnPaste();
 	afx_msg void OnPasteTinyUrl();
 	afx_msg void OnSelAll();
@@ -317,7 +318,6 @@ public:
 	DECLARE_MESSAGE_MAP()
 protected:
 	void OnUpdateSaveSession( CCmdUI* pCmdUI );
-	afx_msg void OnToolImport2003();
 #if defined(_COMBO_)
 	void OnBrowserFontSize(UINT id);
 #endif

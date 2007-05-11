@@ -363,7 +363,7 @@
 #define ID_PASTEFILE                    32779
 #define ID_UP                           32780
 #define ID_DOWN                         32781
-#define ID_CONFIG_FONT                  32782
+#define ID_BBS_FONT                     32782
 #define ID_CONFIG_AUTOSWITCH            32783
 #define ID_VIEW_FULLSCR                 32784
 #define ID_VIEW_CONFIG                  32785
@@ -495,6 +495,7 @@
 #define ID_DOWNLOAD_ARTICLE             32930
 #define IDS_DIFF_PASSWD                 32931
 #define ID_COPYARTICLE_WITH_ANSI        32931
+#define ID_FONT_BTN                     32932
 #define IDS_ERR                         32932
 #define IDS_INCOMPLETE_AUTO_SETTINGS    32933
 #define IDS_SAVE_BTN                    32934

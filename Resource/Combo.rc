@@ -229,7 +229,7 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "快速 BBS選項 (&Q)"
         BEGIN
-            MENUITEM "設定BBS字型 (&F)",            ID_CONFIG_FONT
+            MENUITEM "設定BBS字型 (&F)",            ID_BBS_FONT
             MENUITEM "設定BBS畫面色彩 (&C)",        ID_COLORCONFIG
             MENUITEM "設定BBS背景圖片 (&K)",        ID_SETBK
             MENUITEM "BBS畫面右方顯示捲軸 (&S)",    ID_SHOW_SCROLL

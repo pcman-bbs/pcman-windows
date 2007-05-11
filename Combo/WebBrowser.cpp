@@ -90,9 +90,9 @@ int CWebBrowser::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	wb_ctrl.Create(NULL,NULL,WS_VISIBLE|WS_CHILD,CRect(0,0,0,0),this,1);
 	wb_ctrl.ShowWindow(SW_SHOW);
-	wb_ctrl.SetVisible(TRUE);
+	wb_ctrl.put_Visible(TRUE);
 
-	CComPtr<IDispatch> pwb(wb_ctrl.GetApplication());
+	CComPtr<IDispatch> pwb(wb_ctrl.get_Application());
 	if(pwb.p)
 	{
 		CComQIPtr<IServiceProvider,&IID_IServiceProvider> psp(pwb);
@@ -137,17 +137,30 @@ BOOL CWebBrowser::PreTranslateMessage(MSG *pMsg)
 	}
 
 	BOOL ret = FALSE;
-	IDispatch* app = wb_ctrl.GetApplication();
-	if( app )	{
-		IOleInPlaceActiveObject* ip = NULL;
-		if( SUCCEEDED( app->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&ip ) ) )	{
-			if( S_OK == ip->TranslateAccelerator( pMsg ) )
-			{
-				ret = TRUE;
+	if( pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST )
+	{
+		IDispatch* app = wb_ctrl.get_Application();
+		if( app )	{
+			IOleInPlaceActiveObject* ip = NULL;
+			if( SUCCEEDED( app->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&ip ) ) )	{
+
+				// Some notes from Hong Jen Yee (PCMan):
+				// FIXME: Very dirty hack used to fix the malfunction of "Enter" key in 
+				// rich-text editor of GMail and Yahoo mail.
+				// Warnings: I've no idea why this works, but it do works, so let's use it.
+				// Nobody knows will this cause other problems. Use at your own risk.
+				// Maybe some pages with heavy use of Javascripts will be affected.
+				if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
+					pMsg->message = WM_CHAR;	// Damn! Incredible!! This works!!
+
+				if( S_OK == ip->TranslateAccelerator( pMsg ) )
+				{
+					ret = TRUE;
+				}
+				ip->Release();
 			}
-			ip->Release();
+			app->Release();
 		}
-		app->Release();
 	}
 	return ret ? TRUE : PreTranslateInput(pMsg);
 }
@@ -155,7 +168,7 @@ BOOL CWebBrowser::PreTranslateMessage(MSG *pMsg)
 
 CWnd* CWebBrowser::SetFocus()
 {
-	LPDISPATCH lpd=wb_ctrl.GetDocument();
+	LPDISPATCH lpd=wb_ctrl.get_Document();
 	if(lpd)
 	{
 		IHTMLDocument2* pdoc=NULL;
@@ -258,7 +271,7 @@ void CWebBrowser::OnNewWindow2(LPDISPATCH FAR* ppDisp, BOOL FAR* Cancel)
 			WORD x = LOWORD(m_ClickPos);
 			WORD y = HIWORD(m_ClickPos);
 
-			CComPtr<IHTMLDocument> pdoc = (IHTMLDocument*)wb_ctrl.GetDocument();
+			CComPtr<IHTMLDocument> pdoc = (IHTMLDocument*)wb_ctrl.get_Document();
 			if( pdoc.p )
 			{
 				CComQIPtr<IHTMLDocument2, &IID_IHTMLDocument2> pdoc2( pdoc.p );
@@ -288,7 +301,7 @@ void CWebBrowser::OnNewWindow2(LPDISPATCH FAR* ppDisp, BOOL FAR* Cancel)
 
 	IDispatch* p=*ppDisp;
 	CWebConn* nweb_conn=(CWebConn*)view->ConnectWeb("",FALSE);
-	*ppDisp=nweb_conn->web_browser.wb_ctrl.GetApplication();
+	*ppDisp=nweb_conn->web_browser.wb_ctrl.get_Application();
 }
 
 void CWebBrowser::OnNavigateComplete2(LPDISPATCH pDisp, VARIANT FAR* URL) 
@@ -313,7 +326,7 @@ void CWebBrowser::OnNavigateComplete2(LPDISPATCH pDisp, VARIANT FAR* URL)
 				m_TravelLog.RemoveAt(tmp);
 			}
 		}
-		m_CurTravelLog.Title = wb_ctrl.GetLocationName();
+		m_CurTravelLog.Title = wb_ctrl.get_LocationName();
 		m_TravelLog.AddTail(m_CurTravelLog);
 		m_CurTravelPos = m_TravelLog.GetTailPosition();
 	}
@@ -427,7 +440,7 @@ void CWebBrowser::OnParentNotify(UINT message, LPARAM lParam)
 void CWebBrowser::Find()
 {
 	SetFocus();
-	LPDISPATCH lpd = wb_ctrl.GetDocument();
+	LPDISPATCH lpd = wb_ctrl.get_Document();
 	if(!lpd)
 		return;
 	IOleCommandTarget* pcmd=NULL;

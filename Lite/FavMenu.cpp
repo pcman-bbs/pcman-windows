@@ -390,23 +390,6 @@ inline CStringArray& CFavMenu::GetData(HMENU menu,int& delta)
 	return GetData(mi.dwItemData,delta);
 }
 
-void CFavMenu::LoadHistory(CFile &file)
-{
-	WORD c=0;
-	file.Read(&c,sizeof(c));
-	history.SetSize(c);
-	for(int i=0; i<c; i++)
-		history[i]=LoadString(file);
-}
-
-void CFavMenu::SaveHistory(CFile &file)
-{
-	WORD c=history.GetSize();
-	file.Write(&c,sizeof(c));
-	for(int i=0;i<history.GetSize();i++)
-		SaveString(file,history.ElementAt(i));
-}
-
 int FavItemCompare( const void* item1, const void* item2)
 {
 	return strcmpi( *(CString*)item1, *(CString*)item2 );

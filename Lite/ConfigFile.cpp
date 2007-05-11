@@ -90,7 +90,7 @@ bool CConfigFile::DoLoad( ConfigTable table )
                         {
                             ConfigHandler* handler = (ConfigHandler*)pent->data;
                             char* eos = next_line, tmp = 0;
-                            while( *eos && *eos != '[' )
+                            while( *eos && !(*eos == '[' && *(eos-1) == '\n' ))
                                 ++eos;
                             tmp = *eos;
                             *eos = '\0';

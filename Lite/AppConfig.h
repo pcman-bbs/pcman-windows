@@ -36,17 +36,17 @@ const char FUS_FILENAME[]="FUS";
 const char UI_FILENAME[]="UI";
 
 const char BBS_LIST_FILENAME[]="BBSList";
-const char HOMEPAGE_FILENAME[]="Homepage";
+const char HOMEPAGE_FILENAME[]="Homepage.ini";
 //	const char SITE_SEPARATOR[]="      ";
 
-const char BBS_FAVORITE_FILENAME[]="BBSFavorites";
+const char BBS_FAVORITE_FILENAME[]="BBSFavorites.ini";
 
-const char SESSION_FILENAME[]="Session";
-const char HISTORY_FILENAME[]="History";
+const char SESSION_FILENAME[]="Session.ini";
+const char HISTORY_FILENAME[]="History.ini";
 
 #if defined(_COMBO_)
-	const char WWW_FAVORITE_FILENAME[]="WebFavorites";
-	const char WWW_ADFILTER_FILENAME[]="AdFilters";
+	const char WWW_FAVORITE_FILENAME[]="WebFavorites.ini";
+	const char WWW_ADFILTER_FILENAME[]="AdFilters.ini";
 #endif
 
 BOOL IsContainAnsiCode(LPCTSTR str);
@@ -60,8 +60,6 @@ class CAppConfig : public CConfigFile
 {
 public:
 	static void CfgWindowState(bool load, void* val, void* user_data);
-	inline void LoadHistory(CFile& f);
-	inline void SaveHistory(CFile& f);
 	BOOL QueryPassword(BOOL confirm,LPCTSTR title=NULL);
 	void BackupConfig(CString dir1,CString dir2);
 
@@ -318,26 +316,44 @@ inline CString LoadString(CFile& file)
 	return str;
 }
 
-
-inline void CAppConfig::LoadHistory(CFile &f)
+class CHistoryLoader : public CConfigFile
 {
-	favorites.LoadHistory(f);	// HistoryMenu
+public:
+	class CTypedHistoryHandler : public CConfigFile::ConfigHandler
+	{
+	public:
+		void Load(char* section);
+		void Save(CString &section);
+	};
 
-	DWORD c=0;
-	f.Read(&c,sizeof(c));
-	for(DWORD i=0;i<c;i++)
-		history.AddTail(LoadString(f));
-}
+	class CMenuHistoryHandler : public CConfigFile::ConfigHandler
+	{
+	public:
+		void Load(char* section);
+		void Save(CString &section);
+	};
 
-inline void CAppConfig::SaveHistory(CFile &f)
-{
-	favorites.SaveHistory(f);	// HistoryMenu
+	class CDropDownHistoryHandler : public CConfigFile::ConfigHandler
+	{
+	public:
+		void Load(char* section);
+		void Save(CString &section);
+		CDropDownHistoryHandler( CMainFrame* frm ) : mainfrm(frm){}
+		CMainFrame* mainfrm;
+	};
 
-	DWORD c=history.GetCount();
-	f.Write(&c,sizeof(c));
-	for(POSITION i=history.GetHeadPosition(); i; history.GetNext(i) )
-		SaveString(f,history.GetAt(i));
-}
+	CHistoryLoader( CMainFrame* frm ) : drop(frm)
+	{
+		SetFilePath( ConfigPath + HISTORY_FILENAME );
+	}
+
+protected:
+	bool OnDataExchange( bool load );
+
+	CTypedHistoryHandler typed;
+	CMenuHistoryHandler menu;
+	CDropDownHistoryHandler drop;
+};
 
 extern CAppConfig AppConfig;
 
