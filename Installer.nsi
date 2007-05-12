@@ -12,12 +12,14 @@ OutFile "PCMan.exe"
 !endif
 
 !define PRODUCT_DIR "${PRODUCT_NAME}"
-!define PRODUCT_VERSION "2007"
+!define PRODUCT_VERSION "2007 Alpha"
 !define PRODUCT_PUBLISHER "Open PCMan Team"
 !define PRODUCT_WEB_SITE "http://rt.openfoundry.org/Foundry/Project/?Queue=744"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PCMan.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
+
+!define /date BUILD_TIME "%H:%M %p, %Y-%m-%d"
 
 SetCompressor /SOLID lzma
 
@@ -35,6 +37,8 @@ SetCompressor /SOLID lzma
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
 
 BGGradient 0000FF 000000 FFFFFF
+;Caption "${PRODUCT_NAME} ${PRODUCT_VERSION} ${BUILD_TIME}"
+BrandingText "Copyright (C) 2007 Open PCMan Team  /  Build Time: ${BUILD_TIME}"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -70,6 +74,7 @@ ShowUnInstDetails show
 
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
+;  MessageBox MB_ICONEXCLAMATION|MB_OK "${BUILD_TIME}"
 FunctionEnd
 
 Section SEC01
@@ -78,7 +83,7 @@ Section SEC01
   ;SetOverwrite ifnewer
   File /r /x "Symbols.txt" /x "Config" /x "*.svn" "${SRC_DIR}\*.*"
 
-  StrCmp $LANGUAGE 1028 Chi2 Eng2
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi2 Eng2
   Chi2:
     MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "你要從網路上更新 BBS 站台列表嗎？" IDNO +5
     Goto +2
@@ -105,7 +110,7 @@ Section SEC01
   CreateShortCut "$SMPROGRAMS\${PRODUCT_DIR}\Open PCMan 2007.lnk" "$INSTDIR\PCMan.exe"
   CreateShortCut "$DESKTOP\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk" "$INSTDIR\PCMan.exe"
 
-  StrCmp $LANGUAGE 1028 Chi Eng
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
   Chi:
     CreateShortCut "$SMPROGRAMS\${PRODUCT_DIR}\標點符號輸入程式.lnk" "$INSTDIR\Symbols.exe" "$INSTDIR\Symbols.exe"
     Goto +2
@@ -133,7 +138,7 @@ SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
-  StrCmp $LANGUAGE 1028 Chi Eng
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
   Chi:
     MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) 已成功地從你的電腦移除。"
     Goto +2
@@ -143,7 +148,7 @@ FunctionEnd
 
 Function un.onInit
 !insertmacro MUI_UNGETLANGUAGE
-  StrCmp $LANGUAGE 1028 Chi Eng
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
   Chi:
     MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "你確定要完全移除 $(^Name) ，其及所有的元件？" IDYES +4
     Abort
@@ -165,7 +170,7 @@ Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
 
-  StrCmp $LANGUAGE 1028 Chi Eng
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
   Chi:
     MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "是否連設定檔案一起刪除？" IDNO +6
     Goto +2
@@ -178,7 +183,7 @@ Section Uninstall
   Delete "$SMPROGRAMS\${PRODUCT_DIR}\Website.lnk"
   Delete "$DESKTOP\Open PCMan 2007.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_DIR}\Open PCMan 2007.lnk"
-  StrCmp $LANGUAGE 1028 Chi2 Eng2
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi2 Eng2
   Chi2:
     Delete "$SMPROGRAMS\${PRODUCT_DIR}\標點符號輸入程式.lnk"
     Goto +2
