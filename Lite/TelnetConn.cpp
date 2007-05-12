@@ -576,8 +576,7 @@ void CTelnetConn::ClearCurrentLine(int param)
 		screen[cursor_pos.y][site_settings.cols_per_page]=0;
 		memset(GetLineAttr(cursor_pos.y),7,site_settings.cols_per_page);
 	}
-	SetUpdateLine(cursor_pos.y,0);
-	SetUpdateLine(cursor_pos.y,(BYTE)site_settings.cols_per_page);
+    SetUpdateWholeLine( cursor_pos.y );
 }
 
 void CTelnetConn::ClearScreen(int param)
@@ -1163,7 +1162,7 @@ void CTelnetConn::InsertChar(int n)
 	}
 	memset(curstr+cursor_pos.x,' ',n);
 	memset(GetLineAttr(cursor_pos.y)+cursor_pos.x,7,n);
-	SetUpdateLine(cursor_pos.y,0);
+	SetUpdateLine(cursor_pos.y,cursor_pos.x);
 	SetUpdateLine(cursor_pos.y,(BYTE)site_settings.cols_per_page);
 }
 
