@@ -670,7 +670,6 @@ BEGIN
     ID_SELECTALL            "\n選取整個畫面"
     ID_UP                   "\n切換到上一個連線"
     ID_DOWN                 "\n切換到下一個連線"
-    ID_BBS_FONT             "\n設定字型"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -700,9 +699,10 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
+    IDS_ERR                 "錯誤"
     IDS_CONFIM_PASSWD2      "再次確認密碼"
     IDS_DIFF_PASSWD         "兩次密碼不同!"
-    IDS_ERR                 "錯誤"
+    ID_FONT_BTN             "\n設定字型"
     IDS_INCOMPLETE_AUTO_SETTINGS "設定不完整，必須輸入要自動回應的訊息!"
     IDS_SAVE_BTN            "儲存 (&S)"
     IDS_CANCEL_BTN          "取消 (&N)"

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Lite.rc
+// Used by Common.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -491,12 +491,12 @@
 #define ID_SEARCHBAR                    32927
 #define ID_COPYARTICLE                  32928
 #define ID_PLAY_ANSIMOVIE               32929
+#define IDS_ERR                         32929
 #define IDS_CONFIM_PASSWD2              32930
 #define ID_DOWNLOAD_ARTICLE             32930
 #define IDS_DIFF_PASSWD                 32931
 #define ID_COPYARTICLE_WITH_ANSI        32931
 #define ID_FONT_BTN                     32932
-#define IDS_ERR                         32932
 #define IDS_INCOMPLETE_AUTO_SETTINGS    32933
 #define IDS_SAVE_BTN                    32934
 #define IDS_CANCEL_BTN                  32935
