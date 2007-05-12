@@ -45,10 +45,10 @@ static char THIS_FILE[] = __FILE__;
 	#include "../Combo/WebPageDlg.h"
 
 LPSTR CMainFrame::mainfrm_class_name="PCManCB";
-	const char *CMainFrame::window_title = " - Open PCMan 2007 Combo (preview_20070512)";
+	const char *CMainFrame::window_title = " - Open PCMan 2007 Combo (Build: " __DATE__ ")";
 #else
 LPSTR CMainFrame::mainfrm_class_name="PCMan";
-	const char *CMainFrame::window_title = " - Open PCMan 2007 (preview_20070512)";
+	const char *CMainFrame::window_title = " - Open PCMan 2007 (Build: " __DATE__ ")";
 #endif
 
 extern CFont fnt;
@@ -833,9 +833,17 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 	else
 	{
 		address = param.Left(pos);
-		port = (unsigned short)atoi( LPCTSTR(param.Mid( pos + 1 )) );
+        CString port_str = param.Mid( pos + 1 );
+		port = (unsigned short)atoi( port_str );
+        if( port != 23 )
+        {
+            address += ':';
+            address += port_str;
+        }
+        else
+            param = address;
 	}
-	view.Connect( address, address, port );
+	view.Connect( address, param, port );
 	BringWindowToTop();
 }
 
