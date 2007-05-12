@@ -201,6 +201,15 @@ BOOL CCustomTabCtrl::DeleteItem(int nItem)
 	BOOL r=CTabCtrl::DeleteItem(nItem);
 	if(AppConfig.tab_add_number)
 		UpdateNumberFrom(nItem);
+
+    // FIXME: Dirty hacks used to force-resize the tabs and make the scroll buttons visible.
+    CRect rc;
+    GetWindowRect( rc );
+    --rc.right;
+    ::SetWindowPos( m_hWnd, HWND_NOTOPMOST, 0, 0, rc.Width(), rc.Height(), SWP_NOMOVE|SWP_NOZORDER );
+    ++rc.right;
+    ::SetWindowPos( m_hWnd, HWND_NOTOPMOST, 0, 0, rc.Width(), rc.Height(), SWP_NOMOVE|SWP_NOZORDER );
+
 	return r;
 }
 
@@ -215,6 +224,14 @@ BOOL CCustomTabCtrl::InsertItem(int nItem, TCITEM* pTabCtrlItem)
 	pTabCtrlItem->pszText=(LPSTR)(LPCTSTR)name;
 	r=CTabCtrl::InsertItem(nItem,pTabCtrlItem);
 	UpdateNumberFrom(nItem);
+
+    // FIXME: Dirty hacks used to force-resize the tabs and make the scroll buttons visible.
+    CRect rc;
+    GetWindowRect( rc );
+    --rc.right;
+    ::SetWindowPos( m_hWnd, HWND_NOTOPMOST, 0, 0, rc.Width(), rc.Height(), SWP_NOMOVE|SWP_NOZORDER );
+    ++rc.right;
+    ::SetWindowPos( m_hWnd, HWND_NOTOPMOST, 0, 0, rc.Width(), rc.Height(), SWP_NOMOVE|SWP_NOZORDER );
 	return r;
 }
 
