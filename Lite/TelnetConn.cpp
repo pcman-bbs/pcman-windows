@@ -410,7 +410,7 @@ void CTelnetConn::OnText()
 							curstr[i]=curstr[i-1];
 							pcuratb[i]=pcuratb[i-1];
 						}
-						SetUpdateAllLines(cursor_pos.y);
+						SetUpdateWholeLine(cursor_pos.y);
 					}
 					else
 						SetUpdateLine(cursor_pos.y,(BYTE)cursor_pos.x);	//將這行設為等待更新
@@ -594,13 +594,13 @@ void CTelnetConn::ClearScreen(int param)
 
 		screen [a+site_settings.lines_per_page]=tmpline;
 //		InitNewLine(tmpline);
-//		SetUpdateAllLines(a+site_settings.lines_per_page);
+//		SetUpdateWholeLine(a+site_settings.lines_per_page);
 	}
 
 	for(a=site_settings.line_count-site_settings.lines_per_page;a<site_settings.line_count;a++)	//清空新的一頁
 	{
 		InitNewLine(screen[a]);
-		SetUpdateAllLines(a);
+		SetUpdateWholeLine(a);
 	}
 
 //	現在所有畫面已經向上捲動一頁了
@@ -616,7 +616,7 @@ void CTelnetConn::ClearScreen(int param)
 			if(a < site_settings.lines_per_page)
 				break;
 			memcpy(screen[a],screen[a-site_settings.lines_per_page],GetLineBufLen());
-			SetUpdateAllLines(a);
+			SetUpdateWholeLine(a);
 		}
 		if(cursor_pos.y >= site_settings.lines_per_page)
 		{
@@ -633,13 +633,13 @@ void CTelnetConn::ClearScreen(int param)
 			memcpy(GetLineAttr(cursor_pos.y),
 				GetLineAttr(cursor_pos.y-site_settings.lines_per_page)+cursor_pos.x,site_settings.cols_per_page-cursor_pos.x);
 		}
-		SetUpdateAllLines(cursor_pos.y);
+		SetUpdateWholeLine(cursor_pos.y);
 		for(a=cursor_pos.y+1;a<site_settings.line_count;a++)
 		{
 			if(a < site_settings.lines_per_page)
 				break;
 			memcpy(screen[a],screen[a-site_settings.lines_per_page],GetLineBufLen());
-			SetUpdateAllLines(a);
+			SetUpdateWholeLine(a);
 		}
 		break;
 	}
@@ -657,9 +657,9 @@ void CTelnetConn::InsertLines(int num)	//Insert blank line at current row (shift
 		char* tmpline=screen[i];
 		screen[i]=screen[i-num];
 		screen[i-num]=tmpline;
-		SetUpdateAllLines(i);
+		SetUpdateWholeLine(i);
 		InitNewLine(tmpline);
-		SetUpdateAllLines(i-num);
+		SetUpdateWholeLine(i-num);
 	}
 }
 
@@ -720,11 +720,11 @@ void CTelnetConn::LineFeed()
 		for(int i=_firstl;i<_lastl;i++)
 		{
 			screen[i]=screen[i+1];
-			SetUpdateAllLines(i);
+			SetUpdateWholeLine(i);
 		}
 		screen[_lastl]=tmpline;
 		InitNewLine(tmpline);
-		SetUpdateAllLines(_lastl);
+		SetUpdateWholeLine(_lastl);
 	}
 }
 
@@ -757,11 +757,11 @@ void CTelnetConn::ScrollDown()
 	for(int i=_bottom;i>_top;i--)
 	{
 		screen[i]=screen[i-1];
-		SetUpdateAllLines(i);
+		SetUpdateWholeLine(i);
 	}
 	screen[_top]=tmpline;
 	InitNewLine(tmpline);
-	SetUpdateAllLines(_top);
+	SetUpdateWholeLine(_top);
 }
 
 void CTelnetConn::LineFeed(int param)
@@ -1190,13 +1190,13 @@ void CTelnetConn::DeleteLines(int n)	//delete n lines
 		if(y+n<=last_line)
 		{
 			screen[y]=screen[y+n];
-			SetUpdateAllLines(y);
+			SetUpdateWholeLine(y);
 		}
 		else
 		{
 			screen[y]=tmplines[(y-cursor_pos.y)-(last_line+1-yn)];
 			InitNewLine(screen[y]);
-			SetUpdateAllLines(y);
+			SetUpdateWholeLine(y);
 		}
 	}
 	delete []tmplines;
@@ -1808,7 +1808,7 @@ inline BOOL CTelnetConn::GetUpdateLine(long line)
 	return *(GetLineAttr(line)-1);
 }
 
-inline void CTelnetConn::SetUpdateAllLines(long line)
+inline void CTelnetConn::SetUpdateWholeLine(long line)
 {
 	LPBYTE attrib=GetLineAttr(line);
 	*(attrib-1)=1;

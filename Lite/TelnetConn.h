@@ -110,7 +110,7 @@ public:
 	inline void SetHyperLink(long i,BOOL haslink=TRUE);
 	inline BOOL GetHyperLink(const char* line);
 	inline BOOL GetHyperLink(long i);
-	inline void SetUpdateAllLines(long line);
+	inline void SetUpdateWholeLine(long line);
 	inline BOOL GetUpdateLine(long line);
 	inline void RemoveUpdateLine(long line);
 	void SetUpdateLine(long line,BYTE curx);
