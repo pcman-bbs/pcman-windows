@@ -107,7 +107,7 @@ Section SEC01
   File "${SRC_DIR}\Config\UI"
 
   CreateDirectory "$SMPROGRAMS\${PRODUCT_DIR}"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_DIR}\Open PCMan 2007.lnk" "$INSTDIR\PCMan.exe"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_DIR}\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk" "$INSTDIR\PCMan.exe"
   CreateShortCut "$DESKTOP\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk" "$INSTDIR\PCMan.exe"
 
   StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
@@ -191,6 +191,9 @@ Section Uninstall
     Delete "$SMPROGRAMS\${PRODUCT_DIR}\Symbols.lnk"
 
   RMDir "$SMPROGRAMS\${PRODUCT_DIR}"
+  Delete "$SMPROGRAMS\${PRODUCT_DIR}\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk"
+  Delete "$DESKTOP\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk"
+
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
