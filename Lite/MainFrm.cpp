@@ -835,12 +835,7 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 		address = param.Left(pos);
         CString port_str = param.Mid( pos + 1 );
 		port = (unsigned short)atoi( port_str );
-        if( port != 23 )
-        {
-            address += ':';
-            address += port_str;
-        }
-        else
+        if( port == 23 )
             param = address;
 	}
 	view.Connect( address, param, port );
