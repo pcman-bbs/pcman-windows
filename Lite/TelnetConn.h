@@ -175,7 +175,7 @@ public:
 		is_telnet = true;
 		
 		scr_top=0;
-		scr_bottom=23;
+		scr_bottom = site_settings.lines_per_page - 1;
 	}
 
 	// ClassWizard generated virtual function overrides
