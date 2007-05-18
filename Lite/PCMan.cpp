@@ -140,10 +140,6 @@ BOOL CApp::InitInstance()
 	BOOL r = RegisterHotKey(pFrame->m_hWnd,1,AppConfig.pcman_hotkey_mod,AppConfig.pcman_hotkey);
 
 	pFrame->view.OnInitialUpdate();
-	pFrame->SwitchToConn( 0 );
-	//Restore Main Window Position
-	AppConfig.mainwnd_state.Restore(pFrame->m_hWnd);
-	pFrame->UpdateWindow();
 
 	if( AppConfig.save_session )
 		pFrame->OpenLastSession();
@@ -155,6 +151,12 @@ BOOL CApp::InitInstance()
 		if( pFrame->tab.GetItemCount() == 0 )
 			pFrame->OpenHomepage();
 	}
+
+	pFrame->SwitchToConn( 0 );
+
+	//Restore Main Window Position
+	AppConfig.mainwnd_state.Restore(pFrame->m_hWnd);
+	pFrame->UpdateWindow();
 
 //如果只允許執行一個 PCMan，則把User data設為1
 	SetWindowLong(m_pMainWnd->m_hWnd,GWL_USERDATA,!AppConfig.multiple_instance);
