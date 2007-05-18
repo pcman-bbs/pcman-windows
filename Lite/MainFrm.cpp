@@ -1642,6 +1642,7 @@ void CMainFrame::OnAddressBarComboOK()
 	if(p!=-1)
 		address=address.Left(p);
 
+#if defined(_COMBO_)
 	// FIXME: We doesn't check for *.ans file here!!
 	if(!AppConfig.ads_open_new && strncmp("telnet://",address,9) && view.con && !view.telnet)
 	{
@@ -1651,6 +1652,7 @@ void CMainFrame::OnAddressBarComboOK()
 		((CWebConn*)view.con)->web_browser.SetFocus();
 		return;
 	}
+#endif
 
 	OnNewConnectionAds(address);
 }

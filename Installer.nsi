@@ -99,7 +99,7 @@ Section SEC01
 
   SetOutPath "$INSTDIR\Config"
   File "${SRC_DIR}\Config\Config.ini"
-  File "${SRC_DIR}\Config\BBSFavorites.ini"
+  File "${SRC_DIR}\Config\BBSFavorites"
   File "${SRC_DIR}\Config\FUS"
 
   SetOverwrite on
