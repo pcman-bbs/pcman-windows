@@ -52,7 +52,7 @@ void CCustomTabCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	hti.pt=point;
 	sel=HitTest(&hti);
 	if(sel!=-1)
-		parent->PostMessage(WM_COMMAND,ID_CONNECT_CLOSE,0);
+		parent->CloseConn( sel, true );
 }
 
 void CCustomTabCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
@@ -73,7 +73,7 @@ void CCustomTabCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	hti.pt=point;
 	sel=HitTest(&hti);
 	if(sel!=-1)
-		parent->PostMessage(WM_COMMAND,ID_CONNECT_CLOSE,0);
+		parent->CloseConn( sel, true );
 }
 
 void CCustomTabCtrl::OnLButtonUp(UINT nFlags, CPoint point) 

@@ -151,7 +151,7 @@ public:
 	void OnSwitchBack();
 	void SaveHistory();
 	void LoadHistory();
-	void CloseConn( int i );
+	void CloseConn( int i, bool confirm = false );
 	int NewTab( CConn* pCon, BOOL bActive = FALSE, int idx = -1);
 	void OnUpdateShowAnsiBar(CCmdUI* pCmdUI);
 	void OnUpdateIsSite(CCmdUI* pCmdUI);

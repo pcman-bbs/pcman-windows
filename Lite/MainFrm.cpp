@@ -2313,25 +2313,24 @@ int CMainFrame::NewTab(CConn *pCon, BOOL bActive, int idx)
 
 void CMainFrame::OnConnectClose()
 {
-	int Sel = tab.GetCurSel();
-	if( -1 == Sel )
+	int sel = tab.GetCurSel();
+	CloseConn( sel, true );
+}
+
+void CMainFrame::CloseConn( int i, bool confirm )
+{
+	CConn* pCon = tab.GetCon(i);
+	if( !pCon )
 		return;
-	CConn* pCon = tab.GetCon(Sel);
-	if(pCon)
+
+	if( confirm )	// confirm before close
 	{
 		if( (pCon->is_connected || pCon->is_ansi_editor )
 			&& AppConfig.bbs_close_query)
 			if(MessageBox( LoadString(IDS_CLOSE_CONFIRM) , LoadString(IDS_CONFIRM),MB_OKCANCEL|MB_ICONQUESTION)==IDCANCEL)
 				return;
 	}
-	CloseConn( Sel );
-}
 
-void CMainFrame::CloseConn(int i)
-{
-	CConn* pCon = tab.GetCon(i);
-	if( !pCon )
-		return;
 #ifdef _COMBO_
 	if( pCon->is_web )
 	{
@@ -2344,7 +2343,7 @@ void CMainFrame::CloseConn(int i)
 #endif
 
 	CConn* pprev_con = prev_conn;
-	if(i!=-1)
+	if( i != -1 )
 	{
 		tab.DeleteItem(i);
 		if(i==tab.GetItemCount())
@@ -2432,7 +2431,7 @@ void CMainFrame::OnSwitchBack()
 {
 	int prev_idx = ConnToIndex(prev_conn);
 	if( prev_idx != -1 )
-		SwitchToConn(prev_idx );
+		SwitchToConn( prev_idx );
 }
 
 BOOL CMainFrame::LoadUI()
