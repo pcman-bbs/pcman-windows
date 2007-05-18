@@ -122,7 +122,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_AUTODBCS_MOUSE, OnUpdateAutoDBCSMouse)
 	ON_UPDATE_COMMAND_UI(ID_ADS, OnUpdateShowAddressBar)
 	ON_UPDATE_COMMAND_UI(ID_CLOSEBTN, OnUpdateCloseBtn)
-	ON_CBN_SELENDOK(IDR_ADS_COMBO,OnAddressBarComboOK)
+	ON_CBN_SELENDOK(IDC_ADS_COMBO,OnAddressBarComboOK)
 	ON_BN_CLICKED(IDC_ANSIBAR_BK, OnAnsiBarBk)	//used by ansi bar
 	ON_BN_CLICKED(IDC_ANSIBAR_FG, OnAnsiBarFg)	//used by ansi bar
 	ON_BN_CLICKED(IDC_ANSIBAR_BLINK, OnAnsiBarBlink)	//used by ansi bar
@@ -174,7 +174,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_ACTIVATEAPP()
 	ON_WM_TIMER()
 	//}}AFX_MSG_MAP
-//	ON_CBN_SELENDCANCEL(IDR_ADS_COMBO,OnAddressComboCancel)
+//	ON_CBN_SELENDCANCEL(IDC_ADS_COMBO,OnAddressComboCancel)
 	ON_MESSAGE(WM_COPYDATA,OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY,OnHotKey)
 	ON_MESSAGE(WM_NOTIFYICON,OnNotifyIcon)
@@ -182,6 +182,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_FIRST_HOTSTR,ID_LAST_HOTSTR,OnFrequentlyUsedStr)	//熱鍵送出字串
 	ON_COMMAND_RANGE(ID_FIRST_BBS_FAVORITE,ID_LAST_WEB_FAVORITE,OnFavorite)	//我的最愛
 	ON_COMMAND_RANGE(ID_SWITCHCON1,ID_SWITCHCON10,OnHotkeySwitch)	//視窗切換
+
 
 #if defined(_COMBO_)
 	ON_COMMAND(ID_WWWHOME, OnWebHome)
@@ -346,13 +347,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 //	Create Address Bar
 //----------位址列-------------
-	address_bar.Create(CBS_AUTOHSCROLL|CBS_DROPDOWN,CRect(0,0,0,320),this,IDR_ADS_COMBO);
+	address_bar.Create(CBS_AUTOHSCROLL|CBS_DROPDOWN,CRect(0,0,0,320),this,IDC_ADS_COMBO);
 	address_bar.MoveWindow(0,0,200,24);
 	address_bar.SetFont(&bar_font);
 	HWND hedit=::GetTopWindow(address_bar.m_hWnd);
 	old_address_bar_proc=(WNDPROC)::GetWindowLong(hedit,GWL_WNDPROC);
 	::SetWindowLong(hedit,GWL_WNDPROC,(LONG)AddressBarWndProc);
-//	::SetWindowLong(hedit,GWL_STYLE,::GetWindowLong(hedit,GWL_STYLE)&~ES_NOHIDESEL);
+	::SetWindowLong(hedit,GWL_STYLE,::GetWindowLong(hedit,GWL_STYLE)&~ES_NOHIDESEL);
 	auto_complete.AttachEdit(hedit, &AppConfig.history, address_bar.m_hWnd);
 
 #ifdef	_COMBO_
@@ -821,8 +822,7 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 		param=param.Left(param.GetLength()-1);
 
 	int pos=param.Find(':');
-	if(pos==-1)
-		pos=param.Find(' ');
+
 	CString address;
 	unsigned short port;
 	if(pos==-1)
@@ -1289,23 +1289,6 @@ void CMainFrame::OnEditAdFilter()
 }
 
 
-LRESULT CMainFrame::OnAddressBarEnter(WPARAM w, LPARAM l)
-{
-	CString address;
-	address_bar.GetWindowText(address);
-	if(!AppConfig.ads_open_new && strncmp("telnet://",address,9) && view.con && !view.telnet)
-	{
-		COleVariant v;
-		COleVariant url=address;
-		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
-		((CWebConn*)view.con)->web_browser.SetFocus();
-		return 0;
-	}
-	OnNewConnectionAds(address);
-	return 0;
-}
-
-
 LRESULT CMainFrame::OnSearchBarEnter(WPARAM w, LPARAM l)
 {
 	CString searchword;
@@ -1672,10 +1655,11 @@ void CMainFrame::OnAddressBarComboOK()
 {
 	CString address;
 	int i=address_bar.GetCurSel();
-	if(i==CB_ERR)
-		return;
+	if(i == CB_ERR)
+		address_bar.GetWindowText(address);
+	else
+		address_bar.GetLBText(i,address);
 
-	address_bar.GetLBText(i,address);
 	int p=address.ReverseFind('\t');
 	if(p!=-1)
 		address=address.Left(p);
@@ -1703,9 +1687,11 @@ LRESULT CALLBACK CMainFrame::AddressBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,
 		case VK_RETURN:
 			if( !mainfrm->address_bar.GetDroppedState() )
 			{
-				mainfrm->OnAddressComboEnter();
-				return 0;
+				mainfrm->PostMessage( WM_COMMAND, 
+					MAKEWPARAM( IDC_ADS_COMBO, CBN_SELENDOK ),
+					LPARAM(mainfrm->address_bar.GetSafeHwnd()));
 			}
+			return 0;
 			break;
 		case VK_ESCAPE:
 			mainfrm->OnAddressComboCancel();
@@ -1725,25 +1711,6 @@ LRESULT CALLBACK CMainFrame::AddressBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,
 		return DLGC_WANTALLKEYS;
 
 	return CallWindowProc( mainfrm->old_address_bar_proc, hwnd, msg, wparam, lparam );
-}
-
-void CMainFrame::OnAddressComboEnter()
-{
-	CString address;
-	address_bar.GetWindowText(address);
-
-#if defined(_COMBO_)
-	if(!AppConfig.ads_open_new && strncmp("telnet:",address,7) && view.con && !view.telnet)
-	{
-		
-		COleVariant v;
-		COleVariant url=address;
-		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
-		((CWebConn*)view.con)->web_browser.SetFocus();
-		return;
-	}
-#endif
-	OnNewConnectionAds(address);	// 內部會呼叫 view.AddToTypedHistory(address);
 }
 
 #if defined(_COMBO_)

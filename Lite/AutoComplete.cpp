@@ -77,7 +77,7 @@ void CAutoComplete::DrawItem(LPDRAWITEMSTRUCT lpds)
 			dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
 			dc.SetBkColor(bkclr);
 		}
-		dc.DrawText(m_pSrc->GetAt(m_DisplayedItems[i].strpos),&lpds->rcItem,DT_SINGLELINE|DT_LEFT|DT_VCENTER);
+		dc.DrawText(GetDisplayedItemText(i), &lpds->rcItem, DT_SINGLELINE|DT_LEFT|DT_VCENTER);
 	}
 	else
 		dc.FillSolidRect(&lpds->rcItem,GetSysColor(COLOR_WINDOW));
@@ -96,7 +96,7 @@ LRESULT CALLBACK CAutoComplete::EditProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM 
 {
 	CAutoComplete* pthis=(CAutoComplete*)::GetWindowLong(hwnd,GWL_USERDATA);
 
-	LRESULT r=CallWindowProc( pthis->m_OldEditProc,hwnd,msg,wp,lp );
+	LRESULT r = CallWindowProc( pthis->m_OldEditProc,hwnd,msg,wp,lp );
 	switch(msg)
 	{
 	case WM_KEYDOWN:
@@ -114,11 +114,21 @@ LRESULT CALLBACK CAutoComplete::EditProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM 
 				}
 				return r;
 			case VK_RETURN:
+				{
+					int sel = (int)pthis->GetFirstSelectedItemPosition() - 1;
+					if( sel >=0 )
+					{
+						CString text = pthis->GetDisplayedItemText(sel);
+						::SetWindowText( hwnd, text );
+						::SendMessage( hwnd, EM_SETSEL, 0, -1 );
+					}
+				}
 			case VK_ESCAPE:
 				pthis->Close();
 			default:
 				return r;
 			}
+			break;
 		}
 	case WM_CHAR:
 		if( wp < ' ' && wp != VK_BACK )
@@ -142,39 +152,8 @@ LRESULT CALLBACK CAutoComplete::EditProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM 
 	default:
 		return r;
 	}
-	CStringList& src = *pthis->m_pSrc;
-	CArray<ListItemData, ListItemData>& cur = pthis->m_DisplayedItems;
-	CString str;	int len=::GetWindowTextLength(hwnd);
-	if(len)
-	{
-		::GetWindowText(hwnd,str.GetBuffer(len+1),len+1);
-		str.ReleaseBuffer();
-	}
 
-	cur.RemoveAll();
-	pthis->DeleteAllItems();
-	if(!str.IsEmpty())
-	{
-		for(POSITION pos=src.GetHeadPosition(); pos ;src.GetNext(pos) )
-		{
-			CString& str2 = src.GetAt(pos);
-			char* pstrstrpos = strnstri(str2, str, str2.GetLength());
-			if( pstrstrpos )
-			{
-				cur.Add( ListItemData(pos, int(pstrstrpos - LPCTSTR(str2)) ) );
-				pthis->InsertItem(0,NULL);
-			}
-		}
-	}
-
-	if( cur.GetSize()>0 )
-	{
-		m_pOpenedList = pthis;
-		qsort( cur.GetData(), cur.GetSize(), sizeof(ListItemData), CompareItem);
-		pthis->Open();
-	}
-	else
-		pthis->Close();
+	pthis->FilterDisplayedItems();
 	return r;
 }
 
@@ -201,15 +180,7 @@ void CAutoComplete::Open()
 	SetColumnWidth(0,rc.Width());
 	ShowWindow(SW_SHOWNA);
 	if(m_hCombo)
-	{
-		long l = ::GetWindowTextLength(m_hEdit)+1;
-		CString text;
-		::GetWindowText(m_hEdit, text.GetBuffer(l), l);
 		::SendMessage( m_hCombo, CB_SHOWDROPDOWN, FALSE, 0);
-		text.ReleaseBuffer();
-		::SetWindowText( m_hEdit, text );
-		::SendMessage( m_hEdit, EM_SETSEL, text.GetLength(), text.GetLength());
-	}
 }
 
 void CAutoComplete::Close()
@@ -308,4 +279,45 @@ int CAutoComplete::CompareItem(const void *p1, const void *p2)
 		return r;
 	return strcmp( m_pOpenedList->m_pSrc->GetAt(item1->strpos),
 				m_pOpenedList->m_pSrc->GetAt(item2->strpos));
+}
+
+void CAutoComplete::FilterDisplayedItems()
+{
+	LockWindowUpdate();
+
+	CStringList& src = *m_pSrc;
+	CArray<ListItemData, ListItemData>& cur = m_DisplayedItems;
+	CString str;	int len=::GetWindowTextLength(m_hEdit);
+	if(len)
+	{
+		::GetWindowText(m_hEdit,str.GetBuffer(len+1),len+1);
+		str.ReleaseBuffer();
+	}
+
+	cur.RemoveAll();
+	DeleteAllItems();
+	if(!str.IsEmpty())
+	{
+		for(POSITION pos=src.GetHeadPosition(); pos ;src.GetNext(pos) )
+		{
+			CString& str2 = src.GetAt(pos);
+			char* pstrstrpos = strnstri(str2, str, str2.GetLength());
+			if( pstrstrpos )
+			{
+				cur.Add( ListItemData(pos, int(pstrstrpos - LPCTSTR(str2)) ) );
+				InsertItem(0,NULL);
+			}
+		}
+	}
+
+	if( cur.GetSize()>0 )
+	{
+		m_pOpenedList = this;
+		qsort( cur.GetData(), cur.GetSize(), sizeof(ListItemData), CompareItem);
+		Open();
+	}
+	else
+		Close();
+
+	UnlockWindowUpdate();
 }

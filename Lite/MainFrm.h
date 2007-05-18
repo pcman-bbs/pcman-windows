@@ -163,7 +163,6 @@ public:
 	void OnUpdateIsBBS(CCmdUI* pCmdUI);
 	void OnUpdateSetCharset(CCmdUI* pCmdUI);
 	void RestoreWindow();
-	void OnAddressComboEnter();
 	LRESULT OnNotifyIcon(WPARAM wp,LPARAM lp);
 	LRESULT OnHotKey(WPARAM wp,LPARAM lp);
 	//{{AFX_MSG(CMainFrame)
@@ -306,7 +305,6 @@ public:
 
 	BOOL FindAdFilter(LPCTSTR title,LPCTSTR address );
 	CEdit edit;
-	LRESULT OnAddressBarEnter(WPARAM w,LPARAM l);
 	LRESULT OnSearchBarEnter(WPARAM w,LPARAM l);
 	LRESULT OnRemoveWebConn(WPARAM wparam,LPARAM lparam);
 	BOOL FilterWebConn(CWebConn* web_conn);

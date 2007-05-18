@@ -36,10 +36,12 @@ public:
 	void Open();
 	void DetachEdit();
 	void AttachEdit(HWND hedit, CStringList* src, HWND hCombo = NULL);
+	CString GetDisplayedItemText( int i ){ return m_pSrc->GetAt(m_DisplayedItems[i].strpos); }
 	virtual ~CAutoComplete();
 
 	// Generated message map functions
 protected:
+	void FilterDisplayedItems();
 	static LRESULT CALLBACK MouseProc(int code,WPARAM w,LPARAM l);
 	WNDPROC m_OldEditProc;
 	struct ListItemData

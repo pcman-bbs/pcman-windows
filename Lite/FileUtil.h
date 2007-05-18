@@ -2,6 +2,5 @@
 
 inline BOOL IsFileExist(LPCTSTR path)
 {
-	GetFileAttributes(path);
-	return GetLastError()!=2;
+	return GetFileAttributes(path) != -1;
 }

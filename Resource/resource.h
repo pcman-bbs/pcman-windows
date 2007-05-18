@@ -98,7 +98,7 @@
 #define IDC_SAVEKEY                     139
 #define IDC_COPY_CUR                    139
 #define IDB_TB                          140
-#define IDR_ADS_COMBO                   140
+#define IDC_ADS_COMBO                   140
 #define IDC_DRAG_CUR                    140
 #define IDD_CONFIG                      141
 #define IDC_MAX_HISTORYMENU             141
