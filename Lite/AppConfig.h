@@ -277,7 +277,7 @@ inline void CAppConfig::Default()
 	bktype=0;
 	bkratio=4;		//	ratio/10*100%
 	sound=1;
-	old_textout=1;
+	old_textout=0;
 	active_tab_textcolor=0xa00000;
 
 	switch_back_on_close = 0;

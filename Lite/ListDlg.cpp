@@ -25,6 +25,8 @@ static char THIS_FILE[] = __FILE__;
 	#include "../Combo/WebPageDlg.h"
 #endif
 
+const char SEPARATOR[] = "        ";
+
 /////////////////////////////////////////////////////////////////////////////
 // CListDlg dialog
 
@@ -99,10 +101,9 @@ void CListDlg::OnOK()
 	if(image==4)
 	{
 		CString str=sites.GetItemText(item);
-		CString dir=sites.GetItemFilePath(sites.GetParentItem(item))+';';
+		CString dir=sites.GetItemPath(sites.GetParentItem(item))+';';
 
 		AppConfig.sitelist_state.Save(m_hWnd);
-//		if(item != sites.bbsfavorite)
 		m_InitPath = sites.GetItemPath(item);
 
 		if(sites.changed)
@@ -180,16 +181,25 @@ void CListDlg::AddSite(register CArchive* ar,HTREEITEM parent, char* str)
 	HTREEITEM item;
 	while(ar->ReadString(str,2048) && *str)
 	{
+		CString _str;
+		for( const char* pstr = str; *pstr; ++pstr )
+		{
+			if( *pstr == '\t' )
+				_str += SEPARATOR;
+			else
+				_str += *pstr;
+		}
+
 #if defined(_COMBO_)
 		if(*str=='w')
-			item=sites.InsertItem(LPCTSTR(str)+1,8,8,parent);
+			item=sites.InsertItem(LPCTSTR(_str)+1,8,8,parent);
 		else
 #endif
 		if(*str=='s')
-			item=sites.InsertItem(LPCTSTR(str)+1,4,4,parent);
+			item=sites.InsertItem(LPCTSTR(_str)+1,4,4,parent);
 		else if(*str=='d')
 		{
-			item=sites.InsertItem(LPCTSTR(str)+1,3,3,parent);
+			item=sites.InsertItem(LPCTSTR(_str)+1,3,3,parent);
 			AddSite(ar,item,str);
 		}
 	}
@@ -446,7 +456,10 @@ void CListDlg::SaveSite(register CFile& file, HTREEITEM parent)
 			str="s";
 		else if(image==8)
 			str="w";
-		str+=sites.GetItemText(item);	str+=crlf;
+		CString tmp = sites.GetItemText(item);
+		tmp.Replace( SEPARATOR, "\t" );
+		str += tmp;
+		str+=crlf;
 		file.Write(LPCTSTR(str),str.GetLength());
 
 		if(image==3)	//dir
