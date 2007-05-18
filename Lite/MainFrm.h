@@ -305,7 +305,6 @@ public:
 
 	BOOL FindAdFilter(LPCTSTR title,LPCTSTR address );
 	CEdit edit;
-	LRESULT OnSearchBarEnter(WPARAM w,LPARAM l);
 	LRESULT OnRemoveWebConn(WPARAM wparam,LPARAM lparam);
 	BOOL FilterWebConn(CWebConn* web_conn);
 	void OnToolbarMenuDropDown(NMHDR* pNMHDR, LRESULT* pResult);

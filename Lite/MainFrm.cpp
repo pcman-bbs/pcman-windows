@@ -1288,27 +1288,6 @@ void CMainFrame::OnEditAdFilter()
 	dlg.DoModal();
 }
 
-
-LRESULT CMainFrame::OnSearchBarEnter(WPARAM w, LPARAM l)
-{
-	CString searchword;
-	search_bar.GetWindowText(searchword);
-	CString searchurl = "http://www.google.com/search?q="+searchword;
-
-	if(view.con && !view.telnet)
-	{
-		COleVariant v;
-		COleVariant url=searchurl;
-		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
-		((CWebConn*)view.con)->web_browser.SetFocus();
-		return 0;
-	}
-
-	OnNewConnectionAds(searchurl);
-	return 0;
-}
-
-
 void CMainFrame::OnAdsHttp() 
 {
 	address_bar.SetFocus();
@@ -1763,15 +1742,18 @@ void CMainFrame::OnSearchBarEnter()
 	search_bar.GetWindowText(searchword);
 	CString searchurl = "http://www.google.com/search?q="+searchword;
 
+	// FIXME: whether open search result in current window or new window 
+	//        should be optional in the future!
+/*
 	if(view.con && !view.telnet)
 	{
-		
 		COleVariant v;
 		COleVariant url=searchurl;
 		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
 		((CWebConn*)view.con)->web_browser.SetFocus();
 		return;
 	}
+*/
 
 	OnNewConnectionAds(searchurl);	// ¤º³¡·|©I¥s view.AddToTypedHistory(address);
 }
