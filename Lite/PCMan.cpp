@@ -250,7 +250,7 @@ void CAboutDlg::OnWeb()
 
 void CAboutDlg::OnWeb2() 
 {
-	const char url[] = "http://rt.openfoundry.org/Foundry/Project/?Queue=744";
+	const char url[] = "http://pcman.openfoundry.org/";
 #ifdef	_COMBO_
 	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(url, TRUE);
 #else

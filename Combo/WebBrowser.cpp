@@ -140,9 +140,13 @@ BOOL CWebBrowser::PreTranslateMessage(MSG *pMsg)
 	if( pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST )
 	{
 		IDispatch* app = wb_ctrl.get_Application();
-		if( app )	{
+		if( app )
+		{
 			IOleInPlaceActiveObject* ip = NULL;
-			if( SUCCEEDED( app->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&ip ) ) )	{
+			if( SUCCEEDED( app->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&ip ) ) )
+			{
+				if( S_OK == ip->TranslateAccelerator( pMsg ) )
+					ret = TRUE;
 
 				// Some notes from Hong Jen Yee (PCMan):
 				// FIXME: Very dirty hack used to fix the malfunction of "Enter" key in 
@@ -150,12 +154,16 @@ BOOL CWebBrowser::PreTranslateMessage(MSG *pMsg)
 				// Warnings: I've no idea why this works, but it do works, so let's use it.
 				// Nobody knows will this cause other problems. Use at your own risk.
 				// Maybe some pages with heavy use of Javascripts will be affected.
-				if( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
-					pMsg->message = WM_CHAR;	// Damn! Incredible!! This works!!
-
-				if( S_OK == ip->TranslateAccelerator( pMsg ) )
+				if( !ret && pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN )
 				{
-					ret = TRUE;
+					if( ! (GetKeyState(VK_CONTROL) & 0x8000) &&
+						! (GetKeyState(VK_MENU) & 0x8000) &&
+						! (GetKeyState(VK_SHIFT) & 0x8000) )
+					{
+						pMsg->message = WM_CHAR;	// Damn! Incredible!! This works!!
+						if( S_OK == ip->TranslateAccelerator( pMsg ) )
+							ret = TRUE;
+					}
 				}
 				ip->Release();
 			}

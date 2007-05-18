@@ -1297,7 +1297,6 @@ LRESULT CMainFrame::OnSearchBarEnter(WPARAM w, LPARAM l)
 
 	if(view.con && !view.telnet)
 	{
-		
 		COleVariant v;
 		COleVariant url=searchurl;
 		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
@@ -1663,6 +1662,17 @@ void CMainFrame::OnAddressBarComboOK()
 	int p=address.ReverseFind('\t');
 	if(p!=-1)
 		address=address.Left(p);
+
+	// FIXME: We doesn't check for *.ans file here!!
+	if(!AppConfig.ads_open_new && strncmp("telnet://",address,9) && view.con && !view.telnet)
+	{
+		COleVariant v;
+		COleVariant url=address;
+		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
+		((CWebConn*)view.con)->web_browser.SetFocus();
+		return;
+	}
+
 	OnNewConnectionAds(address);
 }
 
