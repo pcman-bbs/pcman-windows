@@ -36,17 +36,17 @@ const char FUS_FILENAME[]="FUS";
 const char UI_FILENAME[]="UI";
 
 const char BBS_LIST_FILENAME[]="BBSList";
-const char HOMEPAGE_FILENAME[]="Homepage.ini";
+const char HOMEPAGE_FILENAME[]="Homepage";
 //	const char SITE_SEPARATOR[]="      ";
 
-const char BBS_FAVORITE_FILENAME[]="BBSFavorites.ini";
+const char BBS_FAVORITE_FILENAME[]="BBSFavorites";
 
-const char SESSION_FILENAME[]="Session.ini";
-const char HISTORY_FILENAME[]="History.ini";
+const char SESSION_FILENAME[]="Session";
+const char HISTORY_FILENAME[]="History";
 
 #if defined(_COMBO_)
-	const char WWW_FAVORITE_FILENAME[]="WebFavorites.ini";
-	const char WWW_ADFILTER_FILENAME[]="AdFilters.ini";
+	const char WWW_FAVORITE_FILENAME[]="WebFavorites";
+	const char WWW_ADFILTER_FILENAME[]="AdFilters";
 #endif
 
 BOOL IsContainAnsiCode(LPCTSTR str);
