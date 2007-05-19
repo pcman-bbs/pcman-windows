@@ -590,6 +590,7 @@
 #define IDS_SITELIST_UPDATE_SUCCESS     33023
 #define IDS_SITELIST_UPDATE_FAIL        33024
 #define ID_SET_CHARSET_DEFAULT          33025
+#define IDS_WEB_SEARCH                  33025
 #define ID_SET_CHARSET_CP950            33026
 #define ID_SET_CHARSET_CP936            33027
 #define ID_SET_CHARSET_CP932            33028

@@ -232,8 +232,8 @@ const char* CSimpXmlParser::GetAttrText(const char *key, const char **attribs, c
 	return NULL;
 }
 
-int CSimpXmlParser::GetAttrInt(const char *key, const char **attribs, const char **values)
+int CSimpXmlParser::GetAttrInt(const char *key, const char **attribs, const char **values, int def)
 {
 	const char *val = GetAttrText( key, attribs, values );
-	return val ? atoi(val) : 0;
+	return val ? atoi(val) : def;
 }

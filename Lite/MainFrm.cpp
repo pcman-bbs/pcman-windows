@@ -3408,6 +3408,8 @@ void CMainFrame::OnFont()
 	OnBBSFont();
 }
 
+bool DownLoadURL( LPCTSTR url, LPCTSTR out_path, bool show_ui = false );
+
 void CMainFrame::OnPasteTinyUrl()
 {
 	CString url = TINY_URL;
@@ -3415,9 +3417,10 @@ void CMainFrame::OnPasteTinyUrl()
 	if(!CClipboard::GetText(text)) //第一次從剪貼簿取字串 (ansi字串)	
 		return;
 	url += text;
-	HRESULT hr = URLDownloadToFile ( NULL, url, ::AppPath+TINYURL_TEMP_FILENAME, 0, NULL);
-	if ( !SUCCEEDED(hr) )
+
+	if ( !DownLoadURL(url, ::AppPath+TINYURL_TEMP_FILENAME) )
 		return;
+
 	CFile f;
 	char* str = new char[8192];
 	char* found = NULL;

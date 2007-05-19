@@ -44,7 +44,7 @@ public:
 	virtual void ElementData( const char* name, const char* data );
 	virtual void EndElement( const char* name );
 	virtual void BeginElement( const char* name, const char** attribs, const char **values );
-	static int GetAttrInt(const char *key, const char **attribs, const char **values);
+	static int GetAttrInt(const char *key, const char **attribs, const char **values, int def = 0);
 	static const char* GetAttrText(const char *key, const char **attribs, const char **values);
 	CSimpXmlParser();
 	virtual ~CSimpXmlParser();

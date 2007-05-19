@@ -10,6 +10,8 @@
 #include "WinUtils.h"
 
 #include "SearchPlugin.h"
+#include "OleImage.h"
+
 #ifdef	_COMBO_
 //	#include <..\src\occimpl.h>
 	#include "..\Combo\CustSite.h"
@@ -126,6 +128,8 @@ BOOL CApp::InitInstance()
 		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
 		NULL);
 
+	COleImage::Initialize();	// Load OLE for GIF/JPEG loading
+
 	CFileFind searchFind;
 	BOOL searchFound;
 	int pluginId;
@@ -135,6 +139,9 @@ BOOL CApp::InitInstance()
 		searchFound = searchFind.FindNextFile();
 		pluginId = SearchPluginCollection.Load( searchFind.GetFilePath() );
 	}
+
+	COleImage::Finalize();	// Release OLE for GIF/JPEG loading
+
 
 	//Register Hotkey
 	BOOL r = RegisterHotKey(pFrame->m_hWnd,1,AppConfig.pcman_hotkey_mod,AppConfig.pcman_hotkey);

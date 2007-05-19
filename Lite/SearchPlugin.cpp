@@ -2,13 +2,14 @@
 #include "SearchPlugin.h"
 #include "StrUtils.h"
 #include "SimpXmlParser.h"
+#include "OleImage.h"
 
 CSearchPluginCollection SearchPluginCollection;
 
 CSearchPlugin::CSearchPlugin()
 {
-	ShortName = Description = InputEncoding = Image = Method = NULL;
-	ImageBytes = 0;
+	ShortName = Description = InputEncoding = Method = NULL;
+	Image = NULL;
 }
 CSearchPlugin::~CSearchPlugin()
 {
@@ -19,7 +20,7 @@ CSearchPlugin::~CSearchPlugin()
 	if(InputEncoding)
 		free( InputEncoding );
 	if(Image)
-		free( Image );
+		DeleteObject( Image );
 	if(Method)
 		free( Method );
 }
@@ -140,12 +141,14 @@ char* CSearchPluginCollection::GetField(int index, EField f)
 		case INPUTENCODING:
 			return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->InputEncoding;
 			break;
+/*
 		case IMAGE:
 			return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Image;
 			break;
 		case IMAGEBYTES:
 			return (char*)((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->ImageBytes;
 			break;
+*/
 		case URL:
 			return (char*)(LPCTSTR)((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Url;
 			break;
@@ -154,6 +157,65 @@ char* CSearchPluginCollection::GetField(int index, EField f)
 			break;
 	}
 	return _T("");
+}
+
+
+// Reference: http://msdn2.microsoft.com/en-us/library/ms997538.aspx
+
+typedef struct
+{
+    BYTE        bWidth;          // Width, in pixels, of the image
+    BYTE        bHeight;         // Height, in pixels, of the image
+    BYTE        bColorCount;     // Number of colors in image (0 if >=8bpp)
+    BYTE        bReserved;       // Reserved ( must be 0)
+    WORD        wPlanes;         // Color Planes
+    WORD        wBitCount;       // Bits per pixel
+    DWORD       dwBytesInRes;    // How many bytes in this resource?
+    DWORD       dwImageOffset;   // Where in the file is this image?
+} ICONDIRENTRY, *LPICONDIRENTRY;
+
+typedef struct
+{
+    WORD           idReserved;   // Reserved (must be 0)
+    WORD           idType;       // Resource Type (1 for icons)
+    WORD           idCount;      // How many images?
+    ICONDIRENTRY   idEntries[1]; // An entry for each image (idCount of 'em)
+} ICONDIR, *LPICONDIR;
+
+typedef struct
+{
+   BITMAPINFOHEADER   icHeader;      // DIB header
+   RGBQUAD         icColors[1];   // Color table
+   BYTE            icXOR[1];      // DIB bits for XOR mask
+   BYTE            icAND[1];      // DIB bits for AND mask
+} ICONIMAGE, *LPICONIMAGE;
+
+HICON CreateIconFromMem( BYTE *stream, int desired_size )
+{
+
+
+	HICON icon = NULL;
+/*
+	ICONDIR *dir = (ICONDIR*)stream;
+	int idx = 0, dw = INT_MAX, dh = INT_MAX;
+	for( int i = 0; i < dir->idCount; ++i )
+	{
+		int dw2 = abs(dir->idEntries[i].bWidth - desired_size);
+		int dh2 = abs(dir->idEntries[i].bHeight - desired_size);
+		if( abs(dw2) < dw && abs(dh2) < dh2 )
+		{
+			dw = dw2;
+			dh = dh2;
+			idx = i;
+		}
+	}
+	if( idx < dir->idCount )
+	{
+		ICONDIRENTRY& ent = dir->idEntries[i];
+
+	}
+*/
+	return icon;
 }
 
 class CSearchPluginParser : public CSimpXmlParser
@@ -202,6 +264,14 @@ public:
 				}
 			}
 		}
+		else if( 0 == strcmp( name, "Image" ) )
+		{
+			int width = GetAttrInt( "width", attribs, values );
+			int height = GetAttrInt( "height", attribs, values );
+			if( width == 0 || height == 0 )	// error!
+				return;
+			// plugin.Image = new CBitmap();
+		}
 	}
 
 	void ElementData( const char* name, const char* data )
@@ -223,6 +293,29 @@ public:
 				plugin.Description = UTF8ToMultiByte(data, NULL);
 			else
 				plugin.Description = strdup( data );
+		}
+		if( !plugin.Image && 0 == strcmp(name, "Image") )
+		{
+			// Currently, only this kind of format is supported
+			if( 0 == strncmp( data, "data:image/x-icon;base64,", 25  ) )
+			{
+				const char* pdata = data + 25;
+				int ilen = strlen( pdata );
+				int olen = ::Base64Decode( (BYTE*)pdata, ilen, NULL, 0 );
+				if( olen > 0 )
+				{
+					BYTE* obuf = new BYTE[olen];
+					if( ::Base64Decode( (BYTE*)pdata, ilen, obuf, olen ) )
+					{
+						COleImage img;
+						if( img.LoadFromMem( obuf, olen ) )
+						{
+							plugin.Image = img.CopyBitmap();
+						}
+					}
+					delete []obuf;
+				}
+			}
 		}
 	}
 

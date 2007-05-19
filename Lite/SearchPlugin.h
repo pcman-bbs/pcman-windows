@@ -2,6 +2,7 @@
 #define __SEARCHPLUGIN__
 
 #include <afxtempl.h>
+#include <afxwin.h>
 
 #if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible
 #include <atlenc.h>
@@ -16,8 +17,7 @@ public:
 	char* ShortName;
 	char* Description;
 	char* InputEncoding;
-	char* Image;
-	int ImageBytes;
+	HBITMAP Image;
 	CString Url;
 	// CString Suggestions;
 	char* Method;
@@ -38,6 +38,9 @@ public:
 	int GetCount();
 	CString UrlForSearch(int index, CString searchTerm);
 	char* GetField(int index, EField f);
+	HBITMAP GetImage(int index) {
+		return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Image; 
+	}
 
     CSearchPluginCollection(){}
     ~CSearchPluginCollection(){

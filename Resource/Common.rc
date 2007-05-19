@@ -820,6 +820,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_SITELIST_UPDATE_FAIL "更新失敗!"
+    IDS_WEB_SEARCH          "搜尋網頁"
 END
 
 #endif    // Chinese (Taiwan) resources

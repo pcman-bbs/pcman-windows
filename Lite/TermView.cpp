@@ -896,7 +896,6 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 	HMENU sub=inf.hSubMenu;	UINT wID=inf.wID;
 */
 
-
 	MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
 	HMENU search_menu = CreateMenu();
 	CString sel;
@@ -908,36 +907,30 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 	{
 		sel = _T("");
 	}
+
 	if( sel.GetLength() > 0 )
 	{
-#if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible, MFC 4.2 has no CImage
-		CImage image;
-#endif
 		for(int i=0;i< SearchPluginCollection.GetCount(); i++)
 		{
-			//int imageSize = (int)SearchPluginCollection.GetField( i, CSearchPluginCollection::IMAGEBYTES);
-			//IStream *fStream=0;
-			//HRESULT hr=CreateStreamOnHGlobal(0,true,&fStream);
-			//fStream->Write( SearchPluginCollection.GetField( i, CSearchPluginCollection::IMAGE), imageSize, (ULONG*)&imageSize);
-			//hr = image.Load( fStream );
+			HBITMAP image = SearchPluginCollection.GetImage( i );
 			InsertMenu( search_menu, i, MF_BYPOSITION | MF_STRING, ID_SEARCHPLUGIN00 + i, _T( SearchPluginCollection.GetField( i, CSearchPluginCollection::SHORTNAME )) );
-			//if( hr==S_OK)
-			//	SetMenuItemBitmaps( search_menu, i, MF_BYPOSITION, (HBITMAP)image, (HBITMAP)image);
-			//fStream->Release();
-			/**
-			 * Since mfc7(vs2002), CImage supports .png and other formats that it didn't support in the early version,
-			 * and CxImage may no longer need for display png images.
-			 * !! Now that problem is, how to display .ico and how to set menuitem height to at least 16px. !!
-			 **/
+			if( image )
+			{
+				search_menuiteminfo.fMask =  MIIM_BITMAP;
+				search_menuiteminfo.hbmpItem = image;
+				SetMenuItemInfo( search_menu, i, TRUE, &search_menuiteminfo );
+			}
 		}
 		search_menuiteminfo.fMask =  MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
 		search_menuiteminfo.wID = ID_SEARCHPLUGIN_MENU;
 		search_menuiteminfo.hSubMenu = search_menu;
+		CString web_search;
+		web_search.LoadString( IDS_WEB_SEARCH );
 		// FIXME: strings should be stored in string table rather than hard-coded.
-		search_menuiteminfo.dwTypeData = _T("·j´Mºô­¶");
+		search_menuiteminfo.dwTypeData = (LPTSTR)LPCTSTR(web_search);
 		InsertMenuItem ( parent->edit_menu, 5, TRUE, &search_menuiteminfo );
 	}
-	
+
 	char* link=NULL;
 	int len;
 	if(telnet)
