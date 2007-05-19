@@ -442,7 +442,7 @@ bool CAppConfig::OnDataExchange( bool load )
 	    CFG_STR( last_bbslist_item )
 	END_CFG_SECTION()
 
-//	WWW Settings
+//	Web Settings
 #if defined (_COMBO_)
 	BEGIN_CFG_SECTION(Web)
 	    CFG_BYTE( ads_open_new )
@@ -455,6 +455,7 @@ bool CAppConfig::OnDataExchange( bool load )
 	    CFG_BYTE( disable_script_error )
 	    CFG_BYTE( use_ie_fav )
 	    CFG_BYTE( autowrap_favorite )
+	    CFG_SHORT( search_engine )
 	END_CFG_SECTION()
 // Object Section
 //	CStringArray webpage_filter;

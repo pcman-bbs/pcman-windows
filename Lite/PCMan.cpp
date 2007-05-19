@@ -118,29 +118,24 @@ BOOL CApp::InitInstance()
 
 	AppConfig.Load(ConfigPath + CONFIG_FILENAME);
 
+#if defined(_COMBO_)
+	// Lite version calls this function before showing popup menu to reduce startup time.
+	// Combo version loads all search plugins here for search bar.
+	SearchPluginCollection.LoadAll();
+#endif
+
 	CMainFrame* pFrame = new CMainFrame;
 	m_pMainWnd = pFrame;
 
 	WSADATA wsadata;
     WSAStartup(MAKEWORD(2,2),&wsadata);
 
-	pFrame->LoadFrame(IDR_MAINFRAME,
-		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
-		NULL);
-
-	COleImage::Initialize();	// Load OLE for GIF/JPEG loading
-
-	CFileFind searchFind;
-	BOOL searchFound;
-	int pluginId;
-	searchFound = searchFind.FindFile( AppPath + "\\searchplugins\\*.xml" );
-	while( searchFound)
+	if( ! pFrame->LoadFrame(IDR_MAINFRAME,
+			WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
+			NULL) )
 	{
-		searchFound = searchFind.FindNextFile();
-		pluginId = SearchPluginCollection.Load( searchFind.GetFilePath() );
+		return FALSE;
 	}
-
-	COleImage::Finalize();	// Release OLE for GIF/JPEG loading
 
 
 	//Register Hotkey

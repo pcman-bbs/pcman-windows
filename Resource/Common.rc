@@ -577,11 +577,6 @@ IDI_ANSFILE             ICON    DISCARDABLE     "res\\ansfile.ico"
 // Menu
 //
 
-IDR_MAINFRAME MENU DISCARDABLE 
-BEGIN
-    MENUITEM " ",                           65535
-END
-
 IDR_POPUP MENU PRELOAD DISCARDABLE 
 BEGIN
     POPUP ""
@@ -615,6 +610,11 @@ BEGIN
         MENUITEM "到此資料夾下 (&F)",           ID_SITE_MOVE_INTO_FOLDER
         MENUITEM "到此位置 (&P)",               ID_SITE_MOVE_TO_HERE
     END
+END
+
+IDR_MAINFRAME MENU DISCARDABLE 
+BEGIN
+    MENUITEM " ",                           65535
 END
 
 
@@ -820,7 +820,12 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_SITELIST_UPDATE_FAIL "更新失敗!"
-    IDS_WEB_SEARCH          "搜尋網頁"
+    ID_WEB_SEARCH          "搜尋網頁"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "PCMan"
 END
 
 #endif    // Chinese (Taiwan) resources

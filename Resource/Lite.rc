@@ -390,11 +390,6 @@ BEGIN
     ID_RECONNECT            "\n重新連線"
 END
 
-STRINGTABLE DISCARDABLE 
-BEGIN
-    IDR_MAINFRAME           "PCMan 2004"
-END
-
 #endif    // Chinese (Taiwan) resources
 /////////////////////////////////////////////////////////////////////////////
 

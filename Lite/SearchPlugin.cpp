@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SearchPlugin.h"
 #include "StrUtils.h"
@@ -335,3 +336,55 @@ bool CSearchPlugin::ParseXml(char *buf)
 	return CSearchPluginParser(*this).ParseXml(buf);
 }
 
+
+void CSearchPluginCollection::LoadAll()
+{
+	extern CString AppPath;
+
+	if( plugins.GetCount() > 0 )
+		return;
+
+	COleImage::Initialize();	// Load OLE for GIF/JPEG loading
+
+	CFileFind searchFind;
+	BOOL searchFound;
+	int pluginId;
+	searchFound = searchFind.FindFile( AppPath + "\\searchplugins\\*.xml" );
+	while( searchFound)
+	{
+		searchFound = searchFind.FindNextFile();
+		pluginId = SearchPluginCollection.Load( searchFind.GetFilePath() );
+	}
+
+	COleImage::Finalize();	// Release OLE for GIF/JPEG loading
+}
+
+HMENU CSearchPluginCollection::CreateSearchMenu()
+{
+	MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
+	HMENU search_menu = NULL;
+
+#if ! defined(_COMBO_)
+	// Lite version call this function before showing popup menu to reduce startup time
+	SearchPluginCollection.LoadAll();
+#endif
+
+	if( SearchPluginCollection.GetCount() > 0 )
+	{
+		search_menu = CreatePopupMenu();
+		for(int i=0;i< SearchPluginCollection.GetCount(); i++)
+		{
+			HBITMAP image = SearchPluginCollection.GetImage( i );
+			CString text = "  ";
+			text += SearchPluginCollection.GetField( i, CSearchPluginCollection::SHORTNAME );
+			InsertMenu( search_menu, i, MF_BYPOSITION | MF_STRING, ID_SEARCHPLUGIN00 + i, text );
+			if( image )
+			{
+				search_menuiteminfo.fMask =  MIIM_BITMAP;
+				search_menuiteminfo.hbmpItem = image;
+				SetMenuItemInfo( search_menu, i, TRUE, &search_menuiteminfo );
+			}
+		}
+	}
+	return search_menu;
+}

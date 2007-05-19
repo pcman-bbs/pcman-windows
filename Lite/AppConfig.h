@@ -18,6 +18,7 @@
 #include "SiteSettings.h"	// Added by ClassView
 
 #include "ConfigFile.h"
+#include "MemIniFile.h"
 
 //Application Private Messages
 #define WM_NOTIFYICON		(WM_APP+'G')
@@ -174,6 +175,7 @@ public:
 	BYTE disable_script_error;
 	BYTE use_ie_fav;
 	BYTE autowrap_favorite;
+	short search_engine;
 
 // Object Section
 	CStringArray webpage_filter;
@@ -302,6 +304,7 @@ inline void CAppConfig::Default()
 	disable_script_error = 1;
 	use_ie_fav = 1;
 	autowrap_favorite = 1;
+	search_engine = -1;
 #endif
 };
 

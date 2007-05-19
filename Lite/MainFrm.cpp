@@ -38,6 +38,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 #if defined(_COMBO_)
+	#include "SearchPlugin.h"
 	#include "../Combo/WebBrowser.h"
 	#include "../Combo/WebConn.h"
 	#include "Conn.h"
@@ -76,34 +77,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_SHOW_SCROLL, OnShowScroll)
 	ON_COMMAND(ID_SETDEFAULT, OnSetDefaultProgram)
 	ON_COMMAND(ID_CONFIG_AUTOSWITCH, OnAutoSwitch)
-	ON_COMMAND(ID_FREQ_STR, OnShowFrequentlyUsedStr)
-	ON_COMMAND(ID_VIEW_FULLSCR, OnViewFullscr)
-	ON_COMMAND(ID_TOOL_SYMBOLS, OnToolSymbols)
-	ON_COMMAND(ID_VIEW_CONFIG, OnViewConfig)
-	ON_COMMAND(ID_COLORCONFIG, OnColorConfig)
-	ON_COMMAND(ID_CLEAR_HISTORY, OnClearHistory)
-	ON_COMMAND(ID_CUSTOMIZE, OnCustomize)
-	ON_COMMAND(ID_AUTO_DBCS, OnAutoDBCSDetect)
-	ON_COMMAND(ID_ADDTOFAVORITE, OnAddToFavorite)
-	ON_COMMAND(ID_SITE_LIST, OnSitesList)
-	ON_COMMAND(ID_UP, OnPrevConn)
-	ON_COMMAND(ID_DOWN, OnNextConn)
-	ON_COMMAND(ID_LASTCON, OnLastCon)
-	ON_COMMAND(ID_ADDTOHOME, OnAddToHome)
-	ON_COMMAND(ID_COPY, OnCopy)
-	ON_COMMAND(ID_COPYARTICLE, OnCopyArticle)
-	ON_COMMAND(ID_COPYARTICLE_WITH_ANSI, OnCopyArticleWithAnsi)
-	ON_COMMAND(ID_DOWNLOAD_ARTICLE, OnDownloadArticle)
-	ON_COMMAND(ID_COPYPASTE, OnCopyPaste)
-	ON_COMMAND(ID_PASTE, OnPaste)
-	ON_COMMAND(ID_PASTETINYURL, OnPasteTinyUrl)
-	ON_COMMAND(ID_PLAY_ANSIMOVIE, OnPlayMovie)
-	ON_COMMAND(ID_SELECTALL, OnSelAll)
-	ON_COMMAND(ID_BBS_FONT, OnBBSFont)
-	ON_COMMAND(ID_FONT_BTN, OnFont)
-	ON_COMMAND(ID_FILE_EXIT, OnExit)
-	ON_COMMAND(IDM_HELP, OnHelp)
-	ON_COMMAND(ID_CONNECT_NEW, OnNewConn)
 	ON_UPDATE_COMMAND_UI(ID_ANSI_INS, OnUpdateEditorInsertMode)
 	ON_UPDATE_COMMAND_UI(ID_CONFIG_AUTOSWITCH, OnUpdateAutoswitch)
 	ON_UPDATE_COMMAND_UI(ID_KKTAB, OnUpdateKKmanStyleTab)
@@ -142,6 +115,37 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_DISCONNECT, OnUpdateDisconnect)
 	ON_UPDATE_COMMAND_UI(ID_RECONNECT, OnUpdateReconnect)
 	ON_COMMAND(ID_EXITLOG, OnSaveSession)
+	ON_WM_TIMER()
+	ON_COMMAND(ID_FREQ_STR, OnShowFrequentlyUsedStr)
+	ON_COMMAND(ID_EDIT_FIND, OnEditFind)
+	ON_COMMAND(ID_VIEW_FULLSCR, OnViewFullscr)
+	ON_COMMAND(ID_TOOL_SYMBOLS, OnToolSymbols)
+	ON_COMMAND(ID_VIEW_CONFIG, OnViewConfig)
+	ON_COMMAND(ID_CLEAR_HISTORY, OnClearHistory)
+	ON_COMMAND(ID_COLORCONFIG, OnColorConfig)
+	ON_COMMAND(ID_CUSTOMIZE, OnCustomize)
+	ON_COMMAND(ID_AUTO_DBCS, OnAutoDBCSDetect)
+	ON_COMMAND(ID_ADDTOFAVORITE, OnAddToFavorite)
+	ON_COMMAND(ID_ADDTOHOME, OnAddToHome)
+	ON_COMMAND(ID_SITE_LIST, OnSitesList)
+	ON_COMMAND(ID_CONNECT_NEW, OnNewConn)
+	ON_COMMAND(ID_UP, OnPrevConn)
+	ON_COMMAND(ID_DOWN, OnNextConn)
+	ON_COMMAND(ID_LASTCON, OnLastCon)
+	ON_COMMAND(ID_COPY, OnCopy)
+	ON_COMMAND(ID_COPYPASTE, OnCopyPaste)
+	ON_COMMAND(ID_COPYARTICLE, OnCopyArticle)
+	ON_COMMAND(ID_COPYARTICLE_WITH_ANSI, OnCopyArticleWithAnsi)
+	ON_COMMAND(ID_DOWNLOAD_ARTICLE, OnDownloadArticle)
+	ON_COMMAND(ID_PLAY_ANSIMOVIE, OnPlayMovie)
+	ON_COMMAND(ID_FONT_BTN, OnFont)
+	ON_COMMAND(ID_BBS_FONT, OnBBSFont)
+	ON_COMMAND(ID_PASTE, OnPaste)
+	ON_COMMAND(ID_PASTETINYURL, OnPasteTinyUrl)
+	ON_COMMAND(ID_SELECTALL, OnSelAll)
+	ON_COMMAND(ID_FILE_EXIT, OnExit)
+	ON_COMMAND(IDM_HELP, OnHelp)
+	ON_COMMAND_RANGE(ID_SET_CHARSET_DEFAULT,ID_SET_CHARSET_CP932, OnSetCharset) //
 	ON_COMMAND(ID_SWITCH_BACK, OnSwitchBack)
 	ON_UPDATE_COMMAND_UI(ID_SEND_ANSICODE, OnUpdateShowAnsiBar)
 	ON_UPDATE_COMMAND_UI(ID_CURCON_SETTINGS, OnUpdateIsBBSSite)
@@ -165,16 +169,12 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_ADDTOFAVORITE, OnUpdateIsSite)
 	ON_COMMAND(ID_KKTAB, OnKKmanStyleTab)
 	ON_COMMAND(ID_ADS, OnShowAddressBar)
-	ON_COMMAND(ID_EDIT_FIND, OnEditFind)
-	ON_COMMAND_RANGE(ID_SET_CHARSET_DEFAULT,ID_SET_CHARSET_CP932, OnSetCharset) //
 	ON_UPDATE_COMMAND_UI(ID_SET_CHARSET_DEFAULT, OnUpdateSetCharset)
 	ON_UPDATE_COMMAND_UI(ID_EXITLOG, OnUpdateSaveSession)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnSelchangeTab)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
 	ON_WM_ACTIVATEAPP()
-	ON_WM_TIMER()
 	//}}AFX_MSG_MAP
-//	ON_CBN_SELENDCANCEL(IDC_ADS_COMBO,OnAddressComboCancel)
 	ON_MESSAGE(WM_COPYDATA,OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY,OnHotKey)
 	ON_MESSAGE(WM_NOTIFYICON,OnNotifyIcon)
@@ -204,6 +204,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_ADS_OPENNEW, OnAdsOpenNew)
 	ON_COMMAND(ID_TOOL_IMPORT_IEFAV, OnImportIEFavorites)
 	ON_COMMAND(ID_TOOL_EXPORT_IEFAV, OnExportIEFavorites)
+	ON_COMMAND(ID_WEB_SEARCH, OnWebSearch)
 	ON_COMMAND_RANGE(ID_FONT_SMALLEST, ID_FONT_LARGEST, OnBrowserFontSize)
 	ON_NOTIFY(TBN_DROPDOWN , IDC_TOOLBAR, OnToolbarMenuDropDown)
 	ON_COMMAND(ID_GOBACK, OnGoBack)
@@ -359,12 +360,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 #ifdef	_COMBO_
 // Search Bar
 //----------搜尋列------------
-	search_bar.Create(CBS_AUTOHSCROLL|CBS_DROPDOWN,CRect(0,0,0,320),this,IDR_SEARCHBAR);
-	search_bar.MoveWindow(0,0,120,24);
+	search_bar.Create(this);
 	search_bar.SetFont(&bar_font);
-	hedit=::GetTopWindow(search_bar.m_hWnd);
-	old_search_bar_proc=(WNDPROC)::GetWindowLong(hedit,GWL_WNDPROC);
-	::SetWindowLong(hedit,GWL_WNDPROC,(LONG)SearchBarWndProc);
 #endif
 
 //	Create Close Button
@@ -1713,52 +1710,34 @@ void CMainFrame::OnSearchBarCancel()
 		view.SetFocus();
 }
 
-LRESULT CALLBACK CMainFrame::SearchBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam)
+void CMainFrame::OnWebSearch() 
 {
-	CMainFrame* mainfrm = (CMainFrame*)AfxGetMainWnd();
-	if(msg==WM_KEYDOWN)
+	if( AppConfig.search_engine < 0 || AppConfig.search_engine >= SearchPluginCollection.GetCount() )
 	{
-		switch(wparam)
+		// MessageBox("Error!");
+	}
+	else
+	{
+		CString searchurl = SearchPluginCollection.UrlForSearch( AppConfig.search_engine, 
+		                                                         search_bar.GetSearchTerm() );
+
+		// FIXME: whether open search result in current window or new window 
+		//        should be optional in the future!
+	/*
+		if(view.con && !view.telnet)
 		{
-		case VK_RETURN:
-			if( !mainfrm->search_bar.GetDroppedState() )
-			{
-				mainfrm->OnSearchBarEnter();
-				return 0;
-			}
-			break;
-		case VK_ESCAPE:
-			mainfrm->OnSearchBarCancel();
-			return 0;
+			COleVariant v;
+			COleVariant url=searchurl;
+			((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
+			((CWebConn*)view.con)->web_browser.SetFocus();
+			return;
 		}
+	*/
+		OnNewConnectionAds(searchurl);	// 內部會呼叫 view.AddToTypedHistory(address);
 	}
-	else if( msg == WM_GETDLGCODE )
-		return DLGC_WANTALLKEYS;
 
-	return CallWindowProc( mainfrm->old_search_bar_proc, hwnd, msg, wparam, lparam );
 }
 
-void CMainFrame::OnSearchBarEnter()
-{
-	CString searchword;
-	search_bar.GetWindowText(searchword);
-	CString searchurl = "http://www.google.com/search?q="+searchword;
-
-	// FIXME: whether open search result in current window or new window 
-	//        should be optional in the future!
-/*
-	if(view.con && !view.telnet)
-	{
-		COleVariant v;
-		COleVariant url=searchurl;
-		((CWebConn*)view.con)->web_browser.wb_ctrl.Navigate2(&url,&v,&v,&v,&v);
-		((CWebConn*)view.con)->web_browser.SetFocus();
-		return;
-	}
-*/
-
-	OnNewConnectionAds(searchurl);	// 內部會呼叫 view.AddToTypedHistory(address);
-}
 #endif
 
 void CMainFrame::OnAnsiBarBk()
@@ -3803,3 +3782,4 @@ void CMainFrame::OnBBSFont()
 		view.Invalidate(FALSE);
 	}
 }
+

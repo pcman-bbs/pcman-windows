@@ -19,6 +19,7 @@
 #if defined _COMBO_
 	#include "../Combo/adlist.h"
 	#include "../Combo/aditem.h"
+	#include "../Combo/SearchBar.h"
 #endif
 
 #define	CT_MENU		1
@@ -99,7 +100,7 @@ public:
 	CStatic status_bar;
 	CComboBox address_bar;
 #ifdef	_COMBO_
-	CComboBox search_bar;
+	CSearchBar search_bar;
 #endif
 
 	HMENU main_menu;
@@ -236,7 +237,6 @@ public:
 	afx_msg void OnAddToHome();
 	afx_msg void OnSitesList();
 	afx_msg void OnNewConn();
-
 	afx_msg void OnPrevConn();
 	afx_msg void OnNextConn();
 	afx_msg void OnLastCon();
@@ -255,6 +255,7 @@ public:
 	afx_msg void OnExit();
 	afx_msg void OnHelp();
 	afx_msg void OnSetCharset(UINT nID);
+	afx_msg void OnWebSearch();
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);
@@ -308,7 +309,6 @@ public:
 	LRESULT OnRemoveWebConn(WPARAM wparam,LPARAM lparam);
 	BOOL FilterWebConn(CWebConn* web_conn);
 	void OnToolbarMenuDropDown(NMHDR* pNMHDR, LRESULT* pResult);
-	void OnSearchBarEnter();
 	void OnSearchBarCancel();
 #endif
 
@@ -323,10 +323,6 @@ protected:
 	inline void MinimizeToTray();
 	static LRESULT CALLBACK AddressBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
 	WNDPROC old_address_bar_proc;
-#if defined(_COMBO_)
-	static LRESULT CALLBACK SearchBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
-	WNDPROC old_search_bar_proc;
-#endif
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -112,7 +112,7 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_COMMAND_RANGE(ID_EDIT_OPENURL, ID_EDIT_OPENURL_FTP, OnEditOpenURL)
 	ON_COMMAND_RANGE(ID_FIRST_HISTORY,ID_LAST_HISTORY,OnHistory)	//³s½u¬ö¿ý
     ON_REGISTERED_MESSAGE( WM_FINDREPLACE, OnFind )
-	ON_COMMAND_RANGE(ID_SEARCHPLUGIN00, ID_SEARCHPLUGIN31, OnSearchPlugin)
+	ON_COMMAND_RANGE(CSearchPluginCollection::ID_SEARCHPLUGIN00, CSearchPluginCollection::ID_SEARCHPLUGIN31, OnSearchPlugin)
 END_MESSAGE_MAP()
 
 CFont fnt;
@@ -896,8 +896,6 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 	HMENU sub=inf.hSubMenu;	UINT wID=inf.wID;
 */
 
-	MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
-	HMENU search_menu = CreateMenu();
 	CString sel;
 	try
 	{
@@ -910,22 +908,12 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 	if( sel.GetLength() > 0 )
 	{
-		for(int i=0;i< SearchPluginCollection.GetCount(); i++)
-		{
-			HBITMAP image = SearchPluginCollection.GetImage( i );
-			InsertMenu( search_menu, i, MF_BYPOSITION | MF_STRING, ID_SEARCHPLUGIN00 + i, _T( SearchPluginCollection.GetField( i, CSearchPluginCollection::SHORTNAME )) );
-			if( image )
-			{
-				search_menuiteminfo.fMask =  MIIM_BITMAP;
-				search_menuiteminfo.hbmpItem = image;
-				SetMenuItemInfo( search_menu, i, TRUE, &search_menuiteminfo );
-			}
-		}
+		MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
 		search_menuiteminfo.fMask =  MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
-		search_menuiteminfo.wID = ID_SEARCHPLUGIN_MENU;
-		search_menuiteminfo.hSubMenu = search_menu;
+		search_menuiteminfo.wID = CSearchPluginCollection::ID_SEARCHPLUGIN_MENU;
+		search_menuiteminfo.hSubMenu = SearchPluginCollection.CreateSearchMenu();
 		CString web_search;
-		web_search.LoadString( IDS_WEB_SEARCH );
+		web_search.LoadString( ID_WEB_SEARCH );
 		// FIXME: strings should be stored in string table rather than hard-coded.
 		search_menuiteminfo.dwTypeData = (LPTSTR)LPCTSTR(web_search);
 		InsertMenuItem ( parent->edit_menu, 5, TRUE, &search_menuiteminfo );
@@ -970,7 +958,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		}
 	}
 	if(sel.GetLength() > 0 )
-		RemoveMenu( parent->edit_menu, 5, MF_BYPOSITION );
+		DeleteMenu( parent->edit_menu, 5, MF_BYPOSITION );
 	if(cmd >0)
 		AfxGetMainWnd()->SendMessage(WM_COMMAND,cmd,0);
 }
@@ -3167,5 +3155,6 @@ void CTermView::CopySelText()
 
 void CTermView::OnSearchPlugin(UINT id)
 {
-	AppConfig.hyper_links.OpenURL(SearchPluginCollection.UrlForSearch( id-ID_SEARCHPLUGIN00, GetSelText() ));
+	id -= CSearchPluginCollection::ID_SEARCHPLUGIN00;
+	AppConfig.hyper_links.OpenURL(SearchPluginCollection.UrlForSearch( id, GetSelText() ));
 }

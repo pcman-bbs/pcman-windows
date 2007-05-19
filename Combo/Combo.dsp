@@ -268,6 +268,10 @@ SOURCE=..\Lite\Rijndael.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SearchBar.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\SearchPlugin.cpp
 # End Source File
 # Begin Source File
@@ -517,6 +521,10 @@ SOURCE=..\Lite\RFC854.H
 # Begin Source File
 
 SOURCE=..\Lite\Rijndael.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SearchBar.h
 # End Source File
 # Begin Source File
 
