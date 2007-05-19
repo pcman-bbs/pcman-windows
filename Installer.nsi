@@ -95,7 +95,7 @@ Section SEC01
     MessageBox MB_OK "Download failed: $R0"
 
   SetOverwrite off
-;  File "${SRC_DIR}\Symbols.txt"
+  File "${SRC_DIR}\Symbols.txt"
 
   SetOutPath "$INSTDIR\Config"
   File "${SRC_DIR}\Config\Config.ini"
@@ -180,18 +180,8 @@ Section Uninstall
   RMDir /r "$INSTDIR\Config"
   Delete "$INSTDIR\Symbols.txt"
 
-  Delete "$SMPROGRAMS\${PRODUCT_DIR}\Uninstall.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_DIR}\Website.lnk"
-  Delete "$DESKTOP\Open PCMan 2007.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_DIR}\Open PCMan 2007.lnk"
-  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi2 Eng2
-  Chi2:
-    Delete "$SMPROGRAMS\${PRODUCT_DIR}\標點符號輸入程式.lnk"
-    Goto +2
-  Eng2:
-    Delete "$SMPROGRAMS\${PRODUCT_DIR}\Symbols.lnk"
+  RMDir /r "$SMPROGRAMS\${PRODUCT_DIR}"
 
-  RMDir "$SMPROGRAMS\${PRODUCT_DIR}"
   Delete "$SMPROGRAMS\${PRODUCT_DIR}\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk"
   Delete "$DESKTOP\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk"
 
