@@ -717,7 +717,7 @@ bool DownLoadURL( LPCTSTR url, LPCTSTR out_path, bool show_ui = false )
 		{
 			char buf[4096];
 			DWORD len = 0;
-			while( InternetReadFile( ifile, buf, sizeof(buf), &len) )
+			while( InternetReadFile( ifile, buf, sizeof(buf), &len) && len > 0 )
 			{
 				ofile.Write( buf, len );
 			}

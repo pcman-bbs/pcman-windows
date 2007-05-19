@@ -60,7 +60,7 @@ s中正通訊壹參玖肆	bbs.comm.ccu.edu.tw
 s中正電機網路中繼	bbs.ee.ccu.edu.tw
 s中正機械小天堂	bbs.me.ccu.edu.tw
 s中正數學	bbs.math.ccu.edu.tw
-s中正築夢園	cd.twbbs.org
+s中正築夢園 (校內最大站台)	cd.twbbs.org
 s中正心理 心海奇航-賽卡羅旗號	ccupsy.twbbs.org
 
 d中原
@@ -165,6 +165,7 @@ s玄奘玄風星城	bbs.imd.hcu.edu.tw
 
 d立德
 s立德領導之家	bbs.leader.edu.tw
+s立德新月夜	nns.twbbs.org
 
 d交大
 s交大資訊次世代ＢＳ２	bbs.cs.nctu.edu.tw
@@ -224,6 +225,7 @@ s成大土木塵土飛揚 (支持GB碼)	bbs2.civil.ncku.edu.tw
 s成大工程科學忘情小築	bbs.es.ncku.edu.tw
 s成大失落的國度 (login:doombbs)	news.ccns.ncku.edu.tw
 s成大生物飛翔站	flight.twbbs.org
+s成大化學琉璃仙境	nckuch.twbbs.org
 s成大交管寰宇交流 (交通運輸專業板)	bbs.tcm.ncku.edu.tw
 s成大物治黃金之島 (物理治療複健)	bbs.pt.ncku.edu.tw
 s成大物理-Feynman	bbs.phy.ncku.edu.tw
@@ -258,7 +260,7 @@ s東華應數奧林帕斯	bbs.am.ndhu.edu.tw
 
 d空中
 
-d宜蘭
+d宜大
 s宜大蘭雨情懷	bbs.niu.edu.tw
 
 d長庚
@@ -485,7 +487,10 @@ s國立虎尾科技大學尋夢園資訊站	bbs.nfu.edu.tw
 s國立高雄應用科技大學楓城站	bbs.kuas.edu.tw
 s國立高雄海洋科技大學水色烏托邦	bbs.nkmu.edu.tw
 s國立澎湖科技大學	bbs.npu.edu.tw
+s國立勤益科技大學風中情緣	bbs.ncut.edu.tw
 s臺南科技大學	192.192.3.19
+s中國科技大學眷戀山城	bbs.cute.edu.tw
+s中華醫事科技大學不夜城	hwai.twbbs.org
 s中臺科技大學銀樺廣場	bbs.ctust.edu.tw
 s弘光科技大學	bbs.hk.edu.tw
 s高苑科技大學苑苑情深	bbs.kyu.edu.tw
@@ -494,6 +499,8 @@ s樹德科技大學	bbs.stu.edu.tw
 s元培科技大學資訊工程系	203.68.174.232
 s聖約翰科技大學淡水魚	bbs.sju.edu.tw
 s龍華科技大學龍崗豪情	bbs.lhu.edu.tw
+s景文科技大學	bbs.jwit.edu.tw
+s遠東科技大學	bbs.feu.edu.tw
 
 d教育大學
 s國立臺北教育大學芝山情緣	bbs.ntue.edu.tw
@@ -520,9 +527,7 @@ s國立屏東商業技術學院	bbs.npic.edu.tw
 s大華正義學園	src.thit.edu.tw
 s大華電子竹林楓	bbs.peipu.com
 s大漢技術學院	bbs.dahan.edu.tw
-s中國技術學院眷戀山城	bbs.ckitc.edu.tw
 s中華技術學院四分溪	bbs.chit.edu.tw
-s中華醫事學院不夜城	hwai.twbbs.org
 s大同技術學院	bbs.ttc.edu.tw
 s文藻外語學院文藻小站	bbs.wtuc.edu.tw
 s育達商業技術學院	bbs.ydu.edu.tw
@@ -536,12 +541,9 @@ s南開技術學院資訊站	bbs.nkc.edu.tw
 s德明技術學院夢□幽情	bbs.takming.edu.tw
 s致理技術學院	bbs.chihlee.edu.tw
 s華夏技術學院人間風月	bbs.hwh.edu.tw
-s景文計中可樂果	bbs.jwit.edu.tw
-s勤益技術學院風中情緣	bbs.ncit.edu.tw
 s慈濟技術學院心蓮小站	bbs.tccn.edu.tw
 s美和技術學院人間仙境	bbs.meiho.edu.tw
 s親民技術學院計中	bbs.chinmin.edu.tw
-s遠東技術學院計中站	bbs.fec.edu.tw
 s東方技術學院	bbs.tf.edu.tw
 s德霖技術學院青雲崗	bbs.dlit.edu.tw
 s德霖技術學院電子	bbs.ee.dlit.edu.tw
@@ -614,6 +616,9 @@ s建中資訊社雅勒尼恩	infor.org
 s師大附中	bbs.hs.ntnu.edu.tw
 s復興高中永成木瓜牛奶 (休站中)	bbs.fhsh.tp.edu.tw
 s泰北中學泰北采風	linux.part.tpsh.tp.edu.tw
+s北一女資研社弗基斯特	fgisc.twbbs.org
+s中山女高資訊研究社楓資羽翼	csisc.csghs.tp.edu.tw
+s景美女中黃衫客	bbs.cmgsh.tp.edu.tw
 
 d北縣
 s三重高中紙飛機的天空	scjhbbs.twbbs.org
@@ -703,7 +708,7 @@ s小港高中水雲港灣	hkhs.twbbs.org
 s中山高中水綠色年代	watergreen.twbbs.org
 s左營高中蘋婆樹下	bbs.tyhs.edu.tw
 s左營高中蘋婆樹籽	bbs2.tyhs.edu.tw
-s前鎮高中怡園小站	bbs.ccsh.kh.edu.tw
+s前鎮高中藍色傳說怡園小站	bbs.ccsh.kh.edu.tw
 s道明中學多明尼克	bbs.dmhs.kh.edu.tw
 s高師附中玲瓏居停	bbs.nknush.kh.edu.tw
 s高雄女中斑城資訊站	bbs.kghs.kh.edu.tw
@@ -1291,7 +1296,7 @@ s清華大學 自由世界	166.111.48.196
 
 d北京大學
 s北京大學 北大未名★	bbs.pku.edu.cn
-s北京大學 大話西游	162.105.245.5
+s北京大學 大話西游	162.105.245.10
 s北京大學 cs963	162.105.6.250
 s北京大學 數學學院	bbs.math.pku.edu.cn
 s北京大學 數學學院_SSH 	162.105.70.3:31222
@@ -1494,5 +1499,8 @@ s華北電力大學 心電感應	bbs.ncepubj.edu.cn
 s美國 天天壇	tttan.com
 s臺灣 十番町商店街	10ban.no-ip.org
 s美國 聖迭戈小站	sd-bbs.net
-
+s臺灣 任天堂	wii.twbbs.org
+s臺灣 蘿莉小站	loli.twbbs.org
+s臺灣 Appleboy	wuboy.twbbs.org
+s臺灣 幸運草之戀	segaa.net
 
