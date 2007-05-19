@@ -12,6 +12,7 @@ CSearchPlugin::CSearchPlugin()
 	ShortName = Description = InputEncoding = Method = NULL;
 	Image = NULL;
 }
+
 CSearchPlugin::~CSearchPlugin()
 {
 	if(ShortName)
@@ -52,8 +53,8 @@ int CSearchPluginCollection::Load(LPCTSTR filepath)
 	}
     delete []buf;
 
-	plugins.AddTail( plugin );
-	return plugins.GetCount()-1;
+	plugins.Add( plugin );
+	return plugins.GetSize()-1;
 }
 
 CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm)
@@ -125,36 +126,31 @@ CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm)
 
 int CSearchPluginCollection::GetCount()
 {
-	return plugins.GetCount();
+	return plugins.GetSize();
 }
 
 char* CSearchPluginCollection::GetField(int index, EField f)
 {
 	CString value;
+	if( index < 0 || index >= plugins.GetSize() )
+		return NULL;
+
 	switch( f )
 	{
 		case SHORTNAME:
-			return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->ShortName;
+			return ((CSearchPlugin*)plugins[index])->ShortName;
 			break;
 		case DESCRIPTION:
-			return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Description;
+			return ((CSearchPlugin*)plugins[index])->Description;
 			break;
 		case INPUTENCODING:
-			return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->InputEncoding;
+			return ((CSearchPlugin*)plugins[index])->InputEncoding;
 			break;
-/*
-		case IMAGE:
-			return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Image;
-			break;
-		case IMAGEBYTES:
-			return (char*)((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->ImageBytes;
-			break;
-*/
 		case URL:
-			return (char*)(LPCTSTR)((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Url;
+			return (char*)(LPCTSTR)((CSearchPlugin*)plugins[index])->Url;
 			break;
 		case METHOD:
-			return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Method;
+			return ((CSearchPlugin*)plugins[index])->Method;
 			break;
 	}
 	return _T("");
@@ -336,12 +332,18 @@ bool CSearchPlugin::ParseXml(char *buf)
 	return CSearchPluginParser(*this).ParseXml(buf);
 }
 
+int __cdecl _ComparePlugin( const void* v1, const void* v2 )
+{
+	CSearchPlugin* p1 = *(CSearchPlugin**)v1;
+	CSearchPlugin* p2 = *(CSearchPlugin**)v2;
+	return _mbsicmp( (BYTE*)p1->ShortName, (BYTE*)p2->ShortName );
+}
 
 void CSearchPluginCollection::LoadAll()
 {
 	extern CString AppPath;
 
-	if( plugins.GetCount() > 0 )
+	if( plugins.GetSize() > 0 )
 		return;
 
 	COleImage::Initialize();	// Load OLE for GIF/JPEG loading
@@ -350,13 +352,23 @@ void CSearchPluginCollection::LoadAll()
 	BOOL searchFound;
 	int pluginId;
 	searchFound = searchFind.FindFile( AppPath + "\\searchplugins\\*.xml" );
-	while( searchFound)
+	while( searchFound )
 	{
 		searchFound = searchFind.FindNextFile();
 		pluginId = SearchPluginCollection.Load( searchFind.GetFilePath() );
 	}
 
 	COleImage::Finalize();	// Release OLE for GIF/JPEG loading
+
+	plugins.FreeExtra();
+
+	// Brute force!! Sort "internal data" of CPtrArray. Anyway, it works!
+	// FIXME: Current sorting result is not very good.
+	void** pdata = plugins.GetData();
+	if( pdata )
+	{
+		qsort( pdata, plugins.GetSize(), sizeof(void*), _ComparePlugin );
+	}
 }
 
 HMENU CSearchPluginCollection::CreateSearchMenu()

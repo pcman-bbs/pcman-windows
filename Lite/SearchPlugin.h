@@ -26,12 +26,8 @@ public:
 class CSearchPluginCollection {
 private:
 
-#if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible
-	CList<CSearchPlugin*> plugins;
-#else
-	CList<CSearchPlugin*, CSearchPlugin*&> plugins;
-#endif
-	// static char hextable[][4];
+	CPtrArray plugins;
+
 public:
 	enum SearchMenuItemId {
 		ID_SEARCHPLUGIN_MENU = 65535,
@@ -77,13 +73,16 @@ public:
 	CString UrlForSearch(int index, CString searchTerm);
 	char* GetField(int index, EField f);
 	HBITMAP GetImage(int index) {
-		return ((CSearchPlugin*)(plugins.GetAt( plugins.FindIndex(index))))->Image; 
+		if( index < 0 || index >= plugins.GetSize() )
+			return NULL;
+		return ((CSearchPlugin*)plugins[index])->Image; 
 	}
 
     CSearchPluginCollection(){}
     ~CSearchPluginCollection(){
-        for( POSITION pos = plugins.GetHeadPosition(); pos; plugins.GetNext(pos) ) {
-            CSearchPlugin* plugin = plugins.GetAt(pos);
+		int n = plugins.GetSize();
+        for( int i = 0; i < n; ++i ) {
+            CSearchPlugin* plugin = (CSearchPlugin*)plugins[i];
             if( plugin )
                 delete plugin;
         }
