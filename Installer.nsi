@@ -12,9 +12,9 @@ OutFile "PCMan.exe"
 !endif
 
 !define PRODUCT_DIR "${PRODUCT_NAME}"
-!define PRODUCT_VERSION "2007 Alpha"
+!define PRODUCT_VERSION "2007 Beta"
 !define PRODUCT_PUBLISHER "Open PCMan Team"
-!define PRODUCT_WEB_SITE "http://rt.openfoundry.org/Foundry/Project/?Queue=744"
+!define PRODUCT_WEB_SITE "http://pcman.openfoundry.org/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PCMan.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
@@ -168,6 +168,7 @@ Section Uninstall
   Delete "$INSTDIR\Story.txt"
   Delete "$INSTDIR\BBSList"
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
+  Delete "$INSTDIR\Symbols.exe"
   Delete "$INSTDIR\uninst.exe"
 
   StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng

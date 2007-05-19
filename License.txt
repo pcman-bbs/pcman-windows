@@ -1,12 +1,17 @@
-PCMan project is released under GNU General Public License.
+Open PCMan project is released under GNU General Public License.
 Copyright (C) 2001-2007 Hong Jen Yee (PCMan) <pcman.tw@gmail.com>
+Copyright (C) 2007 Open PCMan Team
 
 Lite\Rijndael.cpp and Lite\Rijndael.h are written by George Anescu and 
 not released under GPL, but its license is compatible with GPL.
 
+NOTE:
+Symbols.exe included in this package is freeware, but not free software.
+Its use along with PCMan is permitted by the author and is free of charge.
+
 The original icons used in PCMan are not free, and hence cannot be included
-in this project.  These missing files can be found in previous non-free
-versions of PCMan, such as PCMan 2004/PCMan 2004 Combo.
+in this project.  You can get the files from previous non-free versions of 
+PCMan, such as PCMan 2004/PCMan 2004 Combo.
 
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991

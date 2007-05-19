@@ -283,8 +283,6 @@ int CAutoComplete::CompareItem(const void *p1, const void *p2)
 
 void CAutoComplete::FilterDisplayedItems()
 {
-	LockWindowUpdate();
-
 	CStringList& src = *m_pSrc;
 	CArray<ListItemData, ListItemData>& cur = m_DisplayedItems;
 	CString str;	int len=::GetWindowTextLength(m_hEdit);
@@ -318,6 +316,4 @@ void CAutoComplete::FilterDisplayedItems()
 	}
 	else
 		Close();
-
-	UnlockWindowUpdate();
 }
