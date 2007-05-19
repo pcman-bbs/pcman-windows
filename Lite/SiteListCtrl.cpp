@@ -17,6 +17,9 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+const char SEPARATOR[] = "        ";
+const int SEPARATOR_LEN = 8;
+
 CSiteListCtrl::CSiteListCtrl()
 {
 	SetAutoExpandTarget(1000);
@@ -82,18 +85,20 @@ HTREEITEM CSiteListCtrl::CopyTo(HTREEITEM from, HTREEITEM parent, HTREEITEM inse
 	changed =TRUE;
 	HTREEITEM newitem;
 	TVINSERTSTRUCT tvitem;	tvitem.item.mask=TVIF_CHILDREN|TVIF_HANDLE|TVIF_IMAGE|TVIF_PARAM|TVIF_SELECTEDIMAGE|TVIF_STATE|TVIF_TEXT;
-	tvitem.item.cchTextMax=256;	char tmp[256];	tvitem.item.pszText=tmp;
+	tvitem.item.cchTextMax=256;
+	char tmp[256];
+	tvitem.item.pszText=tmp;
 	tvitem.item.hItem=from;
 	GetItem(&tvitem.item);
 	tvitem.hInsertAfter=insert_after;
 	tvitem.hParent=parent;
 
-	char* ptab=strchr(tmp,'\t');
+	char* ptab = strstr(tmp, SEPARATOR);
 	CString address;
 	char* ptmp;
 	if(ptab)
 	{
-		address=ptab;
+		address = ptab;
 		*ptab=0;
 		ptmp=ptab;
 	}
@@ -171,7 +176,7 @@ void CSiteListCtrl::DeleteItem(HTREEITEM item, BOOL bDelFile)
 CString CSiteListCtrl::GetItemFilePath(HTREEITEM item)
 {
 	CString fp=GetItemPath(item);
-	int i=fp.Find('\t');	if(i!=-1)	fp=fp.Left(i);
+	int i=fp.Find(SEPARATOR);	if( i!=-1 )	fp=fp.Left(i);
 //	return ConfigPath+fp.Mid(strlen(BBS_FAVORITE_NAME)+1);
 	fp = ConfigPath + fp;
 	if( !IsItemDir(item) )
@@ -185,7 +190,7 @@ HTREEITEM CSiteListCtrl::FindChildItem(HTREEITEM parent, LPCTSTR key)
 	for( item=GetChildItem(parent);item; item=GetNextSiblingItem(item) )
 	{
 		CString txt=GetItemText(item);
-		int i=txt.Find('\t');
+		int i=txt.Find(SEPARATOR);
 		if( i!=-1 )
 			txt=txt.Left(i);
 		if( txt.CompareNoCase(key)==0 )
@@ -193,7 +198,6 @@ HTREEITEM CSiteListCtrl::FindChildItem(HTREEITEM parent, LPCTSTR key)
 	}
 	return item;
 }
-
 
 HTREEITEM CSiteListCtrl::GetTopParent(HTREEITEM item)
 {

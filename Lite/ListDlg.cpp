@@ -25,8 +25,6 @@ static char THIS_FILE[] = __FILE__;
 	#include "../Combo/WebPageDlg.h"
 #endif
 
-const char SEPARATOR[] = "        ";
-
 /////////////////////////////////////////////////////////////////////////////
 // CListDlg dialog
 
@@ -114,6 +112,7 @@ void CListDlg::OnOK()
 			view->parent->LoadWebFavorites();
 #endif
 		}
+		str.Replace( SEPARATOR, "\t" );
 		view->ConnectStr( 's' + str, dir );
 		CDialog::OnOK();
 	}
@@ -299,19 +298,30 @@ void CListDlg::OnAddSite()
 		type = (top == sites.wwwfavorite ? 8:4);
 
 	if(image==3)
-		newitem=sites.InsertItem((type==8?"\thttp://":"\t"),type,type,item);
+	{
+		CString text = SEPARATOR;
+		if( type == 8 )
+			text += "http://";
+		newitem=sites.InsertItem(text,type,type,item);
+	}
 	else
-		newitem=sites.InsertItem((type==8?"\thttp://":"\t"),type,type,sites.GetParentItem(item),item);
+	{
+		CString text = SEPARATOR;
+		if( type == 8 )
+			text += "http://";
+
+		newitem=sites.InsertItem(text,type,type,sites.GetParentItem(item),item);
+	}
 #else
 	if(image==3)
-		newitem=sites.InsertItem("\t",4,4,item);
+		newitem=sites.InsertItem(SEPARATOR,4,4,item);
 	else
-		newitem=sites.InsertItem("\t",4,4,sites.GetParentItem(item),item);
+		newitem=sites.InsertItem(SEPARATOR,4,4,sites.GetParentItem(item),item);
 #endif
 
 	sites.SelectItem(newitem);
 	OnEditSite();
-	if(sites.GetItemText(newitem)=="\t")
+	if(sites.GetItemText(newitem)==SEPARATOR)
 	{
 		sites.DeleteItem(newitem, FALSE);
 		sites.SelectItem(item);
@@ -343,8 +353,11 @@ void CListDlg::OnEditSite()
 	{
 		CInputNameDlg dlg(this);
 		dlg.name=sites.GetItemText(item);
+		dlg.name.Replace( SEPARATOR, "\t" );
 		if(dlg.DoModal()==IDOK)
 		{
+			CString tmp = dlg.name;
+			tmp.Replace( "\t", SEPARATOR );
 			sites.SetItemText(item,dlg.name);
 			sites.changed=TRUE;
 		}
@@ -354,29 +367,29 @@ void CListDlg::OnEditSite()
 	{
 		CWebPageDlg dlg(this);
 		CString str=sites.GetItemText(item);
-		int pos=str.Find('\t');
+		int pos=str.Find( SEPARATOR );
 		dlg.m_Name = str.Left(pos);
-		dlg.m_URL = str.Mid(pos+1);
+		dlg.m_URL = str.Mid( pos + SEPARATOR_LEN );
 		if( dlg.DoModal() == IDOK )
 		{
 			sites.changed=TRUE;
-			sites.SetItemText( item,dlg.m_Name +'\t'+dlg.m_URL );
+			sites.SetItemText( item,dlg.m_Name + SEPARATOR +dlg.m_URL );
 		}
 	}
 #endif
 	else	//site
 	{
 		CString str=sites.GetItemText(item);
-		int pos=str.Find('\t');
+		int pos=str.Find( SEPARATOR );
 
 		CConnectPage page0;
 		CString name=page0.name=str.Left(pos);
-		page0.address=str.Mid(pos+1);
+		page0.address=str.Mid( pos + SEPARATOR_LEN );
 		page0.port= 23;
 		pos=page0.address.ReverseFind(':');
 		if(pos!=-1)
 		{
-			page0.port = (unsigned short)atoi(page0.address.Mid(pos+1));
+			page0.port = (unsigned short)atoi(page0.address.Mid(pos + 1));
 			page0.address=page0.address.Left(pos);
 		}
 
@@ -401,9 +414,9 @@ void CListDlg::OnEditSite()
 		{
 			sites.changed=TRUE;
 
-			CString text=page0.name+'\t'+page0.address;
+			CString text=page0.name+ SEPARATOR +page0.address;
 			if( page0.port != 23 && page0.port > 0 )
-				text.Format("%s:%d", page0.name+'\t'+page0.address, page0.port);
+				text.Format("%s%s%s:%d", LPCTSTR(page0.name), SEPARATOR, LPCTSTR(page0.address), page0.port);
 
 			sites.SetItemText(item,text);
 

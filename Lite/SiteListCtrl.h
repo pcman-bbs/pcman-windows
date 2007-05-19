@@ -11,6 +11,9 @@
 
 #include "DragTreeCtrl.h"
 
+extern const char SEPARATOR[];
+extern const int SEPARATOR_LEN;
+
 class CListDlg;
 
 class CSiteListCtrl : public CDragTreeCtrl  
