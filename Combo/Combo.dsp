@@ -240,6 +240,10 @@ SOURCE=..\Lite\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\libmd5-rfc\md5.c"
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\MemIniFile.cpp
 # End Source File
 # Begin Source File
@@ -481,6 +485,10 @@ SOURCE=..\Lite\ListDlg.h
 # Begin Source File
 
 SOURCE=..\Lite\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\libmd5-rfc\md5.h"
 # End Source File
 # Begin Source File
 

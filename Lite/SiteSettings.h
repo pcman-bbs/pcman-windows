@@ -72,8 +72,6 @@ public:
 	{	return !operator==(ss);	}
 	
 	inline void Default();
-	void ReadFile(CFile& file);
-	void WriteFile(CFile& file);
 };
 
 inline void CSiteSettings::Default()

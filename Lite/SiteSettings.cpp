@@ -25,29 +25,13 @@ CSiteSettings::~CSiteSettings()
 
 }
 
-
-void CSiteSettings::ReadFile(CFile& file)
-{
-	file.Read(this,DWORD(&termtype)-DWORD(this));
-	termtype=LoadString(file);
-	idle_str=LoadString(file);
-	esc_convert=LoadString(file);
-}
-
-void CSiteSettings::WriteFile(CFile& file)
-{
-	file.Write(this,DWORD(&termtype)-DWORD(this));
-	SaveString(file,termtype);
-	SaveString(file,idle_str);
-	SaveString(file,esc_convert);
-}
-
 class CSiteSettingsLoader : public CConfigFile
 {
 public:
 	CSiteSettingsLoader( CSiteSettings& settings, CString fpath )
 		: site_settings(settings)
 	{
+
 	    SetFilePath( fpath );
 	}
 

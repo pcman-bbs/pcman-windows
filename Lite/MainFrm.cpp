@@ -183,6 +183,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_FIRST_BBS_FAVORITE,ID_LAST_WEB_FAVORITE,OnFavorite)	//我的最愛
 	ON_COMMAND_RANGE(ID_SWITCHCON1,ID_SWITCHCON10,OnHotkeySwitch)	//視窗切換
 
+	ON_NOTIFY_EX( TTN_NEEDTEXT, 0, OnToolTipNeedText )	// For tooltips
 
 #if defined(_COMBO_)
 	ON_COMMAND(ID_WWWHOME, OnWebHome)
@@ -2049,7 +2050,6 @@ void CMainFrame::OnUpdateSelectAll(CCmdUI* pCmdUI)
 {
 	OnUpdateIsBBS(pCmdUI);
 }
-
 
 BOOL CMainFrame::OnToolTipNeedText(UINT id, NMHDR *nmhdr, LRESULT *r)
 {

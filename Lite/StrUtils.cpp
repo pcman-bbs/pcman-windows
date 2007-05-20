@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "StrUtils.h"
+#include "../libmd5-rfc/md5.h"	// For MD5 hash
 
 //case sensitive
 char* strrstr(const char* str,const char* sub)
@@ -371,4 +372,26 @@ UINT Base64Decode(BYTE* in, UINT inlen, BYTE* out, UINT outlen)
 	for( ; pad > 0; --pad )	// removing padding bytes
 		--out;
 	return out - _out;
+}
+
+// Convert a string to md5 hash string
+// out should be at least 33 bytes (include '\0' at tail) in length.
+char* StrToMD5( const char* in, int len, char* out )
+{
+	md5_byte_t md5[16];
+	md5_state_t md5_state;
+	md5_init( &md5_state );
+	md5_append( &md5_state, ( md5_byte_t * ) in, len );
+	md5_finish( &md5_state, md5 );
+
+	for( int i = 0; i < 16; ++i, out+= 2 )
+	{
+		// convert to hex string presentation (See CharToHex)
+		int d1 = (md5[i] >> 4); // digit1 = md5[i] / 16 = md5[i] >> 4
+		int d2 = (md5[i] & 15); // digit2 = md5[i] % 16 = md5[i] & 15
+		out[1] = d1 >= 10 ? (d1 - 10 + 'A') : (d1 + '0');
+		out[2] = d2 >= 10 ? (d2 - 10 + 'A') : (d2 + '0');
+	}
+	out[33] = '\0';
+	return out;
 }
