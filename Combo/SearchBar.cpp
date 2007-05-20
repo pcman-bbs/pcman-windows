@@ -173,13 +173,19 @@ void CSearchBar::UpdateBtn()
 	inf.cbSize = sizeof(inf);
 	inf.dwMask = TBIF_IMAGE|TBIF_TEXT|TBIF_SIZE;
 	inf.iImage = img;
-	CWindowDC dc(this);
-	CGdiObject* oldf = dc.SelectObject(GetFont());
 	LPCTSTR text = SearchPluginCollection.GetField(AppConfig.search_engine,
  		                                           CSearchPluginCollection::SHORTNAME);
-	CSize sz = dc.GetTextExtent( text, strlen(text) );
-	dc.SelectObject( oldf );
-	inf.cx = sz.cx + 44;
+	if( text )
+	{
+		CWindowDC dc(this);
+		CGdiObject* oldf = dc.SelectObject(GetFont());
+		CSize sz = dc.GetTextExtent( text, strlen(text) );
+		dc.SelectObject( oldf );
+		inf.cx = sz.cx + 44;
+	}
+	else
+		inf.cx = 44;
+
 	inf.pszText = (LPTSTR)text;
 	GetToolBarCtrl().SetButtonInfo( ID_WEB_SEARCH, &inf );
 	GetToolBarCtrl().AutoSize();

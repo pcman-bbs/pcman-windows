@@ -12,7 +12,7 @@ OutFile "PCMan.exe"
 !endif
 
 !define PRODUCT_DIR "${PRODUCT_NAME}"
-!define PRODUCT_VERSION "2007 Beta"
+!define PRODUCT_VERSION "2007 Beta2"
 !define PRODUCT_PUBLISHER "Open PCMan Team"
 !define PRODUCT_WEB_SITE "http://pcman.openfoundry.org/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PCMan.exe"
@@ -36,7 +36,7 @@ SetCompressor /SOLID lzma
 !define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
 
-BGGradient 0000FF 000000 FFFFFF
+;BGGradient 0000FF 000000 FFFFFF
 ;Caption "${PRODUCT_NAME} ${PRODUCT_VERSION} ${BUILD_TIME}"
 BrandingText "Copyright (C) 2007 Open PCMan Team  /  Build Time: ${BUILD_TIME}"
 
@@ -106,6 +106,8 @@ Section SEC01
   File "${SRC_DIR}\Config\*.bmp"
   File "${SRC_DIR}\Config\UI"
 
+  SetShellVarContext all    ; Install for all users
+
   CreateDirectory "$SMPROGRAMS\${PRODUCT_DIR}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_DIR}\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk" "$INSTDIR\PCMan.exe"
   CreateShortCut "$DESKTOP\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk" "$INSTDIR\PCMan.exe"
@@ -116,6 +118,24 @@ Section SEC01
     Goto +2
   Eng:
     CreateShortCut "$SMPROGRAMS\${PRODUCT_DIR}\Symbols.lnk" "$INSTDIR\Symbols.exe" "$INSTDIR\Symbols.exe"
+
+; Check if we are under Windows NT
+   ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+  IfErrors Finish 0
+
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi3 Eng3
+  Chi3:
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "你要讓不同使用者使用各自的設定值嗎？$\n$\n(若選「否」，所有使用者會共用程式安裝目錄內的設定檔)" IDNO +3
+    Delete "$INSTDIR\_Portable"
+    Goto Finish
+    Rename "$INSTDIR\_Portable" "$INSTDIR\Portable"
+    Goto Finish
+  Eng3:
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Do you want to enable per-user config files?" IDNO +3
+    Delete "$INSTDIR\_Portable"
+    Goto Finish
+    Rename "$INSTDIR\_Portable" "$INSTDIR\Portable"
+  Finish:
 
 SectionEnd
 
@@ -171,18 +191,23 @@ Section Uninstall
   Delete "$INSTDIR\Symbols.exe"
   Delete "$INSTDIR\uninst.exe"
 
+  IfFileExists "$INSTDIR\Portable"  0 +5
   StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
   Chi:
     MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "是否連設定檔案一起刪除？" IDNO +6
     Goto +2
   Eng:
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Do you want to delete config files?" IDNO +3
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Do you want to delete config files?" IDNO +2
   RMDir /r "$INSTDIR\Config"
   Delete "$INSTDIR\Symbols.txt"
 
-  RMDir /r "$SMPROGRAMS\${PRODUCT_DIR}"
+  Delete "$INSTDIR\Portable"
+
+  SetShellVarContext all    ; Install for all users
 
   Delete "$SMPROGRAMS\${PRODUCT_DIR}\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk"
+  RMDir /r "$SMPROGRAMS\${PRODUCT_DIR}"
+
   Delete "$DESKTOP\${PRODUCT_NAME} ${PRODUCT_VERSION}.lnk"
 
   RMDir "$INSTDIR"

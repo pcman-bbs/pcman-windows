@@ -99,7 +99,11 @@ BOOL CApp::InitInstance()
 		ConfigPath.ReleaseBuffer();
 		if( ret )
 		{
+#if defined (_COMBO_)
 			ConfigPath += "\\PCMan\\";
+#else
+			ConfigPath += "\\PCMan Combo\\";
+#endif
 			if( !IsFileExist(ConfigPath) )	// Copy default settings when necessary
 			{
 				CreateDirectory( ConfigPath, NULL );

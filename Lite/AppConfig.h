@@ -305,7 +305,7 @@ inline void CAppConfig::Default()
 	disable_script_error = 1;
 	use_ie_fav = 1;
 	autowrap_favorite = 1;
-	search_engine = -1;
+	search_engine = 0;
 #endif
 };
 

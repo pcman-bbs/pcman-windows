@@ -102,10 +102,6 @@ SOURCE=..\Resource\Lite.rc
 # End Source File
 # Begin Source File
 
-SOURCE="..\libmd5-rfc\md5.c"
-# End Source File
-# Begin Source File
-
 SOURCE=..\BuildMenu\StdAfx.cpp
 # End Source File
 # End Group
@@ -115,10 +111,6 @@ SOURCE=..\BuildMenu\StdAfx.cpp
 # Begin Source File
 
 SOURCE=..\BuildMenu\BuildMenu.h
-# End Source File
-# Begin Source File
-
-SOURCE="..\libmd5-rfc\md5.h"
 # End Source File
 # Begin Source File
 
