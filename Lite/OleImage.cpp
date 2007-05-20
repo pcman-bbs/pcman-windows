@@ -26,7 +26,7 @@ COleImage::~COleImage()
 	Destroy();
 }
 
-bool COleImage::LoadFromFile(LPTSTR file_name)
+bool COleImage::LoadFromFile(LPCTSTR file_name)
 {
 	HANDLE file = CreateFile(file_name, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if( INVALID_HANDLE_VALUE == file )
@@ -71,7 +71,7 @@ HBITMAP COleImage::CopyBitmap()
 {
 	OLE_HANDLE handle = NULL;
 	HANDLE result = NULL;
-	if( SUCCEEDED( pic->get_Handle( &handle ) ) )
+	if( (handle = (OLE_HANDLE)GetHandle()) )
 	{
 		SHORT type = 0;
 		UINT utype = IMAGE_BITMAP;
@@ -123,4 +123,12 @@ void COleImage::Destroy()
 		pic->Release();
 		pic = NULL;
 	}
+}
+
+HANDLE COleImage::GetHandle()
+{
+	OLE_HANDLE handle = NULL;
+	if( SUCCEEDED( pic->get_Handle( &handle ) ) )
+		return (HANDLE)handle;
+	return NULL;
 }

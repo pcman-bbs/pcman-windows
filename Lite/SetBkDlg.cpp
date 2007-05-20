@@ -54,7 +54,8 @@ void CSetBkDlg::OnOK()
 
 void CSetBkDlg::OnBrowse() 
 {
-	CFileDialog dlg(TRUE,"bmp",NULL,OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, LoadString(IDS_BMP_FILTEER),this);
+	CFileDialog dlg( TRUE, "bmp", NULL, OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
+		             LoadString(IDS_BMP_FILTEER), this );
 	if(dlg.DoModal()==IDOK)
 		GetDlgItem(IDC_PATH)->SetWindowText(dlg.GetPathName());
 }

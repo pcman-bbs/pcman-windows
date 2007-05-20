@@ -24,6 +24,8 @@
 #include "InputNameDlg.h"
 #include "SearchPlugin.h"
 
+#include "OleImage.h"
+
 #if defined	_COMBO_
 	#include "../Combo/WebPageDlg.h"
 	#include "../Combo/WebConn.h"
@@ -1663,7 +1665,10 @@ void CTermView::UpdateBkgnd()
 		DeleteDC(memdc),memdc=NULL;
 	}
 	if(bk)
-		DeleteObject(bk),bk=NULL;
+	{
+		DeleteObject(bk);
+		bk=NULL;
+	}
 	if(AppConfig.bktype==0)
 		return;
 
@@ -1673,13 +1678,27 @@ void CTermView::UpdateBkgnd()
 	hdc=::GetDC(m_hWnd);
 	memdc=::CreateCompatibleDC(hdc);
 	::ReleaseDC(m_hWnd,hdc);
+
 	if(AppConfig.bktype>1)
 	{
-		bk=(HBITMAP)LoadImage(AfxGetInstanceHandle(),AppConfig.bkpath,IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_DEFAULTCOLOR);
-		if(!bk)
+		if( AppConfig.bkpath.GetLength() > 3 )
+		{
+			LPCTSTR ext = LPCTSTR(AppConfig.bkpath) + AppConfig.bkpath.GetLength() - 3;
+			if( 0 == stricmp( ext, "bmp" ) )	// *.bmp
+				bk=(HBITMAP)LoadImage(AfxGetInstanceHandle(),AppConfig.bkpath,IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_DEFAULTCOLOR);
+			else	// *.gif, *.jpg
+			{
+				COleImage img;
+				COleImage::Initialize();
+				img.LoadFromFile( AppConfig.bkpath );
+				bk = img.CopyBitmap();
+				COleImage::Finalize();
+			}
+		}
+
+		if( !bk )
 		{
 			MessageBox( LoadString(IDS_LOAD_PIC_FAILED ), LoadString(IDS_ERR),MB_OK|MB_ICONSTOP);
-			bk=NULL;
 			AppConfig.bktype=0;
 			AppConfig.bkpath.Empty();
 			return;
@@ -1694,39 +1713,13 @@ void CTermView::UpdateBkgnd()
 		::ReleaseDC(::GetDesktopWindow(),hdc);
 		SelectObject(memdc,holdobj);
 	}
-	GetObject(bk,sizeof(bmp),&bmp);
-	DWORD len=bmp.bmWidth*bmp.bmHeight*4;
-	BYTE *data = new BYTE[len];
-	BYTE* pdata=data;
-	BYTE *lastdata= data+len;
+	GetObject(bk, sizeof(bmp), &bmp);
 
-	BITMAPINFO info;
-	info.bmiColors;
-	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
-	info.bmiHeader.biWidth=bmp.bmWidth;
-	info.bmiHeader.biHeight=bmp.bmHeight;
-	info.bmiHeader.biPlanes=1;
-	info.bmiHeader.biBitCount=32;
-	info.bmiHeader.biCompression=BI_RGB;
-	info.bmiHeader.biSizeImage=0;
-	info.bmiHeader.biClrUsed=0;
-	info.bmiHeader.biClrImportant=0;
-	info.bmiHeader.biXPelsPerMeter=0;
-	info.bmiHeader.biYPelsPerMeter=0;
-
-	HDC dc=::GetDC(m_hWnd);
-	if(::GetDIBits(dc,bk,0,bmp.bmHeight,data,&info,DIB_RGB_COLORS))
-	{
-		while(data<lastdata)
-		{
-			*data=*data*AppConfig.bkratio/10;
-			data++;
-		}
-	
-		int r=::SetDIBits(dc,bk,0,bmp.bmHeight,pdata,&info,DIB_RGB_COLORS);
-		delete []pdata;
-	}
-	::ReleaseDC(m_hWnd,dc);
+	BLENDFUNCTION blf;
+	blf.BlendOp = AC_SRC_OVER;
+	blf.BlendFlags = 0;
+	blf.AlphaFormat = 0;
+	blf.SourceConstantAlpha = 255 * AppConfig.bkratio / 10;
 
 	if(AppConfig.bktype==2)
 	{
@@ -1744,7 +1737,8 @@ void CTermView::UpdateBkgnd()
 		{
 			while(rc.top < rc.bottom)
 			{
-				::BitBlt(memdc,rc.left,rc.top,bmp.bmWidth,bmp.bmHeight,memdc2,0,0,SRCCOPY);		
+				AlphaBlend( memdc, rc.left, rc.top, bmp.bmWidth, bmp.bmHeight,
+				            memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );
 				rc.top+=bmp.bmHeight;
 			}
 			rc.top=0;
@@ -1770,7 +1764,9 @@ void CTermView::UpdateBkgnd()
 		::FillRect(memdc,rc,(HBRUSH)GetStockObject(BLACK_BRUSH));
 		int left=(rc.Width()-bmp.bmWidth)/2;
 		int top=(rc.Height()-bmp.bmHeight)/2;
-		::BitBlt(memdc,left,top,bmp.bmWidth,bmp.bmHeight,memdc2,0,0,SRCCOPY);
+
+		AlphaBlend( memdc, left, top, bmp.bmWidth, bmp.bmHeight,
+				    memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );
 
 		SelectObject(memdc,holdobj);
 		DeleteDC(memdc2);
@@ -1789,7 +1785,8 @@ void CTermView::UpdateBkgnd()
 		holdobj=SelectObject(memdc,bk);
 		HGDIOBJ old2=SelectObject(memdc2,tmp);
 
-		::StretchBlt(memdc,0,0,rc.Width(),rc.Height(),memdc2,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+		AlphaBlend( memdc, 0, 0, rc.Width(), rc.Height(),
+				    memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );
 
 		SelectObject(memdc,holdobj);
 		SelectObject(memdc2,old2);
@@ -1798,7 +1795,6 @@ void CTermView::UpdateBkgnd()
 	}
 	holdobj=SelectObject(memdc,bk);
 }
-
 
 inline void CTermView::FillBk(CDC &dc)
 {

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Combo.rc
+// Used by Common.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3

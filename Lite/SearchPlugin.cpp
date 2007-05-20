@@ -156,65 +156,6 @@ char* CSearchPluginCollection::GetField(int index, EField f)
 	return _T("");
 }
 
-
-// Reference: http://msdn2.microsoft.com/en-us/library/ms997538.aspx
-
-typedef struct
-{
-    BYTE        bWidth;          // Width, in pixels, of the image
-    BYTE        bHeight;         // Height, in pixels, of the image
-    BYTE        bColorCount;     // Number of colors in image (0 if >=8bpp)
-    BYTE        bReserved;       // Reserved ( must be 0)
-    WORD        wPlanes;         // Color Planes
-    WORD        wBitCount;       // Bits per pixel
-    DWORD       dwBytesInRes;    // How many bytes in this resource?
-    DWORD       dwImageOffset;   // Where in the file is this image?
-} ICONDIRENTRY, *LPICONDIRENTRY;
-
-typedef struct
-{
-    WORD           idReserved;   // Reserved (must be 0)
-    WORD           idType;       // Resource Type (1 for icons)
-    WORD           idCount;      // How many images?
-    ICONDIRENTRY   idEntries[1]; // An entry for each image (idCount of 'em)
-} ICONDIR, *LPICONDIR;
-
-typedef struct
-{
-   BITMAPINFOHEADER   icHeader;      // DIB header
-   RGBQUAD         icColors[1];   // Color table
-   BYTE            icXOR[1];      // DIB bits for XOR mask
-   BYTE            icAND[1];      // DIB bits for AND mask
-} ICONIMAGE, *LPICONIMAGE;
-
-HICON CreateIconFromMem( BYTE *stream, int desired_size )
-{
-
-
-	HICON icon = NULL;
-/*
-	ICONDIR *dir = (ICONDIR*)stream;
-	int idx = 0, dw = INT_MAX, dh = INT_MAX;
-	for( int i = 0; i < dir->idCount; ++i )
-	{
-		int dw2 = abs(dir->idEntries[i].bWidth - desired_size);
-		int dh2 = abs(dir->idEntries[i].bHeight - desired_size);
-		if( abs(dw2) < dw && abs(dh2) < dh2 )
-		{
-			dw = dw2;
-			dh = dh2;
-			idx = i;
-		}
-	}
-	if( idx < dir->idCount )
-	{
-		ICONDIRENTRY& ent = dir->idEntries[i];
-
-	}
-*/
-	return icon;
-}
-
 class CSearchPluginParser : public CSimpXmlParser
 {
 public:

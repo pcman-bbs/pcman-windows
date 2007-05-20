@@ -14,11 +14,12 @@
 class COleImage  
 {
 public:
+	HANDLE GetHandle();
 	void Destroy();
 	HBITMAP CopyBitmap();
 	static void Finalize();
 	static void Initialize();
-	bool LoadFromFile( LPTSTR file_name );
+	bool LoadFromFile( LPCTSTR file_name );
 	bool LoadFromMem( LPVOID data, DWORD size );
 	COleImage();
 	virtual ~COleImage();

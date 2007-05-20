@@ -773,7 +773,7 @@ BEGIN
     IDS_CLOSE_CONFIRM       "確定關閉?"
     IDS_CON_FAILED          "連線失敗!"
     IDS_CHOOSE_BACKGROUND   "請選擇背景圖!"
-    IDS_BMP_FILTEER         "點陣圖檔案(*.bmp)|*.bmp|"
+    IDS_BMP_FILTEER         "所有支援的圖檔格式|*.jpg;*.jpeg;*.bmp;*.gif|點陣圖檔案(*.bmp)|*.bmp|JPEG 檔案(*.jpg; *.jpeg)|*.jpg;*.jpeg|GIF 檔案 (*.gif)|*.gif"
     IDS_DONT_USE            "不使用"
     IDS_GB2BIG5             "簡體轉繁體"
 END
@@ -820,7 +820,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_SITELIST_UPDATE_FAIL "更新失敗!"
-    ID_WEB_SEARCH          "搜尋網頁"
+    ID_WEB_SEARCH           "搜尋網頁"
 END
 
 STRINGTABLE DISCARDABLE 
