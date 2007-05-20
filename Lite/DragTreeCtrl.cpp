@@ -262,8 +262,8 @@ HTREEITEM CDragTreeCtrl::PathToItem(LPCTSTR path, HTREEITEM root, TCHAR separato
 		if(text.CompareNoCase(path)==0)
 			break;
 	}
-	if( ch==separator && item)	//如果還沒到終點
-		return PathToItem(pch+1,item,';');
+	if( ch == separator && item)	//如果還沒到終點
+		return PathToItem( pch+1, item, separator );
 
 	delete []path_buf;
 	path_buf=NULL;

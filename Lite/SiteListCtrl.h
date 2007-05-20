@@ -14,6 +14,8 @@
 extern const char SEPARATOR[];
 extern const int SEPARATOR_LEN;
 
+#define PATH_SEPARATOR	'\\'
+
 class CListDlg;
 
 class CSiteListCtrl : public CDragTreeCtrl  
@@ -27,7 +29,7 @@ public:
 	HTREEITEM FindChildItem(HTREEITEM parent, LPCTSTR key);
 	CString GetItemFilePath(HTREEITEM item);
 	void DeleteItem(HTREEITEM item, BOOL bDelFile);
-	CString GetItemPath(HTREEITEM item);
+	CString GetItemPath(HTREEITEM item, char separator = PATH_SEPARATOR, bool strip = true );
 
 	HTREEITEM bbsfavorite;
 	HTREEITEM bbslist;

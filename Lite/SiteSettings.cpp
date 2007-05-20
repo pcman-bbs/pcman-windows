@@ -4,6 +4,7 @@
 
 #include "SiteSettings.h"
 #include "AppConfig.h"
+#include "StrUtils.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -28,11 +29,10 @@ CSiteSettings::~CSiteSettings()
 class CSiteSettingsLoader : public CConfigFile
 {
 public:
-	CSiteSettingsLoader( CSiteSettings& settings, CString fpath )
+	CSiteSettingsLoader( CSiteSettings& settings, CString path )
 		: site_settings(settings)
 	{
-
-	    SetFilePath( fpath );
+		SetFilePath( CSiteSettings::GetFilePath( path ) );
 	}
 
 	bool OnDataExchange(bool load)
@@ -95,4 +95,17 @@ void CSiteSettings::Save(LPCTSTR fpath)
 
 	CSiteSettingsLoader loader( *this, fpath );
 	loader.Save();
+}
+
+CString CSiteSettings::GetFilePath(CString cfg_path)
+{
+	CString fpath;
+
+	fpath = ConfigPath;
+	//fpath += md5;
+	cfg_path.Replace( "\\", "__" );
+	fpath += cfg_path;
+	fpath += ".ini";
+
+	return fpath;
 }

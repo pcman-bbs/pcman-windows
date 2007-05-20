@@ -21,6 +21,7 @@ public:
 	CSiteSettings();
 	~CSiteSettings();
 public:
+	static CString GetFilePath( CString cfg_path );
 	void Save(LPCTSTR fpath);
 	BOOL Load(LPCTSTR fpath);
 //	pure data section

@@ -29,7 +29,7 @@
 #define WM_QUERY_APPCONFIG	(WM_APP+'P')
 #define WM_WBTITLECHANGE	(WM_APP+ 128)
 
-#define	CONFIG_DIR		"Config\\";
+const char CONFIG_DIR[] = "Config\\";
 const char CONFIG_FILENAME[]="Config.ini";
 const char TOOLBAR_BMP_FILENAME[]="Toolbar.bmp";
 const char ICON_BMP_FILENAME[]="Icons.bmp";
@@ -46,6 +46,7 @@ const char SESSION_FILENAME[]="Session";
 const char HISTORY_FILENAME[]="History";
 
 #if defined(_COMBO_)
+	const char WEB_ICON_BMP_FILENAME[]="WebBar.bmp";
 	const char WWW_FAVORITE_FILENAME[]="WebFavorites";
 	const char WWW_ADFILTER_FILENAME[]="AdFilters";
 #endif

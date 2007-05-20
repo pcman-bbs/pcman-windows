@@ -170,7 +170,7 @@ public:
 	BOOL OpenAnsFile(LPCTSTR filepath);
 	UINT mouse_sel_timer;
 	static DWORD DNSLookupThread(LPVOID param);
-	inline CConn* NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg);
+	inline CConn* NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_path);
 	void OnInitialUpdate();
 	inline void FillBk(CDC& dc);
 	void UpdateBkgnd();

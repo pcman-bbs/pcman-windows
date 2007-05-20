@@ -25,6 +25,7 @@ static char THIS_FILE[] = __FILE__;
 
 CString AppPath;
 CString ConfigPath;
+CString DefaultConfigPath;
 
 /////////////////////////////////////////////////////////////////////////////
 // CApp
@@ -52,33 +53,7 @@ CApp theApp;
 
 BOOL CApp::InitInstance()
 {
-	::GetModuleFileName(AfxGetInstanceHandle(),AppPath.GetBuffer(MAX_PATH),_MAX_PATH);
-	AppPath.ReleaseBuffer();
-	AppPath=AppPath.Left(AppPath.ReverseFind('\\')+1);
-	ConfigPath=AppPath+CONFIG_DIR;
-
-//	OFSTRUCT ofs;
-/*
-	if(IsWinNT())	//如果是NT才支援多人環境
-	{
-		LPITEMIDLIST pidl;	CString PersonalConfigPath;
-		::SHGetSpecialFolderLocation(NULL,CSIDL_PERSONAL,&pidl);
-		BOOL personal=(::SHGetPathFromIDList(pidl,PersonalConfigPath.GetBuffer(_MAX_PATH))==NOERROR);
-		IMalloc* im;
-		SHGetMalloc(&im);
-		im->Free(pidl);
-		im->Release();
-		PersonalConfigPath.ReleaseBuffer();
-		PersonalConfigPath+="\\PCMan\\";
-		PersonalConfigPath;
-		//如果沒有個人設定檔
-//		if(OpenFile(PersonalConfigPath+UI_FILENAME,&ofs,OF_EXIST)==HFILE_ERROR)
-		if(!IsFileExist(PersonalConfigPath))
-			AppConfig.BackupConfig(ConfigPath,PersonalConfigPath);
-		ConfigPath=PersonalConfigPath;
-	}
-*/
-
+	// Find other existing instances
 	HWND mainwnd=GetTopWindow(HWND_DESKTOP);
 	while( (mainwnd=::FindWindowEx(HWND_DESKTOP,mainwnd,CMainFrame::mainfrm_class_name,NULL)) )
 	{
@@ -100,6 +75,53 @@ BOOL CApp::InitInstance()
 			SetForegroundWindow(mainwnd);
 			return FALSE;
 		}
+	}
+
+	// Initialize paths
+	::GetModuleFileName(AfxGetInstanceHandle(),AppPath.GetBuffer(MAX_PATH),_MAX_PATH);
+	AppPath.ReleaseBuffer();
+	AppPath=AppPath.Left(AppPath.ReverseFind('\\')+1);
+	DefaultConfigPath = AppPath + CONFIG_DIR;
+
+	// Test for PCMan 2004
+	if( IsFileExist(DefaultConfigPath + "Config") )	// PCMan 2004
+	{
+		// Installed into the directory containing old config files.
+		AfxMessageBox( IDS_PROMPT_IMPORT, MB_OK|MB_ICONINFORMATION );
+		ShellExecute( NULL, "open", "http://pcman.openfoundry.org/faq.html", NULL, NULL, SW_SHOW );
+	}
+
+	// Supporting per-user settings under Windows NT/2000/xp/Vista
+	if( IsWinNT() && !IsFileExist(AppPath + "Portable") )
+	{
+		BOOL ret = SHGetSpecialFolderPath( NULL, ConfigPath.GetBuffer(_MAX_PATH),
+			                               CSIDL_APPDATA, TRUE );
+		ConfigPath.ReleaseBuffer();
+		if( ret )
+		{
+			ConfigPath += "\\PCMan\\";
+			if( !IsFileExist(ConfigPath) )	// Copy default settings when necessary
+			{
+				CreateDirectory( ConfigPath, NULL );
+				// AppConfig.BackupConfig( DefaultConfigPath, ConfigPath );
+				CopyFile( DefaultConfigPath + CONFIG_FILENAME, ConfigPath + CONFIG_FILENAME, TRUE );
+				CopyFile( DefaultConfigPath + UI_FILENAME, ConfigPath + UI_FILENAME, TRUE );
+				CopyFile( DefaultConfigPath + FUS_FILENAME, ConfigPath + FUS_FILENAME, TRUE );
+				CopyFile( DefaultConfigPath + BBS_FAVORITE_FILENAME, ConfigPath + BBS_FAVORITE_FILENAME, TRUE );
+
+				CopyFile( DefaultConfigPath + TOOLBAR_BMP_FILENAME, ConfigPath + TOOLBAR_BMP_FILENAME, TRUE );
+				CopyFile( DefaultConfigPath + ICON_BMP_FILENAME, ConfigPath + ICON_BMP_FILENAME, TRUE );
+#if defined(_COMBO_)
+				CopyFile( DefaultConfigPath + WEB_ICON_BMP_FILENAME, ConfigPath + WEB_ICON_BMP_FILENAME, TRUE );
+#endif
+			}
+		}
+		else
+			ConfigPath.ReleaseBuffer();
+	}
+	else
+	{
+		ConfigPath = DefaultConfigPath;
 	}
 
 #if defined (_COMBO_)
@@ -137,22 +159,20 @@ BOOL CApp::InitInstance()
 		return FALSE;
 	}
 
-
 	//Register Hotkey
 	BOOL r = RegisterHotKey(pFrame->m_hWnd,1,AppConfig.pcman_hotkey_mod,AppConfig.pcman_hotkey);
 
 	pFrame->view.OnInitialUpdate();
 
-	if( AppConfig.save_session )
+	if( AppConfig.save_session )	// open saved session if any
 		pFrame->OpenLastSession();
-
-	if(*m_lpCmdLine)
-		pFrame->OnNewConnectionAds(m_lpCmdLine);
-	else	//如果沒有命令列參數則開啟首頁
+	else if( !*m_lpCmdLine )	// otherwise, open homepage if no command line argument was passed
 	{
 		if( pFrame->tab.GetItemCount() == 0 )
 			pFrame->OpenHomepage();
 	}
+	if(*m_lpCmdLine)	// open file or address passed in command line argument
+		pFrame->OnNewConnectionAds(m_lpCmdLine);
 
 	pFrame->SwitchToConn( 0 );
 

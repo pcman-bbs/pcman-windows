@@ -830,11 +830,9 @@ void CTelnetConn::OnConnect(int nErrorCode)
 		str += ads_port;
 #endif
 		str += '\t';
-		if( !cfg_filepath.IsEmpty() )
-		{
-			int len = cfg_filepath.GetLength() - ConfigPath.GetLength() - name.GetLength() - 4;
-			str += cfg_filepath.Mid( ConfigPath.GetLength(), len );
-		}
+		if( !cfg_path.IsEmpty() )
+			str += cfg_path;
+
 		view->parent->AddToHistoryMenu( str );
 		view->parent->AddToHistory( ads_port );
 	}

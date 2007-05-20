@@ -1235,7 +1235,7 @@ LRESULT CTermView::_OnImeCompositionA(WPARAM wparam, LPARAM lparam)
 	return 0;
 }
 
-BOOL CTermView::Connect(CString address, CString name, unsigned short port, LPCTSTR cfg_filepath)
+BOOL CTermView::Connect(CString address, CString name, unsigned short port, LPCTSTR cfg_path)
 {
 	if(name.IsEmpty())
 		return FALSE;
@@ -1244,7 +1244,7 @@ BOOL CTermView::Connect(CString address, CString name, unsigned short port, LPCT
 			address = "telnet://"+address;
 	#endif
 
-	CConn* ncon = NewConn(address, name, port, cfg_filepath);	//產生了新的連線畫面，完成所有設定
+	CConn* ncon = NewConn(address, name, port, cfg_path);	//產生了新的連線畫面，完成所有設定
 	if(!ncon)
 		return FALSE;
 
@@ -1331,14 +1331,14 @@ void CTermView::ReConnect(CTelnetConn *retelnet)
 		retelnet->is_lookup_host = true;
 		retelnet->Close();
 		retelnet->ClearScreen(2);
-		retelnet->site_settings.Load( retelnet->cfg_filepath );
+		retelnet->site_settings.Load( retelnet->cfg_path );
 		//不用重新載入鍵盤對應
 
 		ConnectSocket(retelnet);
 	}
 	else
 	{
-		Connect(retelnet->address, retelnet->name, retelnet->port, retelnet->cfg_filepath);
+		Connect(retelnet->address, retelnet->name, retelnet->port, retelnet->cfg_path);
 	}
 }
 
@@ -1669,7 +1669,7 @@ void CTermView::UpdateBkgnd()
 		DeleteObject(bk);
 		bk=NULL;
 	}
-	if(AppConfig.bktype==0)
+	if( AppConfig.bktype==0 || AppConfig.bktype > 4 )
 		return;
 
 	HDC hdc=NULL;
@@ -1842,7 +1842,7 @@ void CTermView::OnBackspaceNoDBCS()
 	}
 }
 
-CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_filepath)
+CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_path )
 {
 	CConn* newcon=NULL;
 	newcon=new CTelnetConn;
@@ -1855,10 +1855,10 @@ CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LP
 #endif
 		CTelnetConn* new_telnet=(CTelnetConn*)newcon;
 		new_telnet->port=port;
-		new_telnet->cfg_filepath=cfg_filepath;
+		new_telnet->cfg_path = cfg_path;
 
 		//為新的socket載入設定值
-		if(!new_telnet->site_settings.Load( new_telnet->cfg_filepath ))	//如果載入設定發生錯誤
+		if(!new_telnet->site_settings.Load( new_telnet->cfg_path ))	//如果載入設定發生錯誤
 		{
 			//這很有可能會在密碼輸入錯誤的時候發生!
 			delete new_telnet;
@@ -2635,8 +2635,8 @@ void CTermView::OnCurConSettings()
 	CPropertySheet dlg(IDS_CUR_CON_SETTINGS);
 	CSiteSettings tmpset;
 
-	if(!telnet->cfg_filepath.IsEmpty())	//嘗試載入個別設定
-		tmpset.Load(telnet->cfg_filepath);
+	if(!telnet->cfg_path.IsEmpty())	//嘗試載入個別設定
+		tmpset.Load(telnet->cfg_path);
 	tmpset = telnet->site_settings;	//並使用目前設定值覆蓋無法載入的部分
 
 	CSitePage page1;
@@ -2648,8 +2648,8 @@ void CTermView::OnCurConSettings()
 	dlg.AddPage(&page2);
 	if(dlg.DoModal()==IDOK)
 	{
-		if(!telnet->cfg_filepath.IsEmpty())
-			tmpset.Save(telnet->cfg_filepath);
+		if(!telnet->cfg_path.IsEmpty())
+			tmpset.Save(telnet->cfg_path);
 
 		//重新載入字串觸發
 		telnet->site_settings.triggers.CopyFrom(tmpset.triggers);
@@ -2883,10 +2883,8 @@ void CTermView::ConnectStr(CString name, CString dir)
 		conf = afxEmptyString;
 	else
 	{
-		conf = ConfigPath;
-		conf += dir;
+		conf = dir;
 		conf += name;
-		conf += ".ini";
 	}
 	Connect( address, name, port, conf );
 }

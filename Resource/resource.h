@@ -595,6 +595,7 @@
 #define ID_SET_CHARSET_CP936            33027
 #define ID_SET_CHARSET_CP932            33028
 #define ID_WEB_SEARCH                   33029
+#define IDS_PROMPT_IMPORT               33030
 
 // Next default values for new objects
 // 

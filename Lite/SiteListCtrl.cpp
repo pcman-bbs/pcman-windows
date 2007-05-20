@@ -133,11 +133,15 @@ BOOL CSiteListCtrl::CanDrag(HTREEITEM item)
 	return !!GetParentItem(item);
 }
 
-CString CSiteListCtrl::GetItemPath(HTREEITEM item)
+CString CSiteListCtrl::GetItemPath(HTREEITEM item, char separator, bool strip )
 {
-	CString path=CDragTreeCtrl::GetItemPath(item,';');
-//	int i=path.Find(SITE_SEPARATOR);
-//	if(i!=-1)	path=path.Left(i);
+	CString path=CDragTreeCtrl::GetItemPath( item, separator );
+	if( strip )
+	{
+		int i=path.Find(SEPARATOR);
+		if( i!=-1 )
+			path = path.Left(i);
+	}
 	return path;
 }
 
@@ -154,34 +158,15 @@ void CSiteListCtrl::DeleteItem(HTREEITEM item, BOOL bDelFile)
 	else if(bDelFile)
 		DeleteFile(fpath);
 	CDragTreeCtrl::DeleteItem(item);
-/*
-	//如果刪除項目後，原本的資料夾空了，補上空項目
-	if(!GetChildItem(parent))
-		InsertItem(NULL,4,4,parent);
-*/
- }
-
-//DEL inline void CSiteListCtrl::LoopCreateDirectory(LPCTSTR dpath,int start)
-//DEL {
-//DEL 	LPSTR pname;
-//DEL 	for( LPSTR pdir=pname=(LPSTR)dpath+start; *pdir; pdir=CharNextExA(CP_ACP,pdir,0))
-//DEL 		if(*pdir=='\\')
-//DEL 		{
-//DEL 			*pdir=0;
-//DEL 			CreateDirectory(pname,NULL);
-//DEL 			*pdir='\\';
-//DEL 		}
-//DEL }
+}
 
 CString CSiteListCtrl::GetItemFilePath(HTREEITEM item)
 {
 	CString fp=GetItemPath(item);
-	int i=fp.Find(SEPARATOR);	if( i!=-1 )	fp=fp.Left(i);
-//	return ConfigPath+fp.Mid(strlen(BBS_FAVORITE_NAME)+1);
-	fp = ConfigPath + fp;
-	if( !IsItemDir(item) )
-		fp +=  ".ini";
-	return fp;
+
+	if( IsItemDir(item) )
+		return (ConfigPath + fp);
+	return CSiteSettings::GetFilePath( fp );
 }
 
 HTREEITEM CSiteListCtrl::FindChildItem(HTREEITEM parent, LPCTSTR key)

@@ -37,7 +37,7 @@ public:
 	};
 
 	unsigned short	port;
-	CString cfg_filepath;	//站台進階設定檔路徑
+	CString cfg_path;	//站台進階設定檔相對路徑
 	CKeyMap* key_map;	//鍵盤對映
 
 //	Socket handle

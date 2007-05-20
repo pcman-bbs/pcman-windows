@@ -25,6 +25,8 @@ static char THIS_FILE[] = __FILE__;
 	#include "../Combo/WebPageDlg.h"
 #endif
 
+#define PATH_SEPARATOR	'\\'
+
 /////////////////////////////////////////////////////////////////////////////
 // CListDlg dialog
 
@@ -77,7 +79,7 @@ void CListDlg::OnCancel()
 	HTREEITEM item=sites.GetSelectedItem();
 //	if(item != sites.bbsfavorite)
 //		AppConfig.last_bbslist_item=sites.GetItemPath(item);
-	m_InitPath = sites.GetItemPath(item);
+	m_InitPath = sites.GetItemPath(item, PATH_SEPARATOR, false );
 	AppConfig.sitelist_state.Save(m_hWnd);
 	CDialog::OnCancel();
 }
@@ -99,7 +101,7 @@ void CListDlg::OnOK()
 	if(image==4)
 	{
 		CString str=sites.GetItemText(item);
-		CString dir=sites.GetItemPath(sites.GetParentItem(item))+';';
+		CString dir=sites.GetItemPath( sites.GetParentItem(item) ) + PATH_SEPARATOR;
 
 		AppConfig.sitelist_state.Save(m_hWnd);
 		m_InitPath = sites.GetItemPath(item);
@@ -161,7 +163,7 @@ BOOL CListDlg::OnInitDialog()
 	sites.SetImageList(&parent->img_icons,TVSIL_NORMAL);
 	sites.SetFocus();
 
-	HTREEITEM item=sites.PathToItem(m_InitPath,TVI_ROOT,';');
+	HTREEITEM item=sites.PathToItem( m_InitPath,TVI_ROOT, PATH_SEPARATOR );
 	sites.SelectItem(item?item:sites.bbsfavorite);
 	sites.Expand(item,TVE_EXPAND);
 	AppConfig.sitelist_state.Restore(m_hWnd);
@@ -406,22 +408,22 @@ void CListDlg::OnEditSite()
 		dlg.AddPage(&page1);
 		dlg.AddPage(&page2);
 
-		CString path1=sites.GetItemFilePath(item);
+		CString path1 = sites.GetItemPath(item);
 		if(!tmpset.Load(path1))
 			return;
-
 		if(dlg.DoModal()==IDOK)
 		{
 			sites.changed=TRUE;
 
-			CString text=page0.name+ SEPARATOR +page0.address;
+			CString text=page0.name + SEPARATOR +page0.address;
 			if( page0.port != 23 && page0.port > 0 )
 				text.Format("%s%s%s:%d", LPCTSTR(page0.name), SEPARATOR, LPCTSTR(page0.address), page0.port);
 
 			sites.SetItemText(item,text);
-
-			CString path2=sites.GetItemFilePath(item);
-			MoveFile(path1,path2);
+			path1 = CSiteSettings::GetFilePath( path1 );
+			CString path2 = sites.GetItemPath(item);
+			CString fpath2 = CSiteSettings::GetFilePath( path2 );
+			MoveFile( path1, fpath2 );
 			tmpset.Save(path2);
 		}
 	}
@@ -453,13 +455,14 @@ void CListDlg::OnAddDir()
 void CListDlg::OnSitesAddfavorite() 
 {
 	HTREEITEM item=sites.GetSelectedItem();
-	sites.CopyTo(item,sites.bbsfavorite,TVI_LAST);
+	item = sites.CopyTo(item,sites.bbsfavorite,TVI_LAST);
+	sites.SelectItem( item );
 }
 
 void CListDlg::SaveSite(register CFile& file, HTREEITEM parent)
 {
 	CString str;
-	const char *crlf="\x0d\x0a";
+	const char *crlf="\r\n";
 	for(HTREEITEM item=sites.GetChildItem(parent); item; item=sites.GetNextSiblingItem(item))
 	{
 		int image;		sites.GetItemImage(item,image,image);
@@ -485,7 +488,8 @@ void CListDlg::SaveSite(register CFile& file, HTREEITEM parent)
 void CListDlg::OnSitesAddhome() 
 {
 	HTREEITEM item=sites.GetSelectedItem();
-	sites.CopyTo(item,sites.home,TVI_LAST);
+	item = sites.CopyTo(item,sites.home,TVI_LAST);
+	sites.SelectItem( item );
 }
 
 void CListDlg::OnSize(UINT nType, int cx, int cy) 

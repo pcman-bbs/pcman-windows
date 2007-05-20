@@ -165,16 +165,16 @@ const char* CAppConfig::personal_files[]={
 
 void CAppConfig::BackupConfig(CString dir1, CString dir2)
 {
-	dir2+="PCMan_bak\\";
-	CreateDirectory(dir2,NULL);
-//	for(int i=0;i<(sizeof(personal_files)/sizeof(char*));i++)
-//		CopyFile(dir1+personal_files[i],dir2+personal_files[i],TRUE);
-	CFileFind finder;	BOOL found=finder.FindFile(dir1+"*.*");
+	CreateDirectory(dir2, NULL);
+
+	CFileFind finder;
+	BOOL found=finder.FindFile(dir1 + "*.*");
 	while( found )
 	{
 		found=finder.FindNextFile();
-		CopyFile(finder.GetFilePath(),dir2+finder.GetFileName(),FALSE);
+		CopyFile(finder.GetFilePath(), dir2 + finder.GetFileName(), FALSE);
 	}
+	finder.Close();
 }
 
 BOOL CAppConfig::QueryPassword(BOOL confirm,LPCTSTR title)

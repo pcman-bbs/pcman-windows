@@ -233,10 +233,6 @@ SOURCE=.\MainFrm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE="..\libmd5-rfc\md5.c"
-# End Source File
-# Begin Source File
-
 SOURCE=.\MemIniFile.cpp
 # End Source File
 # Begin Source File
@@ -450,10 +446,6 @@ SOURCE=.\ListDlg.h
 # Begin Source File
 
 SOURCE=.\MainFrm.h
-# End Source File
-# Begin Source File
-
-SOURCE="..\libmd5-rfc\md5.h"
 # End Source File
 # Begin Source File
 

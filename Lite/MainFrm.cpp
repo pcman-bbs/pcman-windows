@@ -374,7 +374,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 //----------Web¤u¨ã¦C-------------
 	web_bar.CreateEx(this,TBSTYLE_FLAT,CBRS_TOOLTIPS|CBRS_ALIGN_TOP|CCS_ADJUSTABLE|WS_CHILD|
 		WS_VISIBLE,tmprc,IDC_WEBBAR);
-	web_bar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath+"webbar.bmp",
+	web_bar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath + WEB_ICON_BMP_FILENAME,
 		IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_LOADMAP3DCOLORS));
 	web_bar_bkgnd.GetBitmap( &bmp);
 	img_webbar.Create( bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 5, 0);
@@ -579,10 +579,10 @@ void CMainFrame::OnClose()
 					}
 					CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
 					CString dir;
-					if( !telnet->cfg_filepath.IsEmpty() )
+					if( !telnet->cfg_path.IsEmpty() )
 					{
-						int len = telnet->cfg_filepath.GetLength() - ConfigPath.GetLength() - telnet->name.GetLength() - 4;
-						dir = telnet->cfg_filepath.Mid( ConfigPath.GetLength(), len );
+						int len = telnet->cfg_path.GetLength() - ConfigPath.GetLength() - telnet->name.GetLength() - 4;
+						dir = telnet->cfg_path.Mid( ConfigPath.GetLength(), len );
 					}
 					if( ! dir.IsEmpty() )
 					{
@@ -1880,7 +1880,7 @@ void CMainFrame::OnBackupConfig()
 	title.LoadString(IDS_CHOOSE_BACKUP_DIR);
 	CBrowseDirDlg dlg(this, title);
 	if(dlg.DoModal()==IDOK)
-		AppConfig.BackupConfig(ConfigPath,CString(dlg.GetPath())+'\\');
+		AppConfig.BackupConfig( ConfigPath, CString(dlg.GetPath()) + "\\PCMan_backup\\" );
 }
 
 void CMainFrame::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT pds) 
@@ -2670,16 +2670,16 @@ void CMainFrame::OnFavorite(UINT id)
 	int idir=-1,_idir;	int level=0;
 	CString dir;
 
+	const char sep_char = '\\' ;
+
 	CStringArray* fav;
 #ifdef _COMBO_
 	BOOL bWWW = id >= ID_FIRST_WEB_FAVORITE;
 	fav = bWWW ? &AppConfig.favorites.web_fav : &AppConfig.favorites.bbs_fav;
 	id-= bWWW ? ID_FIRST_WEB_FAVORITE : ID_FIRST_BBS_FAVORITE;
-	char sep_char = (bWWW && AppConfig.use_ie_fav) ? '\\' : ';' ;
 #else
 	fav = &AppConfig.favorites.bbs_fav;
 	id-=ID_FIRST_BBS_FAVORITE;
-	const char sep_char = ';' ;
 #endif
 
 	for(_idir=id; _idir>=0; _idir-- )
@@ -2706,7 +2706,7 @@ void CMainFrame::OnFavorite(UINT id)
 		dir= (AppConfig.use_ie_fav ? CFavMenu::GetIEFavDir() : LoadString(IDS_WWW_FAVORITE_NAME) ) + ( sep_char + dir );
 	else
 #endif
-		dir=(LoadString( IDS_BBS_FAVORITE_NAME ) + (';'+dir));
+		dir=(LoadString( IDS_BBS_FAVORITE_NAME ) + ( PATH_SEPARATOR + dir ));
 
 	CString name = fav->ElementAt(id);
 #ifdef _COMBO_
@@ -3566,13 +3566,14 @@ void CMainFrame::OpenHomepage()
 	CFile cfgf;
 	if(cfgf.Open(ConfigPath+HOMEPAGE_FILENAME,CFile::modeRead))
 	{
-		adv = LoadString(IDS_HOMEPAGE_NAME)+';';
+		adv = LoadString(IDS_HOMEPAGE_NAME) + PATH_SEPARATOR;
 		CArchive ar(&cfgf,CArchive::load);
 		while(ar.ReadString(str))
 		{
 			if(str.IsEmpty())
 				continue;
-#if 0
+
+/*
 			// FIXME: prevent duplicated items
 			if( AppConfig.save_session )
 			{
@@ -3586,23 +3587,24 @@ void CMainFrame::OpenHomepage()
 						break;
 					CString name = str.Left( p );
 					CString address = str.Mid( p );
-					if( pcon->name == name && pcon->address==ads )
+					if( pcon->name == name && pcon->address == address )
 					{
 						if( str[0] != 's' )
 							continue;
 						CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
-						if( telnet->port != port || telnet->cfg_filepath.IsEmpty() != adv.IsEmpty() )
+						if( telnet->port != port || telnet->cfg_path.IsEmpty() != adv.IsEmpty() )
 							continue;
-						if( telnet->cfg_filepath.Mid(ConfigPath.GetLength()) == ((adv + name) + ".ini") )
+						if( telnet->cfg_path == (adv + name) )
 							break;
 					}
 				}
 				if( i < c )
 					continue;
 			}
-#endif
+*/
 			view.ConnectStr(str, adv );
 		}
+
 		ar.Close();
 		cfgf.Close();
 	}
@@ -3633,7 +3635,8 @@ void CMainFrame::OpenLastSession()
 			adv.Empty();
 			if( *line == 's' )
 			{
-				if( str[str.GetLength()-1] == ';' )	// has adv info
+				// FIXME: what's this??
+				if( str[str.GetLength()-1] == PATH_SEPARATOR )	// has adv info
 				{
 					int p = str.ReverseFind( '\t' );
 					adv = str.Mid( p+1 );
@@ -3641,49 +3644,6 @@ void CMainFrame::OpenLastSession()
 				}
 			}
 			view.ConnectStr( str, adv );
-#if 0
-			CString name,ads;
-			unsigned short port = 23;
-			int c = tab.GetItemCount();
-
-			int pos = str.Find('\t');
-			name = str.Mid(1,pos-1);
-			ads = str.Mid(pos+1);
-			if( str[0]=='s' )
-			{
-				pos = ads.ReverseFind('\t');
-				adv = ads.Mid(pos+1);
-				ads = ads.Left(pos);
-				if( ! adv.IsEmpty() )
-				{
-					adv = ConfigPath + adv;
-					adv += name;
-					adv += ".ini";
-				}
-#ifdef	_COMBO_
-				if( -1 != (pos = ads.Find(':',9)) )
-#else
-				if( -1 != (pos = ads.ReverseFind(':')) )
-#endif
-				{
-					port = (unsigned short)atoi( LPCTSTR( ads.Mid(pos+1) ) );
-					ads = ads.Left(pos);
-				}
-				else
-					port = 23;
-			}
-
-	#ifdef	_COMBO_
-			if( str[0]=='s' )
-			{
-				view.Connect(ads, name, port, adv);
-			}
-			else
-				view.ConnectWeb(ads,FALSE);
-	#else
-			view.Connect(ads, name, port, adv);
-	#endif
-#endif
 		}
 		delete []buf;
 	}
