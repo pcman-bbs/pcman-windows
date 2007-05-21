@@ -565,7 +565,10 @@ void CMainFrame::OnClose()
 					continue;
 				CString line = ( pcon->is_web ? 'w':'s' ) + pcon->name;
 				line += '\t';
-				line += pcon->address;
+				if( 0 == strnicmp( "telnet://", pcon->address, 9 ) )	// BBS
+					line += LPCTSTR(pcon->address) + 9;	// skip "telnet://"
+				else	// Web
+					line += pcon->address;
 #ifdef	_COMBO_
 				// FIXME: should this be pcon->is_telnet? what about ansi editor?
 				if( !pcon->is_web )
@@ -578,16 +581,10 @@ void CMainFrame::OnClose()
 						line += port_str;
 					}
 					CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
-					CString dir;
-					if( !telnet->cfg_path.IsEmpty() )
-					{
-						int len = telnet->cfg_path.GetLength() - ConfigPath.GetLength() - telnet->name.GetLength() - 4;
-						dir = telnet->cfg_path.Mid( ConfigPath.GetLength(), len );
-					}
-					if( ! dir.IsEmpty() )
+					if( ! telnet->cfg_path.IsEmpty() )
 					{
 						line += '\t';
-						line += dir;
+						line += telnet->cfg_path.Left( telnet->cfg_path.GetLength() - telnet->name.GetLength() );
 					}
 #ifdef	_COMBO_
 				}		// end if( !pcon->is_web )
