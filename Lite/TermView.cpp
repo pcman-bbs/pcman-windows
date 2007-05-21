@@ -1721,78 +1721,61 @@ void CTermView::UpdateBkgnd()
 	blf.AlphaFormat = 0;
 	blf.SourceConstantAlpha = 255 * AppConfig.bkratio / 10;
 
-	if(AppConfig.bktype==2)
+
+	CRect rc;
+	switch( AppConfig.bktype )
 	{
-		CRect rc;
+	case 1:	// desktop capture
+	case 2:	// tile
 		rc.left=0;	rc.right=GetSystemMetrics(SM_CXSCREEN);
 		rc.top=0;	rc.bottom=GetSystemMetrics(SM_CYSCREEN);
-		HDC dc=::GetDC(m_hWnd);
-		HDC memdc2=::CreateCompatibleDC(dc);
-		HBITMAP tmp=bk;
-		bk=CreateCompatibleBitmap(dc,rc.right,rc.bottom);
-		::ReleaseDC(m_hWnd,dc);
-		holdobj=SelectObject(memdc,bk);
-		HGDIOBJ old2=SelectObject(memdc2,tmp);
+		break;
+	case 3:	// center
+	case 4:	// stretch
+		GetClientRect(rc);
+	}
+
+	HDC dc=::GetDC(m_hWnd);
+	HDC memdc2=::CreateCompatibleDC(dc);
+	HBITMAP tmp=bk;
+	bk=CreateCompatibleBitmap(dc,rc.right,rc.bottom);
+	::ReleaseDC(m_hWnd,dc);
+	holdobj=SelectObject(memdc,bk);
+	HGDIOBJ old2=SelectObject(memdc2,tmp);
+
+	if ( AppConfig.bktype == 1 || AppConfig.bktype == 4 )
+	{
+		AlphaBlend( memdc, 0, 0, rc.Width(), rc.Height(),
+				    memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );	
+	}
+	else if( AppConfig.bktype == 2 )	// tile
+	{
 		while(rc.left < rc.right)
 		{
 			while(rc.top < rc.bottom)
 			{
+				::FillRect(memdc,rc,(HBRUSH)GetStockObject(BLACK_BRUSH));
 				AlphaBlend( memdc, rc.left, rc.top, bmp.bmWidth, bmp.bmHeight,
-				            memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );
+							memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );
 				rc.top+=bmp.bmHeight;
 			}
 			rc.top=0;
 			rc.left+=bmp.bmWidth;
 		}
-		SelectObject(memdc,holdobj);
-		SelectObject(memdc2,old2);
-		DeleteDC(memdc2);
-		DeleteObject(tmp);
 	}
-	else if(AppConfig.bktype==3)
+	else if ( AppConfig.bktype == 3 )
 	{
-		CRect rc;
-		HDC dc=::GetDC(m_hWnd);
-		HBITMAP tmp=bk;
-		GetClientRect(rc);
-		bk=CreateCompatibleBitmap(dc,rc.right,rc.bottom);
-		::ReleaseDC(m_hWnd,dc);
-		HDC memdc2=::CreateCompatibleDC(memdc);
-		holdobj=SelectObject(memdc,bk);
-		HGDIOBJ old2=SelectObject(memdc2,tmp);
-
-		::FillRect(memdc,rc,(HBRUSH)GetStockObject(BLACK_BRUSH));
 		int left=(rc.Width()-bmp.bmWidth)/2;
 		int top=(rc.Height()-bmp.bmHeight)/2;
-
 		AlphaBlend( memdc, left, top, bmp.bmWidth, bmp.bmHeight,
 				    memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );
-
-		SelectObject(memdc,holdobj);
-		DeleteDC(memdc2);
-		SelectObject(memdc2,old2);
-		DeleteObject(tmp);
+	
 	}
-	else if(AppConfig.bktype==4)
-	{
-		CRect rc;
-		HDC dc=::GetDC(m_hWnd);
-		HBITMAP tmp=bk;
-		GetClientRect(rc);
-		bk=CreateCompatibleBitmap(dc,rc.right,rc.bottom);
-		::ReleaseDC(m_hWnd,dc);
-		HDC memdc2=::CreateCompatibleDC(memdc);
-		holdobj=SelectObject(memdc,bk);
-		HGDIOBJ old2=SelectObject(memdc2,tmp);
+	SelectObject(memdc,holdobj);
+	SelectObject(memdc2,old2);
+	DeleteDC(memdc2);
+	DeleteObject(tmp);
 
-		AlphaBlend( memdc, 0, 0, rc.Width(), rc.Height(),
-				    memdc2, 0, 0, bmp.bmWidth, bmp.bmHeight, blf );
-
-		SelectObject(memdc,holdobj);
-		SelectObject(memdc2,old2);
-		DeleteDC(memdc2);
-		DeleteObject(tmp);
-	}
 	holdobj=SelectObject(memdc,bk);
 }
 
