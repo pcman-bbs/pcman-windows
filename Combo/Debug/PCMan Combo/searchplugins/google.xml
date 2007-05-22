@@ -8,9 +8,6 @@
   <Param name="q" value="{searchTerms}"/>
   <Param name="ie" value="utf-8"/>
   <Param name="oe" value="utf-8"/>
-  <!-- Dynamic parameters -->
-  <Param name="rls" value="{moz:distributionID}:{moz:locale}:{moz:official}"/>
-  <MozParam name="client" condition="defaultEngine" trueValue="firefox-a" falseValue="firefox"/>
 </Url>
 <SearchForm>http://www.google.com/firefox</SearchForm>
 </SearchPlugin>

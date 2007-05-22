@@ -1563,6 +1563,12 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	rbc.GetBandInfo(rbc.IDToIndex(5),&rbi);
 	rbi.cxMinChild=sz.cx;	rbi.cxIdeal=sz.cx;
 	rbc.SetBandInfo(rbc.IDToIndex(5),&rbi);
+
+	// Set minimal size of search bar
+	sz = search_bar.CalcFixedLayout(FALSE,TRUE);
+	rbc.GetBandInfo(rbc.IDToIndex(6),&rbi);
+	rbi.cxMinChild=sz.cx + 60;	rbi.cxIdeal=sz.cx;
+	rbc.SetBandInfo(rbc.IDToIndex(6),&rbi);
 #endif
 
 	rbc.ShowBand(rbc.IDToIndex(1),showtb);
@@ -2051,9 +2057,22 @@ void CMainFrame::OnUpdateSelectAll(CCmdUI* pCmdUI)
 BOOL CMainFrame::OnToolTipNeedText(UINT id, NMHDR *nmhdr, LRESULT *r)
 {
 	NMTTDISPINFO* ptt=(NMTTDISPINFO*)nmhdr;
-	CConn* pCon = tab.GetCon(nmhdr->idFrom);
-	if( pCon )
-		ptt->lpszText=(LPSTR)(LPCTSTR)(pCon)->name;
+	if( nmhdr->hwndFrom == tab.GetToolTips()->m_hWnd )
+	{
+		CConn* pCon = tab.GetCon(nmhdr->idFrom);
+		if( pCon )
+		{
+			ptt->lpszText=(LPSTR)(LPCTSTR)pCon->name;
+			return TRUE;
+		}
+	}
+#if defined(_COMBO_)
+	else if ( nmhdr->idFrom == ID_WEB_SEARCH )
+	{
+		ptt->lpszText = SearchPluginCollection.GetField( AppConfig.search_engine, CSearchPluginCollection::SHORTNAME );
+		return TRUE;
+	}
+#endif
 	return FALSE;
 }
 

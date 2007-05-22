@@ -12,7 +12,7 @@ OutFile "PCMan.exe"
 !endif
 
 !define PRODUCT_DIR "${PRODUCT_NAME}"
-!define PRODUCT_VERSION "2007 Beta2"
+!define PRODUCT_VERSION "2007"
 !define PRODUCT_PUBLISHER "Open PCMan Team"
 !define PRODUCT_WEB_SITE "http://pcman.openfoundry.org/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PCMan.exe"
@@ -66,7 +66,7 @@ BrandingText "Copyright (C) 2007 Open PCMan Team  /  Build Time: ${BUILD_TIME}"
 
 ; MUI end ------
 
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION} PreRelease"
 InstallDir "$PROGRAMFILES\${PRODUCT_DIR}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show

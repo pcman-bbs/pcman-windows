@@ -1,5 +1,5 @@
 <SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
-<ShortName>Yahoo</ShortName>
+<ShortName>Yahoo!奇摩</ShortName>
 <Description>Yahoo 搜尋</Description>
 <InputEncoding>UTF-8</InputEncoding>
 <Image width="16" height="16">data:image/x-icon;base64,R0lGODlhEAAQAJECAP8AAAAAAP///wAAACH5BAEAAAIALAAAAAAQABAAAAIplI+py+0NogQuyBDEnEd2kHkfFWUamEzmpZSfmaIHPHrRguUm/fT+UwAAOw==</Image>

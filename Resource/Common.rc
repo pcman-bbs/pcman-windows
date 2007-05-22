@@ -820,7 +820,6 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_SITELIST_UPDATE_FAIL "更新失敗!"
-    ID_WEB_SEARCH           "搜尋網頁"
     IDS_PROMPT_IMPORT       "Open PCMan 2007 偵測到目錄中有舊版 PCMan 2004 設定檔，格式和新版使用的並不相容。\n\n建議您上官方網站 http://pcman.openfoundry.org/faq.html 參考如何匯入舊版設定檔的說明。"
 END
 

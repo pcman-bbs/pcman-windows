@@ -234,16 +234,23 @@ public:
 		}
 		if( !plugin.Image && 0 == strcmp(name, "Image") )
 		{
-			// Currently, only this kind of format is supported
-			if( 0 == strncmp( data, "data:image/x-icon;base64,", 25  ) )
+			if( 0 == strncmp( data, "data:image/", 11 ) )
 			{
-				const char* pdata = data + 25;
-				int ilen = strlen( pdata );
-				int olen = ::Base64Decode( (BYTE*)pdata, ilen, NULL, 0 );
+				data += 11;
+				// Currently, only these kinds of format is supported
+				if( 0 == strncmp( data, "x-icon;base64,", 14  ) )
+					data += 14;
+				else if( 0 == strncmp( data, "gif;base64,", 11  ) )
+					data += 11;
+				else
+					return;
+
+				int ilen = strlen( data );
+				int olen = ::Base64Decode( (BYTE*)data, ilen, NULL, 0 );
 				if( olen > 0 )
 				{
 					BYTE* obuf = new BYTE[olen];
-					if( ::Base64Decode( (BYTE*)pdata, ilen, obuf, olen ) )
+					if( ::Base64Decode( (BYTE*)data, ilen, obuf, olen ) )
 					{
 						COleImage img;
 						if( img.LoadFromMem( obuf, olen ) )

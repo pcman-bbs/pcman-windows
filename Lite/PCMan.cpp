@@ -83,6 +83,7 @@ BOOL CApp::InitInstance()
 	AppPath=AppPath.Left(AppPath.ReverseFind('\\')+1);
 	DefaultConfigPath = AppPath + CONFIG_DIR;
 
+/*
 	// Test for PCMan 2004
 	if( IsFileExist(DefaultConfigPath + "Config") )	// PCMan 2004
 	{
@@ -90,7 +91,7 @@ BOOL CApp::InitInstance()
 		AfxMessageBox( IDS_PROMPT_IMPORT, MB_OK|MB_ICONINFORMATION );
 		ShellExecute( NULL, "open", "http://pcman.openfoundry.org/faq.html", NULL, NULL, SW_SHOW );
 	}
-
+*/
 	// Supporting per-user settings under Windows NT/2000/xp/Vista
 	if( IsWinNT() && !IsFileExist(AppPath + "Portable") )
 	{
