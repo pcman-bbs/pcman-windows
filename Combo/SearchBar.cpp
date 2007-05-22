@@ -45,7 +45,7 @@ static TBBUTTON searchbar_btns[]={
 
 BOOL CSearchBar::Create( CWnd* pParent )
 {
-	return CToolBar::CreateEx( pParent, TBSTYLE_AUTOSIZE|/*TBSTYLE_LIST|*/TBSTYLE_FLAT, TBSTYLE_TOOLTIPS|WS_CHILD|WS_VISIBLE|CBRS_ALIGN_TOP|WS_CLIPCHILDREN,
+	return CToolBar::CreateEx( pParent, TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE|/*TBSTYLE_LIST|*/TBSTYLE_FLAT, TBSTYLE_TOOLTIPS|WS_CHILD|WS_VISIBLE|CBRS_ALIGN_TOP|WS_CLIPCHILDREN,
                                CRect(0, 0, 0, 0), IDC_SEARCHBAR );
 }
 
@@ -221,6 +221,8 @@ int CSearchBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CToolBar::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	GetToolBarCtrl().SetBitmapSize(CSize(16, 16));
 
 	hedit = CreateWindowEx( WS_EX_CLIENTEDGE, "EDIT", NULL, ES_AUTOHSCROLL|WS_CHILD|WS_VISIBLE,
 		                    0, 0, 0, 0, m_hWnd, NULL, AfxGetInstanceHandle(), NULL );

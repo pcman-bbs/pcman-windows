@@ -31,6 +31,8 @@ BEGIN_MESSAGE_MAP(CAnsiBar, CDialogBar)
 	//{{AFX_MSG_MAP(CAnsiBar)
 	ON_WM_DRAWITEM()
 	ON_WM_MEASUREITEM()
+	ON_WM_ERASEBKGND()
+	ON_WM_MOVE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -307,4 +309,24 @@ void CAnsiBar::Send(DWORD type)
 	::SetForegroundWindow(view->parent->m_hWnd);
 	view->SetFocus();
 	view->telnet->Send(LPCTSTR(escstr),escstr.GetLength());
+}
+
+BOOL CAnsiBar::OnEraseBkgnd(CDC* pDC) 
+{
+	// dirty hack used to draw background properly under XP & Vista. :-(
+	// http://msdn2.microsoft.com/en-us/library/17750y97(VS.80).aspx
+    HWND parent = ::GetParent(m_hWnd);
+    CPoint pt(0, 0);
+	::MapWindowPoints( m_hWnd, parent, &pt, 1 );
+    pt = pDC->OffsetWindowOrg( pt.x, pt.y );
+    LRESULT ret = ::SendMessage( parent, WM_ERASEBKGND, (WPARAM)pDC->m_hDC, 0 );
+    pDC->SetWindowOrg( pt.x, pt.y );
+    return ret;
+}
+
+void CAnsiBar::OnMove(int x, int y) 
+{
+	// dirty hack used to draw background properly under XP & Vista. :-(
+	// http://msdn2.microsoft.com/en-us/library/17750y97(VS.80).aspx
+	Invalidate();
 }

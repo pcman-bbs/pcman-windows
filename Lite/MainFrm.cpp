@@ -277,6 +277,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	icon=AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	SetIcon(icon,TRUE);	SetIcon(icon,FALSE);
 
+	CBitmap imglist_bmp;
 //	Load Image List for Site List and Tab...
 	imglist_bmp.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath+ICON_BMP_FILENAME,IMAGE_BITMAP,0,0,LR_LOADFROMFILE));
 	img_icons.Create(16,16,ILC_COLOR32|ILC_MASK,9,0);
@@ -290,11 +291,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SIZE sizebtn;
 	SIZE sizeimg;
 	BITMAP bmp;
-	toolbar.CreateEx(this,TBSTYLE_FLAT,CCS_ADJUSTABLE|CBRS_ALIGN_TOP|CBRS_TOOLTIPS|
+	toolbar.CreateEx(this,TBSTYLE_TRANSPARENT|TBSTYLE_FLAT,CCS_ADJUSTABLE|CBRS_ALIGN_TOP|CBRS_TOOLTIPS|
 		WS_CHILD|WS_VISIBLE, tmprc, IDC_TOOLBAR );
 
+	CBitmap toolbar_bkgnd;
 	toolbar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath+TOOLBAR_BMP_FILENAME,
-		IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_LOADMAP3DCOLORS));
+		IMAGE_BITMAP,0,0,LR_LOADFROMFILE));
 	toolbar_bkgnd.GetBitmap(&bmp);
 
 	//img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, ILC_COLOR32|ILC_MASK, 9,0);
@@ -304,8 +306,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 #else
 	img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 17,0);
 #endif
-	ImageList_AddMasked(img_toolbar.m_hImageList, (HBITMAP)toolbar_bkgnd.m_hObject,RGB(255,0,255));
-
+	ImageList_AddMasked(img_toolbar.m_hImageList, (HBITMAP)toolbar_bkgnd.m_hObject, RGB(192,192,192));
 
 #ifdef _COMBO_
 	toolbar.GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
@@ -366,16 +367,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 #endif
 
 //	Create Close Button
-	close_btn.CreateEx(this,TBSTYLE_FLAT,CBRS_ALIGN_TOP|WS_CHILD|WS_VISIBLE|
+	close_btn.CreateEx(this,TBSTYLE_TRANSPARENT|TBSTYLE_FLAT,CBRS_ALIGN_TOP|WS_CHILD|WS_VISIBLE|
 		CBRS_TOOLTIPS, tmprc, IDC_CLOSEBTNBAR);
 	close_btn.LoadToolBar(IDR_CLOSEBTN);
 
 #if defined(_COMBO_)
 //----------Web¤u¨ã¦C-------------
-	web_bar.CreateEx(this,TBSTYLE_FLAT,CBRS_TOOLTIPS|CBRS_ALIGN_TOP|CCS_ADJUSTABLE|WS_CHILD|
+	web_bar.CreateEx(this,TBSTYLE_TRANSPARENT|TBSTYLE_FLAT,CBRS_TOOLTIPS|CBRS_ALIGN_TOP|CCS_ADJUSTABLE|WS_CHILD|
 		WS_VISIBLE,tmprc,IDC_WEBBAR);
 	web_bar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(),ConfigPath + WEB_ICON_BMP_FILENAME,
-		IMAGE_BITMAP,0,0,LR_LOADFROMFILE|LR_LOADMAP3DCOLORS));
+		IMAGE_BITMAP,0,0,LR_LOADFROMFILE));
 	web_bar_bkgnd.GetBitmap( &bmp);
 	img_webbar.Create( bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 5, 0);
 	ImageList_AddMasked(img_webbar.m_hImageList, (HBITMAP)web_bar_bkgnd.m_hObject,RGB(255,0,255));

@@ -53,14 +53,16 @@ public:
 // Implementation
 
 	// Generated message map functions
-	//{{AFX_MSG(CAnsiBar)
 	afx_msg void OnBk();
 	afx_msg void OnFg();
 	afx_msg void OnBlink();
-	afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
-	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	afx_msg void OnSend();
 	afx_msg void OnSendDropDown();
+	//{{AFX_MSG(CAnsiBar)
+	afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
+	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnMove(int x, int y);
 	//}}AFX_MSG
 protected:
 	DECLARE_MESSAGE_MAP()

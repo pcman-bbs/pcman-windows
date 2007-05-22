@@ -116,9 +116,7 @@ public:
 	HMENU tab_popup_menu;
 
 	CImageList img_toolbar;
-	CBitmap toolbar_bkgnd;
 	CImageList img_icons;
-	CBitmap imglist_bmp;
 	HICON icon;
 	CReBar rebar;
 	CAnsiBar ansi_bar;
