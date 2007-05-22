@@ -915,8 +915,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		search_menuiteminfo.wID = CSearchPluginCollection::ID_SEARCHPLUGIN_MENU;
 		search_menuiteminfo.hSubMenu = SearchPluginCollection.CreateSearchMenu();
 		CString web_search;
-		web_search.LoadString( ID_WEB_SEARCH );
-		// FIXME: strings should be stored in string table rather than hard-coded.
+		web_search.LoadString( IDS_WEB_SEARCH );
 		search_menuiteminfo.dwTypeData = (LPTSTR)LPCTSTR(web_search);
 		InsertMenuItem ( parent->edit_menu, 5, TRUE, &search_menuiteminfo );
 	}
