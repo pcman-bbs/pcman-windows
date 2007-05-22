@@ -446,31 +446,35 @@ void CTelnetConn::OnText()
 
 		if (is_getting_article)
 		{
-			if( get_article_with_ansi )
-				downloaded_article += GetLineWithAnsi( last_line - 1 );
-			else
-				downloaded_article += screen[ last_line - 1 ];
-			downloaded_article.TrimRight();
-			downloaded_article += "\r\n";
+			//甧Firebird BBS
+			//程︽临琌フ玥单BBS server肚癳程︽
+			char* last_line_txt = screen[ last_line ];
+			while(*last_line_txt == ' ')
+				last_line_txt++;
+			
+			if ( (last_line_txt - screen[ last_line ]) < strlen(screen[ last_line ]) )
+			{
 
-			if( IsEndOfArticleReached() )
-			{
-				//甧Firebird BBS
-				//程︽临琌フ玥单BBS server肚癳程︽
-				char* last_line_txt = screen[ last_line ];
-				while(*last_line_txt == ' ')
-					last_line_txt++;
-				if ( (last_line_txt - screen[ last_line ]) < strlen(screen[ last_line ]) )
-					CopyArticleComplete();
-			}
-			else
-			{
-				const char* key = key_map->FindKey(VK_DOWN, 0);
-				SendString( key ? key : "^[[B" );
-				if( !download_article_dlg )
+				if( get_article_with_ansi )
+					downloaded_article += GetLineWithAnsi( last_line - 1 );
+				else
+					downloaded_article += screen[ last_line - 1 ];
+				downloaded_article.TrimRight();
+				downloaded_article += "\r\n";
+
+				if( IsEndOfArticleReached() )
 				{
-					download_article_dlg = new CDownloadArticleDlg(this);
-					download_article_dlg->DoModal();
+					CopyArticleComplete();
+				}
+				else
+				{
+					const char* key = key_map->FindKey(VK_DOWN, 0);
+					SendString( key ? key : "^[[B" );
+					if( !download_article_dlg )
+					{
+						download_article_dlg = new CDownloadArticleDlg(this);
+						download_article_dlg->DoModal();
+					}
 				}
 			}
 		}
