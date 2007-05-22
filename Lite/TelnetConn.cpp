@@ -459,7 +459,7 @@ void CTelnetConn::OnText()
 					downloaded_article += GetLineWithAnsi( last_line - 1 );
 				else
 					downloaded_article += screen[ last_line - 1 ];
-				downloaded_article.TrimRight();
+				downloaded_article.TrimRight(" ");
 				downloaded_article += "\r\n";
 
 				if( IsEndOfArticleReached() )
@@ -2062,7 +2062,7 @@ void CTelnetConn::CopyArticle(bool with_color, bool in_editor)
 			downloaded_article += screen[y];
 		else
 			downloaded_article += GetLineWithAnsi( y );
-		downloaded_article.TrimRight();
+		downloaded_article.TrimRight(" ");
 		downloaded_article += "\r\n";
 	}
 
