@@ -36,17 +36,17 @@ RSC=rc.exe
 # PROP BASE Output_Dir "Release"
 # PROP BASE Intermediate_Dir "Release"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC 1
+# PROP Use_MFC 2
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "NDEBUG"
-# ADD RSC /l 0x404 /d "NDEBUG"
+# ADD RSC /l 0x404 /d "NDEBUG" /d "_AFXDLL"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -61,13 +61,13 @@ LINK32=link.exe
 # PROP BASE Output_Dir "Debug"
 # PROP BASE Intermediate_Dir "Debug"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC 0
+# PROP Use_MFC 1
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "_DEBUG"
@@ -77,7 +77,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -94,7 +94,7 @@ SOURCE=.\AppConfig.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\BBSHyperLink.cpp
+SOURCE=.\BBSHyperLink.cpp
 # End Source File
 # Begin Source File
 
@@ -102,19 +102,15 @@ SOURCE=.\Migrate.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\ReBarState.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SiteSettings.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\StrUtils.cpp
+SOURCE=.\StrUtils.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\WindowState.cpp
+SOURCE=.\TriggerList.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -126,7 +122,11 @@ SOURCE=.\AppConfig.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\BBSHyperLink.h
+SOURCE=.\BBSHyperLink.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CustomToolBar.h
 # End Source File
 # Begin Source File
 
@@ -134,19 +134,15 @@ SOURCE=..\Lite\FileUtil.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\ReBarState.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\SiteSettings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\strutils.h
+SOURCE=.\StrUtils.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\Lite\WindowState.h
+SOURCE=.\TriggerList.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

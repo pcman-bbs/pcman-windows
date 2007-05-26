@@ -36,10 +36,12 @@ void CSiteSettings::ReadFile(CFile& file)
 
 void CSiteSettings::WriteFile(CFile& file)
 {
+/*
 	file.Write(this,DWORD(&termtype)-DWORD(this));
 	SaveString(file,termtype);
 	SaveString(file,idle_str);
 	SaveString(file,esc_convert);
+*/
 }
 
 BOOL CSiteSettings::Load(LPCTSTR fpath)
@@ -54,7 +56,6 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 			*this = AppConfig.site_settings;
 		else	//載入個別設定
 			ReadFile(file);
-
 		if( !triggers.LoadFromFile(file) )
 		{
 			file.Close();
@@ -69,6 +70,7 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 
 void CSiteSettings::Save(LPCTSTR fpath)
 {
+#if 0
 	CFile file;
 	BOOL use_default = operator ==( AppConfig.site_settings );
 
@@ -87,4 +89,5 @@ void CSiteSettings::Save(LPCTSTR fpath)
 		triggers.SaveToFile(file);
 		file.Close();
 	}
+#endif
 }

@@ -5,15 +5,12 @@
 #if !defined(AFX_APPCONFIG_H__14C7B573_F013_4BD6_8CD8_132DD4F5189F__INCLUDED_)
 #define AFX_APPCONFIG_H__14C7B573_F013_4BD6_8CD8_132DD4F5189F__INCLUDED_
 
-#include "ReBarState.h"	// Added by ClassView
-#include "WindowState.h"	// Added by ClassView
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "MainFrm.h"
 #include "CustomToolBar.h"	// Added by ClassView
-#include "FavMenu.h"	// Added by ClassView
+//#include "FavMenu.h"	// Added by ClassView
 #include "BBSHyperLink.h"	// Added by ClassView
 #include "SiteSettings.h"	// Added by ClassView
 
@@ -40,8 +37,24 @@ const char HISTORY_FILENAME[]="History";
 
 BOOL IsContainAnsiCode(LPCTSTR str);
 CString LoadString(CFile& file);
-CString LoadString(CMemIniFile& file);
 void SaveString(CFile& file,LPCTSTR str);
+
+class CReBarBandPos
+{
+public:
+	UINT wID;
+	UINT fStyle;
+	UINT cx;
+	inline CReBarBandPos(){wID=-1;}
+};
+
+class CWindowState  
+{
+public:
+	int padding_bytes_of_unknown_usage;	// FIXME: what's this?
+	int showcmd;
+	RECT rect;
+};
 
 class CAppConfig
 {
@@ -93,7 +106,6 @@ public:
 	WORD pcman_hotkey_mod;
 
 	int max_history;
-//	int max_history_menu;
 
 //	AnsiEditor Settings
 	int	ed_cols_per_page;
@@ -141,15 +153,14 @@ public:
 	CString last_bbslist_item;
 
 	CCustomToolBarInfo main_toolbar_inf;
-	static TBBUTTON maintb_btns[];
+//	static TBBUTTON maintb_btns[];
 
 	CStringList history;
-	CFavMenu favorites;
+//	CFavMenu favorites;
 
 //	WWW Settings
 #if defined (_COMBO_)
 	CCustomToolBarInfo webbar_inf;
-	static TBBUTTON webbar_btns[];
 	BYTE ads_open_new;
 	BYTE disable_popup;
 	BYTE showwb;
@@ -167,8 +178,7 @@ public:
 #endif
 
 	CBBSHyperLink hyper_links;
-//	const static char* personal_files[];
-	bool lock_pcman;
+	CStringArray history_menu;
 };
 
 inline void CAppConfig::Default()
@@ -226,7 +236,7 @@ inline void CAppConfig::Default()
 	//determined by it's constructor
 
 //Main ToolBar Buttons (should init in CAppConfig constructor)
-	main_toolbar_inf.LoadDefault();
+//	main_toolbar_inf.LoadDefault();
 
 //	HyperLink Settings
 	link_underline=1;
@@ -253,7 +263,7 @@ inline void CAppConfig::Default()
 	font_info.lfQuality=DRAFT_QUALITY;
 	font_info.lfPitchAndFamily=49;
 //	font_info.lfPitchAndFamily=FIXED_PITCH|FF_DONTCARE;
-	strcpy(font_info.lfFaceName, LoadString(IDS_DEFAULT_FONT_FACE));
+	strcpy(font_info.lfFaceName, "²Ó©úÅé" /*LoadString(IDS_DEFAULT_FONT_FACE)*/);
 
 	bktype=0;
 	bkratio=4;		//	ratio/10*100%
@@ -267,9 +277,9 @@ inline void CAppConfig::Default()
 //	Site Settings
 
 //	object section
-	last_bbslist_item = LoadString( IDS_BBS_FAVORITE_NAME );
+//	last_bbslist_item = LoadString( IDS_BBS_FAVORITE_NAME );
 
-	hyper_links.Default();
+//	hyper_links.Default();
 //	WWW Settings
 #if defined (_COMBO_)
 	showwb = 1;
@@ -282,39 +292,39 @@ inline void CAppConfig::Default()
 	use_ie_fav = 1;
 	autowrap_favorite = 1;
 #endif
-	Save(ConfigPath+CONFIG_FILENAME);
 };
 
 
-inline CString LoadString(CFile& file)
-{
-	CString str;
-	DWORD len=0;
-	file.Read(&len,sizeof(DWORD));
-	file.Read(str.GetBuffer(len),len);
-	str.ReleaseBuffer();
-	return str;
-}
-
+CString LoadString(CFile& file);
 
 inline void CAppConfig::LoadHistory(CFile &f)
 {
-	favorites.LoadHistory(f);	// HistoryMenu
+	DWORD padding_bytes_of_unknown_usage;
+	f.Read( &padding_bytes_of_unknown_usage, 4 );
 
-	DWORD c=0;
+	int i;
+	WORD c=0;
 	f.Read(&c,sizeof(c));
-	for(DWORD i=0;i<c;i++)
+	history_menu.SetSize(c);
+	for( i=0; i<c; ++i )
+		history_menu[i]=LoadString(f);
+
+	DWORD n=0;
+	f.Read(&n,sizeof(n));
+	for( i=0; i<n ;++i )
 		history.AddTail(LoadString(f));
 }
 
 inline void CAppConfig::SaveHistory(CFile &f)
 {
+/*
 	favorites.SaveHistory(f);	// HistoryMenu
 
 	DWORD c=history.GetCount();
 	f.Write(&c,sizeof(c));
 	for(POSITION i=history.GetHeadPosition(); i; history.GetNext(i) )
 		SaveString(f,history.GetAt(i));
+*/
 }
 
 extern CAppConfig AppConfig;

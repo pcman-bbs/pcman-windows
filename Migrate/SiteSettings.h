@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "stdafx.h"
-#include "KeyMap.h"	// Added by ClassView
+#include <afxwin.h>
+//#include "KeyMap.h"	// Added by ClassView
 #include "TriggerList.h"	// Added by ClassView
 
 enum EncodingConv {GB2BIG5=1, BIG52GB=2};
@@ -98,7 +98,7 @@ inline void CSiteSettings::Default()
 
 	cols_per_page=80;
 	lines_per_page=24;
-	strcpy(KeyMapName,CKeyMap::default_kmname);
+	strcpy(KeyMapName, "¹w³]");
 //	use_default=1;
 
 //	object section
