@@ -72,9 +72,8 @@ BOOL CTriggerList::LoadFromFile(CFile &file)
 
 	while(c)
 	{
-		tmp=LoadString(file);
 		CTriggerItem* ntitem=Add();
-		ntitem->msg=UnescapeControlChars(tmp);
+		ntitem->msg=LoadString(file);
 		//讀取可能加密的字串
 		DWORD l;
 		file.Read(&l,sizeof(DWORD));	//	l=strlen(respond);
@@ -83,34 +82,15 @@ BOOL CTriggerList::LoadFromFile(CFile &file)
 		if( *tmpbuf=='*' )	//如果有加密
 		{
 			l--;
-/*
-FIXME
-			if(!crypto.IsInitialized())
-			{
-				if(!AppConfig.QueryPassword(FALSE))
-					return FALSE;
-				crypto.EnterPassword(AppConfig.passwd);
-			}
-			char* decbuf = new char[l+2];
-			memset(decbuf,0,l+2);
-			crypto.Decrypt(tmpbuf+1,decbuf,l);
-			memcpy(tmpbuf+1,decbuf,l);
-			delete []decbuf;
-
-			char* ppasswd = tmpbuf+strlen(tmpbuf)+1;
-			if( memcmp(LPCTSTR(AppConfig.passwd),ppasswd,AppConfig.passwd.GetLength()) )
-			{
-				AppConfig.passwd.Empty();
-				delete []tmpbuf;
-				return FALSE;
-			}
-			*ppasswd=0;
-*/
+			int len = Base64Encode( (BYTE*)tmpbuf + 1, l, NULL, 0 );
+			char* base64 = ntitem->respond.GetBuffer( len + 2 );
+			base64[0] = '+';
+			len = Base64Encode( (BYTE*)tmpbuf + 1, l, (BYTE*)base64+1, len );
+			base64[len + 1] = '\0';
+			ntitem->respond.ReleaseBuffer();
 		}
 		else
-			tmpbuf[l]=0;
-		//------------讀取加密字串完畢
-		ntitem->respond=tmpbuf;
+			ntitem->respond = (tmpbuf + 1);
 		delete []tmpbuf;
 
 		file.Read(&ntitem->first,sizeof(WORD));
@@ -122,45 +102,33 @@ FIXME
 
 void CTriggerList::SaveToFile(CFile &file)
 {
-#if 0
-FIXME:
-
-	file.Write(&count,sizeof(count));
-
-	for(CTriggerItem* pi=pfirst;pi;pi=pi->pnext)
+	CString section;
+	for( CTriggerItem* item = pfirst; item; item = item->pnext )
 	{
-		//儲存要偵測的字串
-		SaveString(file,pi->msg);
-		//儲存回應字串，視情況加密
-		if(pi->respond[0]=='*')	//需要加密
-		{
-			if(!crypt.IsInitialized())
-				crypt.EnterPassword(AppConfig.passwd);
-			DWORD len=pi->respond.GetLength()+1;
-			DWORD len2=len+AppConfig.passwd.GetLength();	//連密碼一起儲存
-			len2 = (len2/16 + (len2%16?1:0))*16+1;
-			file.Write(&len2,sizeof(len2));
-			len2--;
-			char* buf=new char[len2+2];
-			memset(buf,0,len2);
-			memcpy(buf,LPCTSTR(pi->respond),len);
-			memcpy(buf+len,LPCTSTR(AppConfig.passwd),AppConfig.passwd.GetLength());
-			char *buf2 = new char[len2+2];
-			memset(buf2,0,len2+2);
-			crypt.Encrypt(buf+1,buf2+1,len2);
-			*buf2 = *buf;
-			file.Write(buf2,len2+1);
-			delete []buf2;
-			delete []buf;
-		}
+		char buf[16];
+		section += "<item>\r\n";
+		section += "first=";
+		sprintf( buf, "%d\r\n", item->first );
+		section += buf;
+
+		section += "count=";
+		sprintf( buf, "%d\r\n", item->count );
+		section += buf;
+
+		section += "recv=";
+		section += item->msg;
+		section += "\r\n";
+
+		section += "send=";
+		if( '+' == *LPCTSTR(item->respond) )
+			section += item->respond;
 		else
-			SaveString(file,pi->respond);
-		//儲存第一次開始觸發的次數
-		file.Write(&pi->first,sizeof(WORD));
-		//儲存總共要觸發的次數
-		file.Write(&pi->count,sizeof(WORD));
+			section += EscapeControlChars(item->respond);
+
+		section += "\r\n</item>\r\n\r\n";
 	}
-#endif
+
+	file.Write( LPCTSTR(section), section.GetLength() );
 }
 
 void CTriggerList::CopyFrom(CTriggerList &newval)

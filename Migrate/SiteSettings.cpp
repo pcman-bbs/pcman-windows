@@ -70,13 +70,12 @@ void CSiteSettings::WriteFile(CFile& file)
 	fprintf( file, "termtype=%s\r\n", LPCTSTR(termtype) );
 	fprintf( file, "idle_str=%s\r\n", LPCTSTR(idle_str) );
 	fprintf( file, "esc_convert=%s\r\n", LPCTSTR(EscapeControlChars(esc_convert)) );
-	// CTriggerList triggers;	//Ä²µo¦r¦ê
-/*
-	BEGIN_CFG_FILE( table )
-		CFG_SECTION( Site )
-		CFG_CUSTOM_SECTION( "Triggers=%d\r\n", triggers )
-	END_CFG_FILE()
-*/
+
+	if( triggers.count > 0 )
+	{
+		fprintf( file, "[Triggers]\r\n" );
+		triggers.SaveToFile( file );
+	}
 }
 
 BOOL CSiteSettings::Load(LPCTSTR fpath)

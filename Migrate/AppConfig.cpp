@@ -30,10 +30,11 @@ void CAppConfig::Load(LPCTSTR config_path)
 	CFile f;
 	if( f.Open(config_path,CFile::modeRead) )
 	{
-//General settings pure value
-		f.Read(this,((DWORD)&site_settings-(DWORD)this));
-//		f.Read(this,((DWORD)&termtype-(DWORD)this));
-//General settings object data
+		//General settings pure value
+		f.Read( this, ((DWORD)&rebar_bands[0] - (DWORD)this));
+		f.Read( rebar_bands, sizeof(CReBarBandPos) * (IsCombo ? 5 : 4) );
+		f.Read( &link_underline, ((DWORD)&site_settings - (DWORD)&link_underline));
+		//General settings object data
 		site_settings.ReadFile(f);
 
 		bkpath=LoadString(f);
@@ -43,19 +44,17 @@ void CAppConfig::Load(LPCTSTR config_path)
 		main_toolbar_inf.LoadFromFile(f);
 		hyper_links.Load(f);
 
-//	WWW Settings
-	#if defined _COMBO_
-		webbar_inf.LoadFromFile(f);
-		f.Read(&ads_open_new,((DWORD)&webpage_filter-(DWORD)&ads_open_new));
-	#endif
+		//	WWW Settings
+		if( IsCombo )
+		{
+			webbar_inf.LoadFromFile(f);
+			f.Read(&ads_open_new,((DWORD)&webpage_filter-(DWORD)&ads_open_new));
+		}
 		f.Close();
 	}
 	else
 		Default();
 
-#if defined _COMBO_
-	LoadWebPageFilter();
-#endif
 }
 
 void fprint_color( CFile& file, const char* name, COLORREF clr )
@@ -214,43 +213,41 @@ void CAppConfig::Save(LPCTSTR config_path)
     fprint_wndstate( file, "freq_str", freqstr_state );
 // Customize toolbar buttons
 	fprint_toolbarinf( file, "main_toolbar", main_toolbar_inf );
-#if defined _COMBO_
-	fprint_toolbarinf( file, "web_bar", webbar_inf )
-#endif
+
+	if( IsCombo )
+		fprint_toolbarinf( file, "web_bar", webbar_inf );
 
 // ReBar Position
     fprint_rebar( file, "rebar0", rebar_bands[0] );
     fprint_rebar( file, "rebar1", rebar_bands[1] );
     fprint_rebar( file, "rebar2", rebar_bands[2] );
     fprint_rebar( file, "rebar3", rebar_bands[3] );
-#if defined _COMBO_
-    fprint_rebar( file, "rebar4", rebar_bands[4] );
-    fprint_rebar( file, "rebar5", rebar_bands[5] );
-#endif
 
+	if( IsCombo )
+	{
+		fprint_rebar( file, "rebar4", rebar_bands[4] );
+		fprintf( file, "rebar5=6,160,336" );
+	}
 	last_bbslist_item.Replace( ';', '\\' );
 	fprintf( file, "last_bbslist_item=%s\r\n", last_bbslist_item );
     file.Write("\r\n", 2);
 
 //	Web Settings
-#if defined (_COMBO_)
-	fprintf( file, "[Web]\r\n" );
-	fprintf( file, "ads_open_new=%d\r\n", ads_open_new );
-	fprintf( file, "disable_popup=%d\r\n", disable_popup );
-	fprintf( file, "showwb=%d\r\n", showwb );
-	fprintf( file, "fullscr_showwb=%d\r\n", fullscr_showwb );
-	fprintf( file, "showsearchbar=%d\r\n", showsearchbar );
-	fprintf( file, "fullscr_showsearchbar=%d\r\n", fullscr_showsearchbar );
-	fprintf( file, "autosort_favorite=%d\r\n", autosort_favorite );
-	fprintf( file, "disable_script_error=%d\r\n", disable_script_error );
-	fprintf( file, "use_ie_fav=%d\r\n", use_ie_fav );
-	fprintf( file, "autowrap_favorite=%d\r\n", autowrap_favorite );
-	fprintf( file, " search_engine=%d\r\n", search_engine );
-    file.Write("\r\n", 2);
-
-// Object Section
-//	CStringArray webpage_filter;
-#endif
+	if( IsCombo )
+	{
+		fprintf( file, "[Web]\r\n" );
+		fprintf( file, "ads_open_new=%d\r\n", ads_open_new );
+		fprintf( file, "disable_popup=%d\r\n", disable_popup );
+		fprintf( file, "showwb=%d\r\n", showwb );
+		fprintf( file, "fullscr_showwb=%d\r\n", fullscr_showwb );
+		fprintf( file, "showsearchbar=%d\r\n", 1 );
+		fprintf( file, "fullscr_showsearchbar=%d\r\n", 1 );
+		fprintf( file, "autosort_favorite=%d\r\n", autosort_favorite );
+		fprintf( file, "disable_script_error=%d\r\n", disable_script_error );
+		fprintf( file, "use_ie_fav=%d\r\n", use_ie_fav );
+		fprintf( file, "autowrap_favorite=%d\r\n", autowrap_favorite );
+		file.Write("\r\n", 2);
+	}
 }
 
 CAppConfig::CAppConfig()
@@ -259,6 +256,9 @@ CAppConfig::CAppConfig()
 
 void CAppConfig::BackupConfig(CString dir1, CString dir2)
 {
+	MoveFile( dir1, dir2 );
+	CreateDirectory( dir1, NULL );
+/*
 	CreateDirectory(dir2,NULL);
 	CFileFind finder;	BOOL found=finder.FindFile(dir1+"*.*");
 	while( found )
@@ -266,6 +266,7 @@ void CAppConfig::BackupConfig(CString dir1, CString dir2)
 		found=finder.FindNextFile();
 		CopyFile(finder.GetFilePath(),dir2+finder.GetFileName(),FALSE);
 	}
+*/
 }
 
 BOOL IsContainAnsiCode(LPCTSTR str)
@@ -341,3 +342,46 @@ void fprintf( CFile& file, const char* format, ... )
 	file.Write( line, len );
 }
 
+void CAppConfig::SaveHistory(CFile &f)
+{
+	int i;
+	fprintf( f, "[Menu]\r\n" );
+	for( i = 0; i < history_menu.GetSize(); ++i )
+	{
+		CString str = history_menu[i];
+		if( str[0] == 's' )	// bbs
+		{
+			int p = str.Find( '\t' );
+			if( p <= 0 )
+				continue;
+			int p2 = str.Find( '\t', p + 1 );
+			if( p2 > 0 )	// 有進階設定檔
+			{
+				CString name = str.Mid(1, p - 1);
+				CString address = str.Mid( p, (p2 - p) );
+				CString cfg = str.Mid( p2 + 1 );
+
+				str = 's' + name;
+				str += address;
+				if( 0 == strnicmp( cfg, ConfigPath, ConfigPath.GetLength() ) )
+				{
+					cfg = cfg.Mid( ConfigPath.GetLength() );
+					cfg.Replace( ';', '\\' );
+					cfg += name;
+					str += '\t';
+					str += cfg;
+				}
+			}
+		}
+		str += "\r\n";
+		f.Write( LPCTSTR(str), str.GetLength() );
+	}
+	fprintf( f, "\r\n[DropDown]\r\n" );
+	for( i = 0; i < history_dropdown.GetSize(); ++i )
+		fprintf( f, "%s\r\n", LPCTSTR(history_dropdown[i]) );
+	fprintf( f, "\r\n[Typed]\r\n" );
+	POSITION pos = history.GetHeadPosition();
+	for( ; pos; history.GetNext(pos) )
+		fprintf( f, "%s\r\n", LPCTSTR(history.GetAt(pos)) );
+
+}

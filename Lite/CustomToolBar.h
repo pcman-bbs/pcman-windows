@@ -26,7 +26,7 @@ public:
 	{	pbtns=_pbtns;	allcount=_allcount;	}
 
 	~CCustomToolBarInfo()
-	{	delete index;	}
+	{	delete []index;	}
 
 	void Save(CString& value)
 	{

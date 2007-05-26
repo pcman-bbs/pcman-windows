@@ -359,7 +359,7 @@ bool CAppConfig::OnDataExchange( bool load )
 	   _CFG_BYTE( "italic", font_info.lfItalic ) 
 	   _CFG_BYTE( "underline", font_info.lfUnderline ) 
 //	   _CFG_BYTE( font_info.lfStrikeOut ) 
-//	   _CFG_BYTE( "font_info.lfCharSet ) 
+	   _CFG_BYTE( "charset", font_info.lfCharSet ) 
 	   _CFG_BYTE( "oprec", font_info.lfOutPrecision ) 
 	   _CFG_BYTE( "cprec", font_info.lfClipPrecision ) 
 	   _CFG_BYTE( "quality", font_info.lfQuality ) 
@@ -394,7 +394,6 @@ bool CAppConfig::OnDataExchange( bool load )
 	    _CFG_STR( "termtype", site_settings.termtype )
 	    _CFG_STR( "idle_str", site_settings.idle_str )
 	    _CFG_ESTR( "esc_convert", site_settings.esc_convert )
-	    // CTriggerList triggers;	//Ä²µo¦r¦ê
 	END_CFG_SECTION()
 
     BEGIN_CFG_SECTION(Color)
@@ -480,11 +479,6 @@ bool CAppConfig::OnDataExchange( bool load )
         strcpy( font_info.lfFaceName, lfFaceName );
 
     return ret;
-}
-
-void CAppConfig::CfgWindowState(bool load, void* val, void* user_data)
-{
-    CWindowState& ws = *(CWindowState*)user_data;
 }
 
 void CHistoryLoader::CTypedHistoryHandler::Load( char* section )

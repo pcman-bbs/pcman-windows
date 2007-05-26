@@ -9,9 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-//#include "FavMenu.h"	// Added by ClassView
 #include "BBSHyperLink.h"	// Added by ClassView
 #include "SiteSettings.h"	// Added by ClassView
+
+extern CString ConfigPath;
+extern BOOL IsCombo;
 
 #define	CONFIG_DIR		"Config\\";
 const char CONFIG_FILENAME[]="Config";
@@ -20,7 +22,6 @@ const char ICON_BMP_FILENAME[]="Icons.bmp";
 const char FUS_FILENAME[]="FUS";
 const char UI_FILENAME[]="UI";
 
-const char BBS_LIST_FILENAME[]="BBSList";
 const char HOMEPAGE_FILENAME[]="Homepage";
 //	const char SITE_SEPARATOR[]="      ";
 
@@ -29,10 +30,8 @@ const char BBS_FAVORITE_FILENAME[]="BBSFavorites";
 const char SESSION_FILENAME[]="Session";
 const char HISTORY_FILENAME[]="History";
 
-#if defined(_COMBO_)
-	const char WWW_FAVORITE_FILENAME[]="WebFavorites";
-	const char WWW_ADFILTER_FILENAME[]="AdFilters";
-#endif
+const char WWW_FAVORITE_FILENAME[]="WebFavorites";
+const char WWW_ADFILTER_FILENAME[]="AdFilters";
 
 BOOL IsContainAnsiCode(LPCTSTR str);
 CString LoadString(CFile& file);
@@ -66,8 +65,13 @@ public:
 	BYTE* index;
 	TBBUTTON* pbtns;
 
+	CCustomToolBarInfo() : index(NULL) {}
+
 	~CCustomToolBarInfo()
-	{	delete []index;	}
+	{	
+		if( index )
+			delete []index;
+	}
 
 	inline void LoadFromFile(CFile& f)
 	{
@@ -81,14 +85,8 @@ class CAppConfig
 {
 public:
 	inline void LoadHistory(CFile& f);
-	inline void SaveHistory(CFile& f);
+	void SaveHistory(CFile& f);
 	void BackupConfig(CString dir1,CString dir2);
-
-#if defined	(_COMBO_)
-	enum{max_rebar_band_count=5};
-#else
-	enum{max_rebar_band_count=4};
-#endif
 
 	CAppConfig();
 
@@ -136,8 +134,9 @@ public:
 	CWindowState mainwnd_state;
 	CWindowState sitelist_state;
 	CWindowState freqstr_state;
+
 //ReBar Position
-	CReBarBandPos rebar_bands[max_rebar_band_count];
+	CReBarBandPos rebar_bands[6];
 
 //	HyperLink Settings
 	BOOL link_underline;
@@ -180,7 +179,6 @@ public:
 //	CFavMenu favorites;
 
 //	WWW Settings
-#if defined (_COMBO_)
 	CCustomToolBarInfo webbar_inf;
 	BYTE ads_open_new;
 	BYTE disable_popup;
@@ -194,12 +192,9 @@ public:
 // Object Section
 	CStringArray webpage_filter;
 
-	inline void LoadWebPageFilter();
-	inline void SaveWebPageFilter();
-#endif
-
 	CBBSHyperLink hyper_links;
 	CStringArray history_menu;
+	CStringArray history_dropdown;
 };
 
 inline void CAppConfig::Default()
@@ -230,13 +225,10 @@ inline void CAppConfig::Default()
 	pcman_hotkey=0xc0;	//'`'
 	pcman_hotkey_mod=MOD_ALT;
 
-#ifdef _COMBO_
-	max_history=600;
-//	max_history_menu=20;
-#else
-	max_history=40;
-//	max_history_menu=10;
-#endif
+	if( IsCombo )
+		max_history=600;
+	else
+		max_history=40;
 
 //	AnsiEditor Settings
 	ed_cols_per_page=80;
@@ -302,17 +294,17 @@ inline void CAppConfig::Default()
 
 //	hyper_links.Default();
 //	WWW Settings
-#if defined (_COMBO_)
+
 	showwb = 1;
 	fullscr_showwb = 1;
-	webbar_inf.LoadDefault();
+//	webbar_inf.LoadDefault();
 	ads_open_new=0;
 	disable_popup=1;
 	autosort_favorite=1;
 	disable_script_error = 1;
 	use_ie_fav = 1;
 	autowrap_favorite = 1;
-#endif
+
 };
 
 
@@ -320,32 +312,29 @@ CString LoadString(CFile& file);
 
 inline void CAppConfig::LoadHistory(CFile &f)
 {
-	DWORD padding_bytes_of_unknown_usage;
-	f.Read( &padding_bytes_of_unknown_usage, 4 );
-
 	int i;
 	WORD c=0;
-	f.Read(&c,sizeof(c));
-	history_menu.SetSize(c);
-	for( i=0; i<c; ++i )
-		history_menu[i]=LoadString(f);
-
 	DWORD n=0;
+
+	f.Read( &n, 4 );
+	if( n > 0 )
+	{
+		history_dropdown.SetSize(n);
+		for( i = 0; i < n; ++i )
+			history_dropdown[i] = LoadString(f);
+	}
+
+	f.Read(&c,sizeof(c));
+	if( c > 0 )
+	{
+		history_menu.SetSize(c);
+		for( i=0; i<c; ++i )
+			history_menu[i] = LoadString(f);
+	}
+
 	f.Read(&n,sizeof(n));
 	for( i=0; i<n ;++i )
 		history.AddTail(LoadString(f));
-}
-
-inline void CAppConfig::SaveHistory(CFile &f)
-{
-/*
-	favorites.SaveHistory(f);	// HistoryMenu
-
-	DWORD c=history.GetCount();
-	f.Write(&c,sizeof(c));
-	for(POSITION i=history.GetHeadPosition(); i; history.GetNext(i) )
-		SaveString(f,history.GetAt(i));
-*/
 }
 
 extern CAppConfig AppConfig;

@@ -61,7 +61,6 @@ CString GetIEPath();
 class CAppConfig : public CConfigFile
 {
 public:
-	static void CfgWindowState(bool load, void* val, void* user_data);
 	BOOL QueryPassword(BOOL confirm,LPCTSTR title=NULL);
 	void BackupConfig(CString dir1,CString dir2);
 
