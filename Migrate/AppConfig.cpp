@@ -58,6 +58,42 @@ void CAppConfig::Load(LPCTSTR config_path)
 #endif
 }
 
+void fprint_color( CFile& file, const char* name, COLORREF clr )
+{
+	fprintf( file, "%s=%d,%d,%d\r\n", name, GetRValue(clr), GetGValue(clr), GetBValue(clr) ); 
+}
+
+void fprint_wndstate( CFile& file, const char* name, CWindowState& state )
+{
+    fprintf( file,
+		"%s=%d,%d,%d,%d,%d\r\n",
+		name,
+        state.rect.left,
+        state.rect.top,
+        state.rect.right,
+        state.rect.bottom,
+        state.showcmd );
+}
+
+void fprint_toolbarinf( CFile& file, const char* name, CCustomToolBarInfo& inf )
+{
+	CString value;
+    for( int i =0; i < inf.count; ++i ) {
+        char tmp[10];
+        if( ! value.IsEmpty() )
+            value += ',';
+        sprintf(tmp, "%d", inf.index[i]);
+        value += tmp;
+    }
+	value += "\r\n";
+	file.Write( LPCTSTR(value), value.GetLength() );
+}
+
+void fprint_rebar( CFile& file, const char* name, CReBarBandPos& pos )
+{
+	fprintf( file, "%s=%d,%d,%d\r\n", name, pos.wID, pos.fStyle, pos.cx );
+}
+
 void CAppConfig::Save(LPCTSTR config_path)
 {
 	CFile file;
@@ -138,7 +174,6 @@ void CAppConfig::Save(LPCTSTR config_path)
 	fprintf( file, "weight=%d\r\n",  font_info.lfWeight ); 
 	fprintf( file, "italic=%d\r\n",  font_info.lfItalic ); 
 	fprintf( file, "underline=%d\r\n",  font_info.lfUnderline ); 
-	//	   fprintf( file, "font_info.lfStrikeOut ); 
 	fprintf( file, "charset=%d\r\n",  font_info.lfCharSet ); 
 	fprintf( file, "oprec=%d\r\n",  font_info.lfOutPrecision ); 
 	fprintf( file, "cprec=%d\r\n",  font_info.lfClipPrecision ); 
@@ -147,104 +182,74 @@ void CAppConfig::Save(LPCTSTR config_path)
     file.Write("\r\n", 2);
 
 	site_settings.WriteFile( file );
-/*
-    fprintf( file, "[Color]\r\n" );
-	_CFG_COLOR( "black", colormap[0] )
-	_CFG_COLOR( "dark_red", colormap[1] )
-	_CFG_COLOR( "dark_green", colormap[2] )
-	_CFG_COLOR( "brown", colormap[3] )
-	_CFG_COLOR( "dark_blue", colormap[4] )
-	_CFG_COLOR( "dark_magenta", colormap[5] )
-	_CFG_COLOR( "dark_cyan", colormap[6] )
-	_CFG_COLOR( "light_gray", colormap[7] )
-	_CFG_COLOR( "gray", colormap[8] )
-	_CFG_COLOR( "red", colormap[9] )
-	_CFG_COLOR( "green", colormap[10] )
-	_CFG_COLOR( "yellow", colormap[11] )
-	_CFG_COLOR( "blue", colormap[12] )
-	_CFG_COLOR( "magenta", colormap[13] )
-	_CFG_COLOR( "cyan", colormap[14] )
-	_CFG_COLOR( "white", colormap[15] )
+    file.Write("\r\n", 2);
 
-		CFG_COLOR( active_tab_textcolor )
-	END_CFG_SECTION()
-*/
-/*
+	hyper_links.Save( file );
+    file.Write("\r\n", 2);
+
+    fprintf( file, "[Color]\r\n" );
+	fprint_color( file, "black", colormap[0] );
+	fprint_color( file, "dark_red", colormap[1] );
+	fprint_color( file, "dark_green", colormap[2] );
+	fprint_color( file, "brown", colormap[3] );
+	fprint_color( file, "dark_blue", colormap[4] );
+	fprint_color( file, "dark_magenta", colormap[5] );
+	fprint_color( file, "dark_cyan", colormap[6] );
+	fprint_color( file, "light_gray", colormap[7] );
+	fprint_color( file, "gray", colormap[8] );
+	fprint_color( file, "red", colormap[9] );
+	fprint_color( file, "green", colormap[10] );
+	fprint_color( file, "yellow", colormap[11] );
+	fprint_color( file, "blue", colormap[12] );
+	fprint_color( file, "magenta", colormap[13] );
+	fprint_color( file, "cyan", colormap[14] );
+	fprint_color( file, "white", colormap[15] );
+	fprint_color( file, "active_tab_textcolor", active_tab_textcolor );
+    file.Write("\r\n", 2);
+
 	fprintf( file, "[Window]\r\n" );
 // Window position
-    CFG_CUSTOM( "main", mainwnd_state )
-    CFG_CUSTOM( "site_list", sitelist_state )
-    CFG_CUSTOM( "freq_str", freqstr_state )
-
+    fprint_wndstate( file, "main", mainwnd_state );
+    fprint_wndstate( file, "site_list", sitelist_state );
+    fprint_wndstate( file, "freq_str", freqstr_state );
 // Customize toolbar buttons
-	CFG_CUSTOM( "main_toolbar", main_toolbar_inf )
+	fprint_toolbarinf( file, "main_toolbar", main_toolbar_inf );
 #if defined _COMBO_
-		CFG_CUSTOM( "web_bar", webbar_inf )
+	fprint_toolbarinf( file, "web_bar", webbar_inf )
 #endif
 
 // ReBar Position
-        CFG_CUSTOM( "rebar0", rebar_bands[0] )
-        CFG_CUSTOM( "rebar1", rebar_bands[1] )
-        CFG_CUSTOM( "rebar2", rebar_bands[2] )
-        CFG_CUSTOM( "rebar3", rebar_bands[3] )
+    fprint_rebar( file, "rebar0", rebar_bands[0] );
+    fprint_rebar( file, "rebar1", rebar_bands[1] );
+    fprint_rebar( file, "rebar2", rebar_bands[2] );
+    fprint_rebar( file, "rebar3", rebar_bands[3] );
 #if defined _COMBO_
-        CFG_CUSTOM( "rebar4", rebar_bands[4] )
-        CFG_CUSTOM( "rebar5", rebar_bands[5] )
+    fprint_rebar( file, "rebar4", rebar_bands[4] );
+    fprint_rebar( file, "rebar5", rebar_bands[5] );
 #endif
-	    fprintf( file, "last_bbslist_item )
-	END_CFG_SECTION()
+
+	last_bbslist_item.Replace( ';', '\\' );
+	fprintf( file, "last_bbslist_item=%s\r\n", last_bbslist_item );
+    file.Write("\r\n", 2);
 
 //	Web Settings
 #if defined (_COMBO_)
-	fprintf( file, "[Web)
-	    fprintf( file, "ads_open_new )
-	    fprintf( file, "disable_popup )
-	    fprintf( file, "showwb )
-	    fprintf( file, "fullscr_showwb )
-	    fprintf( file, "showsearchbar )
-	    fprintf( file, "fullscr_showsearchbar )
-	    fprintf( file, "autosort_favorite )
-	    fprintf( file, "disable_script_error )
-	    fprintf( file, "use_ie_fav )
-	    fprintf( file, "autowrap_favorite )
-	    fprintf( file, " search_engine )
-	END_CFG_SECTION()
+	fprintf( file, "[Web]\r\n" );
+	fprintf( file, "ads_open_new=%d\r\n", ads_open_new );
+	fprintf( file, "disable_popup=%d\r\n", disable_popup );
+	fprintf( file, "showwb=%d\r\n", showwb );
+	fprintf( file, "fullscr_showwb=%d\r\n", fullscr_showwb );
+	fprintf( file, "showsearchbar=%d\r\n", showsearchbar );
+	fprintf( file, "fullscr_showsearchbar=%d\r\n", fullscr_showsearchbar );
+	fprintf( file, "autosort_favorite=%d\r\n", autosort_favorite );
+	fprintf( file, "disable_script_error=%d\r\n", disable_script_error );
+	fprintf( file, "use_ie_fav=%d\r\n", use_ie_fav );
+	fprintf( file, "autowrap_favorite=%d\r\n", autowrap_favorite );
+	fprintf( file, " search_engine=%d\r\n", search_engine );
+    file.Write("\r\n", 2);
+
 // Object Section
 //	CStringArray webpage_filter;
-#endif
-
-*/
-
-#if 0
-	CFile f;
-	if(f.Open(config_path,CFile::modeWrite|CFile::modeCreate))
-	{
-//General settings pure value
-		f.Write(this,((DWORD)&site_settings-(DWORD)this));
-//General settings object data
-//		site_settings.Save(f);
-		site_settings.WriteFile(f);
-		SaveString(f,bkpath);
-		SaveString(f,wavepath);
-		SaveString(f,last_bbslist_item);
-
-		main_toolbar_inf.SaveToFile(f);
-		hyper_links.Save(f);
-
-//		SaveHistory(f);
-//	WWW Settings
-	#if defined _COMBO_
-		webbar_inf.SaveToFile(f);
-		f.Write(&ads_open_new,((DWORD)&webpage_filter-(DWORD)&ads_open_new));
-	#endif
-
-		f.Close();
-	}
-
-#if defined _COMBO_
-	SaveWebPageFilter();
-#endif
-
 #endif
 }
 

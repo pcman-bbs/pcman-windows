@@ -126,10 +126,6 @@ SOURCE=.\BBSHyperLink.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\CustomToolBar.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\Lite\FileUtil.h
 # End Source File
 # Begin Source File

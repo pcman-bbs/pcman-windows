@@ -116,6 +116,7 @@ BOOL CApp::InitInstance()
 	}
 #endif	// import old UI
 
+	// per-site settings
 	CFileFind finder;
 	BOOL found = finder.FindFile( OldConfigPath + "*;*" );
 	while( found )
@@ -129,5 +130,12 @@ BOOL CApp::InitInstance()
 		if( site.Load( src ) )
 			site.Save( dest );
 	}
+
+#if 0
+#if defined _COMBO_
+	SaveWebPageFilter();
+#endif
+#endif
+
 	return CWinApp::InitInstance();
 }

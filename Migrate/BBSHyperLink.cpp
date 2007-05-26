@@ -38,6 +38,20 @@ void CBBSHyperLink::Load(CFile &file)
 
 void CBBSHyperLink::Save(CFile &file)
 {
+	CString section = "[HyperLink]\r\n";
+	for( int i = 0, c = links.GetSize(); i < c; ++i )
+	{
+		section += links[i].scheme;
+		section += '=';
+		section += links[i].program;
+		section += '|';
+		char color_str[32];
+		COLORREF color = links[i].color;
+		sprintf( color_str, "%d,%d,%d\r\n",
+				 GetRValue(color), GetGValue(color), GetBValue(color) );
+		section += color_str;
+	}
+	file.Write( LPCTSTR(section), section.GetLength() );
 /*
 	WORD c=links.GetSize();
 	file.Write(&c,sizeof(c));

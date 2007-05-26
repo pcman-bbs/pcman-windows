@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "CustomToolBar.h"	// Added by ClassView
 //#include "FavMenu.h"	// Added by ClassView
 #include "BBSHyperLink.h"	// Added by ClassView
 #include "SiteSettings.h"	// Added by ClassView
@@ -56,6 +55,26 @@ public:
 	int padding_bytes_of_unknown_usage;	// FIXME: what's this?
 	int showcmd;
 	RECT rect;
+};
+
+
+class CCustomToolBarInfo	//目前支援最多255個按鈕
+{
+public:
+	int count;
+	int allcount;
+	BYTE* index;
+	TBBUTTON* pbtns;
+
+	~CCustomToolBarInfo()
+	{	delete []index;	}
+
+	inline void LoadFromFile(CFile& f)
+	{
+		f.Read(&count,sizeof(count));
+		index=new BYTE[count];
+		f.Read(index,count*sizeof(*index));
+	}
 };
 
 class CAppConfig
