@@ -39,6 +39,8 @@ BOOL IsContainAnsiCode(LPCTSTR str);
 CString LoadString(CFile& file);
 void SaveString(CFile& file,LPCTSTR str);
 
+void fprintf( CFile& file, const char* format, ... );
+
 class CReBarBandPos
 {
 public:

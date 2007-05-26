@@ -35,6 +35,8 @@ BOOL CApp::InitInstance()
 	cfg.BackupConfig( ConfigPath, OldConfigPath );
 	cfg.Load( OldConfigPath + CONFIG_FILENAME );
 
+	cfg.Save( ConfigPath + "Config.ini" );
+
 	CFile f;
 	if(  f.Open( OldConfigPath + HISTORY_FILENAME, CFile::modeRead )  )
 	{
@@ -120,8 +122,9 @@ BOOL CApp::InitInstance()
 	{
 		found = finder.FindNextFile();
 		CString src = finder.GetFilePath();
-		CString dest = src;
+		CString dest = finder.GetFileTitle();
 		dest.Replace(";", "__");
+		dest = ConfigPath + dest;
 		CSiteSettings site;
 		if( site.Load( src ) )
 			site.Save( dest );

@@ -4,6 +4,9 @@
 
 #include "SiteSettings.h"
 #include "AppConfig.h"
+#include "StrUtils.h"
+
+#include <stdarg.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -36,11 +39,43 @@ void CSiteSettings::ReadFile(CFile& file)
 
 void CSiteSettings::WriteFile(CFile& file)
 {
+	fprintf( file, "[Site]\r\n" );
+	fprintf( file, "line_count=%d\r\n", line_count );
+	fprintf( file, "idle_interval=%d\r\n", idle_interval );
+	fprintf( file, "connect_interval=%d\r\n", connect_interval );
+	fprintf( file, "reconnect_interval=%d\r\n", reconnect_interval  );
+	fprintf( file, "paste_autowrap_col=%d\r\n", paste_autowrap_col  );
+	fprintf( file, "cols_per_page=%d\r\n", cols_per_page );
+	fprintf( file, "lines_per_page=%d\r\n", lines_per_page );
+
+	fprintf( file, "prevent_idle=%d\r\n", prevent_idle );
+	fprintf( file, "auto_reconnect=%d\r\n", auto_reconnect );
+
+	fprintf( file, "showscroll=%d\r\n", showscroll );
+	fprintf( file, "line_wrap=%d\r\n", line_wrap );
+	fprintf( file, "paste_autowrap=%d\r\n", paste_autowrap );
+	fprintf( file, "auto_dbcs_mouse=%d\r\n", auto_dbcs_mouse );
+	fprintf( file, "auto_dbcs_arrow=%d\r\n", auto_dbcs_arrow );
+	fprintf( file, "auto_dbcs_del=%d\r\n", auto_dbcs_del );
+	fprintf( file, "auto_dbcs_backspace=%d\r\n", auto_dbcs_backspace );
+	fprintf( file, "localecho=%d\r\n", localecho );
+
+	fprintf( file, "text_output_conv=%d\r\n", text_output_conv );	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
+	fprintf( file, "text_input_conv=%d\r\n", text_input_conv );		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
+
+	if( 0 == strcmp( KeyMapName, "預設" ) )
+		strcpy( KeyMapName, "Default" );
+
+	fprintf( file, "key_map_name=%s\r\n", KeyMapName );
+	fprintf( file, "termtype=%s\r\n", LPCTSTR(termtype) );
+	fprintf( file, "idle_str=%s\r\n", LPCTSTR(idle_str) );
+	fprintf( file, "esc_convert=%s\r\n", LPCTSTR(EscapeControlChars(esc_convert)) );
+	// CTriggerList triggers;	//觸發字串
 /*
-	file.Write(this,DWORD(&termtype)-DWORD(this));
-	SaveString(file,termtype);
-	SaveString(file,idle_str);
-	SaveString(file,esc_convert);
+	BEGIN_CFG_FILE( table )
+		CFG_SECTION( Site )
+		CFG_CUSTOM_SECTION( "Triggers=%d\r\n", triggers )
+	END_CFG_FILE()
 */
 }
 
@@ -70,24 +105,8 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 
 void CSiteSettings::Save(LPCTSTR fpath)
 {
-#if 0
 	CFile file;
-	BOOL use_default = operator ==( AppConfig.site_settings );
-
-	//如果設定值和預設值相同而且沒有使用字串觸發，就把設定檔刪除
-	if(use_default && triggers.count==0 )
-	{
-		DeleteFile(fpath);
+	if( !file.Open( fpath, CFile::modeWrite|CFile::modeCreate ) )
 		return;
-	}
-
-	if(file.Open(fpath,CFile::modeWrite|CFile::modeCreate))
-	{
-		file.Write(&use_default,sizeof(use_default));
-		if(!use_default)
-			WriteFile(file);
-		triggers.SaveToFile(file);
-		file.Close();
-	}
-#endif
+	WriteFile( file );
 }
