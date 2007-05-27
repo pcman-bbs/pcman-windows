@@ -38,6 +38,7 @@
 
 extern CString AppPath;
 extern CString ConfigPath;
+extern CString DefaultConfigPath;
 
 inline CString LoadString(UINT id)
 {

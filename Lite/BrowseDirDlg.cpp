@@ -19,7 +19,7 @@ int CBrowseDirDlg::DoModal()
 
 CBrowseDirDlg::CBrowseDirDlg( CWnd* pParent , LPCTSTR lpstrTitle = NULL )
 {
-	bi.hwndOwner = pParent->m_hWnd;
+	bi.hwndOwner = pParent->GetSafeHwnd();
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = new char[MAX_PATH];
 	bi.pszDisplayName[0] = 0;

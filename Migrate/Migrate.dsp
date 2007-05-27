@@ -40,6 +40,7 @@ RSC=rc.exe
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /YX /FD /c
@@ -98,6 +99,10 @@ SOURCE=.\BBSHyperLink.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\BrowseDirDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Migrate.cpp
 # End Source File
 # Begin Source File
@@ -126,6 +131,10 @@ SOURCE=.\BBSHyperLink.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\BrowseDirDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\FileUtil.h
 # End Source File
 # Begin Source File
@@ -139,6 +148,10 @@ SOURCE=.\StrUtils.h
 # Begin Source File
 
 SOURCE=.\TriggerList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\WinUtils.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

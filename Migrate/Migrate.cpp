@@ -3,6 +3,9 @@
 #include <windows.h>
 #include "AppConfig.h"
 #include "SiteSettings.h"
+#include "../Lite/BrowseDirDlg.h"
+#include "../Lite/FileUtil.h"
+#include "../Lite/WinUtils.h"
 
 /*
 int WINAPI WinMain( HINSTANCE hinst, HINSTANCE hprev, LPSTR lpcmd, int showcmd )
@@ -12,15 +15,12 @@ int WINAPI WinMain( HINSTANCE hinst, HINSTANCE hprev, LPSTR lpcmd, int showcmd )
 }
 */
 
-inline BOOL IsFileExist(LPCTSTR path)
-{
-	return GetFileAttributes(path) != -1;
-}
-
 class CApp : public CWinApp
 {
 public:
 	BOOL InitInstance();
+protected:
+	LPCTSTR ParseCmdLine( LPCTSTR cmd, CString &arg );
 }theApp;
 
 CString ConfigPath;
@@ -29,25 +29,80 @@ BOOL IsCombo = FALSE;
 BOOL CApp::InitInstance()
 {
 	CString AppPath;
+	CString src_dir;
+	CString dest_dir;
+
+	// gather command line arguments
+	LPCTSTR pcmd = ParseCmdLine( m_lpCmdLine, src_dir );
+	if( pcmd )
+		ParseCmdLine( pcmd, dest_dir );
+
+	if( src_dir.IsEmpty() )
+	{
+find_2004:
+		CBrowseDirDlg dlg(NULL, "請選取 PCMan 2004 安裝的資料夾");
+		if( dlg.DoModal() != IDOK )
+			return 1;
+		src_dir = dlg.GetPath();
+	}
+	if( ! IsFileExist( src_dir + "\\Config\\Config" ) )
+	{
+		MessageBox( NULL, "找不到 PCMan 2004 設定檔", NULL, MB_OK|MB_ICONSTOP ); 
+		goto find_2004;
+	}
+
+	if( dest_dir.IsEmpty() )
+	{
+		CBrowseDirDlg dlg(NULL, "請選取 Open PCMan 2007 安裝的資料夾");
+		if( dlg.DoModal() != IDOK )
+			return 1;
+		dest_dir = dlg.GetPath();
+	}
 
 	::GetModuleFileName(AfxGetInstanceHandle(),AppPath.GetBuffer(MAX_PATH),_MAX_PATH);
 	AppPath.ReleaseBuffer();
 	AppPath=AppPath.Left(AppPath.ReverseFind('\\')+1);
-	ConfigPath = AppPath + CONFIG_DIR;
 
 	CAppConfig cfg;
-	CString OldConfigPath = AppPath + "Config.2004\\";
+	CString OldConfigPath;
+
+	if( 0 == src_dir.CompareNoCase( dest_dir ) )	// src and dest are the same
+	{
+		OldConfigPath = src_dir + "\\Config.2004\\";
+		//	backup before continue
+		cfg.BackupConfig( src_dir + "\\Config\\", OldConfigPath );
+	}
+	else
+		OldConfigPath = src_dir + "\\Config\\";
+
+	ConfigPath = dest_dir + "\\Config\\";
 
 	// 識別是 Combo or Lite 版本
-	if( IsFileExist( ConfigPath + "Webbar.bmp" ) || 
-		IsFileExist( ConfigPath + WWW_ADFILTER_FILENAME ) || 
-		IsFileExist( ConfigPath + WWW_FAVORITE_FILENAME ) )
+	if( IsFileExist( OldConfigPath + "Webbar.bmp" ) || 
+		IsFileExist( OldConfigPath + WWW_ADFILTER_FILENAME ) || 
+		IsFileExist( OldConfigPath + WWW_FAVORITE_FILENAME ) )
 		IsCombo = TRUE;
 
-	cfg.BackupConfig( ConfigPath, OldConfigPath );
+	// 判斷是否支援多使用者
+	if( IsWinNT() && !IsFileExist(dest_dir + "\\Portable") )
+	{
+		BOOL ret = SHGetSpecialFolderPath( NULL, ConfigPath.GetBuffer(_MAX_PATH),
+			                               CSIDL_APPDATA, TRUE );
+		ConfigPath.ReleaseBuffer();
+		if( ret )
+		{
+			if( IsCombo )
+				ConfigPath += "\\PCMan Combo\\";
+			else
+				ConfigPath += "\\PCMan\\";
+
+		}
+	}
+
+	if( !IsFileExist(ConfigPath) )	// Copy default settings when necessary
+		CreateDirectory( ConfigPath, NULL );
 
 	cfg.Load( OldConfigPath + CONFIG_FILENAME );
-
 	cfg.Save( ConfigPath + "Config.ini" );
 
 	// Favorites
@@ -149,7 +204,7 @@ BOOL CApp::InitInstance()
 	CopyFile( OldConfigPath + "FUS", ConfigPath + "FUS", TRUE );
 
 	// UI, FIXME: old UI file shouldn't be used in new programs
-	CopyFile( OldConfigPath + "UI", ConfigPath + "UI", TRUE );
+	// CopyFile( OldConfigPath + "UI", ConfigPath + "UI", TRUE );
 
 #if 0	// import old UI
 	if(  f.Open(OldConfigPath + "UI", CFile::modeRead)  )
@@ -260,4 +315,30 @@ BOOL CApp::InitInstance()
 	}
 
 	return CWinApp::InitInstance();
+}
+
+LPCTSTR CApp::ParseCmdLine( LPCTSTR cmd, CString &arg )
+{
+	LPCTSTR pcmd, pquote = NULL;
+	for( pcmd = cmd; *pcmd; ++pcmd )
+	{
+		if( *pcmd == '\"' )	// quote
+		{
+			if( pquote )
+				pquote = NULL;
+			else
+				pquote = pcmd;
+			continue;
+		}
+		else if( *pcmd == ' ' )
+		{
+			if( ! pquote )
+				break;
+		}
+		arg += *pcmd;
+	}
+	while( *pcmd == ' ' )
+		++pcmd;
+
+	return *pcmd ? pcmd : NULL;
 }

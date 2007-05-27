@@ -2394,7 +2394,8 @@ void CMainFrame::OnSwitchBack()
 BOOL CMainFrame::LoadUI()
 {
 	CFile ui;
-	if(!ui.Open(ConfigPath+UI_FILENAME,CFile::modeRead))
+	if( !ui.Open(ConfigPath+UI_FILENAME,CFile::modeRead )
+		&& !ui.Open(DefaultConfigPath+UI_FILENAME,CFile::modeRead ) )
 		return FALSE;
 
 	main_menu = CreateMenu();
