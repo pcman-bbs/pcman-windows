@@ -69,14 +69,13 @@ find_2004:
 	AppPath.ReleaseBuffer();
 	AppPath=AppPath.Left(AppPath.ReverseFind('\\')+1);
 
-	CAppConfig cfg;
 	CString OldConfigPath;
 
 	if( 0 == src_dir.CompareNoCase( dest_dir ) )	// src and dest are the same
 	{
 		OldConfigPath = src_dir + "\\Config.2004\\";
 		//	backup before continue
-		cfg.BackupConfig( src_dir + "\\Config\\", OldConfigPath );
+		AppConfig.BackupConfig( src_dir + "\\Config\\", OldConfigPath );
 	}
 	else
 		OldConfigPath = src_dir + "\\Config\\";
@@ -110,8 +109,8 @@ find_2004:
 	if( !IsFileExist(ConfigPath) )	// Copy default settings when necessary
 		CreateDirectory( ConfigPath, NULL );
 
-	cfg.Load( OldConfigPath + CONFIG_FILENAME );
-	cfg.Save( ConfigPath + "Config.ini" );
+	AppConfig.Load( OldConfigPath + CONFIG_FILENAME );
+	AppConfig.Save( ConfigPath + "Config.ini" );
 
 	// Favorites
 	CopyFile( OldConfigPath + BBS_FAVORITE_FILENAME, ConfigPath + BBS_FAVORITE_FILENAME, FALSE );
@@ -133,12 +132,12 @@ find_2004:
 	CFile f;
 	if(  f.Open( OldConfigPath + HISTORY_FILENAME, CFile::modeRead )  )
 	{
-		cfg.LoadHistory(f);
+		AppConfig.LoadHistory(f);
 		f.Close();
 
 		if(  f.Open( ConfigPath + HISTORY_FILENAME, CFile::modeWrite|CFile::modeCreate )  )
 		{
-			cfg.SaveHistory(f);
+			AppConfig.SaveHistory(f);
 			f.Close();
 		}
 	}

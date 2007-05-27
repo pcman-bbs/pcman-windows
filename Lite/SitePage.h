@@ -16,6 +16,7 @@ class CSitePage : public CPropertyPage
 	DECLARE_DYNCREATE(CSitePage)
 // Construction
 public:
+	bool show_use_global;
 //	int use_default;
 	CSiteSettings* psettings;
 //	Flags
@@ -49,6 +50,8 @@ public:
 
 // Implementation
 protected:
+	void UpdateDisplay();
+	void EnableControls( bool enable );
 	// Generated message map functions
 	//{{AFX_MSG(CSitePage)
 	virtual BOOL OnInitDialog();
@@ -58,6 +61,7 @@ protected:
 	afx_msg void OnRenameMap();
 	afx_msg void OnDelMap();
 	afx_msg void OnSelchangeKeyMap();
+	afx_msg void OnUseGlobalSettings();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

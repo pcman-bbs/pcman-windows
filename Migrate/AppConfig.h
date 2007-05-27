@@ -203,7 +203,7 @@ inline void CAppConfig::Default()
 	scrolltab=0;
 	close_query=1;
 	dblclk_close=1;
-	tab_add_number=1;	
+	tab_add_number=1;
 	tab_button=1;
 	showtb=1;
 	showsb=1;

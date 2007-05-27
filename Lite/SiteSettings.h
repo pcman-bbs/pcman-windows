@@ -48,6 +48,8 @@ public:
 	BYTE text_output_conv;	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
 	BYTE text_input_conv;		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
 
+	BYTE use_global;	// Use global settings
+
 //	object section of Site Settings
 	CString key_map_name;
 	CString termtype;
@@ -98,7 +100,6 @@ inline void CSiteSettings::Default()
 	cols_per_page=80;
 	lines_per_page=24;
 	key_map_name = CKeyMap::default_kmname;
-//	use_default=1;
 
 //	object section
 
@@ -108,6 +109,8 @@ inline void CSiteSettings::Default()
 
 	text_output_conv = 0;	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
 	text_input_conv = 0;		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
+
+	use_global = 1;
 }
 
 //inline void CSiteSettings::CopyFrom(CSiteSettings* newval)

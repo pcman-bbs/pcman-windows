@@ -477,7 +477,6 @@ bool CAppConfig::OnDataExchange( bool load )
 
     if( load )
         strcpy( font_info.lfFaceName, lfFaceName );
-
     return ret;
 }
 

@@ -37,7 +37,28 @@ public:
 
 	bool OnDataExchange(bool load)
 	{
+		if( load )
+		{
+			site_settings = AppConfig.site_settings;
+		}
+		else	// save
+		{
+			if( site_settings.use_global )
+			{
+				BEGIN_CFG_SECTION(Site)
+					_CFG_BYTE( "use_global", site_settings.use_global )
+				END_CFG_SECTION()
+
+				BEGIN_CFG_FILE( table )
+					CFG_SECTION( Site )
+					CFG_CUSTOM_SECTION( "Triggers", site_settings.triggers )
+				END_CFG_FILE()
+				return DoDataExchange( load, table );
+			}
+		}
+
 		BEGIN_CFG_SECTION(Site)
+			_CFG_BYTE( "use_global", site_settings.use_global )
 			_CFG_LONG( "line_count", site_settings.line_count )
 			_CFG_LONG( "idle_interval", site_settings.idle_interval )
 			_CFG_INT( "connect_interval", site_settings.connect_interval )
@@ -90,9 +111,14 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 
 void CSiteSettings::Save(LPCTSTR fpath)
 {
+	// When we use global settings and don't have triggers,
+	// the config file is no more needed, and should be deleted.
+	if( use_global && triggers.count == 0 )
+	{
+		DeleteFile( GetFilePath(fpath) );
+		return;
+	}
 	CFile file;
-	BOOL use_default = operator ==( AppConfig.site_settings );
-
 	CSiteSettingsLoader loader( *this, fpath );
 	loader.Save();
 }

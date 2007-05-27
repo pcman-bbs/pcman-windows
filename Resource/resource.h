@@ -331,6 +331,7 @@
 #define IDC_ACTIVE_TAB_TEXTCOLOR        1134
 #define IDC_ITEMSPIN                    1135
 #define IDC_MAX_HISTORYSPIN             1136
+#define IDC_USE_GLOBAL_SETTINGS         1137
 #define IDR_BUILD_UI                    1234
 #define IDR_MAINMENU                    1236
 #define ID_LAST_WEB_FAVORITE            6000
@@ -604,7 +605,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        185
 #define _APS_NEXT_COMMAND_VALUE         32933
-#define _APS_NEXT_CONTROL_VALUE         1137
+#define _APS_NEXT_CONTROL_VALUE         1138
 #define _APS_NEXT_SYMED_VALUE           154
 #endif
 #endif

@@ -297,41 +297,6 @@ CString LoadString(CFile& file)
 	return str;
 }
 
-#ifdef	_COMBO_
-inline void CAppConfig::LoadWebPageFilter()
-{
-	CFile file;
-	if(file.Open(ConfigPath + WWW_ADFILTER_FILENAME, CFile::modeRead))
-	{
-		int c = 0;
-		file.Read(&c, 4);
-		webpage_filter.SetSize( c, 4 );
-		for(int i=0; i<c; i++)
-			webpage_filter[i] = LoadString(file);
-		file.Close();
-	}
-}
-
-inline void CAppConfig::SaveWebPageFilter()
-{
-/*
-	CFile file;
-	if(file.Open(ConfigPath + WWW_ADFILTER_FILENAME, CFile::modeWrite|CFile::modeCreate))
-	{
-		int c = webpage_filter.GetSize();
-		for( int i = 0; i < c; ++i )
-		{
-			CString& line = webpage_filter[i];
-			file.Write( LPCTSTR( line ), line.GetLength() );
-			file.Write( "\r\n", 2 );
-		}
-		file.Close();
-	}
-*/
-}
-#endif
-
-
 void fprintf( CFile& file, const char* format, ... )
 {
 	char line[4096];
@@ -366,6 +331,7 @@ void CAppConfig::SaveHistory(CFile &f)
 				if( 0 == strnicmp( cfg, ConfigPath, ConfigPath.GetLength() ) )
 				{
 					cfg = cfg.Mid( ConfigPath.GetLength() );
+					cfg = cfg.Left( cfg.GetLength() - name.GetLength() );
 					cfg.Replace( ';', '\\' );
 					cfg += name;
 					str += '\t';

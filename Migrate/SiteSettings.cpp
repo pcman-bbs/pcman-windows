@@ -20,7 +20,7 @@ static char THIS_FILE[]=__FILE__;
 
 CSiteSettings::CSiteSettings()
 {
-
+	use_global = false;
 }
 
 CSiteSettings::~CSiteSettings()
@@ -40,36 +40,41 @@ void CSiteSettings::ReadFile(CFile& file)
 void CSiteSettings::WriteFile(CFile& file)
 {
 	fprintf( file, "[Site]\r\n" );
-	fprintf( file, "line_count=%d\r\n", line_count );
-	fprintf( file, "idle_interval=%d\r\n", idle_interval );
-	fprintf( file, "connect_interval=%d\r\n", connect_interval );
-	fprintf( file, "reconnect_interval=%d\r\n", reconnect_interval  );
-	fprintf( file, "paste_autowrap_col=%d\r\n", paste_autowrap_col  );
-	fprintf( file, "cols_per_page=%d\r\n", cols_per_page );
-	fprintf( file, "lines_per_page=%d\r\n", lines_per_page );
+	fprintf( file, "use_global=%d\r\n", use_global );
 
-	fprintf( file, "prevent_idle=%d\r\n", prevent_idle );
-	fprintf( file, "auto_reconnect=%d\r\n", auto_reconnect );
+	if( ! use_global )
+	{
+		fprintf( file, "line_count=%d\r\n", line_count );
+		fprintf( file, "idle_interval=%d\r\n", idle_interval );
+		fprintf( file, "connect_interval=%d\r\n", connect_interval );
+		fprintf( file, "reconnect_interval=%d\r\n", reconnect_interval  );
+		fprintf( file, "paste_autowrap_col=%d\r\n", paste_autowrap_col  );
+		fprintf( file, "cols_per_page=%d\r\n", cols_per_page );
+		fprintf( file, "lines_per_page=%d\r\n", lines_per_page );
 
-	fprintf( file, "showscroll=%d\r\n", showscroll );
-	fprintf( file, "line_wrap=%d\r\n", line_wrap );
-	fprintf( file, "paste_autowrap=%d\r\n", paste_autowrap );
-	fprintf( file, "auto_dbcs_mouse=%d\r\n", auto_dbcs_mouse );
-	fprintf( file, "auto_dbcs_arrow=%d\r\n", auto_dbcs_arrow );
-	fprintf( file, "auto_dbcs_del=%d\r\n", auto_dbcs_del );
-	fprintf( file, "auto_dbcs_backspace=%d\r\n", auto_dbcs_backspace );
-	fprintf( file, "localecho=%d\r\n", localecho );
+		fprintf( file, "prevent_idle=%d\r\n", prevent_idle );
+		fprintf( file, "auto_reconnect=%d\r\n", auto_reconnect );
 
-	fprintf( file, "text_output_conv=%d\r\n", text_output_conv );	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
-	fprintf( file, "text_input_conv=%d\r\n", text_input_conv );		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
+		fprintf( file, "showscroll=%d\r\n", showscroll );
+		fprintf( file, "line_wrap=%d\r\n", line_wrap );
+		fprintf( file, "paste_autowrap=%d\r\n", paste_autowrap );
+		fprintf( file, "auto_dbcs_mouse=%d\r\n", auto_dbcs_mouse );
+		fprintf( file, "auto_dbcs_arrow=%d\r\n", auto_dbcs_arrow );
+		fprintf( file, "auto_dbcs_del=%d\r\n", auto_dbcs_del );
+		fprintf( file, "auto_dbcs_backspace=%d\r\n", auto_dbcs_backspace );
+		fprintf( file, "localecho=%d\r\n", localecho );
 
-	if( 0 == strcmp( KeyMapName, "預設" ) )
-		strcpy( KeyMapName, "Default" );
+		fprintf( file, "text_output_conv=%d\r\n", text_output_conv );	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
+		fprintf( file, "text_input_conv=%d\r\n", text_input_conv );		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
 
-	fprintf( file, "key_map_name=%s\r\n", KeyMapName );
-	fprintf( file, "termtype=%s\r\n", LPCTSTR(termtype) );
-	fprintf( file, "idle_str=%s\r\n", LPCTSTR(idle_str) );
-	fprintf( file, "esc_convert=%s\r\n", LPCTSTR(EscapeControlChars(esc_convert)) );
+		if( 0 == strcmp( KeyMapName, "預設" ) )
+			strcpy( KeyMapName, "Default" );
+
+		fprintf( file, "key_map_name=%s\r\n", KeyMapName );
+		fprintf( file, "termtype=%s\r\n", LPCTSTR(termtype) );
+		fprintf( file, "idle_str=%s\r\n", LPCTSTR(idle_str) );
+		fprintf( file, "esc_convert=%s\r\n", LPCTSTR(EscapeControlChars(esc_convert)) );
+	}
 
 	if( triggers.count > 0 )
 	{
@@ -87,7 +92,10 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 		//檢查是否使用預設值
 		file.Read(&str_trigger,sizeof(str_trigger));
 		if(str_trigger)	//如果使用預設值
+		{
 			*this = AppConfig.site_settings;
+			use_global = true;
+		}
 		else	//載入個別設定
 			ReadFile(file);
 		if( !triggers.LoadFromFile(file) )
@@ -104,6 +112,10 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 
 void CSiteSettings::Save(LPCTSTR fpath)
 {
+	// 不需要使用進階設定檔
+	if( use_global && triggers.count == 0 )
+		return;
+
 	CFile file;
 	if( !file.Open( fpath, CFile::modeWrite|CFile::modeCreate ) )
 		return;

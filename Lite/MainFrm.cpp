@@ -2911,7 +2911,7 @@ void CMainFrame::OnViewConfig()
     configdlg.m_psh.dwFlags |= PSH_NOAPPLYNOW;
 	CGeneralPage page0;
 	CSitePage page1;
-//	page1.use_default=-1;
+	page1.show_use_global = 0;
 	page1.psettings = &AppConfig.site_settings;
 
 	COtherPage page2;
