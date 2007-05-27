@@ -40,7 +40,7 @@ void CSiteSettings::ReadFile(CFile& file)
 void CSiteSettings::WriteFile(CFile& file)
 {
 	fprintf( file, "[Site]\r\n" );
-	fprintf( file, "use_global=%d\r\n", use_global );
+	fprintf( file, "use_global=%d\r\n\r\n", use_global );
 
 	if( ! use_global )
 	{

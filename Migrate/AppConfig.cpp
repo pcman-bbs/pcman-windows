@@ -84,6 +84,7 @@ void fprint_toolbarinf( CFile& file, const char* name, CCustomToolBarInfo& inf )
         sprintf(tmp, "%d", inf.index[i]);
         value += tmp;
     }
+	value = name + ('=' + value);
 	value += "\r\n";
 	file.Write( LPCTSTR(value), value.GetLength() );
 }
@@ -218,15 +219,15 @@ void CAppConfig::Save(LPCTSTR config_path)
 		fprint_toolbarinf( file, "web_bar", webbar_inf );
 
 // ReBar Position
-    fprint_rebar( file, "rebar0", rebar_bands[0] );
-    fprint_rebar( file, "rebar1", rebar_bands[1] );
-    fprint_rebar( file, "rebar2", rebar_bands[2] );
-    fprint_rebar( file, "rebar3", rebar_bands[3] );
+    fprint_rebar( file, "rebar0", rebar_bands[0] );	// id=1
+    fprint_rebar( file, "rebar1", rebar_bands[2] );	// id=3
+    fprint_rebar( file, "rebar2", rebar_bands[3] );	// id=4
+    fprint_rebar( file, "rebar3", rebar_bands[1] );	// id=2
 
 	if( IsCombo )
 	{
-		fprint_rebar( file, "rebar4", rebar_bands[4] );
-		fprintf( file, "rebar5=6,160,336\r\n" );
+		fprint_rebar( file, "rebar4", rebar_bands[4] );	// id=5
+		fprintf( file, "rebar5=6,160,336\r\n" );	//id=6
 	}
 	last_bbslist_item.Replace( ';', '\\' );
 	fprintf( file, "last_bbslist_item=%s\r\n", last_bbslist_item );
