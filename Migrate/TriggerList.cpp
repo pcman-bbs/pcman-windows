@@ -90,7 +90,10 @@ BOOL CTriggerList::LoadFromFile(CFile &file)
 			ntitem->respond.ReleaseBuffer();
 		}
 		else
-			ntitem->respond = (tmpbuf + 1);
+		{
+			tmpbuf[0] = '-';
+			ntitem->respond = tmpbuf;
+		}
 		delete []tmpbuf;
 
 		file.Read(&ntitem->first,sizeof(WORD));
