@@ -301,6 +301,7 @@
 #define IDC_SPINONEPAGE_COL             1105
 #define IDC_FULL_SHOWWB                 1105
 #define IDC_SPINONEPAGE_LINE            1106
+#define IDC_FULL_SHOWSEARCH             1106
 #define IDC_SPIN_MAX_HISTORY            1107
 #define IDC_STATIC1                     1107
 #define IDC_STATIC2                     1108

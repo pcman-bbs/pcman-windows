@@ -181,15 +181,17 @@ BEGIN
     CONTROL         "位址列",IDC_FULL_SHOWADS,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,86,157,40,10
     CONTROL         "狀態列",IDC_FULL_SHOWSB,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,140,157,40,10
+                    WS_TABSTOP,141,157,40,10
     CONTROL         "關閉連線按鈕",IDC_FULL_SHOWCLOSE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,194,157,64,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,195,157,64,10
     CONTROL         "連線標籤列",IDC_FULL_SHOWTAB,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,16,172,56,10
-    CONTROL         "ANSI 色彩工具列",IDC_FULL_USE_ANSIBAR,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,86,172,75,10
+    CONTROL         "ANSI 工具",IDC_FULL_USE_ANSIBAR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,86,172,51,10
+    CONTROL         "搜尋列",IDC_FULL_SHOWSEARCH,"Button",BS_AUTOCHECKBOX | 
+                    NOT WS_VISIBLE | WS_TABSTOP,141,172,40,10
     CONTROL         "Web 工具列",IDC_FULL_SHOWWB,"Button",BS_AUTOCHECKBOX | 
-                    NOT WS_VISIBLE | WS_TABSTOP,194,172,57,10
+                    NOT WS_VISIBLE | WS_TABSTOP,195,172,57,10
 END
 
 IDD_HYPERLINK DIALOG DISCARDABLE  0, 0, 276, 209
@@ -370,7 +372,7 @@ BEGIN
                     WS_TABSTOP,7,54,64,10
     CONTROL         "圖片放大到整個視窗",IDC_FULL,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,7,70,88,10
-    EDITTEXT        IDC_PATH,7,96,137,14,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_PATH,7,96,137,14,ES_AUTOHSCROLL
     PUSHBUTTON      "瀏覽 (&B)",IDC_BROWSE,149,96,50,14
     CONTROL         "Slider2",IDC_RATIO,"msctls_trackbar32",TBS_TOP | 
                     WS_TABSTOP,105,61,94,23

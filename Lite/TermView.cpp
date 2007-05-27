@@ -2468,7 +2468,12 @@ LRESULT CTermView::OnFind(WPARAM w, LPARAM l)
 			telnet->sel_start.x=telnet->sel_end.x=0;
 		}
 
-		strstrfunc pstrstr=pfinddlg->MatchCase()?strstr:strstri;
+		strstrfunc pstrstr = NULL;
+		if( pfinddlg->MatchCase() )
+			pstrstr = (strstrfunc)strstr;
+		else
+			pstrstr = (strstrfunc)strstri;
+
 		y=telnet->sel_start.y;
 		startx=telnet->sel_start.x;
 		endx=telnet->sel_end.x;
@@ -2757,7 +2762,8 @@ CString CTermView::GetSelText()
 				strcpy(data,telnet->screen[selstarty]+telnet->sel_start.x);
 				strstriptail(data);
 				strcat(data,crlf);
-				for(int i=selstarty+1;i<selendy;i++)
+				int i;
+				for( i=selstarty+1; i<selendy; ++i )
 				{
 					strcat(data,telnet->screen[i]);
 					strstriptail(data);

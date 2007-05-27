@@ -39,12 +39,15 @@ void CSetBkDlg::OnOK()
 {
 	CSliderCtrl* slider=(CSliderCtrl*)GetDlgItem(IDC_RATIO);
 	AppConfig.bkratio=slider->GetPos();
-	for(int i=0;i<5;i++)
+	int i;
+	for( i=0;i<5; ++i )
+	{
 		if(((CButton*)GetDlgItem(100+i))->GetCheck())	
 		{
 			AppConfig.bktype=i;
 			break;
 		}
+	}
 	GetDlgItem(IDC_PATH)->GetWindowText(AppConfig.bkpath);
 	if(AppConfig.bkpath.IsEmpty() && i>1)
 		MessageBox( LoadString( IDS_CHOOSE_BACKGROUND ));

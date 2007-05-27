@@ -232,7 +232,8 @@ int CBBSHyperLink::GetURLType(const char *url)
 		return email;
 
 	int len=int(psymbol)-int(url);
-	for(int i=0;i<links.GetSize();i++)
+	int i;
+	for( i=0;i<links.GetSize(); ++i )
 	{
 		if( strnicmp(plinks[i].scheme,url,len)==0 )	//如果有偵測到
 			break;

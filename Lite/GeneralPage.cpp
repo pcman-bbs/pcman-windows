@@ -62,6 +62,8 @@ BOOL CGeneralPage::OnInitDialog()
 #ifdef	_COMBO_
 	::ShowWindow(::GetDlgItem( m_hWnd, IDC_FULL_SHOWWB),SW_SHOW);
 	CheckDlgButton(IDC_FULL_SHOWWB,AppConfig.fullscr_showwb);
+	::ShowWindow(::GetDlgItem( m_hWnd, IDC_FULL_SHOWSEARCH),SW_SHOW);
+	CheckDlgButton(IDC_FULL_SHOWSEARCH,AppConfig.fullscr_showsearchbar);
 #endif
 
 	WORD mod=((AppConfig.pcman_hotkey_mod&MOD_ALT)?HOTKEYF_ALT:0) |
@@ -99,6 +101,7 @@ void CGeneralPage::OnOK()
 
 #ifdef	_COMBO_
 	AppConfig.fullscr_showwb=IsDlgButtonChecked(IDC_FULL_SHOWWB);
+	AppConfig.fullscr_showsearchbar=IsDlgButtonChecked(IDC_FULL_SHOWSEARCH);
 #endif
 	
 	WORD mod,vk;

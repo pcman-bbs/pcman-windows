@@ -179,17 +179,18 @@ void CAnsiBar::UpdateColor(UINT type)
 		}
 		else	//不使用區塊並選取多行
 		{
-				for(int p=telnet->sel_start.x;p<telnet->site_settings.cols_per_page;p++)
-					AddAttr(telnet->GetLineAttr(telnet->sel_start.y)[p],type);
+			int i, p;
+			for( p=telnet->sel_start.x;p<telnet->site_settings.cols_per_page;p++ )
+				AddAttr(telnet->GetLineAttr(telnet->sel_start.y)[p],type);
 
-				for(int i=telnet->sel_start.y+1;i<telnet->sel_end.y;i++)
-				{
-					for(int p=0;p<telnet->site_settings.cols_per_page;p++)
-						AddAttr(telnet->GetLineAttr(i)[p],type);
-				}
+			for( i=telnet->sel_start.y+1;i<telnet->sel_end.y;i++ )
+			{
+				for( p=0;p<telnet->site_settings.cols_per_page;p++ )
+					AddAttr(telnet->GetLineAttr(i)[p],type);
+			}
 
-				for(p=0;p<telnet->sel_end.x;p++)
-					AddAttr(telnet->GetLineAttr(telnet->sel_end.y)[p],type);
+			for( p=0;p<telnet->sel_end.x;p++ )
+				AddAttr(telnet->GetLineAttr(telnet->sel_end.y)[p],type);
 		}
 		CRect rc;
 		rc.top=telnet->sel_start.y*view->lineh+view->top_margin;
