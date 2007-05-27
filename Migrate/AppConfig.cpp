@@ -226,7 +226,7 @@ void CAppConfig::Save(LPCTSTR config_path)
 	if( IsCombo )
 	{
 		fprint_rebar( file, "rebar4", rebar_bands[4] );
-		fprintf( file, "rebar5=6,160,336" );
+		fprintf( file, "rebar5=6,160,336\r\n" );
 	}
 	last_bbslist_item.Replace( ';', '\\' );
 	fprintf( file, "last_bbslist_item=%s\r\n", last_bbslist_item );

@@ -1,3 +1,9 @@
+/*
+	This is a tool used to migrate old config files from PCMan 2004 to Open PCMan 2007
+	Usage: Migrate.exe [Dir of destination PCMan 2007] [Dir of source PCMan 2004]
+	If no directory is specified, a dialog will popup to let the user choose directories.
+*/
+
 #include <afxwin.h>
 
 #include <windows.h>
@@ -33,9 +39,9 @@ BOOL CApp::InitInstance()
 	CString dest_dir;
 
 	// gather command line arguments
-	LPCTSTR pcmd = ParseCmdLine( m_lpCmdLine, src_dir );
+	LPCTSTR pcmd = ParseCmdLine( m_lpCmdLine, dest_dir );
 	if( pcmd )
-		ParseCmdLine( pcmd, dest_dir );
+		ParseCmdLine( pcmd, src_dir );
 
 	if( src_dir.IsEmpty() )
 	{
@@ -83,6 +89,8 @@ find_2004:
 		IsFileExist( OldConfigPath + WWW_FAVORITE_FILENAME ) )
 		IsCombo = TRUE;
 
+	BOOL IsDestCombo = IsFileExist( OldConfigPath + "Webbar.bmp" );
+
 	// 判斷是否支援多使用者
 	if( IsWinNT() && !IsFileExist(dest_dir + "\\Portable") )
 	{
@@ -106,15 +114,20 @@ find_2004:
 	cfg.Save( ConfigPath + "Config.ini" );
 
 	// Favorites
-	CopyFile( OldConfigPath + BBS_FAVORITE_FILENAME, ConfigPath + BBS_FAVORITE_FILENAME, TRUE );
+	CopyFile( OldConfigPath + BBS_FAVORITE_FILENAME, ConfigPath + BBS_FAVORITE_FILENAME, FALSE );
 	if( IsCombo )
-		CopyFile( OldConfigPath + WWW_FAVORITE_FILENAME, ConfigPath + WWW_FAVORITE_FILENAME, TRUE );
+		CopyFile( OldConfigPath + WWW_FAVORITE_FILENAME, ConfigPath + WWW_FAVORITE_FILENAME, FALSE );
 
 	// Toolbars
-	CopyFile( OldConfigPath + TOOLBAR_BMP_FILENAME, ConfigPath + TOOLBAR_BMP_FILENAME, TRUE );
-	CopyFile( OldConfigPath + ICON_BMP_FILENAME, ConfigPath + ICON_BMP_FILENAME, TRUE );
-	if( IsCombo )
-		CopyFile( OldConfigPath + "Webbar.bmp", ConfigPath + "Webbar.bmp", TRUE );
+	// Icons of Combo and Lite versions are not compatible.
+	// Only import the icons when src and dest are both Combo or both Lite.
+	if( IsCombo == IsDestCombo )
+	{
+		CopyFile( OldConfigPath + TOOLBAR_BMP_FILENAME, ConfigPath + TOOLBAR_BMP_FILENAME, FALSE );
+		CopyFile( OldConfigPath + ICON_BMP_FILENAME, ConfigPath + ICON_BMP_FILENAME, FALSE );
+		if( IsCombo )
+			CopyFile( OldConfigPath + "Webbar.bmp", ConfigPath + "Webbar.bmp", FALSE );
+	}
 
 	// History
 	CFile f;
@@ -201,7 +214,7 @@ find_2004:
 	}
 
 	// FUS
-	CopyFile( OldConfigPath + "FUS", ConfigPath + "FUS", TRUE );
+	CopyFile( OldConfigPath + "FUS", ConfigPath + "FUS", FALSE );
 
 	// UI, FIXME: old UI file shouldn't be used in new programs
 	// CopyFile( OldConfigPath + "UI", ConfigPath + "UI", TRUE );
@@ -314,6 +327,7 @@ find_2004:
 		f.Close();
 	}
 
+	MessageBox( NULL, "匯入完成!", "完成", MB_OK|MB_ICONINFORMATION );
 	return CWinApp::InitInstance();
 }
 

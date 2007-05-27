@@ -43,7 +43,7 @@ BrandingText "Copyright (C) 2007 Open PCMan Team  /  Build Time: ${BUILD_TIME}"
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!define MUI_LICENSEPAGE_CHECKBOX
+;!define MUI_LICENSEPAGE_CHECKBOX
 !insertmacro MUI_PAGE_LICENSE "License.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
@@ -66,7 +66,7 @@ BrandingText "Copyright (C) 2007 Open PCMan Team  /  Build Time: ${BUILD_TIME}"
 
 ; MUI end ------
 
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION} PreRelease"
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 InstallDir "$PROGRAMFILES\${PRODUCT_DIR}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -82,13 +82,14 @@ Section SEC01
   SetOverwrite on
   ;SetOverwrite ifnewer
   File /r /x "Symbols.txt" /x "Config" /x "*.svn" "${SRC_DIR}\*.*"
+  File "Migrate\Release\Migrate.exe"
 
   StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi2 Eng2
   Chi2:
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "你要從網路上更新 BBS 站台列表嗎？" IDNO +5
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "你要從網路上更新 BBS 站台列表嗎？" IDNO +5
     Goto +2
   Eng2:
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Do you want to update the BBS list from internet?" IDNO +2
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Do you want to update the BBS list from internet?" IDNO +2
   NSISdl::download "http://free.ym.edu.tw/pcman/site_list.big5" "BBSList"
   Pop $R0 ;Get the return value
   StrCmp $R0 "success" +2
@@ -154,6 +155,18 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+
+  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
+  Chi:
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "是否執行 PCMan 2004 舊版設定檔匯入程式?" IDYES Import
+    goto Finish
+  Eng:
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Do you want to import old config files from PCMan 2004?" IDYES Import
+    goto Finish
+  Import:
+    ExecWait '"$INSTDIR\Migrate.exe" "$INSTDIR"'
+  Finish:
+    Delete "$INSTDIR\Migrate.exe"
 SectionEnd
 
 Function un.onUninstSuccess
