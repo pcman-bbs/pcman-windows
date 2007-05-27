@@ -62,17 +62,18 @@ LINK32=link.exe
 # PROP BASE Output_Dir "Debug"
 # PROP BASE Intermediate_Dir "Debug"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC 2
+# PROP Use_MFC 1
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "_DEBUG"
-# ADD RSC /l 0x404 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x404 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -103,7 +104,15 @@ SOURCE=..\Lite\BrowseDirDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Hotkey.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Migrate.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Migrate.rc
 # End Source File
 # Begin Source File
 
@@ -139,6 +148,10 @@ SOURCE=..\Lite\FileUtil.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Hotkey.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SiteSettings.h
 # End Source File
 # Begin Source File
@@ -157,6 +170,14 @@ SOURCE=..\Lite\WinUtils.h
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\ui_combo.bin
+# End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\UI
+# End Source File
 # End Target
 # End Project

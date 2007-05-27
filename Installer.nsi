@@ -4,11 +4,11 @@
 !ifdef _COMBO_
 !define PRODUCT_NAME "Open PCMan Combo"
 !define SRC_DIR "Combo\Release\PCMan Combo"
-OutFile "PCManCB.exe"
+OutFile ".\Release\PCManCB.exe"
 !else
 !define PRODUCT_NAME "Open PCMan"
 !define SRC_DIR "Lite\Release\PCMan"
-OutFile "PCMan.exe"
+OutFile ".\Release\PCMan.exe"
 !endif
 
 !define PRODUCT_DIR "${PRODUCT_NAME}"

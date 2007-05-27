@@ -99,7 +99,7 @@ inline void CSiteSettings::Default()
 
 	cols_per_page=80;
 	lines_per_page=24;
-	strcpy(KeyMapName, "¹w³]");
+	strcpy(KeyMapName, "Default");
 
 //	object section
 

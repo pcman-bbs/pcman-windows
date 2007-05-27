@@ -13,6 +13,10 @@
 #include "../Lite/FileUtil.h"
 #include "../Lite/WinUtils.h"
 
+#include "Hotkey.h"
+
+#include "resource.h"
+
 /*
 int WINAPI WinMain( HINSTANCE hinst, HINSTANCE hprev, LPSTR lpcmd, int showcmd )
 {
@@ -31,6 +35,72 @@ protected:
 
 CString ConfigPath;
 BOOL IsCombo = FALSE;
+
+#define	CT_MENU		1
+#define	CT_HAS_SUB	2
+#define	CT_EMPTY_SUB	2
+#define	CT_LAST		4
+#define	CT_CMD		8
+
+#pragma pack(1)	// byte align: 1
+struct UIMenuItem
+{
+	BYTE type;	// CT_MENU,CT_HAS_SUB,CT_CMD,如果TYPE=0則為Separator，後面幾項都沒有
+	WORD id_or_subcount;	//	如果有CT_HAS_SUB,為SUBCOUNT,如果沒有則為ID
+	WORD state;	//	只有Menu才有此項目
+	WORD len;	// text 的長度,含 '\0'
+	CHAR text[1];	//	長度不定,0結尾
+};
+#pragma pack()	// restore default byte align
+
+BYTE* WriteUI( CFile& f, BYTE* buf, CArray<ACCEL, ACCEL&>& accels )
+{
+	UIMenuItem* item = (UIMenuItem*)buf;
+	if( ! item->type )	//Separator
+	{
+		f.Write( buf, sizeof(BYTE) );
+		++buf;	// Next item
+	}
+	else
+	{
+		buf += sizeof(UIMenuItem) + item->len - 1;	//Next item
+
+		if( item->type & CT_HAS_SUB )
+		{
+			f.Write( item, sizeof(UIMenuItem) - 1 );
+			f.Write( item->text, item->len );
+			WORD count = item->id_or_subcount;	//取得sub item count
+			while( count > 0 )
+			{
+				buf = WriteUI( f, buf, accels );
+				--count;
+			}
+		}
+		else
+		{
+			CString text = item->text;
+			int p = text.Find( '\t' );
+			if( p >0 )
+				text = text.Left(p);
+			// apply hotkey
+			for( int i = 0; i < accels.GetSize(); ++i )
+			{
+				if( accels[i].cmd == item->id_or_subcount )
+				{
+					text += '\t';
+					text += HotkeyToStr( accels[i].fVirt, accels[i].key );
+					break;
+				}
+			}
+			item->len = text.GetLength() + 1;
+			f.Write( item, sizeof(UIMenuItem) - 1 );
+			f.Write( LPCTSTR(text), item->len );
+		}
+	}
+
+	return buf;
+}
+
 
 BOOL CApp::InitInstance()
 {
@@ -215,41 +285,44 @@ find_2004:
 	// FUS
 	CopyFile( OldConfigPath + "FUS", ConfigPath + "FUS", FALSE );
 
-	// UI, FIXME: old UI file shouldn't be used in new programs
-	// CopyFile( OldConfigPath + "UI", ConfigPath + "UI", TRUE );
-
-#if 0	// import old UI
-	if(  f.Open(OldConfigPath + "UI", CFile::modeRead)  )
+	// Try to import hotkeys from old UI
+	HGLOBAL hrc = NULL;
+	DWORD ui_len = 0;
+	LPCTSTR rid = IsCombo ? LPCTSTR(IDR_UI_COMBO) : LPCTSTR(IDR_UI_LITE);
+	HRSRC rc = FindResource( AfxGetResourceHandle(), rid, "RT_UI" );
+	if( rc )
 	{
-		WORD c;
-		f.Read( &c, 2 );
-		ACCEL* acc = new ACCEL[c];
-		f.Read( acc, c * sizeof(ACCEL) );
-		f.Close();
+		ui_len = SizeofResource( AfxGetResourceHandle(), rc );
+		hrc = LoadResource( AfxGetResourceHandle(), rc );
+	}
+	if( hrc )
+	{
+		BYTE* pui = (BYTE*)LockResource( hrc );
 
-		CArray<ACCEL, ACCEL&> accels;
-		accels.SetSize( c );
-		int i;
-		for( i = 0; i < c; ++i )
-			accels[i] = acc[i];
-		delete acc;
-		acc = NULL;
-
-		BYTE* data = NULL;
-		DWORD rest = 0;
-		if( f.Open( ConfigPath + "UI2", CFile::modeRead ) )
+		// import old UI
+		if(  f.Open(OldConfigPath + "UI", CFile::modeRead)  )
 		{
-			f.Read( &c, sizeof(c) );
-			acc = new ACCEL[c];
+			WORD c;
+			f.Read( &c, 2 );
+			ACCEL* acc = new ACCEL[c];
 			f.Read( acc, c * sizeof(ACCEL) );
-			rest = f.GetLength() - (c * sizeof(ACCEL));
-			data = new BYTE[rest];
-			f.Read( data, rest * sizeof(BYTE) );
 			f.Close();
-		}
 
-		if( acc && data )
-		{
+			CArray<ACCEL, ACCEL&> accels;
+			accels.SetSize( c );
+			int i;
+			for( i = 0; i < c; ++i )
+				accels[i] = acc[i];
+			delete acc;
+			acc = NULL;
+
+			BYTE* data = pui;
+			c = *(WORD*)data;
+			data += sizeof(WORD);
+			acc = (ACCEL*)data;
+			data += c * sizeof(ACCEL);
+			DWORD rest = ui_len - (data - pui);
+
 			for( i = 0; i < c; ++i )
 			{
 				int j;
@@ -263,7 +336,7 @@ find_2004:
 				{
 					// 舊版 UI 內沒有此命令，表示為 2007 新增的預設熱鍵
 					ACCEL new_acc = acc[i];
-					for( i = 0; i < accels.GetSize(); ++i )
+					for( j = 0; j < accels.GetSize(); ++j )
 					{
 						// 在舊版 UI 裡面此熱鍵已被使用
 						if(	accels[j].fVirt == acc[i].fVirt 
@@ -278,15 +351,15 @@ find_2004:
 			}
 			if( f.Open( ConfigPath + "UI", CFile::modeWrite|CFile::modeCreate ) )
 			{
+				c = accels.GetSize();
+				f.Write( &c, sizeof(WORD) );
 				f.Write( accels.GetData(), accels.GetSize() * sizeof(ACCEL) );
-				f.Write( data, rest );
+				// f.Write( data, rest );
+				WriteUI( f, data, accels );
 				f.Close();
 			}
-			delete []acc;
-			delete []data;
 		}
 	}
-#endif	// import old UI
 
 	// per-site settings
 	CFileFind finder;
