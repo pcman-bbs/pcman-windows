@@ -54,6 +54,6 @@ UINT Base64Decode(BYTE* in, UINT inlen, BYTE* out, UINT outlen);
 
 // Convert a string to md5 hash string
 // out should be at least 33 bytes (include '\0' at tail) in length.
-char* StrToMD5( const char* in, int len, char* out );
+// char* StrToMD5( const char* in, int len, char* out );
 
 #endif

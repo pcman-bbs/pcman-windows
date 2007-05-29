@@ -344,7 +344,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	tab_popup_menu=::LoadMenu(AfxGetInstanceHandle(),LPSTR(IDR_POPUP));
 	tab_popup_menu=::GetSubMenu(tab_popup_menu,0);
 #ifdef	_COMBO_
-	webtab_popup_menu=::LoadMenu(AfxGetInstanceHandle(),LPSTR(IDR_TABPOPUP2));
+	webtab_popup_menu=::LoadMenu(AfxGetInstanceHandle(),LPSTR(IDR_POPUP2));
 	webtab_popup_menu=::GetSubMenu(webtab_popup_menu,0);
 #endif
 
@@ -1723,8 +1723,10 @@ void CMainFrame::OnWebSearch()
 	}
 	else
 	{
+		CString term;
+		bool utf8 = search_bar.GetSearchTerm( term );
 		CString searchurl = SearchPluginCollection.UrlForSearch( AppConfig.search_engine, 
-		                                                         search_bar.GetSearchTerm() );
+		                                                         term, utf8 );
 
 		// FIXME: whether open search result in current window or new window 
 		//        should be optional in the future!

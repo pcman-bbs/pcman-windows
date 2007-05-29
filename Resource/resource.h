@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Common.rc
+// Used by Combo.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -126,7 +126,7 @@
 #define IDD_KEYMAP                      161
 #define IDD_INPUTNAME                   165
 #define IDD_QUICKCONNECT                167
-#define IDR_TABPOPUP2                   170
+#define IDR_POPUP2                      170
 #define IDR_CLOSEBTN                    171
 #define IDD_WEB                         173
 #define IDI_PCMAN_16                    178
@@ -500,7 +500,9 @@
 #define ID_COPYARTICLE_WITH_ANSI        32931
 #define ID_FONT_BTN                     32932
 #define IDS_INCOMPLETE_AUTO_SETTINGS    32933
+#define ID_EDIT_DELETE                  32933
 #define IDS_SAVE_BTN                    32934
+#define ID_EDIT_SELALL                  32934
 #define IDS_CANCEL_BTN                  32935
 #define IDS_CANCEL_BTN2                 32936
 #define IDS_DEL_CONFIRM                 32937
@@ -604,7 +606,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        185
-#define _APS_NEXT_COMMAND_VALUE         32933
+#define _APS_NEXT_COMMAND_VALUE         32935
 #define _APS_NEXT_CONTROL_VALUE         1138
 #define _APS_NEXT_SYMED_VALUE           154
 #endif

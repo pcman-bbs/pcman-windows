@@ -70,7 +70,7 @@ public:
 	enum EField { SHORTNAME, DESCRIPTION, INPUTENCODING, IMAGE, URL, METHOD, IMAGEBYTES };
 	int Load(LPCTSTR path);
 	int GetCount();
-	CString UrlForSearch(int index, CString searchTerm);
+	CString UrlForSearch(int index, CString searchTerm, bool utf8 = false );
 	char* GetField(int index, EField f);
 	HBITMAP GetImage(int index) {
 		if( index < 0 || index >= plugins.GetSize() )

@@ -7,22 +7,37 @@
 #include "../Lite/MainFrm.h"
 #include "../Lite/SearchPlugin.h"
 
+#include <windowsx.h>
+#include <Richedit.h>	// for richedit 2.0
+#include "../Resource/resource.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
 
+static HMODULE riched20 = NULL;
+
+WCHAR* RichEdit20_GetText( HWND edit );
+
 /////////////////////////////////////////////////////////////////////////////
 // CSearchBar
 
 CSearchBar::CSearchBar() : old_search_bar_proc(NULL), img_list(NULL)
 {
+	riched20 = LoadLibraryA("RICHED20.DLL");
 }
 
 CSearchBar::~CSearchBar()
 {
 	ImageList_Destroy( img_list );
+
+	if( riched20 )
+	{
+		FreeLibrary( riched20 );
+		riched20 = NULL;
+	}
 }
 
 BEGIN_MESSAGE_MAP(CSearchBar, CToolBar)
@@ -38,7 +53,6 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSearchBar message handlers
 
-static TCHAR btn_text[] = "Google!";
 static TBBUTTON searchbar_btns[]={
 	{-1, ID_WEB_SEARCH,TBSTATE_ENABLED,TBSTYLE_BUTTON|TBSTYLE_DROPDOWN, 0, 0 }
 };
@@ -69,29 +83,53 @@ LRESULT CALLBACK CSearchBar::EditProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lp
 			return 0;
 		}
 		break;
-/*
-	case WM_SETFOCUS:
+	case WM_CONTEXTMENU:
+		if( riched20 )
 		{
-			LPTSTR engine = SearchPluginCollection.GetField( AppConfig.search_engine, CSearchPluginCollection::SHORTNAME );
-			CString term;
-			int len = ::GetWindowTextLength( hwnd );
-			::GetWindowText( hwnd, term.GetBuffer( len + 1 ), len + 1 );
-			term.ReleaseBuffer();
-			if( term == engine )
-				::SetWindowText( hwnd, NULL );
-			break;
-		}
-	case WM_KILLFOCUS:
-		{
-			CString term;
-			int len = ::GetWindowTextLength( hwnd );
-			::GetWindowText( hwnd, term.GetBuffer( len + 1 ), len + 1 );
-			term.ReleaseBuffer();
-			if( term.IsEmpty() )
-				::SetWindowText(hwnd, SearchPluginCollection.GetField( AppConfig.search_engine, CSearchPluginCollection::SHORTNAME ));
+			HMENU menu = ::LoadMenu( AfxGetResourceHandle(), LPCTSTR(IDR_POPUP2) );
+			HMENU popup = ::GetSubMenu( menu, 2 );
+			TrackPopupMenu( popup, TPM_LEFTALIGN, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), 0, hwnd, NULL );
+			DestroyMenu( menu );
+			return 0;
 		}
 		break;
-*/
+	case WM_COMMAND:
+		if( riched20 )
+		{
+            switch( LOWORD(wparam) )
+            {
+            case ID_EDIT_UNDO:
+                ::SendMessage( hwnd, WM_UNDO, 0, 0 );
+                return 0;
+            case ID_EDIT_CUT:
+                ::SendMessage( hwnd, WM_CUT, 0, 0 );
+                return 0;
+            case ID_EDIT_COPY:
+                ::SendMessage( hwnd, WM_COPY, 0, 0 );
+                return 0;
+            case ID_EDIT_PASTE:
+                ::SendMessage( hwnd, WM_PASTE, 0, NULL );
+                return 0;
+            case ID_EDIT_DELETE:
+                ::SendMessage( hwnd, WM_CLEAR, 0, 0 );
+                return 0;
+            case ID_EDIT_SELALL: {
+                CHARRANGE cr = {0, -1};
+                ::SendMessage( hwnd, EM_EXSETSEL, 0, (LPARAM)&cr );
+                return 0;
+                }
+            }
+		}
+		break;
+	case WM_SETFOCUS:
+		if( riched20 )
+		{
+            CHARRANGE cr = {0, -1};
+            ::SendMessage( hwnd, EM_EXSETSEL, 0, (LPARAM)&cr );	
+		}
+		else
+			::SendMessage( hwnd, EM_SETSEL, 0, -1 );
+		break;
 	case WM_GETDLGCODE:
 		return DLGC_WANTALLKEYS;
 	}
@@ -164,38 +202,6 @@ void CSearchBar::UpdateBtn()
 	inf.iImage = img;
 	GetToolBarCtrl().SetButtonInfo( ID_WEB_SEARCH, &inf );
 	GetToolBarCtrl().AutoSize();
-//	GetToolBarCtrl().SetIndent( rc.Width() - btn_rc.Width() - 4 );
-
-/*
-	TBBUTTONINFO inf={0};
-	inf.cbSize = sizeof(inf);
-	inf.dwMask = TBIF_IMAGE|TBIF_TEXT|TBIF_SIZE;
-	inf.iImage = img;
-	LPCTSTR text = SearchPluginCollection.GetField(AppConfig.search_engine,
- 		                                           CSearchPluginCollection::SHORTNAME);
-	if( text )
-	{
-		CWindowDC dc(this);
-		CGdiObject* oldf = dc.SelectObject(GetFont());
-		CSize sz = dc.GetTextExtent( text, strlen(text) );
-		dc.SelectObject( oldf );
-		inf.cx = sz.cx + 44;
-	}
-	else
-		inf.cx = 44;
-
-	inf.pszText = (LPTSTR)text;
-	GetToolBarCtrl().SetButtonInfo( ID_WEB_SEARCH, &inf );
-	GetToolBarCtrl().AutoSize();
-
-	CRect rc;
-	GetWindowRect(rc);
-	CRect btn_rc;
-	GetItemRect( 0, btn_rc );
-
-	::MoveWindow( hedit, 1, 1, rc.Width() - btn_rc.Width() - 6, rc.Height()-2, TRUE );
-	GetToolBarCtrl().SetIndent( rc.Width() - btn_rc.Width() - 4 );
-*/
 }
 
 void CSearchBar::OnTimer(UINT nIDEvent) 
@@ -205,16 +211,33 @@ void CSearchBar::OnTimer(UINT nIDEvent)
 	KillTimer( nIDEvent );
 }
 
-CString CSearchBar::GetSearchTerm()
+bool CSearchBar::GetSearchTerm( CString& term )
 {
-	CString term;
-	int len = ::GetWindowTextLength(hedit) + 1;
-	if( len > 0 )
+	if( riched20 )
 	{
-		::GetWindowText( hedit, term.GetBuffer( len ), len );
+		WCHAR* tmp = ::RichEdit20_GetText(hedit);
+		int wlen = wcslen( tmp ) + 1;
+		int len = WideCharToMultiByte( CP_UTF8, 0, tmp, wlen, NULL, 0, NULL, NULL );
+		char* buf = term.GetBuffer( len );
+		len = WideCharToMultiByte( CP_UTF8, 0, tmp, wlen, buf, len, NULL, NULL );
 		term.ReleaseBuffer();
+		delete tmp;
+
+		if( len <= 0 )
+			term.Empty();
+
+		return true;
 	}
-	return term;
+	else
+	{
+		int len = ::GetWindowTextLength(hedit) + 1;
+		if( len > 0 )
+		{
+			::GetWindowText( hedit, term.GetBuffer( len ), len );
+			term.ReleaseBuffer();
+		}
+	}
+	return false;
 }
 
 int CSearchBar::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -224,8 +247,22 @@ int CSearchBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	GetToolBarCtrl().SetBitmapSize(CSize(16, 16));
 
-	hedit = CreateWindowEx( WS_EX_CLIENTEDGE, "EDIT", NULL, ES_AUTOHSCROLL|WS_CHILD|WS_VISIBLE,
-		                    0, 0, 0, 0, m_hWnd, NULL, AfxGetInstanceHandle(), NULL );
+	LPCTSTR cls_name;
+	if( riched20 )
+		cls_name = "RichEdit20A";
+	else
+		cls_name = "EDIT";
+
+	hedit = CreateWindowEx( WS_EX_CLIENTEDGE, cls_name, NULL, ES_AUTOHSCROLL|WS_CHILD|WS_VISIBLE,
+							0, 0, 0, 0, m_hWnd, NULL, AfxGetInstanceHandle(), NULL );
+
+	if( riched20 )
+	{
+		::SendMessage( hedit, EM_SETTEXTMODE, TM_PLAINTEXT|TM_MULTICODEPAGE, 0 );
+		::SendMessage( hedit, EM_SETMARGINS, EC_LEFTMARGIN|EC_RIGHTMARGIN, MAKELPARAM(2, 2) );
+		::SendMessage( hedit, EM_SETUNDOLIMIT, 1, 0 );
+	}
+
 	old_search_bar_proc=(WNDPROC)::GetWindowLong(hedit,GWL_WNDPROC);
 	::SetWindowLong(hedit,GWL_WNDPROC,(LONG)EditProc);
 	::SetWindowLong(hedit,GWL_USERDATA,(LONG)this);
@@ -257,6 +294,22 @@ int CSearchBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetTimer( 1, 0, NULL );
 	EnableToolTips();
 	return 0;
+}
+
+WCHAR* RichEdit20_GetText( HWND edit )
+{
+    WCHAR *buf;
+    GETTEXTLENGTHEX gtl = { GTL_USECRLF|GTL_CLOSE, 1200 };
+    DWORD len = SendMessage( edit, EM_GETTEXTLENGTHEX, (WPARAM)&gtl, (LPARAM)0 );
+    if( len <= 0 )
+            return NULL;
+    GETTEXTEX gt = {0};
+    gt.codepage = 1200;	// unicode
+    gt.flags = GT_USECRLF;
+    gt.cb = len * sizeof(WCHAR);
+    buf = new WCHAR[len + 1];
+    len = SendMessage( edit, EM_GETTEXTEX, (WPARAM)&gt, (LPARAM)buf );
+    return buf;
 }
 
 

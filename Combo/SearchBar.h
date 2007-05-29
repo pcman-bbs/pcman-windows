@@ -29,7 +29,7 @@ public:
 
 // Implementation
 public:
-	CString GetSearchTerm();
+	bool GetSearchTerm( CString& term ); // return true if term is encoded in UTF-8.
 	void UpdateBtn();
 	void SetFont( CFont* font );
 	CComboBox search_bar;

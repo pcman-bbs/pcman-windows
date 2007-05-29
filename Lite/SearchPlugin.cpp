@@ -57,7 +57,7 @@ int CSearchPluginCollection::Load(LPCTSTR filepath)
 	return plugins.GetSize()-1;
 }
 
-CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm)
+CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm, bool utf8 )
 {
 	CString url = GetField( index, CSearchPluginCollection::URL);
 	char* utf8Str;
@@ -68,9 +68,15 @@ CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm)
 
 	if( stricmp(GetField( index, CSearchPluginCollection::INPUTENCODING), "utf-8")==0 )
 	{
-		utf8Str = MultiByteToUTF8( searchTerm, &utf8Len );
+		if( utf8 )
+		{
+			utf8Str = (char*)LPCTSTR(searchTerm);
+			utf8Len = searchTerm.GetLength();
+		}
+		else
+			utf8Str = MultiByteToUTF8( searchTerm, &utf8Len );
 		//utf8Str = MultiByteToMultiByte( CP_ACP, CP_UTF8, searchTerm, &utf8Len );
-		for (int i = 0; i < utf8Len-1; i++) {
+		for (int i = 0; i < utf8Len; i++) {
 			int ch = (unsigned char)utf8Str[i];
 			if( isalnum( ch ) ) { // 'A'-'Z', 'a'-'z', '0'-'9'
 				encodedTerm += (char)ch;
@@ -100,12 +106,18 @@ CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm)
 			else
 				encodedTerm += CharToHex( ch, hex );
 		}
-		delete[] utf8Str;
+		if( ! utf8 )
+			delete[] utf8Str;
 	}
 	else
 	{
-		utf8Len = searchTerm.GetLength();
-		utf8Str = (char*)(LPCTSTR)searchTerm;
+		if( utf8 )
+			utf8Str = UTF8ToMultiByte( searchTerm, &utf8Len );
+		else
+		{
+			utf8Len = searchTerm.GetLength();
+			utf8Str = (char*)(LPCTSTR)searchTerm;
+		}
 
 		for (int i = 0; i < utf8Len; i++) {
 			int ch = (unsigned char)utf8Str[i];
@@ -118,6 +130,9 @@ CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm)
 			} else
 				encodedTerm += CharToHex( ch, hex );
 		}
+
+		if( utf8 )
+			delete []utf8Str;
 	}
 	url.Replace( "{searchTerms}", encodedTerm );
 	return url;

@@ -288,7 +288,7 @@ void CListDlg::OnAddSite()
 	UINT type=0;
 	if( top == sites.home )
 	{
-		CMenu popup;	popup.LoadMenu(IDR_TABPOPUP2);
+		CMenu popup;	popup.LoadMenu(IDR_POPUP2);
 		CRect rc;	GetDlgItem(ID_SITES_NEW)->GetWindowRect(rc);
 		type = popup.GetSubMenu(1)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RETURNCMD,rc.left,rc.bottom,this);
 		// WWW : type = 8
