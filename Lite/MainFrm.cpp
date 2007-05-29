@@ -3591,35 +3591,59 @@ void CMainFrame::OpenHomepage()
 			if(str.IsEmpty())
 				continue;
 
-/*
 			// FIXME: prevent duplicated items
 			if( AppConfig.save_session )
 			{
+				int p = str.Find( '\t' );
+				if( p < 0 )
+					break;
+				CString address = str.Mid( p + 1 );
+				int port = 0;
+				CTelnetConn* telnet = NULL;
+				if( str[0] == 's' )	// telnet
+				{
+					p = address.Find(':');
+					if( p > 0 )
+					{
+						port = atoi( (LPCTSTR(address) + p + 1) );
+						address = address.Left( p );
+					}
+					else
+						port = 23;
+
+					#if defined(_COMBO_)
+						address = "telnet://" + address;
+					#endif
+				}
 				int i;
 				int c = tab.GetItemCount();
 				for( i=0; i < c; i++)
 				{
 					CConn* pcon = tab.GetCon(i);
-					int p = str.Find( '\t' );
-					if( p < 0 )
-						break;
-					CString name = str.Left( p );
-					CString address = str.Mid( p );
-					if( pcon->name == name && pcon->address == address )
+					// The same site has been opened
+					if( 0 == pcon->address.CompareNoCase(address) )
 					{
-						if( str[0] != 's' )
-							continue;
-						CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
-						if( telnet->port != port || telnet->cfg_path.IsEmpty() != adv.IsEmpty() )
-							continue;
-						if( telnet->cfg_path == (adv + name) )
+						if( pcon->is_telnet )	// this is a telnet connection
+						{
+							CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
+							if( port == telnet->port ) // both address and port are duplicated
+							{
+								// If the site has been loaded with advanced settings, or 
+								// we cannot provide more useful advanced settings over the loaded one,
+								// just skip this site.
+								if( ! telnet->cfg_path.IsEmpty() || adv.IsEmpty() )
+									break;
+							}
+						}
+						else
+						{
 							break;
+						}
 					}
 				}
 				if( i < c )
 					continue;
 			}
-*/
 			view.ConnectStr(str, adv );
 		}
 

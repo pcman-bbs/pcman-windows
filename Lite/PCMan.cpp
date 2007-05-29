@@ -171,13 +171,11 @@ BOOL CApp::InitInstance()
 
 	if( AppConfig.save_session )	// open saved session if any
 		pFrame->OpenLastSession();
-	else if( !*m_lpCmdLine )	// otherwise, open homepage if no command line argument was passed
-	{
-		if( pFrame->tab.GetItemCount() == 0 )
-			pFrame->OpenHomepage();
-	}
+
 	if(*m_lpCmdLine)	// open file or address passed in command line argument
 		pFrame->OnNewConnectionAds(m_lpCmdLine);
+	else	// otherwise, open homepage if no command line argument was passed
+		pFrame->OpenHomepage();
 
 	pFrame->SwitchToConn( 0 );
 
