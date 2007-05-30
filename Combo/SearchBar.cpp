@@ -6,7 +6,7 @@
 #include "SearchBar.h"
 #include "../Lite/MainFrm.h"
 #include "../Lite/SearchPlugin.h"
-#include "AppConfig.h"
+#include "../Lite/AppConfig.h"
 
 #include <windowsx.h>
 #include <Richedit.h>	// for richedit 2.0
