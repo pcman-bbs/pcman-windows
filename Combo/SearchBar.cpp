@@ -45,7 +45,6 @@ CSearchBar::~CSearchBar()
 BEGIN_MESSAGE_MAP(CSearchBar, CToolBar)
 	//{{AFX_MSG_MAP(CSearchBar)
 	ON_WM_SIZE()
-	ON_WM_TIMER()
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
 	//}}AFX_MSG_MAP
@@ -202,24 +201,21 @@ void CSearchBar::UpdateBtn()
 	GetToolBarCtrl().AutoSize();
 }
 
-void CSearchBar::OnTimer(UINT nIDEvent) 
-{
-	UpdateBtn();
-	KillTimer( nIDEvent );
-}
-
 bool CSearchBar::GetSearchTerm( CString& term )
 {
 	if( riched20 )
 	{
 		WCHAR* tmp = ::RichEdit20_GetText(hedit);
-		int wlen = wcslen( tmp ) + 1;
-		int len = WideCharToMultiByte( CP_UTF8, 0, tmp, wlen, NULL, 0, NULL, NULL );
-		char* buf = term.GetBuffer( len );
-		len = WideCharToMultiByte( CP_UTF8, 0, tmp, wlen, buf, len, NULL, NULL );
-		term.ReleaseBuffer();
-		delete tmp;
-
+		int len = 0;
+		if( tmp )
+		{
+			int wlen = wcslen( tmp ) + 1;
+			len = WideCharToMultiByte( CP_UTF8, 0, tmp, wlen, NULL, 0, NULL, NULL );
+			char* buf = term.GetBuffer( len );
+			len = WideCharToMultiByte( CP_UTF8, 0, tmp, wlen, buf, len, NULL, NULL );
+			term.ReleaseBuffer();
+			delete tmp;
+		}
 		if( len <= 0 )
 			term.Empty();
 

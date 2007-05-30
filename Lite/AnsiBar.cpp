@@ -331,3 +331,5 @@ void CAnsiBar::OnMove(int x, int y)
 	// http://msdn2.microsoft.com/en-us/library/17750y97(VS.80).aspx
 	Invalidate();
 }
+
+
