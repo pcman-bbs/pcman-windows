@@ -438,6 +438,7 @@ bool CAppConfig::OnDataExchange( bool load )
         CFG_CUSTOM( "rebar4", rebar_bands[4] )
         CFG_CUSTOM( "rebar5", rebar_bands[5] )
 #endif
+		CFG_BYTE( use_riched20 )
 	    CFG_STR( last_bbslist_item )
 	END_CFG_SECTION()
 

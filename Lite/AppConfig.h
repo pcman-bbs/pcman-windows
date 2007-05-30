@@ -120,6 +120,8 @@ public:
 //ReBar Position
 	CReBarBandPos rebar_bands[max_rebar_band_count];
 
+	BYTE use_riched20;
+
 //	HyperLink Settings
 	BOOL link_underline;
 	BOOL link_autoswitch;
@@ -161,7 +163,7 @@ public:
 	CStringList history;
 	CFavMenu favorites;
 
-//	WWW Settings
+//	Web support
 #if defined (_COMBO_)
 	CCustomToolBarInfo webbar_inf;
 	static TBBUTTON webbar_btns[];
@@ -177,7 +179,6 @@ public:
 	BYTE autowrap_favorite;
 	short search_engine;
 
-// Object Section
 	CStringArray webpage_filter;
 
 	inline void LoadWebPageFilter();
@@ -247,6 +248,8 @@ inline void CAppConfig::Default()
 
 //Main ToolBar Buttons (should init in CAppConfig constructor)
 	main_toolbar_inf.LoadDefault();
+
+	use_riched20 = 1;
 
 //	HyperLink Settings
 	link_underline=1;

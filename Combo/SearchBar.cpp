@@ -6,6 +6,7 @@
 #include "SearchBar.h"
 #include "../Lite/MainFrm.h"
 #include "../Lite/SearchPlugin.h"
+#include "AppConfig.h"
 
 #include <windowsx.h>
 #include <Richedit.h>	// for richedit 2.0
@@ -26,7 +27,8 @@ WCHAR* RichEdit20_GetText( HWND edit );
 
 CSearchBar::CSearchBar() : old_search_bar_proc(NULL), img_list(NULL)
 {
-	riched20 = LoadLibraryA("RICHED20.DLL");
+	if( AppConfig.use_riched20 )
+		riched20 = LoadLibraryA("RICHED20.DLL");
 }
 
 CSearchBar::~CSearchBar()
