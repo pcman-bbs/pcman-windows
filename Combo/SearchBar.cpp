@@ -42,10 +42,10 @@ CSearchBar::~CSearchBar()
 
 BEGIN_MESSAGE_MAP(CSearchBar, CToolBar)
 	//{{AFX_MSG_MAP(CSearchBar)
-	ON_WM_SETFOCUS()
 	ON_WM_SIZE()
 	ON_WM_TIMER()
 	ON_WM_CREATE()
+	ON_WM_SETFOCUS()
 	//}}AFX_MSG_MAP
 	ON_NOTIFY_REFLECT(TBN_DROPDOWN, OnMenuDropDown)
 END_MESSAGE_MAP()
@@ -61,11 +61,6 @@ BOOL CSearchBar::Create( CWnd* pParent )
 {
 	return CToolBar::CreateEx( pParent, TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE|/*TBSTYLE_LIST|*/TBSTYLE_FLAT, TBSTYLE_TOOLTIPS|WS_CHILD|WS_VISIBLE|CBRS_ALIGN_TOP|WS_CLIPCHILDREN,
                                CRect(0, 0, 0, 0), IDC_SEARCHBAR );
-}
-
-void CSearchBar::OnSetFocus(CWnd* pOldWnd) 
-{
-	::SetFocus( hedit );
 }
 
 LRESULT CALLBACK CSearchBar::EditProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam)
@@ -122,6 +117,7 @@ LRESULT CALLBACK CSearchBar::EditProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lp
 		}
 		break;
 	case WM_SETFOCUS:
+		CallWindowProc( This->old_search_bar_proc, hwnd, msg, wparam, lparam );
 		if( riched20 )
 		{
             CHARRANGE cr = {0, -1};
@@ -129,7 +125,7 @@ LRESULT CALLBACK CSearchBar::EditProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lp
 		}
 		else
 			::SendMessage( hwnd, EM_SETSEL, 0, -1 );
-		break;
+		return 0;
 	case WM_GETDLGCODE:
 		return DLGC_WANTALLKEYS;
 	}
@@ -207,7 +203,6 @@ void CSearchBar::UpdateBtn()
 void CSearchBar::OnTimer(UINT nIDEvent) 
 {
 	UpdateBtn();
-	CToolBar::OnTimer(nIDEvent);
 	KillTimer( nIDEvent );
 }
 
@@ -282,16 +277,15 @@ int CSearchBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			HBITMAP hbmp = SearchPluginCollection.GetImage(i);
 			if( hbmp )
 			{
-				CBitmap* bmp = CBitmap::FromHandle(hbmp);
-				toolbar.AddBitmap( 0, bmp );
+				TBADDBITMAP tbab;
+				tbab.hInst = NULL;
+				tbab.nID = (UINT)hbmp;
+				::SendMessage(toolbar.m_hWnd, TB_ADDBITMAP, 1, (LPARAM)&tbab);
 			}
 		}
 	}
 
-	// FIXME: Icon cannot be correctly set here due to bugs of Windows.
-	//        Use WM_TIMER to force asynchronized update.
-	// UpdateBtn();
-	SetTimer( 1, 0, NULL );
+	UpdateBtn();
 	EnableToolTips();
 	return 0;
 }
@@ -312,4 +306,13 @@ WCHAR* RichEdit20_GetText( HWND edit )
     return buf;
 }
 
+void CSearchBar::SetEditFocus()
+{
+	::SetFocus( hedit );
+}
 
+void CSearchBar::OnSetFocus(CWnd* pOldWnd) 
+{
+	CToolBar::OnSetFocus(pOldWnd);
+	SetEditFocus();	
+}

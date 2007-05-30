@@ -945,7 +945,7 @@ void CMainFrame::OnShowSearchBar()
 
 void CMainFrame::OnSearchBarFocus() 
 {
-	search_bar.SetFocus();
+	search_bar.SetEditFocus();
 }
 #endif
 

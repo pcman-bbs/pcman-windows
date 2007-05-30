@@ -29,6 +29,7 @@ public:
 
 // Implementation
 public:
+	void SetEditFocus();
 	bool GetSearchTerm( CString& term ); // return true if term is encoded in UTF-8.
 	void UpdateBtn();
 	void SetFont( CFont* font );
@@ -44,10 +45,10 @@ protected:
 	static LRESULT CALLBACK EditProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
 
 	//{{AFX_MSG(CSearchBar)
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	//}}AFX_MSG
 
 	WNDPROC old_search_bar_proc;
