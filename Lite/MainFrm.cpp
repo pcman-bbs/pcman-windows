@@ -379,7 +379,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		IMAGE_BITMAP,0,0,LR_LOADFROMFILE));
 	web_bar_bkgnd.GetBitmap( &bmp);
 	img_webbar.Create( bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 5, 0);
-	ImageList_AddMasked(img_webbar.m_hImageList, (HBITMAP)web_bar_bkgnd.m_hObject,RGB(255,0,255));
+	ImageList_AddMasked(img_webbar.m_hImageList, (HBITMAP)web_bar_bkgnd.m_hObject,RGB(192,192,192));
 	web_bar.SetSizes(CSize(23,22),CSize(16,16));
 	//web_bar.SetBitmap((HBITMAP)web_bar_bkgnd.m_hObject);
 	web_bar.LoadToolBar(&AppConfig.webbar_inf);

@@ -84,6 +84,40 @@ END_EVENTSINK_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CWebBrowser message handlers
 
+const DWORD SET_FEATURE_ON_THREAD = 0x00000001;
+const DWORD SET_FEATURE_ON_PROCESS = 0x00000002;
+const DWORD SET_FEATURE_IN_REGISTRY = 0x00000004;
+const DWORD SET_FEATURE_ON_THREAD_LOCALMACHINE = 0x00000008;
+const DWORD SET_FEATURE_ON_THREAD_INTRANET = 0x00000010;
+const DWORD SET_FEATURE_ON_THREAD_TRUSTED = 0x00000020;
+const DWORD SET_FEATURE_ON_THREAD_INTERNET = 0x00000040;
+const DWORD SET_FEATURE_ON_THREAD_RESTRICTED = 0x00000080;
+
+enum INTERNETFEATURELIST {
+	FEATURE_OBJECT_CACHING = 0,
+	FEATURE_ZONE_ELEVATION = 1,
+	FEATURE_MIME_HANDLING = 2,
+	FEATURE_MIME_SNIFFING = 3,
+	FEATURE_WINDOW_RESTRICTIONS = 4,
+	FEATURE_WEBOC_POPUPMANAGEMENT = 5,
+	FEATURE_BEHAVIORS = 6,
+	FEATURE_DISABLE_MK_PROTOCOL = 7,
+	FEATURE_LOCALMACHINE_LOCKDOWN = 8,
+	FEATURE_SECURITYBAND = 9,
+	FEATURE_RESTRICT_ACTIVEXINSTALL = 10,
+	FEATURE_VALIDATE_NAVIGATE_URL = 11,
+	FEATURE_RESTRICT_FILEDOWNLOAD = 12,
+	FEATURE_ADDON_MANAGEMENT = 13,
+	FEATURE_PROTOCOL_LOCKDOWN = 14,
+	FEATURE_HTTP_USERNAME_PASSWORD_DISABLE = 15,
+	FEATURE_SAFE_BINDTOOBJECT = 16,
+	FEATURE_UNC_SAVEDFILECHECK = 17,
+	FEATURE_GET_URL_DOM_FILEPATH_UNENCODED = 18,
+	FEATURE_ENTRY_COUNT = 19,
+};
+
+typedef HRESULT (WINAPI *PCoInternetSetFeatureEnabled)(INTERNETFEATURELIST, DWORD, BOOL);
+
 int CWebBrowser::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
@@ -99,6 +133,18 @@ int CWebBrowser::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		if(psp.p)
 			psp.p->QueryService(SID_STravelLogCursor, IID_ITravelLogStg, (void**) &m_TravelLog);
 	}
+
+	HMODULE urlmon = LoadLibrary("urlmon.dll");
+	if( urlmon ){
+		PCoInternetSetFeatureEnabled CoInternetSetFeatureEnabled = NULL;
+		CoInternetSetFeatureEnabled = (PCoInternetSetFeatureEnabled)GetProcAddress( urlmon, "CoInternetSetFeatureEnabled" );
+		if( CoInternetSetFeatureEnabled ) {
+			CoInternetSetFeatureEnabled( FEATURE_WEBOC_POPUPMANAGEMENT, SET_FEATURE_ON_PROCESS, TRUE );
+			CoInternetSetFeatureEnabled( FEATURE_SECURITYBAND, SET_FEATURE_ON_PROCESS, TRUE );
+		}
+		FreeLibrary( urlmon );
+	}
+
 	return 0;
 }
 
@@ -249,6 +295,8 @@ void CWebBrowser::OnProgressChange(long Progress, long ProgressMax)
 		return;
 	pgs=Progress;
 	pgsmax=ProgressMax;
+	if( pgs == pgsmax )
+		pgs = 0;
 	if(view->con==web_conn)
 	{
 		parent->progress_bar.SetRange32(0,ProgressMax);
