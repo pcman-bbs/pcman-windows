@@ -17,7 +17,7 @@
 #include <afxtempl.h>
 
 /*
-#if defined	_COMBO_
+#ifdef	_COMBO_
 	#include"../Combo/menumapitem.h"
 #endif
 */
@@ -28,7 +28,7 @@ bool find_link(char* type,char* str,int& start,int& end);
 class CMainFrame;
 
 
-#if defined	_COMBO_
+#ifdef	_COMBO_
 	class CWebConn;
 	struct MENUMAPITEM;
 #else	//在不支援 Web 的版本中直接把TCon定義成MySocket省去麻煩
@@ -44,7 +44,7 @@ protected:
 	static LPSTR ctviewcls;
 
 public:
-#if defined	_COMBO_
+#ifdef	_COMBO_
 	CStringList favorite_ads;
 	BOOL autosort_favorite;
 	CConn* con;
@@ -152,7 +152,7 @@ public:
 	CString GetSelText();
 	void FindStart();
 
-#if defined	_COMBO_
+#ifdef	_COMBO_
 	CWebConn* ConnectWeb(CString address,BOOL act);
 	void MoveWindow( int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE );
 	BOOL SetWindowPos( const CWnd* pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags );
