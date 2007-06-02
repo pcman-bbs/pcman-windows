@@ -413,7 +413,11 @@ void CTelnetConn::OnText()
 						SetUpdateWholeLine(cursor_pos.y);
 					}
 					else
-						SetUpdateLine(cursor_pos.y,(BYTE)cursor_pos.x);	//將這行設為等待更新
+                    {
+                        // reduce unnecessary update.  does this work?
+                        if( curstr[cursor_pos.x] != *buf || pcuratb[cursor_pos.x] != cur_attr )
+						    SetUpdateLine(cursor_pos.y,(BYTE)cursor_pos.x);	//將這行設為等待更新
+                    }
 
 					pcuratb[cursor_pos.x]=cur_attr;
 					curstr[cursor_pos.x]=*buf;

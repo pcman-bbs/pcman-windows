@@ -129,6 +129,10 @@ LRESULT CALLBACK CSearchBar::EditProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lp
 		return 0;
 	case WM_GETDLGCODE:
 		return DLGC_WANTALLKEYS;
+    case WM_SETCURSOR:
+        if( riched20 )
+            ::SetCursor( AfxGetApp()->LoadStandardCursor(IDC_IBEAM) );
+        break;
 	}
 	return CallWindowProc( This->old_search_bar_proc, hwnd, msg, wparam, lparam );
 }

@@ -101,9 +101,9 @@ BOOL CApp::InitInstance()
 		if( ret )
 		{
 #if defined (_COMBO_)
-			ConfigPath += "\\PCMan\\";
-#else
 			ConfigPath += "\\PCMan Combo\\";
+#else
+			ConfigPath += "\\PCMan\\";
 #endif
 			if( !IsFileExist(ConfigPath) )	// Copy default settings when necessary
 			{
