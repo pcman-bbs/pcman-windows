@@ -171,14 +171,12 @@ char* CSearchPluginCollection::GetField(int index, EField f)
 	return _T("");
 }
 
-class CSearchPluginParser : public CSimpXmlParser
-{
-public:
-	CSearchPluginParser(CSearchPlugin& _plugin) : plugin( _plugin ), url(NULL)
-	{
-	}
 
-	void BeginElement( const char* name, const char** attribs, const char **values )
+CSearchPluginParser::CSearchPluginParser(CSearchPlugin& _plugin) : plugin( _plugin ), url(NULL)
+{
+}
+
+void CSearchPluginParser::BeginElement( const char* name, const char** attribs, const char **values )
 	{
 		if( 0 == strncmp( name, "os:", 3 ) )
 			name += 3;
@@ -227,7 +225,7 @@ public:
 		}
 	}
 
-	void ElementData( const char* name, const char* data )
+void CSearchPluginParser::ElementData( const char* name, const char* data )
 	{
 		if( 0 == strncmp( name, "os:", 3 ) )
 			name += 3;
@@ -279,16 +277,12 @@ public:
 		}
 	}
 
-	void EndElement( const char* name )
+void CSearchPluginParser::EndElement( const char* name )
 	{
 		if( name == url )
 			url = NULL;
 	}
 
-protected:
-	CSearchPlugin& plugin;
-	const char* url;
-};
 
 bool CSearchPlugin::ParseXml(char *buf)
 {

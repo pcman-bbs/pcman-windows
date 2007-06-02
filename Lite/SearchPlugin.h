@@ -9,6 +9,8 @@
 #include <atlstr.h>
 #endif
 
+#include "SimpXmlParser.h"
+
 class CSearchPlugin {
 public:
 	bool ParseXml( char* buf );
@@ -90,5 +92,18 @@ public:
 };
 
 extern CSearchPluginCollection SearchPluginCollection;
+
+class CSearchPluginParser : public CSimpXmlParser
+{
+public:
+	CSearchPluginParser(CSearchPlugin& _plugin);
+	void BeginElement( const char* name, const char** attribs, const char **values );
+	void ElementData( const char* name, const char* data );
+	void EndElement( const char* name );
+
+protected:
+	CSearchPlugin& plugin;
+	const char* url;
+};
 
 #endif
