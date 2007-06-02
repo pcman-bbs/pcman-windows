@@ -2468,17 +2468,21 @@ LRESULT CTermView::OnFind(WPARAM w, LPARAM l)
 			telnet->sel_start.x=telnet->sel_end.x=0;
 		}
 
-		strstrfunc pstrstr = NULL;
-		if( pfinddlg->MatchCase() )
-			pstrstr = (strstrfunc)strstr;
-		else
-			pstrstr = (strstrfunc)strstri;
-
 		y=telnet->sel_start.y;
 		startx=telnet->sel_start.x;
 		endx=telnet->sel_end.x;
 		line=telnet->screen[y]+endx;
-		while( !(found=(*pstrstr)(line,find_str)) )
+
+		if(pfinddlg->MatchCase())
+		{
+			found = strstr(line,find_str);
+		}
+		else
+		{
+			found = strstri(line,find_str);
+		}
+
+		while( !found )
 		{
 			y++;
 			if(y >= telnet->site_settings.line_count )
