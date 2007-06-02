@@ -46,10 +46,10 @@ static char THIS_FILE[] = __FILE__;
 	#include "../Combo/WebPageDlg.h"
 
 LPSTR CMainFrame::mainfrm_class_name="PCManCB";
-	const char *CMainFrame::window_title = " - Open PCMan 2007 Combo (Build: " __DATE__ ")";
+	const char *CMainFrame::window_title = " - Open PCMan 2007 Combo";// (Build: " __DATE__ ")";
 #else
 LPSTR CMainFrame::mainfrm_class_name="PCMan";
-	const char *CMainFrame::window_title = " - Open PCMan 2007 (Build: " __DATE__ ")";
+	const char *CMainFrame::window_title = " - Open PCMan 2007";// (Build: " __DATE__ ")";
 #endif
 
 extern CFont fnt;
