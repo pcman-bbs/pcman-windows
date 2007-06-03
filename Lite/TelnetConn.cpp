@@ -1014,11 +1014,8 @@ void CTelnetConn::LocalEcho(void* str, int len)
 
 int CTelnetConn::SendString(LPCTSTR str)
 {
-	char* str_in = (char*)str;
-
 	const char* enter=NULL;
 	const char* CRLF="\x0d\x0a";
-
 	if(key_map)
 		enter=key_map->FindKey(VK_RETURN,0);
 
@@ -1034,9 +1031,9 @@ int CTelnetConn::SendString(LPCTSTR str)
 			char* eol;
 			int x=cursor_pos.x;
 			int rl=0;
-			while(eol=strchr(str_in,13))
+			while(eol=strchr(str,13))
 			{
- 				rl+=Send(str,eol-str);
+				rl+=Send(str,eol-str);
 				cursor_pos.x=x;
 				if(cursor_pos.y<last_line)
 					cursor_pos.y++;
