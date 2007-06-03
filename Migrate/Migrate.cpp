@@ -368,7 +368,7 @@ find_2004:
 	{
 		found = finder.FindNextFile();
 		CString src = finder.GetFilePath();
-		CString dest = finder.GetFileTitle();
+		CString dest = finder.GetFileName();
 		dest.Replace(";", "__");
 		dest = ConfigPath + dest;
 		dest += ".ini";
