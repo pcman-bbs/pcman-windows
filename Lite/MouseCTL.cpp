@@ -175,17 +175,14 @@ BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 			}
 		}else 
 		{
-//			OnContextMenu(this, point);
-
-			xRet = TRUE;
-/*
 			POINT pt;
 
 			pt = point;
 			ClientToScreen(hWnd, &pt);
 			SendMessage(hWnd, WM_CONTEXTMENU, (DWORD)NULL, (DWORD)MAKELONG(pt.x, pt.y));
 			m_dwMenuTimeCounter = GetTickCount();
-*/
+
+			xRet = TRUE;
 		}
 	}
 	m_MouseState.R &= ~MT_STATE_WHELL_ACT;

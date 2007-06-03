@@ -2011,7 +2011,10 @@ BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		return TRUE;
 
 	if (AppConfig.use_MouseCTL)
-		return MouseCTL_OnMouseWheel(m_hWnd, nFlags, zDelta, pt);
+	{
+		MouseCTL_OnMouseWheel(m_hWnd, nFlags, zDelta, pt);
+		goto __Exit;
+	}
 
 	SCROLLINFO info;
 	GetScrollInfo(SB_VERT,&info);
@@ -2038,6 +2041,8 @@ BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 			Invalidate(FALSE);
 		}
 	}
+
+__Exit:
 	return CWnd::OnMouseWheel(nFlags, zDelta, pt);
 }
 
@@ -3198,15 +3203,13 @@ void CTermView::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CTermView::OnRButtonUp(UINT nFlags, CPoint point) 
 {
-	BOOL xRet;
 	CPoint point2;
-
-	xRet = TRUE;
 	
 	if (AppConfig.use_MouseCTL)
-		xRet = MouseCTL_OnRButtonUp(m_hWnd, nFlags, point);
-
-	if (xRet == TRUE)
+	{
+		MouseCTL_OnRButtonUp(m_hWnd, nFlags, point);
+	}
+	else
 	{
 		POINT pt;
 		CPoint point2;
