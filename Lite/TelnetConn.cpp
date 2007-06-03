@@ -1014,8 +1014,7 @@ void CTelnetConn::LocalEcho(void* str, int len)
 
 int CTelnetConn::SendString(LPCTSTR str)
 {
-	char* str_in = NULL;
-	strncat(str_in,str,sizeof(str));
+	char* str_in = (char*)str;
 
 	const char* enter=NULL;
 	const char* CRLF="\x0d\x0a";
@@ -1037,7 +1036,7 @@ int CTelnetConn::SendString(LPCTSTR str)
 			int rl=0;
 			while(eol=strchr(str_in,13))
 			{
-				rl+=Send(str,eol-str);
+ 				rl+=Send(str,eol-str);
 				cursor_pos.x=x;
 				if(cursor_pos.y<last_line)
 					cursor_pos.y++;
@@ -1882,60 +1881,34 @@ void CTelnetConn::End()
 void CTelnetConn::SendMacroString(CString str)
 {
 //	先檢查是否有巨集指令，像是暫停
-	POSITION pos_temp;
-	const char* pstr_temp = NULL;
-
 	const char* _pstr=str;
-
 	for(const char*pstr=_pstr; *pstr; pstr+=get_chw(pstr) )
 	{
-		pstr_temp = pstr;
 		if(*pstr=='#' && *(pstr+1) )
 		{
 			pstr++;
-			pstr_temp = pstr;
-
 			switch(*pstr)
 			{
 			case 'p':
 			{
 				if(pstr > _pstr)
-				{
 					Send( _pstr, int(pstr)-int(_pstr)-1 );
-				}
 
 				pstr++;
 				int pause=atoi(pstr);
-				pstr_temp = pstr;
-
 				for( POSITION pos=delay_send.GetHeadPosition(); pos ;delay_send.GetNext(pos) )
 				{
 					if( pause > delay_send.GetAt(pos).time )
-					{
-						pos_temp = pos;
 						break;
-					}
 				}
-
 				while( isdigit(*pstr) )
-				{
 					*pstr++;
-					pstr_temp = pstr;
-				}
 
-				CTelnetConnDelayedSend ds;
-				ds.str=pstr;
-				ds.time=pause;
-
-				if(pos_temp)
-				{
-					delay_send.InsertBefore(pos_temp,ds);
-				}
+				CTelnetConnDelayedSend ds;	ds.str=pstr;	ds.time=pause;
+				if(pos)
+					delay_send.InsertBefore(pos,ds);
 				else
-				{
 					delay_send.AddTail(ds);
-				}
-
 				return;
 			}
 			case '#':
@@ -1946,9 +1919,8 @@ void CTelnetConn::SendMacroString(CString str)
 			}
 		}
 	}
-	if(pstr_temp > _pstr)
-		Send( _pstr, int(pstr_temp)-int(_pstr) );
-
+	if(pstr > _pstr)
+		Send( _pstr, int(pstr)-int(_pstr) );
 }
 
 void CTelnetConn::SendNaws()
