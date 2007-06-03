@@ -163,7 +163,7 @@ void CTelnetConn::OnReceive(int nErrorCode)
 	{
 		SCROLLINFO info;
 		view->GetScrollInfo(SB_VERT,&info);
-		if( info.nPos != (info.nMax - info.nPage) )
+		if( info.nPos != (int)(info.nMax - info.nPage) )
 		{
 			scroll_pos = info.nPos = (info.nMax - info.nPage);
 			info.fMask=SIF_POS;
@@ -308,6 +308,13 @@ void CTelnetConn::OnText()
 			{
 				if(*buf>='@' && *buf<='~')	//如果已經結束ANSI mode
 					ansi_mode=0;
+
+				if (*buf == 0x0A)
+				{
+					ansi_mode = 0;
+					buf--;
+
+				}
 			}
 
 			if( (pansi_param-ansi_param) < 63 )	//檢查是否已經超出ansi_buffer,64th byte是結尾0
@@ -456,7 +463,7 @@ void CTelnetConn::OnText()
 			while(*last_line_txt == ' ')
 				last_line_txt++;
 			
-			if ( (last_line_txt - screen[ last_line ]) < strlen(screen[ last_line ]) )
+			if ( (int)(last_line_txt - screen[ last_line ]) < (int)strlen(screen[ last_line ]) )
 			{
 
 				if( get_article_with_ansi )
@@ -1169,8 +1176,8 @@ void CTelnetConn::InsertChar(int n)
 	}
 	memset(curstr+cursor_pos.x,' ',n);
 	memset(GetLineAttr(cursor_pos.y)+cursor_pos.x,7,n);
-	SetUpdateLine(cursor_pos.y,cursor_pos.x);
-	SetUpdateLine(cursor_pos.y,(BYTE)site_settings.cols_per_page);
+	SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);
+	SetUpdateLine(cursor_pos.y, (BYTE)site_settings.cols_per_page);
 }
 
 void CTelnetConn::DeleteLines(int n)	//delete n lines
@@ -1432,6 +1439,11 @@ inline void CTelnetConn::ProcessAnsiEscapeSequence()
 				break;
 			case 'n':	//Device Status Report
 				DeviceStatusReport(p1);
+				break;
+			default:
+				{
+					Sleep(0);
+				}
 				break;
 			}
 		}

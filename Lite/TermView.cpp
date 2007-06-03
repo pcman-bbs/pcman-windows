@@ -613,7 +613,7 @@ void CTermView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		info.nPos--;
 		break;
 	case SB_LINEDOWN:
-		if(info.nPos >= (info.nMax - info.nPage) )
+		if(info.nPos >= (int)(info.nMax - info.nPage) )
 			return;
 		info.nPos++;
 		break;
@@ -624,12 +624,12 @@ void CTermView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		break;
 	case SB_PAGEDOWN:
 		info.nPos += telnet->site_settings.lines_per_page;
-		if(info.nPos > (info.nMax - info.nPage))
+		if(info.nPos > (int)(info.nMax - info.nPage))
 			info.nPos = info.nMax - info.nPage;
 		break;
 	case SB_THUMBTRACK:
 		info.nPos=nPos;
-		if(info.nPos > (info.nMax - info.nPage))
+		if(info.nPos > (int)(info.nMax - info.nPage))
 			info.nPos = info.nMax - info.nPage;
 		break;
 	}
@@ -1986,7 +1986,7 @@ BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		int pos=info.nPos;
 		if(info.nPos<0)
 			info.nPos=0;
-		else if(info.nPos > (info.nMax - info.nPage))
+		else if(info.nPos > (int)(info.nMax - info.nPage))
 			info.nPos = info.nMax - info.nPage;
 
 		if( info.nPos != oldpos )
