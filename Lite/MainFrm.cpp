@@ -2310,12 +2310,9 @@ void CMainFrame::CloseConn( int i, bool confirm )
 		if(i!=-1)
 			tab.SetCurSel(i);
 	}
-	
-	//int switch_to;
-	//if( AppConfig.switch_back_on_close && -1 != (switch_to = ConnToIndex(pprev_con)) )
 
-	int switch_to  = ConnToIndex(pprev_con);
-	if( AppConfig.switch_back_on_close = BST_CHECKED)
+	int switch_to;
+	if( AppConfig.switch_back_on_close && -1 != (switch_to = ConnToIndex(pprev_con)) )
 	{
 		SwitchToConn( switch_to );
 	}
