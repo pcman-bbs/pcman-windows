@@ -75,8 +75,8 @@ PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan\Config
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /ZI /Od /I "..\SimpXmlParser" /D "_DEBUG" /D "BUILD_UI" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
-# SUBTRACT CPP /Fr /YX /Yc /Yu
+# ADD CPP /nologo /MTd /W3 /Gm /ZI /Od /I "..\SimpXmlParser" /D "_DEBUG" /D "BUILD_UI" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /Fr /FD /GZ /c
+# SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "_DEBUG"
@@ -234,6 +234,10 @@ SOURCE=.\MainFrm.cpp
 # Begin Source File
 
 SOURCE=.\MemIniFile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MouseCTL.cpp
 # End Source File
 # Begin Source File
 
@@ -589,7 +593,15 @@ SOURCE=..\Resource\res\idr_main.ico
 # End Source File
 # Begin Source File
 
+SOURCE=..\Resource\res\page_cur.cur
+# End Source File
+# Begin Source File
+
 SOURCE=..\Resource\Res\toolbar1.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Resource\res\topic_cur.cur
 # End Source File
 # End Group
 # End Target

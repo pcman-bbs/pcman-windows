@@ -30,6 +30,7 @@
 
 #include "Clipboard.h"
 #include "StrUtils.h"
+#include "MouseCTL.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -87,6 +88,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_TOOLBAR, OnUpdateShowToolbar)
 	ON_UPDATE_COMMAND_UI(ID_AUTODBCS_ARROW, OnUpdateAutoDBCSArrow)
 	ON_UPDATE_COMMAND_UI(ID_AUTODBCS_BACKSPACE, OnUpdateAutoDBCSBackspace)
+	ON_UPDATE_COMMAND_UI(ID_MOUSE_CTL, OnUpdateBBSMouseCTL)
+	ON_COMMAND(ID_MOUSE_CTL, OnBBSMouseCTL)
 	ON_COMMAND(ID_AUTODBCS_BACKSPACE, OnAutoDBCSBackspace)
 	ON_COMMAND(ID_AUTODBCS_ARROW, OnAutoDBCSArrow)
 	ON_COMMAND(ID_AUTODBCS_DEL, OnAutoDBCSDel)
@@ -2396,6 +2399,17 @@ void CMainFrame::OnSwitchBack()
 	int prev_idx = ConnToIndex(prev_conn);
 	if( prev_idx != -1 )
 		SwitchToConn( prev_idx );
+}
+
+void CMainFrame::OnUpdateBBSMouseCTL(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(AppConfig.use_MouseCTL);
+}
+
+void CMainFrame::OnBBSMouseCTL()
+{
+	AppConfig.use_MouseCTL = !AppConfig.use_MouseCTL;
+	MouseCTL_Reset();
 }
 
 BOOL CMainFrame::LoadUI()

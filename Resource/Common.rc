@@ -566,6 +566,8 @@ END
 IDC_COPY_CUR            CURSOR  DISCARDABLE     "res\\drag_cur.cur"
 IDC_DRAG_CUR            CURSOR  DISCARDABLE     "res\\copy_cur.cur"
 IDC_HAND_CUR            CURSOR  DISCARDABLE     "res\\hand.cur"
+IDC_TOPIC_CUR           CURSOR  DISCARDABLE     "res\\topic_cur.cur"
+IDC_PAGE_CUR            CURSOR  DISCARDABLE     "res\\page_cur.cur"
 
 /////////////////////////////////////////////////////////////////////////////
 //

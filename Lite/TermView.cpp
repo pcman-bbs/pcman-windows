@@ -23,6 +23,7 @@
 #include "Clipboard.h"
 #include "InputNameDlg.h"
 #include "SearchPlugin.h"
+#include "MouseCTL.h"
 
 #include "OleImage.h"
 
@@ -72,18 +73,24 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_WM_ERASEBKGND()
 	ON_WM_CHAR()
 	ON_WM_KEYDOWN()
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_LBUTTONDOWN()
 	ON_WM_DESTROY()
 	ON_WM_VSCROLL()
 	ON_WM_TIMER()
-	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_WM_CONTEXTMENU()
 	ON_WM_PAINT()
 	ON_WM_SIZE()
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
+	ON_WM_LBUTTONDBLCLK()
+	ON_WM_RBUTTONDBLCLK()
+	ON_WM_MBUTTONDBLCLK()
+	ON_WM_MBUTTONDOWN()
+	ON_WM_MBUTTONUP()
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONUP()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 	ON_COMMAND(ID_PASTEFILE, OnEditPastefile)
 	ON_COMMAND(ID_RECONNECT, OnReconnect)
 	ON_WM_CREATE()
@@ -586,6 +593,9 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point)
 		telnet->cursor_pos.y=y;
 		telnet->UpdateCursorPos();
 	}
+
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnLButtonDown(m_hWnd, nFlags, point);
 }
 
 void CTermView::OnDestroy() 
@@ -645,6 +655,9 @@ void CTermView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 void CTermView::OnTimer(UINT nIDEvent) 
 {
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnTimer(m_hWnd, nIDEvent);
+	
 	if( nIDEvent == ID_MAINTIMER )
 	{
 		if(AppConfig.flash_window && doflash)
@@ -728,7 +741,17 @@ void CTermView::OnTimer(UINT nIDEvent)
 
 void CTermView::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	ReleaseCapture();
+	DWORD dw1;
+
+	if (AppConfig.use_MouseCTL)
+	{
+		dw1 = MouseCTL_OnLButtonUp_PreProcess(m_hWnd, nFlags, point);
+		if (dw1 == FALSE)
+			return ;
+	}else
+		ReleaseCapture();
+
+
 	::KillTimer(NULL,mouse_sel_timer);
 	if(!telnet)
 		return;
@@ -750,9 +773,16 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point)
 			//	呼叫程式開啟超連結
 			AppConfig.hyper_links.OpenURL(url);
 			url[l]=tmp;
+		}else
+		{
+			if (AppConfig.use_MouseCTL)
+				MouseCTL_OnLButtonUp(m_hWnd, nFlags, point);
 		}
 //	-------------------------------------------------
 	}
+
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnLButtonUp_PostProcess(m_hWnd, nFlags, point);
 }
 
 void CTermView::OnMouseMove(UINT nFlags, CPoint point) 
@@ -1060,6 +1090,9 @@ void CTermView::OnDisConnect()
 
 void CTermView::OnSetFocus(CWnd* pOldWnd) 
 {
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnSetFocus(m_hWnd);
+	
 	CWnd::OnSetFocus(pOldWnd);
 	CreateCaret();
 	ShowCaret();
@@ -1392,6 +1425,7 @@ int CTermView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	hand_cursor = AfxGetApp()->LoadCursor(IDC_HAND_CUR);
+	MouseCTL_Init(m_hWnd);
 
 	chi_conv.SetTablePath(AppPath+"Conv\\");
 	return 0;
@@ -1975,6 +2009,10 @@ BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	if(!telnet)
 		return TRUE;
+
+	if (AppConfig.use_MouseCTL)
+		return MouseCTL_OnMouseWheel(m_hWnd, nFlags, zDelta, pt);
+
 	SCROLLINFO info;
 	GetScrollInfo(SB_VERT,&info);
 	if( (zDelta>0 && info.nPos>0) || (zDelta<0 && info.nPos<info.nMax) )
@@ -3143,4 +3181,58 @@ void CTermView::OnSearchPlugin(UINT id)
 {
 	id -= CSearchPluginCollection::ID_SEARCHPLUGIN00;
 	AppConfig.hyper_links.OpenURL(SearchPluginCollection.UrlForSearch( id, GetSelText() ));
+}
+
+
+void CTermView::OnRButtonDblClk(UINT nFlags, CPoint point) 
+{
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnRButtonDblClk(m_hWnd, nFlags, point);
+}
+
+void CTermView::OnRButtonDown(UINT nFlags, CPoint point) 
+{
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnRButtonDown(m_hWnd, nFlags, point);
+}
+
+void CTermView::OnRButtonUp(UINT nFlags, CPoint point) 
+{
+	BOOL xRet;
+	CPoint point2;
+
+	xRet = TRUE;
+	
+	if (AppConfig.use_MouseCTL)
+		xRet = MouseCTL_OnRButtonUp(m_hWnd, nFlags, point);
+
+	if (xRet == TRUE)
+	{
+		POINT pt;
+		CPoint point2;
+
+		pt = point;
+		ClientToScreen(&pt);
+		point2.x = pt.x;
+		point2.y = pt.y;
+		OnContextMenu(this, point2);
+	}
+}
+
+void CTermView::OnMButtonDown(UINT nFlags, CPoint point) 
+{
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnMButtonDown(m_hWnd, nFlags, point);
+}
+
+void CTermView::OnMButtonUp(UINT nFlags, CPoint point) 
+{
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnMButtonUp(m_hWnd, nFlags, point);
+}
+
+void CTermView::OnMButtonDblClk(UINT nFlags, CPoint point) 
+{
+	if (AppConfig.use_MouseCTL)
+		MouseCTL_OnMButtonDblClk(m_hWnd, nFlags, point);
 }

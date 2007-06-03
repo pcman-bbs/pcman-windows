@@ -94,6 +94,7 @@ public:
 	BYTE use_ansi_bar;
 	BYTE kktab;
 	BYTE is_full_scr;
+	BYTE use_MouseCTL;
 
 	BYTE fullscr_showtb;
 	BYTE fullscr_showsb;
@@ -208,6 +209,7 @@ inline void CAppConfig::Default()
 	kktab=0;
 	is_full_scr=0;
 	use_ansi_bar=1;
+	use_MouseCTL = 0;
 
 	fullscr_showtb=0;
 	fullscr_showsb=0;

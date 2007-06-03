@@ -129,6 +129,8 @@
 #define IDR_POPUP2                      170
 #define IDR_CLOSEBTN                    171
 #define IDD_WEB                         173
+#define IDC_TOPIC_CUR                   176
+#define IDC_PAGE_CUR                    177
 #define IDI_PCMAN_16                    178
 #define IDI_PCMAN_96                    179
 #define IDD_DOWNLOADING                 182
@@ -600,6 +602,7 @@
 #define ID_SET_CHARSET_CP932            33028
 #define ID_WEB_SEARCH                   33029
 #define IDS_PROMPT_IMPORT               33030
+#define ID_MOUSE_CTL                    33031
 
 // Next default values for new objects
 // 

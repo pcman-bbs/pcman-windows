@@ -116,6 +116,7 @@ void CAppConfig::Save(LPCTSTR config_path)
 	fprintf( file, "use_ansi_bar=%d\r\n", use_ansi_bar );
 	fprintf( file, "kktab=%d\r\n", kktab );
 	fprintf( file, "is_full_scr=%d\r\n", is_full_scr );
+	fprintf( file, "use_MouseCTL=%d\r\n", use_MouseCTL );
 
 	fprintf( file, "fullscr_showtb=%d\r\n", fullscr_showtb );
 	fprintf( file, "fullscr_showsb=%d\r\n", fullscr_showsb );

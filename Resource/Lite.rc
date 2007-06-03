@@ -208,6 +208,7 @@ BEGIN
         MENUITEM "結束時紀錄上次的連線 (&E)",   ID_EXITLOG
         MENUITEM SEPARATOR
         MENUITEM "切換全螢幕瀏覽 (&L)\tAlt+Enter", ID_VIEW_FULLSCR
+        MENUITEM "啟用滑鼠瀏覽",                ID_MOUSE_CTL
     END
     POPUP "我的最愛 (&A)"
     BEGIN

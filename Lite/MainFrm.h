@@ -254,6 +254,8 @@ public:
 	afx_msg void OnHelp();
 	afx_msg void OnSetCharset(UINT nID);
 	afx_msg void OnWebSearch();
+	afx_msg void OnUpdateBBSMouseCTL(CCmdUI* pCmdUI);
+	afx_msg void OnBBSMouseCTL();
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);

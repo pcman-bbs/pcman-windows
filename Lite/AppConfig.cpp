@@ -298,6 +298,7 @@ bool CAppConfig::OnDataExchange( bool load )
 	    CFG_BYTE( use_ansi_bar )
 	    CFG_BYTE( kktab )
 	    CFG_BYTE( is_full_scr )
+		CFG_BYTE( use_MouseCTL )
 
 	    CFG_BYTE( fullscr_showtb )
 	    CFG_BYTE( fullscr_showsb )

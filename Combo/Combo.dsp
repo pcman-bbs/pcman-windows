@@ -244,6 +244,10 @@ SOURCE=..\Lite\MemIniFile.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\MouseCTL.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\OleImage.cpp
 # End Source File
 # Begin Source File
