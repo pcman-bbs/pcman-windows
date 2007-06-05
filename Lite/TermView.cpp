@@ -594,7 +594,7 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point)
 		telnet->UpdateCursorPos();
 	}
 
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnLButtonDown(m_hWnd, nFlags, point);
 }
 
@@ -655,7 +655,7 @@ void CTermView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 void CTermView::OnTimer(UINT nIDEvent) 
 {
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnTimer(m_hWnd, nIDEvent);
 	
 	if( nIDEvent == ID_MAINTIMER )
@@ -743,7 +743,7 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	DWORD dw1;
 
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 	{
 		dw1 = MouseCTL_OnLButtonUp_PreProcess(m_hWnd, nFlags, point);
 		if (dw1 == FALSE)
@@ -775,13 +775,13 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point)
 			url[l]=tmp;
 		}else
 		{
-			if (AppConfig.use_MouseCTL)
+			if (CanUseMouseCTL())
 				MouseCTL_OnLButtonUp(m_hWnd, nFlags, point);
 		}
 //	-------------------------------------------------
 	}
 
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnLButtonUp_PostProcess(m_hWnd, nFlags, point);
 }
 
@@ -1090,7 +1090,7 @@ void CTermView::OnDisConnect()
 
 void CTermView::OnSetFocus(CWnd* pOldWnd) 
 {
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnSetFocus(m_hWnd);
 	
 	CWnd::OnSetFocus(pOldWnd);
@@ -2010,7 +2010,7 @@ BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	if(!telnet)
 		return TRUE;
 
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 	{
 		MouseCTL_OnMouseWheel(m_hWnd, nFlags, zDelta, pt);
 		goto __Exit;
@@ -3191,13 +3191,13 @@ void CTermView::OnSearchPlugin(UINT id)
 
 void CTermView::OnRButtonDblClk(UINT nFlags, CPoint point) 
 {
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnRButtonDblClk(m_hWnd, nFlags, point);
 }
 
 void CTermView::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnRButtonDown(m_hWnd, nFlags, point);
 }
 
@@ -3205,7 +3205,7 @@ void CTermView::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	CPoint point2;
 	
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 	{
 		MouseCTL_OnRButtonUp(m_hWnd, nFlags, point);
 	}
@@ -3224,18 +3224,30 @@ void CTermView::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CTermView::OnMButtonDown(UINT nFlags, CPoint point) 
 {
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnMButtonDown(m_hWnd, nFlags, point);
 }
 
 void CTermView::OnMButtonUp(UINT nFlags, CPoint point) 
 {
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnMButtonUp(m_hWnd, nFlags, point);
 }
 
 void CTermView::OnMButtonDblClk(UINT nFlags, CPoint point) 
 {
-	if (AppConfig.use_MouseCTL)
+	if (CanUseMouseCTL())
 		MouseCTL_OnMButtonDblClk(m_hWnd, nFlags, point);
+}
+
+BOOL CTermView::CanUseMouseCTL()
+{
+	BOOL xRet;
+
+	xRet = FALSE;
+
+	if (AppConfig.use_MouseCTL && telnet && telnet->is_ansi_editor == FALSE)
+		xRet = TRUE;
+
+	return xRet;
 }

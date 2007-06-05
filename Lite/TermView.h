@@ -174,6 +174,7 @@ public:
 	void OnInitialUpdate();
 	inline void FillBk(CDC& dc);
 	void UpdateBkgnd();
+	int CanUseMouseCTL();
 
 	BOOL doflash;
 	CString GetSelAnsi();

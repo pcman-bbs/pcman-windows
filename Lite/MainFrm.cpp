@@ -2403,6 +2403,15 @@ void CMainFrame::OnSwitchBack()
 
 void CMainFrame::OnUpdateBBSMouseCTL(CCmdUI* pCmdUI)
 {
+
+	BOOL bEnable;
+	
+	bEnable = TRUE;
+	if (view.telnet && view.telnet->is_ansi_editor)
+		bEnable = FALSE;
+	
+	pCmdUI->Enable(bEnable);
+
 	pCmdUI->SetCheck(AppConfig.use_MouseCTL);
 }
 
@@ -3122,6 +3131,9 @@ int CMainFrame::ConnToIndex(CConn *conn)
 void CMainFrame::SwitchToConn( int index )
 {
 	CConn *newcon = tab.GetCon( index );
+
+	MouseCTL_Reset();
+
 #ifdef	_COMBO_
 	prev_conn = view.con;
 #else
