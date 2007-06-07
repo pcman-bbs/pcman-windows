@@ -423,7 +423,11 @@ void CFavMenu::AddToIEFav(HMENU fmenu, CString favpath, UINT &id )
 
 			CString item;
 			if( finder.IsDirectory() )
+			{	//取得有"."的資料夾名稱 by NomedEmag 07/06/08
+				title = finder.GetFileName();
+				//
 				item = 'd' + title;
+			}
 			else
 			{
 				item = 'w' + title;
