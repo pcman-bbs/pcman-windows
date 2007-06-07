@@ -1,4 +1,8 @@
 #include "StdAfx.h"
+#include "MainFrm.h"
+#include "MouseCTL.h"
+
+CTermView *g_pView = NULL;
 
 struct MOUSE_STATE 
 {
@@ -25,6 +29,7 @@ static DWORD m_dwMenuTimeCounter;
 
 static HCURSOR m_page_cursor;
 static HCURSOR m_topic_cursor;
+static HWND m_hWnd_ForTimer = NULL;
 
 void MouseCTL_OnLButtonDblClk(HWND hWnd, UINT nFlags, CPoint point) 
 {
@@ -41,7 +46,7 @@ void MouseCTL_OnLButtonDown(HWND hWnd, UINT nFlags, CPoint point)
 	m_MouseState.L |= MT_STATE_PRESS;
 	m_MouseState.L |= dwStill;
 	SetTimer(hWnd, MT_EVENT_STILL, MT_TIME_STILL, NULL);
-
+	m_hWnd_ForTimer = hWnd;
 }
 
 BOOL MouseCTL_OnLButtonUp_PreProcess(HWND hWnd, UINT nFlags, CPoint point)
@@ -132,6 +137,7 @@ void MouseCTL_OnRButtonDown(HWND hWnd, UINT nFlags, CPoint point)
 	m_MouseState.R |= MT_STATE_PRESS;
 	m_MouseState.R |= dwStill;
 	SetTimer(hWnd, MT_EVENT_STILL, MT_TIME_STILL, NULL);
+	m_hWnd_ForTimer = hWnd;
 }
 
 BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point) 
@@ -298,6 +304,12 @@ void MouseCTL_OnTimer(HWND hWnd, UINT nIDEvent)
 	KillTimer(hWnd, nIDEvent);
 	hCursor = NULL;
 	pdwMouseState = NULL;
+
+	if (MouseCTL_IsCursorInSelect())
+	{
+		MouseCTL_Reset(FALSE);
+		return ;
+	}
 	
 	if (m_MouseState.R & MT_STATE_PRESS)
 	{
@@ -332,12 +344,42 @@ void MouseCTL_Init(HWND hWnd)
 	m_topic_cursor = LoadCursor(GetModuleHandle(NULL), MAKEINTRESOURCE(IDC_TOPIC_CUR));
 }
 
-void MouseCTL_Reset()
+BOOL MouseCTL_IsCursorInSelect()
+{
+	CTelnetConn* telnet;
+	
+	telnet = NULL;
+	if (g_pView)
+		telnet = g_pView->telnet;
+
+	if (telnet == NULL)
+		return FALSE;
+	
+	if (telnet->sel_start.x != telnet->sel_end.x ||
+		telnet->sel_start.y != telnet->sel_end.y)
+		return TRUE;
+
+	return FALSE;
+}
+
+void MouseCTL_Reset(BOOL bRestoreMouse)
 {
 	memset(&m_MouseState, 0, sizeof(m_MouseState));
 	m_dwWndFocusTimeCounter = 0;
 	m_dwMenuTimeCounter = 0;
 
-	ReleaseCapture();
-	SetCursor(NULL);
+	if (m_hWnd_ForTimer)
+		KillTimer(m_hWnd_ForTimer, MT_EVENT_STILL);
+	m_hWnd_ForTimer = NULL;
+
+	if (bRestoreMouse)
+	{
+		ReleaseCapture();
+		SetCursor(NULL);
+	}
+}
+
+void MouseCTL_Reset()
+{
+	MouseCTL_Reset(TRUE);
 }

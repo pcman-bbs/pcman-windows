@@ -19,4 +19,9 @@ void MouseCTL_OnTimer(HWND hWnd, UINT nIDEvent);
 
 void MouseCTL_OnSetFocus(HWND hWnd);
 void MouseCTL_Init(HWND hWnd);
+void MouseCTL_Reset(BOOL bRestoreMouse);
 void MouseCTL_Reset();
+
+BOOL MouseCTL_IsCursorInSelect();
+
+extern CTermView *g_pView;

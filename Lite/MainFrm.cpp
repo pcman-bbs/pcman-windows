@@ -258,6 +258,7 @@ CMainFrame::CMainFrame()
 	g_ucs2conv.SetTablePath(AppPath);
 	g_ucs2conv.InitBig52Ucs2Tab();
 	g_ucs2conv.InitUcs22Big5Tab();
+	g_pView = &view;
 
 #if defined(_COMBO_)
 	focus=NULL;
