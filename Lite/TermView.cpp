@@ -467,10 +467,14 @@ bool find_link(char* type,char* str,int& start,int& end)
 }
 
 
-void CTermView::OnLButtonDblClk(UINT nFlags, CPoint point)
+void CTermView::OnLButtonDblClk(UINT nFlags, CPoint point_In)
 {
 	if(!telnet || !AppConfig.dblclk_select)
 		return;
+
+	CPoint point;
+
+	point = point_In;
 
 	int x,y;
 	PtToLineCol(point,x,y,false);
@@ -545,14 +549,22 @@ void CTermView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		}
 	}
 	Invalidate(FALSE);
+
+	if (CanUseMouseCTL())
+		MouseCTL_OnLButtonDblClk(m_hWnd, nFlags, point_In);
+	
 }
 
 
-void CTermView::OnLButtonDown(UINT nFlags, CPoint point) 
+void CTermView::OnLButtonDown(UINT nFlags, CPoint point_In) 
 {
 	SetFocus();
 	if(!telnet)
 		return;
+
+	CPoint point;
+
+	point = point_In;
 /*
 //測試用---------
 	CWindowDC dc(this);
@@ -568,7 +580,6 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point)
 //---------------
 */
 
-	SetCapture();
 	int x,y;
 	PtToLineCol(point,x,y);
 	y+=telnet->scroll_pos;
@@ -595,7 +606,9 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 
 	if (CanUseMouseCTL())
-		MouseCTL_OnLButtonDown(m_hWnd, nFlags, point);
+		MouseCTL_OnLButtonDown(m_hWnd, nFlags, point_In);
+	else
+		SetCapture();
 }
 
 void CTermView::OnDestroy() 
@@ -739,13 +752,17 @@ void CTermView::OnTimer(UINT nIDEvent)
 }
 
 
-void CTermView::OnLButtonUp(UINT nFlags, CPoint point) 
+void CTermView::OnLButtonUp(UINT nFlags, CPoint point_In) 
 {
 	DWORD dw1;
 
+	CPoint point;
+
+	point = point_In;
+
 	if (CanUseMouseCTL())
 	{
-		dw1 = MouseCTL_OnLButtonUp_PreProcess(m_hWnd, nFlags, point);
+		dw1 = MouseCTL_OnLButtonUp_PreProcess(m_hWnd, nFlags, point_In);
 		if (dw1 == FALSE)
 			return ;
 	}else
@@ -776,21 +793,25 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point)
 		}else
 		{
 			if (CanUseMouseCTL())
-				MouseCTL_OnLButtonUp(m_hWnd, nFlags, point);
+				MouseCTL_OnLButtonUp(m_hWnd, nFlags, point_In);
 		}
 //	-------------------------------------------------
 	}
 
 	if (CanUseMouseCTL())
-		MouseCTL_OnLButtonUp_PostProcess(m_hWnd, nFlags, point);
+		MouseCTL_OnLButtonUp_PostProcess(m_hWnd, nFlags, point_In);
 }
 
-void CTermView::OnMouseMove(UINT nFlags, CPoint point) 
+void CTermView::OnMouseMove(UINT nFlags, CPoint point_In) 
 {
 	if(!telnet)
 		return;
 
+	CPoint point;
 	int lx,ly;
+
+	point = point_In;
+
 	PtToLineCol(point,lx,ly,false);
 
 	BOOL bsel=(nFlags&MK_LBUTTON && ::GetCapture()==m_hWnd);		//是否正在選取?
@@ -911,8 +932,14 @@ void CTermView::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		int len;
 		if( HyperLinkHitTest(lx,ly,len))
-			SetCursor(hand_cursor);
+		{
+			if (MouseCTL_GetCurrentMouseCursor() == NULL)
+				SetCursor(hand_cursor);
+		}
 	}
+
+	if (CanUseMouseCTL())
+		MouseCTL_OnMouseMove(m_hWnd, nFlags, point_In);
 }
 
 void CTermView::OnContextMenu(CWnd* pWnd, CPoint point) 
@@ -2005,14 +2032,18 @@ void CTermView::OnSelAllBuf()
 	Invalidate(FALSE);
 }
 
-BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
+BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint point_In) 
 {
 	if(!telnet)
 		return TRUE;
 
+	CPoint pt;
+
+	pt = point_In;
+
 	if (CanUseMouseCTL())
 	{
-		MouseCTL_OnMouseWheel(m_hWnd, nFlags, zDelta, pt);
+		MouseCTL_OnMouseWheel(m_hWnd, nFlags, zDelta, point_In);
 		goto __Exit;
 	}
 
@@ -3189,32 +3220,32 @@ void CTermView::OnSearchPlugin(UINT id)
 }
 
 
-void CTermView::OnRButtonDblClk(UINT nFlags, CPoint point) 
+void CTermView::OnRButtonDblClk(UINT nFlags, CPoint point_In) 
 {
 	if (CanUseMouseCTL())
-		MouseCTL_OnRButtonDblClk(m_hWnd, nFlags, point);
+		MouseCTL_OnRButtonDblClk(m_hWnd, nFlags, point_In);
 }
 
-void CTermView::OnRButtonDown(UINT nFlags, CPoint point) 
+void CTermView::OnRButtonDown(UINT nFlags, CPoint point_In) 
 {
 	if (CanUseMouseCTL())
-		MouseCTL_OnRButtonDown(m_hWnd, nFlags, point);
+		MouseCTL_OnRButtonDown(m_hWnd, nFlags, point_In);
 }
 
-void CTermView::OnRButtonUp(UINT nFlags, CPoint point) 
+void CTermView::OnRButtonUp(UINT nFlags, CPoint point_In) 
 {
 	CPoint point2;
 	
 	if (CanUseMouseCTL())
 	{
-		MouseCTL_OnRButtonUp(m_hWnd, nFlags, point);
+		MouseCTL_OnRButtonUp(m_hWnd, nFlags, point_In);
 	}
 	else
 	{
 		POINT pt;
 		CPoint point2;
 
-		pt = point;
+		pt = point_In;
 		ClientToScreen(&pt);
 		point2.x = pt.x;
 		point2.y = pt.y;
@@ -3222,22 +3253,22 @@ void CTermView::OnRButtonUp(UINT nFlags, CPoint point)
 	}
 }
 
-void CTermView::OnMButtonDown(UINT nFlags, CPoint point) 
+void CTermView::OnMButtonDown(UINT nFlags, CPoint point_In) 
 {
 	if (CanUseMouseCTL())
-		MouseCTL_OnMButtonDown(m_hWnd, nFlags, point);
+		MouseCTL_OnMButtonDown(m_hWnd, nFlags, point_In);
 }
 
-void CTermView::OnMButtonUp(UINT nFlags, CPoint point) 
+void CTermView::OnMButtonUp(UINT nFlags, CPoint point_In) 
 {
 	if (CanUseMouseCTL())
-		MouseCTL_OnMButtonUp(m_hWnd, nFlags, point);
+		MouseCTL_OnMButtonUp(m_hWnd, nFlags, point_In);
 }
 
-void CTermView::OnMButtonDblClk(UINT nFlags, CPoint point) 
+void CTermView::OnMButtonDblClk(UINT nFlags, CPoint point_In) 
 {
 	if (CanUseMouseCTL())
-		MouseCTL_OnMButtonDblClk(m_hWnd, nFlags, point);
+		MouseCTL_OnMButtonDblClk(m_hWnd, nFlags, point_In);
 }
 
 BOOL CTermView::CanUseMouseCTL()

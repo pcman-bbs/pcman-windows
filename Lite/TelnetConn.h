@@ -95,7 +95,7 @@ public:
 	void CopyArticleComplete(bool cancel = false);
 	void CopyArticle( bool with_color, bool in_editor );
 	CString GetLineWithAnsi( long line );
-	bool IsEndOfArticleReached();
+	int IsEndOfArticleReached();
 	void SendNaws();
 	void SendMacroString(CString str);
 	inline int GetLineBufLen();

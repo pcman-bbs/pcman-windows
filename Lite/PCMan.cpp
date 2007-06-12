@@ -53,6 +53,8 @@ CApp theApp;
 
 BOOL CApp::InitInstance()
 {
+	DBG_INIT(1);
+	
 	// Find other existing instances
 	HWND mainwnd=GetTopWindow(HWND_DESKTOP);
 	while( (mainwnd=::FindWindowEx(HWND_DESKTOP,mainwnd,CMainFrame::mainfrm_class_name,NULL)) )

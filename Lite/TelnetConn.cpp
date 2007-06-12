@@ -1943,7 +1943,7 @@ void CTelnetConn::SendNaws()
 }
 
 
-bool CTelnetConn::IsEndOfArticleReached()
+int CTelnetConn::IsEndOfArticleReached()
 {
 	char* last_line_txt = screen[last_line];
 	char* percent;
@@ -1954,9 +1954,10 @@ bool CTelnetConn::IsEndOfArticleReached()
 		while( num > last_line_txt && isdigit( num[-1] ) )
 			--num;
 		if( num < percent && atoi(num) < 100 )
-			return false;
+			return 0;
+		return 1;
 	}
-	return true;
+	return 2;
 }
 
 CString CTelnetConn::GetLineWithAnsi(long line)

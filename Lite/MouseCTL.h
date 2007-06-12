@@ -9,6 +9,7 @@ void MouseCTL_OnMButtonDblClk(HWND hWnd, UINT nFlags, CPoint point);
 void MouseCTL_OnLButtonDblClk(HWND hWnd, UINT nFlags, CPoint point);
 void MouseCTL_OnLButtonDown(HWND hWnd, UINT nFlags, CPoint point);
 void MouseCTL_OnLButtonUp(HWND hWnd, UINT nFlags, CPoint point);
+void MouseCTL_OnMouseMove(HWND hWnd, UINT nFlags, CPoint point);
 
 BOOL MouseCTL_OnLButtonUp_PreProcess(HWND hWnd, UINT nFlags, CPoint point);
 void MouseCTL_OnLButtonUp_PostProcess(HWND hWnd, UINT nFlags, CPoint point);
@@ -24,4 +25,10 @@ void MouseCTL_Reset();
 
 BOOL MouseCTL_IsCursorInSelect();
 
+BOOL MouseCTL_SendInput(char cKey_In, BOOL bExtendKey, BOOL bControlKey);
+void MouseCTL_OnAction(DWORD dwActionID, DWORD dwActionID_Sub);
+void WINAPI MouseCTL_UpdateStatus();
+HCURSOR MouseCTL_GetCurrentMouseCursor();
+
 extern CTermView *g_pView;
+extern char g_szMouseGesture[30];

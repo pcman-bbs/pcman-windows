@@ -43,8 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /O2 /Ob2 /I "..\SimpXmlParser" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FD /c
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /nologo /MT /W3 /GX /O2 /Ob2 /I "..\SimpXmlParser" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FR /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "NDEBUG"
@@ -75,8 +74,7 @@ PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan\Config
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /ZI /Od /I "..\SimpXmlParser" /D "_DEBUG" /D "BUILD_UI" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /Fr /FD /GZ /c
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\SimpXmlParser" /D "_DEBUG" /D "BUILD_UI" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "USE_DEBUG_CONSOLE" /Fr /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x404 /d "_DEBUG"
@@ -238,6 +236,14 @@ SOURCE=.\MemIniFile.cpp
 # Begin Source File
 
 SOURCE=.\MouseCTL.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MouseGesture.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MouseGesture.h
 # End Source File
 # Begin Source File
 
