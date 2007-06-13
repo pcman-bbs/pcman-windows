@@ -580,6 +580,8 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point_In)
 //---------------
 */
 
+	SetCapture();
+
 	int x,y;
 	PtToLineCol(point,x,y);
 	y+=telnet->scroll_pos;
@@ -607,8 +609,7 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point_In)
 
 	if (CanUseMouseCTL())
 		MouseCTL_OnLButtonDown(m_hWnd, nFlags, point_In);
-	else
-		SetCapture();
+		
 }
 
 void CTermView::OnDestroy() 
@@ -765,8 +766,9 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point_In)
 		dw1 = MouseCTL_OnLButtonUp_PreProcess(m_hWnd, nFlags, point_In);
 		if (dw1 == FALSE)
 			return ;
-	}else
-		ReleaseCapture();
+	}
+	
+	ReleaseCapture();
 
 
 	::KillTimer(NULL,mouse_sel_timer);
