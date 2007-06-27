@@ -57,7 +57,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 OutDir=.\Release
 SOURCE="$(InputPath)"
-PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan Combo\Config
+PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan Combo\Config	..\Version_PreBuildEvent_Combo.bat 1
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "Combo - Win32 Debug"
@@ -88,7 +88,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 OutDir=.\Debug
 SOURCE="$(InputPath)"
-PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan Combo\Config
+PreLink_Cmds=$(OutDir)\BuildMenu.exe $(OutDir)\PCMan Combo\Config	..\Version_PreBuildEvent_Lite.bat 1
 # End Special Build Tool
 
 !ENDIF 
