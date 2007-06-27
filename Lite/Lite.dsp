@@ -179,6 +179,10 @@ SOURCE=.\CustomToolBar.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Debug_Kit.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\DlgLayout\DlgLayout.cpp
 # End Source File
 # Begin Source File
@@ -404,6 +408,10 @@ SOURCE=.\CustomTabCtrl.h
 # Begin Source File
 
 SOURCE=.\CustomToolBar.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Debug_Kit.h
 # End Source File
 # Begin Source File
 

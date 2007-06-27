@@ -190,6 +190,10 @@ SOURCE=.\custsite.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\Debug_Kit.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\DlgLayout\DlgLayout.cpp
 # End Source File
 # Begin Source File
@@ -439,6 +443,10 @@ SOURCE=..\Lite\CustomToolBar.h
 # Begin Source File
 
 SOURCE=.\custsite.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\Debug_Kit.h
 # End Source File
 # Begin Source File
 
