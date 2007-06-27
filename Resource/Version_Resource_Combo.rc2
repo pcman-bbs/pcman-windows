@@ -1,0 +1,53 @@
+//
+// Resource_Version.RC2 - resources Microsoft Visual C++ does not edit directly
+//
+
+#ifdef APSTUDIO_INVOKED
+#error this file is not editable by Microsoft Visual C++
+#endif //APSTUDIO_INVOKED
+
+
+#include "..\Combo\Version.h"
+
+/////////////////////////////////////////////////////////////////////////////
+// Add manually edited resources here...
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION FILEVER
+ PRODUCTVERSION PRODUCTVER
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004e4"
+        BEGIN
+        	VALUE "Comments", Version_CommentsA
+            VALUE "CompanyName", Version_CompanyNameA
+            VALUE "FileDescription", Version_FileDescriptionA
+            VALUE "FileVersion", FILEVER_DOT_STRA
+            VALUE "InternalName", Version_InternalNameA
+            VALUE "LegalCopyright", Version_LegalCopyrightA
+            VALUE "OriginalFilename", Version_OriginalFilenameA
+            VALUE "ProductName", Version_ProductNameA
+            VALUE "ProductVersion", PRODUCTVER_DOT_STRA
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1252
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////

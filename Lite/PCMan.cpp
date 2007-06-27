@@ -15,6 +15,9 @@
 #ifdef	_COMBO_
 //	#include <..\src\occimpl.h>
 	#include "..\Combo\CustSite.h"
+	#include "..\Combo\Version.h"
+#else
+	#include "..\Lite\Version.h"
 #endif
 
 #ifdef _DEBUG
@@ -315,6 +318,13 @@ BOOL CAboutDlg::OnInitDialog()
 	    GetDlgItem(IDC_EDIT)->SetWindowText( buf );
         delete []buf;
     }
+
+	char buf1[0x100];
+
+	wsprintf(buf1, "%s - %d.%d.%d, Build %d, %s", 
+		Version_InternalNameA, Version_Major, Version_Minor, Version_PatchLevel, Version_BuildNumber, Version_RevDateA);
+
+	GetDlgItem(IDC_VERSION)->SetWindowText(buf1);
 	return TRUE;
 }
 

@@ -51,6 +51,7 @@ BEGIN
     "#pragma code_page(950)\r\n"
     "#endif //_WIN32\r\n"
     "#include ""Common.rc""\r\n"
+    "#include ""Version_Resource_Lite.rc2""\r\n"
     "//#include ""l.cht\\afxres.rc""          // Standard components\r\n"
     "#endif\0"
 END
@@ -329,52 +330,6 @@ END
 #endif
 
 
-#ifndef _MAC
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 8,0,0,0
- PRODUCTVERSION 8,0,0,0
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040404b0"
-        BEGIN
-            VALUE "Comments", "本軟體由洪任諭及 Open PCMan Team 共同製作\0"
-            VALUE "CompanyName", "Open PCMan Project\0"
-            VALUE "FileDescription", "PCMan 2007\0"
-            VALUE "FileVersion", "8. 0. 0. 0\0"
-            VALUE "InternalName", "Open PCMan 8.0\0"
-            VALUE "LegalCopyright", "Copyright (C) 2001 - 2007 由 洪任諭及 Open PCMan Team 共同製作\0"
-            VALUE "LegalTrademarks", "Copyright (C) 2001 - 2007 由 洪任諭及 Open PCMan Team 共同製作\0"
-            VALUE "OriginalFilename", "PCMan.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "PCMan 2007 Combo\0"
-            VALUE "ProductVersion", "8. 0. 0. 0\0"
-            VALUE "SpecialBuild", "\0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x404, 1200
-    END
-END
-
-#endif    // !_MAC
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -412,6 +367,7 @@ LANGUAGE 4, 1
 #pragma code_page(950)
 #endif //_WIN32
 #include "Common.rc"
+#include "Version_Resource_Lite.rc2"
 //#include "l.cht\afxres.rc"          // Standard components
 #endif
 /////////////////////////////////////////////////////////////////////////////
