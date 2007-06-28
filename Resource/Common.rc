@@ -540,13 +540,13 @@ BEGIN
     PUSHBUTTON      "軟體說明",IDB_HELP,240,208,37,14
     LTEXT           "授權方式： GNU General Public License 第二版\nCopyright (C) 2001-2007 原作者：陽明大學醫學系 洪任諭\nCopyright (C) 2007 cole945, neopro, rocet, Open PCMan 開發團隊",
                     IDC_STATIC,41,19,220,27
-    EDITTEXT        IDC_EDIT,7,64,270,140,ES_MULTILINE | ES_AUTOVSCROLL | 
+    EDITTEXT        IDC_EDIT,7,55,270,149,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
     ICON            IDR_MAINFRAME,IDC_STATIC,10,9,20,20
     CTEXT           "Open PCMan 2007 - 開放原始碼的全方位 BBS 瀏覽軟體",
                     IDC_STATIC,39,7,207,8
     PUSHBUTTON      "參觀開發專案網頁",IDC_WEB2,157,208,69,14
-    LTEXT           "",IDC_VERSION,41,48,220,11
+    LTEXT           "",IDC_VERSION,42,45,220,8
 END
 
 IDD_DOWNLOADING DIALOG DISCARDABLE  0, 0, 142, 44

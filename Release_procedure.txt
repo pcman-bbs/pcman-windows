@@ -43,8 +43,19 @@ SET BuildNumber=0       ==> ·í¥¼¦w¸ËTortoiseSVN ¤S·Q½sÄ¶µ{¦¡®É©Ò¥Îªºª©¸¹
 SET BuildNumber_Date=2007/6/27 12:24 ==> ·í¥¼¦w¸ËTortoiseSVN ¤S·Q½sÄ¶µ{¦¡®É©Ò¥Îªº¤é´Á
 
 
-
 4.
+§¹¦¨«e­±ªº³]©w«á¡A¶}©l«Ø³y°õ¦æÀÉ¡A¦pªG¬O­º¦¸±qsvn¤U¸ü¦^¨Ó¡Aª`·N³o»Ý­nbuild¤G¦¸¡A
+²Ä¤@¦¸¥Îbuild(¼öÁäF7)¡Abuild§¹«á¡A°¨¤W¦A°õ¦æ²Ä¤G¦¸build
+²Ä¤G¦¸¥Îbuild(¼öÁäF7)¡A©Î¬O«öExcute Program(¼öÁäctrl-F5)¡A´N·|¦A«Ø¤@¦¸¡A
+¦ý¬O¡A³o¦¸buildªº³t«×«Ü§Ö¡C(¦Ó¥­±`debugµ{¦¡®É¡A¥u»Ý­nbuild¤@¦¸´N¦æ¤F)
+
+¦Ó¬°¤°»òbuild§¹²Ä¤@¦¸¡A¦A«ö¤@¦¸build¡AÁÙ·|¦AbuildÀÉ®×¡H
+¥¿±`¤£¬O¦]¬°ÀÉ®×¨S§ïÅÜ¡A©Ò¥H¤£·|build
+¬°¤°»ò­n³o¼Ë¡A­ì²z¦p¤U
+
+
+
+5.
 ¥Ñ©óvc6.0¨S¦³pre-buildªº«H¸¹¡A¾É­P§Ú­ÌµLªk¦bµ{¦¡­è¶}©lbuildªº®É«á´N²£¥Íversioh.h
 ©Ò¥H¦bbuild­nreleaseªºµ{¦¡«e¡A
 ­n¤â°Ê¥h°õ¦æVersion_PreBuildEvent_Lite.bat©MVersion_PreBuildEvent_Combo.bat
@@ -52,13 +63,13 @@ SET BuildNumber_Date=2007/6/27 12:24 ==> ·í¥¼¦w¸ËTortoiseSVN ¤S·Q½sÄ¶µ{¦¡®É©Ò¥Îª
 ­Y¬Ovs2005«h¦³pre-buildªº«H¸¹¡A¥i¥H§¹¦¨¦Û°Ê¤Æ¡A
 ¦ý¬O²{¦b¬O¥Îvc6.0¡A©Ò¥H´N¥ý¥Î¤â°Êªº¤èªk¥h°õ¦æ
 
-ª`·N:
+ª`·N1:
 ­Y°õ¦æVersion_PreBuildEvent_Lite.bat©MVersion_PreBuildEvent_Combo.bat
 ¸õ¥X¡u¨t²Î§ä¤£¨ì«ü©wªº¸ô®|¡v¡A«h»Ý­n¶}±Ò©R¥O¦C¼Ò¦¡¡A¸õ¨ì²{¦bªº¤u§@¥Ø¿ý
 ¦A°õ¦æ¤W­±ªº¤G­ÓbatÀÉ
 
 
-ª`·N:
+ª`·N2:
 ÁöµMvc6.0¨S¦³pre-buildªº«H¸¹¡A¦ý¬O¬°¤F¤è«K¡AÁÙ¬O¥[¤F©R¥O¦bpre-link
 ©Ò¥H¥i¥H¦Û°Ê²£¥Íversioh.hÀÉ¡A¦ý¬O­n¸Ì­±­×§ïªº¸ê®Æ¥¿½T¡A»Ý­nbuild¤G¦¸¤~¦æ
 ²Ä¤@¦¸build ²£¥Íversioh.hÀÉ¡A¦ý¬O¦]¬°¬O³Ì«á¤~²£¥Íªº¡A©Ò¥H¥¼¥Î¨ì
@@ -66,12 +77,9 @@ SET BuildNumber_Date=2007/6/27 12:24 ==> ·í¥¼¦w¸ËTortoiseSVN ¤S·Q½sÄ¶µ{¦¡®É©Ò¥Îª
 
 
 
-5.
-§¹¦¨«e­±ªº³]©w«á¡A¶}©l«Ø³y°õ¦æÀÉ
-
 
 
 ¬ÛÃö¸ê°T¡A½Ð°Ñ¦ÒversionCTL\Version_ReadMe.txt
 
 
-­º½s: Omar Lin  (ID: badpp)
+­º½s: Omar Lin  (ID: badpp) ¤U¤È 04:02 2007/6/28
