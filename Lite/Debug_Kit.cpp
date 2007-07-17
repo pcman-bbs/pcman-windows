@@ -18,7 +18,7 @@ BOOL DebugConsole_Init(int nMode)
 
 
 
-DWORD DebugConsole_printf(const char*format, ... )
+DWORD DebugConsole_printfA(const char*format, ... )
 {
     va_list args;
     DWORD len;
@@ -31,6 +31,34 @@ DWORD DebugConsole_printf(const char*format, ... )
 	{
         WriteFile( m_hStdHandle, buff, len, &len, NULL );
     }
+	
+    return len;
+}
+
+DWORD DebugConsole_printfW(const wchar_t*format, ... )
+{
+    va_list args;
+    DWORD len;
+    wchar_t buff[8192];
+	char *pforateA;
+	DWORD dw1;
+
+    va_start( args, format );
+	
+    len = _vsnwprintf( buff, sizeof(buff)/sizeof(wchar_t), format, args );
+
+	dw1 = WideCharToMultiByte(0, 0, buff, -1, 0, 0, 0, 0);
+	pforateA = (char*)LocalAlloc(LPTR, dw1+1);
+
+	WideCharToMultiByte(0, 0, buff, -1, pforateA, dw1+1, 0, 0);
+
+	
+    if(m_hStdHandle != INVALID_HANDLE_VALUE) 
+	{
+        WriteFile( m_hStdHandle, pforateA, len, &len, NULL );
+    }
+
+	LocalFree(pforateA);
 	
     return len;
 }

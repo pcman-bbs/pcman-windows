@@ -43,7 +43,7 @@ fix would be nice.
 #   include <algorithm>
 #endif
 
-typedef void (WINAPI UpdateMessage_def)(void);
+typedef void (WINAPI UpdateMessage_def)(DWORD);
 
 //////////////////////////////////////////////////////////////////////
 // MOUSE_GESTURE_MESSAGE_STRING
@@ -55,7 +55,7 @@ typedef void (WINAPI UpdateMessage_def)(void);
 
 #define MOUSE_GESTURE_MESSAGE_STRING _T("MGMS-{5E11C944-1412-4b52-8C86-DB293CB4BE93}")
 
-#define UNKNOWN_GETURE_ID	0x0
+#define UNKNOWN_GETURE_ID	0
 #define INVALID_GETURE_ID	0xFFFFFFFF
 
 
@@ -90,7 +90,9 @@ public:
     int AddGesture(UINT nID, const Motion *Motions, size_t count);
     int AddGesture(UINT nID, const Gesture &rGesture);
 	int AddGesture(UINT ID, const char *szGesture_In);
-    bool RemoveGesture (UINT nID);
+    bool RemoveGesture(UINT nID);
+	int RemoveGesture_All();
+    void KillGesture();
 
     UINT MouseMessage(WPARAM wp, LPARAM lp);
 
@@ -108,7 +110,6 @@ private:
     static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wp, LPARAM lp);
     static CMouseGesture *GetGesturePointer(HWND hWnd, POINT pt);
 
-    void KillGesture();
     UINT GetGestureIdFromMap(const Gesture &gesture);
 
     static CMouseGesture* Current;  // The CMouseGesture currently reading the mouse movements

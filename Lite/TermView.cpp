@@ -293,6 +293,9 @@ void CTermView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CTermView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
+	DBG_PRINT("OnKeyDown(0x%X('%c'), 0x08%X(Scan:0x%02X('%c') Ext:%d)\r\n", 
+		nChar, nChar, nFlags, nFlags&0xFF, nFlags&0xFF, (nFlags>>8)&0x1);
+
 	if(!telnet)
 	{
 		if(nChar == VK_RETURN && AppConfig.nocon_enter_reconnect )

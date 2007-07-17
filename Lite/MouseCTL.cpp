@@ -1,3 +1,14 @@
+/********************************************************************
+	created:	2007/06/29
+	created:	29:6:2007   0:26
+	filename: 	MouseCTL.cpp
+	file base:	MouseCTL
+	file ext:	cpp
+	author:		Omar Lin
+	
+	purpose:	Mouse Control
+*********************************************************************/
+
 #include "StdAfx.h"
 #include "MainFrm.h"
 #include "MouseCTL.h"
@@ -6,7 +17,7 @@
 
 CTermView *g_pView = NULL;
 CMouseGesture m_gesture;
-char g_szMouseGesture[30];
+char g_szMouseGesture[60];
 
 struct MOUSE_STATE 
 {
@@ -29,6 +40,10 @@ static MOUSE_STATE m_MouseState;
 #define MT_TIME_GET(MouseState) MouseState&0x00FFFFFF
 #define MT_TIME_SET(MouseState, time) MouseState = (MouseState&0xFF000000)|(time&0x00FFFFFF)
 
+enum MOUSE_CMD_TYPE
+{
+	CMD_TYPE_KEY_INPUT = 0,
+};
 
 enum MOUSE_ACTION
 {
@@ -44,21 +59,65 @@ enum MOUSE_ACTION
 	MA_MOUSE_GESTURE,
 };
 
-
-enum GESTURE
+struct  MOUSE_ACTION_CMD_INFO
 {
-	MG_BR_U = 1,
-	MG_BR_D,
-	MG_BR_L,
-	MG_BR_R,
-	MG_BR_U_D,
-	MG_BR_D_U,
-	MG_BR_R_L,
-	MG_BR_L_R,
-	MG_BR_U_D_U,
-	MG_BR_R_L_R,
-	MG_BR_LDRDL,
+	DWORD	nMouseAction;
+	char	*szCmd;
+	char	*szCmdInfo;
+	DWORD	nCmdType;
 };
+
+MOUSE_ACTION_CMD_INFO MouseActionArray_Default[] = 
+{
+	{MA_L_BT_CLICK, "\"ENTER\"", "Enter", CMD_TYPE_KEY_INPUT},
+	{MA_M_BT_CLICK, "\"LEFT\"", "Left", CMD_TYPE_KEY_INPUT},
+	{MA_WHELL_UP, "\"UP\"", "Up", CMD_TYPE_KEY_INPUT},
+	{MA_WHELL_DOWN, "\"DOWN\"", "Down", CMD_TYPE_KEY_INPUT},
+	{MA_R_BT_WHELL_UP, "\"PRIOR\"", "PageUp", CMD_TYPE_KEY_INPUT},
+	{MA_R_BT_WHELL_DOWN, "\"NEXT\"", "PageDown", CMD_TYPE_KEY_INPUT},
+	{MA_L_BT_WHELL_UP, "-", "-", CMD_TYPE_KEY_INPUT},
+	{MA_L_BT_WHELL_DOWN, "+", "+", CMD_TYPE_KEY_INPUT},
+	{0, 0, 0, 0},
+};
+
+MOUSE_ACTION_CMD_INFO *g_pMouseActionArray_Now = NULL;
+
+BOOL MouseCTL_MouseAction_Setup_Cmd(MOUSE_ACTION_CMD_INFO *pMA_Array);
+BOOL MouseCTL_MouseAction_RemoveAll_Cmd();
+MOUSE_ACTION_CMD_INFO *MouseCTL_MouseAction_GeCmdInfo(DWORD nMouseAction_In);
+
+
+
+struct  GESTURE_CMD_INFO
+{
+	char	*szGesture;
+	char	*szCmd;
+	char	*szCmdInfo;
+	DWORD	nCmdType;
+};
+
+GESTURE_CMD_INFO GestureArray_Default[] = 
+{
+	{"rU", "\"HOME\"", "Home", CMD_TYPE_KEY_INPUT},
+	{"rD", "\"END\"", "End", CMD_TYPE_KEY_INPUT},
+	{"rR", "\"ENTER\"", "Enter", CMD_TYPE_KEY_INPUT},
+	{"rL", "\"LEFT\"", "Left", CMD_TYPE_KEY_INPUT},
+	{"rUDU", "=", "=", CMD_TYPE_KEY_INPUT},
+	{"rRLR", "^Q", "Ctrl-q", CMD_TYPE_KEY_INPUT},
+	{"rLDRDL", "S", "S", CMD_TYPE_KEY_INPUT},
+	{"rUD", "\"LEFT\"\"ENTER\"\"END\"", "Reload(Left Enter End)", CMD_TYPE_KEY_INPUT},
+	{0, 0, 0, 0},
+};
+
+GESTURE_CMD_INFO *g_pGestureArray_Now = NULL;;
+const char szUnknowtGesture[] = "未知的手勢";
+#define GESTURE_FIRST_ID	1
+
+BOOL MouseCTL_Gesture_Setup_Cmd(GESTURE_CMD_INFO *pGestureArray);
+BOOL MouseCTL_Gesture_RemoveAll_Cmd();
+GESTURE_CMD_INFO *MouseCTL_Gesture_GeCmdInfo(DWORD nID_In);
+
+
 
 enum MC_CURSOR
 {
@@ -68,7 +127,9 @@ enum MC_CURSOR
 	CURSOR_RELOAD = 0xFFFFFFFF,
 };
 
+
 void MouseCTL_SetMouseCursor(HWND hWnd, MC_CURSOR Cursor);
+const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString, char *cKey_In, BOOL *bExtendKey, BOOL *bControlKey);
 
 static DWORD m_dwWndFocusTimeCounter;
 static DWORD m_dwMenuTimeCounter;
@@ -189,6 +250,7 @@ void MouseCTL_OnRButtonDown(HWND hWnd, UINT nFlags, CPoint point)
 	m_MouseState.R |= dwStill;
 	SetTimer(hWnd, MT_EVENT_STILL, MT_TIME_STILL, NULL);
 	m_hWnd_ForTimer = hWnd;
+	SetCapture(hWnd);
 }
 
 BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point) 
@@ -206,6 +268,9 @@ BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 
 	dwGestureID = m_gesture.MouseMessage(WM_RBUTTONUP, (LPARAM)&MHS);
 
+	if (MouseCTL_GetCurrentMouseCursor() == NULL)
+		ReleaseCapture();
+
 	m_MouseState.R &= ~MT_STATE_PRESS;
 
 	KillTimer(hWnd, MT_EVENT_STILL);
@@ -218,6 +283,11 @@ BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 	if (dwGestureID != INVALID_GETURE_ID)
 	{
 		MouseCTL_OnAction(MA_MOUSE_GESTURE, dwGestureID);
+		if (g_szMouseGesture[0])
+		{
+			g_szMouseGesture[0] = 0;
+			MouseCTL_UpdateStatus(UNKNOWN_GETURE_ID);
+		}
 		goto __Exit;
 	}
 
@@ -283,6 +353,7 @@ BOOL MouseCTL_OnMouseWheel(HWND hWnd, UINT nFlags, short zDelta, CPoint pt)
 {
 	int nGap;
 	BOOL bExtendKey;
+	BOOL bGestureReset;
 
 	m_MouseState.R |= MT_STATE_WHELL_ACT;
 	m_MouseState.L |= MT_STATE_WHELL_ACT;
@@ -294,12 +365,14 @@ BOOL MouseCTL_OnMouseWheel(HWND hWnd, UINT nFlags, short zDelta, CPoint pt)
 		return TRUE;
 
 	bExtendKey = TRUE;
+	bGestureReset = FALSE;
 
 	if (nGap < 0) 
 	{
 		if (m_MouseState.R & MT_STATE_PRESS ||
 			m_MouseState.R & MT_STATE_STILL)
 		{
+			bGestureReset = TRUE;
 			MouseCTL_OnAction(MA_R_BT_WHELL_DOWN, 0);
 		}else if (m_MouseState.L & MT_STATE_PRESS ||
 			m_MouseState.L & MT_STATE_STILL)
@@ -314,6 +387,7 @@ BOOL MouseCTL_OnMouseWheel(HWND hWnd, UINT nFlags, short zDelta, CPoint pt)
 		if (m_MouseState.R & MT_STATE_PRESS ||
 			m_MouseState.R & MT_STATE_STILL)
 		{
+			bGestureReset = TRUE;
 			MouseCTL_OnAction(MA_R_BT_WHELL_UP, 0);
 		}else if (m_MouseState.L & MT_STATE_PRESS ||
 			m_MouseState.L & MT_STATE_STILL)
@@ -324,6 +398,9 @@ BOOL MouseCTL_OnMouseWheel(HWND hWnd, UINT nFlags, short zDelta, CPoint pt)
 			MouseCTL_OnAction(MA_WHELL_UP, 0);
 		}
 	}
+
+	if (bGestureReset)
+		m_gesture.KillGesture();
 
 	return TRUE;
 }
@@ -344,12 +421,13 @@ void MouseCTL_OnMouseMove(HWND hWnd, UINT nFlags, CPoint point)
 		if (g_szMouseGesture[0] && s_dwMoveTimes > 10)
 		{
 			g_szMouseGesture[0] = 0;
-			MouseCTL_UpdateStatus();
+			MouseCTL_UpdateStatus(UNKNOWN_GETURE_ID);
 			s_dwMoveTimes = 0;
 		}
 	}
 
-	if (nFlags & MK_RBUTTON)
+	if (nFlags & MK_RBUTTON && 
+		!(m_MouseState.R & MT_STATE_WHELL_ACT))
 	{
 		MOUSEHOOKSTRUCT MHS = {0};
 		
@@ -414,8 +492,45 @@ void MouseCTL_OnSetFocus(HWND hWnd)
 	m_dwWndFocusTimeCounter = GetTickCount();
 }
 
-void WINAPI MouseCTL_UpdateStatus()
+DWORD m_LastGestureID = UNKNOWN_GETURE_ID;
+
+char *MouseCTL_GetStatusInfo()
 {
+	static char s_StatusInfo[0x100] = {0};
+	const char *pszInfo;
+	DWORD dw1;
+
+	if (g_szMouseGesture[0])
+	{
+
+		GESTURE_CMD_INFO *pGesture;
+
+		pGesture = MouseCTL_Gesture_GeCmdInfo(m_LastGestureID);
+		if (pGesture == NULL)
+			pszInfo = szUnknowtGesture;
+		else
+			pszInfo = pGesture->szCmdInfo;
+
+		dw1 = strlen(g_szMouseGesture);
+		while(dw1 > 0 && g_szMouseGesture[dw1-1] == ',') 
+			dw1--;
+		if (dw1 > 0)
+			g_szMouseGesture[dw1] = 0;
+
+		wsprintf(s_StatusInfo, "%s  (%s)", g_szMouseGesture, pszInfo);
+
+		if (dw1 > 0)
+			g_szMouseGesture[dw1] = ',';
+	}else
+		s_StatusInfo[0] = 0;
+
+	return s_StatusInfo;
+}
+
+void WINAPI MouseCTL_UpdateStatus(DWORD nID)
+{
+	m_LastGestureID = nID;
+
 	if (g_pView && g_pView->parent)
 		g_pView->parent->UpdateStatus();
 
@@ -431,20 +546,10 @@ void MouseCTL_Init(HWND hWnd)
 	m_gesture.m_szDirctionNow = g_szMouseGesture;
 	m_gesture.m_dwDirction_BufLen = sizeof(g_szMouseGesture)/sizeof(TCHAR);
 	m_gesture.fnUpdateMessage = MouseCTL_UpdateStatus;
-	m_gesture.Attach(hWnd, 20);
-
-	m_gesture.AddGesture(MG_BR_U, "rU");
-	m_gesture.AddGesture(MG_BR_D, "rD");
-	m_gesture.AddGesture(MG_BR_L, "rL");
-	m_gesture.AddGesture(MG_BR_R, "rR");
-	m_gesture.AddGesture(MG_BR_U_D, "rUD");
-	m_gesture.AddGesture(MG_BR_D_U, "rDU");
-	m_gesture.AddGesture(MG_BR_R_L, "rRL");
-	m_gesture.AddGesture(MG_BR_L_R, "rLR");
-	m_gesture.AddGesture(MG_BR_U_D_U, "rUDU");
-	m_gesture.AddGesture(MG_BR_R_L_R, "rRLR");
-	m_gesture.AddGesture(MG_BR_LDRDL, "rLDRDL");//S型
-
+	m_gesture.Attach(hWnd, 20);//設定手勢的靈敏度，值愈大的話，愈不靈敏，方向的改變要大一點，但是滑鼠的動作就要變大
+	
+	MouseCTL_MouseAction_Setup_Cmd(MouseActionArray_Default);
+	MouseCTL_Gesture_Setup_Cmd(GestureArray_Default);
 }
 
 BOOL MouseCTL_IsCursorInSelect()
@@ -544,6 +649,9 @@ void MouseCTL_Reset()
 /*
 為什麼不用key_map->FindKey(cKey_In, 0);
 因為在使用VK_NEXT時，找到的轉換表是錯的，還要再填Flag的值才行
+
+Extend key 有PageDown PageUp Home End Up Down Left Right Insert Delete 還有右邊的Ctrl鍵
+此時的Extend Key的virtual-key 會跟現行的按鍵會有重覆，所以一偵測到Extend Key就virtual-key就是不一樣
 */
 BOOL MouseCTL_SendInput(char cKey_In, BOOL bExtendKey, BOOL bControlKey)
 {
@@ -551,36 +659,180 @@ BOOL MouseCTL_SendInput(char cKey_In, BOOL bExtendKey, BOOL bControlKey)
 	char buf[20];
 	int nBNow;
 	CString StrUnCtl;
-	int nScan;
+	const char *KeyTable;
+	CTelnetConn* telnet;
 
 	xRet = FALSE;
-	buf[0] = 0;
-	nBNow = 0;
 
-	if (bControlKey == FALSE && bExtendKey == TRUE)
+	telnet = NULL;
+
+	if (g_pView)
+		telnet = g_pView->telnet;
+
+	if (telnet == NULL)
+		goto __Exit;
+
+	if (bExtendKey)
 	{
-		nScan = MapVirtualKey (cKey_In, 0);
-		keybd_event(cKey_In, nScan, KEYEVENTF_EXTENDEDKEY, 0 );
-		keybd_event(cKey_In, nScan, KEYEVENTF_EXTENDEDKEY|KEYEVENTF_KEYUP, 0);
-	}
-	else
+		KeyTable = telnet->key_map->FindKey(cKey_In, bExtendKey?0xFFFFFFFF:0);
+		if (KeyTable == NULL)
+			goto __Exit;
+		StrUnCtl = KeyTable;
+	}else
 	{
+		buf[0] = 0;
+		nBNow = 0;
+		
 		if (bControlKey)
 			buf[nBNow++] = '^';
 
 		buf[nBNow++] = cKey_In;
 		buf[nBNow++] = 0;
 
-		if (bControlKey)
-			StrUnCtl = UnescapeControlChars(buf);
+ 		if (bControlKey)
+ 			StrUnCtl = UnescapeControlChars(buf);
 		else
 			StrUnCtl = buf;
-
-		if (g_pView && g_pView->telnet)
-			g_pView->telnet->SendString(StrUnCtl);
 	}
 
+	telnet->SendString(StrUnCtl);
+
 	xRet = TRUE;
+
+__Exit:
+	return xRet;
+}
+
+/************************************************************************
+EXTEND_KEY中的字串為關鍵字，所以寫字串需要加上" "  如"HOME"
+若是想用"號的話  就用 \"
+若是在兩個"號中的字串，不是我們的關鍵字，則這個區塊跳過不看
+若是只發現一個"號，則這個字元就當做是輸入錯誤而跳過，位移一個字元，看下一個字開始讀
+************************************************************************/
+const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_In, BOOL *bExtendKey, BOOL *bControlKey)
+{
+	const char *szKeyString;
+	const char *pszNext, *pszBlockEnd, *pBuf1;
+	char szStringBlock[0x100];
+	int i;
+
+	*cKey_In = 0;
+	*bExtendKey = FALSE;
+	*bControlKey = FALSE;
+
+	szKeyString = szKeyString_In;
+
+	if (szKeyString == NULL || szKeyString[0] == 0)
+		return NULL;
+
+	//當有失敗發生時，就往下一個字串移動
+	pszNext = szKeyString + 1;
+
+	if (szKeyString[0] == '\"')
+	{
+		szKeyString++;
+
+		//尋找相鄰的'\"'  但是 ""\\\""要忽略
+		pszBlockEnd = (char*)szKeyString;	
+		i = 0;
+		while (pszBlockEnd[0] && pszBlockEnd[0] != '\"') 
+		{
+			//若是""\\\""要忽略
+			if (pszBlockEnd[0] == '\\' && pszBlockEnd[1] == '\"')
+				pszBlockEnd ++;
+
+			szStringBlock[i] = pszBlockEnd[0];
+			i++;
+			pszBlockEnd++;
+		}
+		szStringBlock[i] = 0;
+
+		//鄰近沒有'\"'的話，那這次的輸入不算，當成這個'\"'是不小心輸入錯誤，下個字串+1 在重新來比對
+		if (pszBlockEnd[0] == 0)
+			goto __Exit;
+
+		pszBlockEnd ++;//最後一個字元為'\"'
+		pszNext = pszBlockEnd;
+
+		//判斷是否為ExtendKey
+		for (i=0; i<sizeof(Extend_Key)/sizeof(Extend_Key[0]); i++)
+		{
+			pBuf1 = Extend_Key[i].szName;
+			if (stricmp(szStringBlock, pBuf1) == 0)
+			{
+				*cKey_In = Extend_Key[i].VirKey;
+				*bExtendKey = TRUE;
+				break;
+			}
+		}
+		
+		if (*cKey_In)
+			goto __Exit;
+		
+		
+		//判斷是否為Enter
+		if (stricmp(szStringBlock, KEYSTR_ENTER) == 0)
+		{
+			*cKey_In = VK_RETURN;
+		}
+
+		//若沒有符合的命令，但是卻有  ""來包字串，所以這個字串跳過  不看，看下一個區塊
+		goto __Exit;		
+	}
+
+
+	//判斷是否為Ctrl複合鍵
+	if (szKeyString[0] == '^' && szKeyString[1] && isupper(szKeyString[1]))
+	{
+		*cKey_In = szKeyString[1];
+		*bControlKey = TRUE;
+		pszNext = szKeyString + 2;
+	}
+
+	if (*cKey_In)
+		goto __Exit;
+
+	//若是""\\\""要忽略
+	if (szKeyString[0] == '\\' && szKeyString[1] == '\"')
+	{
+		*cKey_In = szKeyString[1];
+		pszNext = szKeyString + 2;
+	}
+
+	if (*cKey_In)
+		goto __Exit;
+
+	*cKey_In = szKeyString[0];
+	pszNext = szKeyString + 1;
+
+__Exit:
+	return pszNext;
+}
+
+BOOL MouseCTL_RunCommand(const char *szCmdString, DWORD nCmdType)
+{
+	BOOL xRet;
+
+	xRet = FALSE;
+
+	if (nCmdType == CMD_TYPE_KEY_INPUT)
+	{
+		const char *pNexKey;
+		char cKey_In;
+		BOOL bExtendKey;
+		BOOL bControlKey;
+
+		pNexKey = szCmdString;
+		while (pNexKey && pNexKey[0])
+		{
+			pNexKey = MouseCTL_KeyStringToKeyInput(pNexKey, &cKey_In, &bExtendKey, &bControlKey);
+			if (cKey_In == 0)
+				continue;
+
+			MouseCTL_SendInput(cKey_In, bExtendKey, bControlKey);
+			xRet = TRUE;
+		}
+	}
 
 	return xRet;
 }
@@ -591,67 +843,155 @@ void MouseCTL_OnAction(DWORD dwActionID, DWORD dwActionID_Sub)
 
 	switch(dwActionID)
 	{
-	case MA_L_BT_CLICK:
-		MouseCTL_SendInput(VK_RETURN, TRUE, FALSE);
-		break;
 	case MA_R_BT_CLICK:
 		break;
+	case MA_L_BT_CLICK:
 	case MA_M_BT_CLICK:
-		MouseCTL_SendInput(VK_LEFT, TRUE, FALSE);
-		break;
 	case MA_WHELL_UP:
-		MouseCTL_SendInput(VK_UP, TRUE, FALSE);
-		break;
 	case MA_WHELL_DOWN:
-		MouseCTL_SendInput(VK_DOWN, TRUE, FALSE);
-		break;
 	case MA_R_BT_WHELL_UP:
-		MouseCTL_SendInput(VK_PRIOR, TRUE, FALSE);
-		break;
 	case MA_R_BT_WHELL_DOWN:
-		MouseCTL_SendInput(VK_NEXT, TRUE, FALSE);
-		break;
 	case MA_L_BT_WHELL_UP:
-		MouseCTL_SendInput('-', FALSE, FALSE);
-		break;
 	case MA_L_BT_WHELL_DOWN:
-		MouseCTL_SendInput('+', FALSE, FALSE);
+		{
+			MOUSE_ACTION_CMD_INFO *pMA;
+
+			pMA = MouseCTL_MouseAction_GeCmdInfo(dwActionID);
+			if (pMA == NULL)
+				break;
+			
+			MouseCTL_RunCommand(pMA->szCmd, pMA->nCmdType);
+		}
 		break;
 	case MA_MOUSE_GESTURE:
 		{
-			switch(dwActionID_Sub)
-			{
-			case MG_BR_U:
-				MouseCTL_SendInput(VK_HOME, TRUE, FALSE);
+			if (dwActionID_Sub == UNKNOWN_GETURE_ID)
 				break;
-			case MG_BR_D:
-				MouseCTL_SendInput(VK_END, TRUE, FALSE);
+
+			GESTURE_CMD_INFO *pGesture;
+
+			pGesture = MouseCTL_Gesture_GeCmdInfo(dwActionID_Sub);
+			if (pGesture == NULL)
 				break;
-			case MG_BR_R:
-				MouseCTL_SendInput(VK_RETURN, TRUE, FALSE);
-				break;
-			case MG_BR_L:
-				MouseCTL_SendInput(VK_LEFT, TRUE, FALSE);
-				break;
-			case MG_BR_L_R:
-			case MG_BR_R_L:
-				break;
-			case MG_BR_D_U:
-			case MG_BR_U_D:
-				break;
-			case MG_BR_U_D_U:
-				MouseCTL_SendInput('=', FALSE, FALSE);
-				break;
-			case MG_BR_R_L_R:
-				MouseCTL_SendInput('Q', FALSE, TRUE);
-				break;
-			case MG_BR_LDRDL:
-				MouseCTL_SendInput('S', FALSE, FALSE);
-				break;
-			case UNKNOWN_GETURE_ID:
-				break;
-			}
+			
+			MouseCTL_RunCommand(pGesture->szCmd, pGesture->nCmdType);
+					
 		}
 		break;
 	}
 }
+
+BOOL MouseCTL_Gesture_Setup_Cmd(GESTURE_CMD_INFO *pGestureArray)
+{
+	BOOL xRet;
+	int nID_Now;
+	GESTURE_CMD_INFO *pGesture;
+
+	xRet = FALSE;
+
+	m_gesture.RemoveGesture_All();
+	g_pGestureArray_Now = pGestureArray;
+
+	if (pGestureArray == NULL)
+		goto __Exit;
+
+	pGesture = &g_pGestureArray_Now[0];
+	nID_Now = GESTURE_FIRST_ID;
+	while (pGesture && pGesture->szGesture && pGesture->szCmd)
+	{
+		m_gesture.AddGesture(nID_Now, pGesture->szGesture);
+		nID_Now ++;
+		pGesture++;
+
+		xRet = TRUE;
+	}
+
+__Exit:
+	return xRet;
+}
+
+BOOL MouseCTL_Gesture_RemoveAll_Cmd()
+{
+	MouseCTL_Gesture_Setup_Cmd(NULL);
+	return TRUE;
+}
+
+GESTURE_CMD_INFO *MouseCTL_Gesture_GeCmdInfo(DWORD nID_In)
+{
+	GESTURE_CMD_INFO *pGesture;
+	int nID_Now;
+	BOOL bOK;
+
+	bOK = FALSE;
+	if (nID_In < GESTURE_FIRST_ID || g_pGestureArray_Now == NULL)
+		return NULL;
+
+	pGesture = &g_pGestureArray_Now[0];
+	nID_Now = GESTURE_FIRST_ID;
+	while (pGesture && pGesture->szGesture && pGesture->szCmd)
+	{
+		if (nID_In == nID_Now)
+		{
+			bOK = TRUE;
+			break;
+		}
+		pGesture++;
+		nID_Now ++;
+	}
+
+	if (bOK == FALSE)
+		return NULL;
+
+	return pGesture;
+}
+
+BOOL MouseCTL_MouseAction_Setup_Cmd(MOUSE_ACTION_CMD_INFO *pMA_Array)
+{
+	BOOL xRet;
+
+	xRet = FALSE;
+
+	g_pMouseActionArray_Now = pMA_Array;
+
+	if (pMA_Array == NULL)
+		goto __Exit;
+
+	xRet = TRUE;
+
+__Exit:
+	return xRet;
+}
+
+BOOL MouseCTL_MouseAction_RemoveAll_Cmd()
+{
+	MouseCTL_MouseAction_Setup_Cmd(NULL);
+	return TRUE;
+}
+
+MOUSE_ACTION_CMD_INFO *MouseCTL_MouseAction_GeCmdInfo(DWORD nMouseAction_In)
+{
+	MOUSE_ACTION_CMD_INFO *pMA;
+	BOOL bOK;
+
+	bOK = FALSE;
+
+	if (g_pMouseActionArray_Now == NULL)
+		return NULL;
+
+	pMA = &g_pMouseActionArray_Now[0];
+	while (pMA && pMA->nMouseAction && pMA->szCmd)
+	{
+		if (nMouseAction_In == pMA->nMouseAction)
+		{
+			bOK = TRUE;
+			break;
+		}
+		pMA++;
+	}
+
+	if (bOK == FALSE)
+		return NULL;
+
+	return pMA;
+}
+

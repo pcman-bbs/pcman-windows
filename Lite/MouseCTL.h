@@ -25,10 +25,33 @@ void MouseCTL_Reset();
 
 BOOL MouseCTL_IsCursorInSelect();
 
-BOOL MouseCTL_SendInput(char cKey_In, BOOL bExtendKey, BOOL bControlKey);
 void MouseCTL_OnAction(DWORD dwActionID, DWORD dwActionID_Sub);
-void WINAPI MouseCTL_UpdateStatus();
+void WINAPI MouseCTL_UpdateStatus(DWORD nID);
 HCURSOR MouseCTL_GetCurrentMouseCursor();
 
 extern CTermView *g_pView;
-extern char g_szMouseGesture[30];
+char *MouseCTL_GetStatusInfo();
+
+
+struct EXTEND_KEY
+{
+	char *szName;
+	char VirKey;
+};
+
+const EXTEND_KEY Extend_Key[] = 
+{
+	{"HOME", VK_HOME},
+	{"END", VK_END},
+	{"NEXT", VK_NEXT},//page down
+	{"PRIOR", VK_PRIOR},//page up
+	{"LEFT", VK_LEFT},
+	{"RIGHT", VK_RIGHT},
+	{"UP", VK_UP},
+	{"DOWN", VK_DOWN},
+	{"INSERT", VK_INSERT},
+	{"DELETE", VK_DELETE},
+};
+
+#define KEYSTR_ENTER "ENTER"
+

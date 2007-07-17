@@ -211,7 +211,7 @@ int CMouseGesture::AddGesture(UINT ID,
 int CMouseGesture::AddGesture(UINT ID,
                               const Gesture &rGesture)
 {
-    _ASSERT (ID > 0);
+    _ASSERT (ID > UNKNOWN_GETURE_ID);
     _ASSERT (rGesture.size() > 1);
 
     if (rGesture.size() < 2 || ID < 1)
@@ -310,7 +310,7 @@ int CMouseGesture::AddGesture(UINT ID,
     }
 
     // make sure the supplied gesture is unique
-    if (GetGestureIdFromMap(rGesture) != 0)
+    if (GetGestureIdFromMap(rGesture) != UNKNOWN_GETURE_ID)
     {
         _ASSERT(false);
         return -2;
@@ -419,6 +419,15 @@ bool CMouseGesture::RemoveGesture(UINT nID)
     }
 
     return ret;
+}
+
+int CMouseGesture::RemoveGesture_All()
+{
+	m_GestureMap.clear();
+	m_ButtonFlag = 0;
+	KillGesture();
+
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -535,7 +544,7 @@ UINT CMouseGesture::MouseMessage(WPARAM wp, LPARAM lp)
 	if (bClearMsgBuf)
 	{
 		m_szDirctionNow[0] = 0;
-		if (fnUpdateMessage) fnUpdateMessage();
+		if (fnUpdateMessage) fnUpdateMessage(UNKNOWN_GETURE_ID);
 	}
 
 	DBG_PRINT("MouseMessage(0X%04X) = %d, m_ButtonDown:%d\r\n", Message, ret, m_ButtonDown);
@@ -673,6 +682,10 @@ UINT CMouseGesture::OnMouseMove(MOUSEHOOKSTRUCT *pMHS)
         m_BoundingSquare.top = pMHS->pt.y - m_nDistance;
         m_BoundingSquare.bottom = pMHS->pt.y + m_nDistance;
 
+        // direction changed, save the new direction
+        m_CurrentGesture.push_back(Direction);
+        m_LastDirection = Direction;
+
 		if (m_szDirctionNow)
 		{
 			char buf[4];
@@ -701,12 +714,14 @@ UINT CMouseGesture::OnMouseMove(MOUSEHOOKSTRUCT *pMHS)
 			if (dw1 < m_dwDirction_BufLen)
 			{
 				strcat(m_szDirctionNow, buf);
-				if (fnUpdateMessage) fnUpdateMessage();
+
+				UINT GestureID = GetGestureIdFromMap(m_CurrentGesture);
+				
+				DBG_PRINT("Get GestureID:%d(Move)\r\n", GestureID);
+				
+				if (fnUpdateMessage) fnUpdateMessage(GestureID);
 			}
 		}
-        // direction changed, save the new direction
-        m_CurrentGesture.push_back(Direction);
-        m_LastDirection = Direction;
     }
 
     SHOW_BOUNDING_SQUARE (pMHS, m_BoundingSquare);
@@ -792,7 +807,7 @@ UINT CMouseGesture::OnButtonUp(MOUSEHOOKSTRUCT *pMHS)
 
 	DBG_PRINT("Get GestureID:%d\r\n", GestureID);
 
-	if (GestureID == 0 && bHaveMouseMove == FALSE)
+	if (GestureID == UNKNOWN_GETURE_ID && bHaveMouseMove == FALSE)
 		return INVALID_GETURE_ID;
 		
     return GestureID;
@@ -815,7 +830,7 @@ UINT CMouseGesture::OnButtonUp(MOUSEHOOKSTRUCT *pMHS)
 
 UINT CMouseGesture::GetGestureIdFromMap(const Gesture &gesture)
 {
-    UINT ret = 0;
+    UINT ret = UNKNOWN_GETURE_ID;
 
     for (GestureMap::const_iterator it = m_GestureMap.begin(); it != m_GestureMap.end(); ++it)
     {
@@ -848,6 +863,13 @@ void CMouseGesture::KillGesture()
     {
 //        ReleaseCapture();
     }
+
+	if (m_szDirctionNow[0])
+	{
+		m_szDirctionNow[0] = 0;
+		if (fnUpdateMessage) fnUpdateMessage(UNKNOWN_GETURE_ID);
+	}
+
 
     m_ButtonDown = None;
     m_bShift = false;
