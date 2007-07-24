@@ -112,6 +112,7 @@ BEGIN
             MENUITEM "Traditional Chinese (Big5)",  ID_SET_CHARSET_CP950
             MENUITEM "Simplified Chinese (GB2312)", ID_SET_CHARSET_CP936
             MENUITEM "Japanese (Shift_JIS)",        ID_SET_CHARSET_CP932
+            MENUITEM "Unicode (UTF-8)",             ID_SET_CHARSET_UTF8
         END
         MENUITEM SEPARATOR
         MENUITEM "½Æ»s¨Ã¶K¤W (&S)",             ID_COPYPASTE

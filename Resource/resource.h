@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Common.rc
+// Used by Combo.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -601,16 +601,17 @@
 #define ID_SET_CHARSET_CP950            33026
 #define ID_SET_CHARSET_CP936            33027
 #define ID_SET_CHARSET_CP932            33028
-#define ID_WEB_SEARCH                   33029
-#define IDS_PROMPT_IMPORT               33030
-#define ID_MOUSE_CTL                    33031
+#define ID_SET_CHARSET_UTF8             33029
+#define ID_WEB_SEARCH                   33030
+#define IDS_PROMPT_IMPORT               33031
+#define ID_MOUSE_CTL                    33032
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        185
-#define _APS_NEXT_COMMAND_VALUE         32935
+#define _APS_NEXT_COMMAND_VALUE         33033
 #define _APS_NEXT_CONTROL_VALUE         1139
 #define _APS_NEXT_SYMED_VALUE           154
 #endif
