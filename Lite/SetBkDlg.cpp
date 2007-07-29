@@ -17,11 +17,11 @@ static char THIS_FILE[] = __FILE__;
 
 
 CSetBkDlg::CSetBkDlg(CTermView* pParent /*=NULL*/)
-	: CDialog(CSetBkDlg::IDD, pParent)
+		: CDialog(CSetBkDlg::IDD, pParent)
 {
-	view=pParent;
+	view = pParent;
 	//{{AFX_DATA_INIT(CSetBkDlg)
-		// NOTE: the ClassWizard will add member initialization here
+	// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -35,40 +35,40 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSetBkDlg message handlers
 
-void CSetBkDlg::OnOK() 
+void CSetBkDlg::OnOK()
 {
-	CSliderCtrl* slider=(CSliderCtrl*)GetDlgItem(IDC_RATIO);
-	AppConfig.bkratio=slider->GetPos();
+	CSliderCtrl* slider = (CSliderCtrl*)GetDlgItem(IDC_RATIO);
+	AppConfig.bkratio = slider->GetPos();
 	int i;
-	for( i=0;i<5; ++i )
+	for (i = 0;i < 5; ++i)
 	{
-		if(((CButton*)GetDlgItem(100+i))->GetCheck())	
+		if (((CButton*)GetDlgItem(100 + i))->GetCheck())
 		{
-			AppConfig.bktype=i;
+			AppConfig.bktype = i;
 			break;
 		}
 	}
 	GetDlgItem(IDC_PATH)->GetWindowText(AppConfig.bkpath);
-	if(AppConfig.bkpath.IsEmpty() && i>1)
-		MessageBox( LoadString( IDS_CHOOSE_BACKGROUND ));
+	if (AppConfig.bkpath.IsEmpty() && i > 1)
+		MessageBox(LoadString(IDS_CHOOSE_BACKGROUND));
 	else
 		CDialog::OnOK();
 }
 
-void CSetBkDlg::OnBrowse() 
+void CSetBkDlg::OnBrowse()
 {
-	CFileDialog dlg( TRUE, "bmp", NULL, OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
-		             LoadString(IDS_BMP_FILTEER), this );
-	if(dlg.DoModal()==IDOK)
+	CFileDialog dlg(TRUE, "bmp", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+					LoadString(IDS_BMP_FILTEER), this);
+	if (dlg.DoModal() == IDOK)
 		GetDlgItem(IDC_PATH)->SetWindowText(dlg.GetPathName());
 }
 
-BOOL CSetBkDlg::OnInitDialog() 
+BOOL CSetBkDlg::OnInitDialog()
 {
-	CSliderCtrl* slider=(CSliderCtrl*)GetDlgItem(IDC_RATIO);
-	slider->SetRange(0,10);
+	CSliderCtrl* slider = (CSliderCtrl*)GetDlgItem(IDC_RATIO);
+	slider->SetRange(0, 10);
 	slider->SetPos(AppConfig.bkratio);
-	((CButton*)GetDlgItem(AppConfig.bktype+100))->SetCheck(TRUE);	//Radio ªºID=100~104
+	((CButton*)GetDlgItem(AppConfig.bktype + 100))->SetCheck(TRUE);	//Radio ªºID=100~104
 	GetDlgItem(IDC_PATH)->SetWindowText(AppConfig.bkpath);
 	return TRUE;
 }

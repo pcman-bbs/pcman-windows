@@ -30,9 +30,9 @@ public:
 // Implementation
 public:
 	void SetEditFocus();
-	bool GetSearchTerm( CString& term ); // return true if term is encoded in UTF-8.
+	bool GetSearchTerm(CString& term);   // return true if term is encoded in UTF-8.
 	void UpdateBtn();
-	void SetFont( CFont* font );
+	void SetFont(CFont* font);
 	CComboBox search_bar;
 	BOOL Create(CWnd* pParent);
 	virtual ~CSearchBar();
@@ -42,7 +42,7 @@ protected:
 	void OnMenuDropDown(NMHDR *pNMHDR, LRESULT *pResult);
 	HWND hedit;
 	HIMAGELIST img_list;
-	static LRESULT CALLBACK EditProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
+	static LRESULT CALLBACK EditProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	//{{AFX_MSG(CSearchBar)
 	afx_msg void OnSize(UINT nType, int cx, int cy);

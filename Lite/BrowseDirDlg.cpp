@@ -5,9 +5,9 @@
 int CBrowseDirDlg::DoModal()
 {
 	LPITEMIDLIST pidl = ::SHBrowseForFolder(&bi);
-	if( pidl )
+	if (pidl)
 	{
-		::SHGetPathFromIDList(pidl,bi.pszDisplayName);
+		::SHGetPathFromIDList(pidl, bi.pszDisplayName);
 		IMalloc* pmlc;
 		SHGetMalloc(&pmlc);
 		pmlc->Free(pidl);
@@ -17,7 +17,7 @@ int CBrowseDirDlg::DoModal()
 	return IDCANCEL;
 }
 
-CBrowseDirDlg::CBrowseDirDlg( CWnd* pParent , LPCTSTR lpstrTitle = NULL )
+CBrowseDirDlg::CBrowseDirDlg(CWnd* pParent , LPCTSTR lpstrTitle = NULL)
 {
 	bi.hwndOwner = pParent->GetSafeHwnd();
 	bi.pidlRoot = NULL;
@@ -31,6 +31,6 @@ CBrowseDirDlg::CBrowseDirDlg( CWnd* pParent , LPCTSTR lpstrTitle = NULL )
 
 CBrowseDirDlg::~CBrowseDirDlg()
 {
-	if(bi.pszDisplayName)
+	if (bi.pszDisplayName)
 		delete []bi.pszDisplayName;
 }

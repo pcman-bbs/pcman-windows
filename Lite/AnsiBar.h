@@ -16,7 +16,8 @@ class CAnsiBar : public CDialogBar
 {
 // Construction
 public:
-	enum {
+	enum
+	{
 		UC_ALL = 0,
 		UC_FG = 1,
 		UC_BK = 2,
@@ -26,7 +27,7 @@ public:
 	void Send(DWORD type);
 	BOOL bchild;
 	int width;
-	void AddAttr(BYTE& atb,UINT type);
+	void AddAttr(BYTE& atb, UINT type);
 
 	void UpdateColor(UINT type);
 
@@ -40,14 +41,14 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CAnsiBar)
 	enum { IDD = IDD_FORMAT };
-		// NOTE: the ClassWizard will add data members here
+	// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAnsiBar)
-	public:
+public:
 	//}}AFX_VIRTUAL
 
 // Implementation

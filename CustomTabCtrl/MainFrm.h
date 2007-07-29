@@ -13,10 +13,10 @@
 
 class CMainFrame : public CFrameWnd
 {
-	
+
 public:
 	CMainFrame();
-protected: 
+protected:
 	DECLARE_DYNAMIC(CMainFrame)
 
 // Attributes
@@ -53,8 +53,8 @@ protected:
 	//{{AFX_MSG(CMainFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSetFocus(CWnd *pOldWnd);
-		// NOTE - the ClassWizard will add and remove member functions here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
+	// NOTE - the ClassWizard will add and remove member functions here.
+	//    DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

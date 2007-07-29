@@ -30,44 +30,44 @@
 #define WM_WBTITLECHANGE	(WM_APP+ 128)
 
 const char CONFIG_DIR[] = "Config\\";
-const char CONFIG_FILENAME[]="Config.ini";
-const char TOOLBAR_BMP_FILENAME[]="Toolbar.bmp";
-const char ICON_BMP_FILENAME[]="Icons.bmp";
-const char FUS_FILENAME[]="FUS";
-const char UI_FILENAME[]="UI";
+const char CONFIG_FILENAME[] = "Config.ini";
+const char TOOLBAR_BMP_FILENAME[] = "Toolbar.bmp";
+const char ICON_BMP_FILENAME[] = "Icons.bmp";
+const char FUS_FILENAME[] = "FUS";
+const char UI_FILENAME[] = "UI";
 
-const char BBS_LIST_FILENAME[]="BBSList";
-const char HOMEPAGE_FILENAME[]="Homepage";
+const char BBS_LIST_FILENAME[] = "BBSList";
+const char HOMEPAGE_FILENAME[] = "Homepage";
 //	const char SITE_SEPARATOR[]="      ";
 
-const char BBS_FAVORITE_FILENAME[]="BBSFavorites";
+const char BBS_FAVORITE_FILENAME[] = "BBSFavorites";
 
-const char SESSION_FILENAME[]="Session";
-const char HISTORY_FILENAME[]="History";
+const char SESSION_FILENAME[] = "Session";
+const char HISTORY_FILENAME[] = "History";
 
 #if defined(_COMBO_)
-	const char WEB_ICON_BMP_FILENAME[]="WebBar.bmp";
-	const char WWW_FAVORITE_FILENAME[]="WebFavorites";
-	const char WWW_ADFILTER_FILENAME[]="AdFilters";
+const char WEB_ICON_BMP_FILENAME[] = "WebBar.bmp";
+const char WWW_FAVORITE_FILENAME[] = "WebFavorites";
+const char WWW_ADFILTER_FILENAME[] = "AdFilters";
 #endif
 
 BOOL IsContainAnsiCode(LPCTSTR str);
 CString LoadString(CFile& file);
 CString LoadString(CMemIniFile& file);
-void SaveString(CFile& file,LPCTSTR str);
+void SaveString(CFile& file, LPCTSTR str);
 
 CString GetIEPath();
 
 class CAppConfig : public CConfigFile
 {
 public:
-	BOOL QueryPassword(BOOL confirm,LPCTSTR title=NULL);
-	void BackupConfig(CString dir1,CString dir2);
+	BOOL QueryPassword(BOOL confirm, LPCTSTR title = NULL);
+	void BackupConfig(CString dir1, CString dir2);
 
 #if defined	(_COMBO_)
-	enum{max_rebar_band_count=6};
+	enum{max_rebar_band_count = 6};
 #else
-	enum{max_rebar_band_count=4};
+	enum{max_rebar_band_count = 4};
 #endif
 
 	CAppConfig();
@@ -190,60 +190,60 @@ public:
 //	const static char* personal_files[];
 	bool lock_pcman;
 protected:
-	bool OnDataExchange( bool load );
+	bool OnDataExchange(bool load);
 };
 
 inline void CAppConfig::Default()
 {
-	multiple_instance=0;
-	scrolltab=0;
-	close_query=1;
-	dblclk_close=1;
-	tab_add_number=1;	
-	tab_button=1;
-	showtb=1;
-	showsb=1;
-	showtab=1;
-	showads=1;
-	showclose=1;
-	kktab=0;
-	is_full_scr=0;
-	use_ansi_bar=1;
+	multiple_instance = 0;
+	scrolltab = 0;
+	close_query = 1;
+	dblclk_close = 1;
+	tab_add_number = 1;
+	tab_button = 1;
+	showtb = 1;
+	showsb = 1;
+	showtab = 1;
+	showads = 1;
+	showclose = 1;
+	kktab = 0;
+	is_full_scr = 0;
+	use_ansi_bar = 1;
 	use_MouseCTL = 0;
 
-	fullscr_showtb=0;
-	fullscr_showsb=0;
-	fullscr_showtab=1;
-	fullscr_showads=1;
-	fullscr_showclose=1;
-	full_use_ansi_bar=0;
+	fullscr_showtb = 0;
+	fullscr_showsb = 0;
+	fullscr_showtab = 1;
+	fullscr_showads = 1;
+	fullscr_showclose = 1;
+	full_use_ansi_bar = 0;
 
-	minimize_to_tray=0;
-	pcman_hotkey=0xc0;	//'`'
-	pcman_hotkey_mod=MOD_ALT;
+	minimize_to_tray = 0;
+	pcman_hotkey = 0xc0;	//'`'
+	pcman_hotkey_mod = MOD_ALT;
 
 #ifdef _COMBO_
-	max_history=600;
+	max_history = 600;
 //	max_history_menu=20;
 #else
-	max_history=40;
+	max_history = 40;
 //	max_history_menu=10;
 #endif
 
 //	AnsiEditor Settings
-	ed_cols_per_page=80;
-	ed_lines_per_page=24;
+	ed_cols_per_page = 80;
+	ed_lines_per_page = 24;
 
 //Main window
-	mainwnd_state.showcmd=SW_SHOWMAXIMIZED;
-	SetRect(&mainwnd_state.rect,50,50,50+640,50+480);
+	mainwnd_state.showcmd = SW_SHOWMAXIMIZED;
+	SetRect(&mainwnd_state.rect, 50, 50, 50 + 640, 50 + 480);
 //Site List
-	sitelist_state.showcmd=SW_SHOW;
-	SetRect(&sitelist_state.rect,60,60,60+520,60+512);
+	sitelist_state.showcmd = SW_SHOW;
+	SetRect(&sitelist_state.rect, 60, 60, 60 + 520, 60 + 512);
 
 //FreqStr Dlg
-	freqstr_state.showcmd=SW_SHOW;
-	SetRect(&freqstr_state.rect,100,80,600,480);
+	freqstr_state.showcmd = SW_SHOW;
+	SetRect(&freqstr_state.rect, 100, 80, 600, 480);
 
 //ReBar position
 	//determined by it's constructor
@@ -254,38 +254,38 @@ inline void CAppConfig::Default()
 	use_riched20 = 1;
 
 //	HyperLink Settings
-	link_underline=1;
-	link_autoswitch=0;
+	link_underline = 1;
+	link_autoswitch = 0;
 
 //	BBS Setttings
-	auto_cancelsel=1;
-	auto_copy=0;
-	enter_reconnect=1;
-	nocon_enter_reconnect=1;
-	auto_close=0;
-	auto_font=1;
-	bbs_close_query=1;
-	auto_switch=0;
-	flash_window=1;
-	smooth_draw=0;
-	memcpy(colormap,default_colormap,sizeof(colormap));
-	memset(&font_info,0,sizeof(font_info));
-	font_info.lfHeight=-16;
-	font_info.lfWeight=FW_NORMAL;
-	font_info.lfCharSet=CHINESEBIG5_CHARSET;
-	font_info.lfOutPrecision=OUT_STROKE_PRECIS;
-	font_info.lfClipPrecision=CLIP_STROKE_PRECIS;
-	font_info.lfQuality=DRAFT_QUALITY;
-	font_info.lfPitchAndFamily=49;
+	auto_cancelsel = 1;
+	auto_copy = 0;
+	enter_reconnect = 1;
+	nocon_enter_reconnect = 1;
+	auto_close = 0;
+	auto_font = 1;
+	bbs_close_query = 1;
+	auto_switch = 0;
+	flash_window = 1;
+	smooth_draw = 0;
+	memcpy(colormap, default_colormap, sizeof(colormap));
+	memset(&font_info, 0, sizeof(font_info));
+	font_info.lfHeight = -16;
+	font_info.lfWeight = FW_NORMAL;
+	font_info.lfCharSet = CHINESEBIG5_CHARSET;
+	font_info.lfOutPrecision = OUT_STROKE_PRECIS;
+	font_info.lfClipPrecision = CLIP_STROKE_PRECIS;
+	font_info.lfQuality = DRAFT_QUALITY;
+	font_info.lfPitchAndFamily = 49;
 //	font_info.lfPitchAndFamily=FIXED_PITCH|FF_DONTCARE;
 	strcpy(font_info.lfFaceName, LoadString(IDS_DEFAULT_FONT_FACE));
-	dblclk_select=1;
+	dblclk_select = 1;
 
-	bktype=0;
-	bkratio=4;		//	ratio/10*100%
-	sound=1;
-	old_textout=0;
-	active_tab_textcolor=0xa00000;
+	bktype = 0;
+	bkratio = 4;		//	ratio/10*100%
+	sound = 1;
+	old_textout = 0;
+	active_tab_textcolor = 0xa00000;
 
 	switch_back_on_close = 0;
 
@@ -293,19 +293,19 @@ inline void CAppConfig::Default()
 //	Site Settings
 
 //	object section
-	last_bbslist_item = LoadString( IDS_BBS_FAVORITE_NAME );
+	last_bbslist_item = LoadString(IDS_BBS_FAVORITE_NAME);
 
 	hyper_links.Default();
 //	WWW Settings
 #if defined (_COMBO_)
 	showwb = 1;
-	showsearchbar=1;
+	showsearchbar = 1;
 	fullscr_showwb = 1;
-	fullscr_showsearchbar=1;
+	fullscr_showsearchbar = 1;
 	webbar_inf.LoadDefault();
-	ads_open_new=0;
-	disable_popup=1;
-	autosort_favorite=1;
+	ads_open_new = 0;
+	disable_popup = 1;
+	autosort_favorite = 1;
 	disable_script_error = 1;
 	use_ie_fav = 1;
 	autowrap_favorite = 1;
@@ -317,9 +317,9 @@ inline void CAppConfig::Default()
 inline CString LoadString(CFile& file)
 {
 	CString str;
-	DWORD len=0;
-	file.Read(&len,sizeof(DWORD));
-	file.Read(str.GetBuffer(len),len);
+	DWORD len = 0;
+	file.Read(&len, sizeof(DWORD));
+	file.Read(str.GetBuffer(len), len);
 	str.ReleaseBuffer();
 	return str;
 }
@@ -327,36 +327,36 @@ inline CString LoadString(CFile& file)
 class CHistoryLoader : public CConfigFile
 {
 public:
-	class CTypedHistoryHandler : public CConfigFile::ConfigHandler
+class CTypedHistoryHandler : public CConfigFile::ConfigHandler
 	{
 	public:
 		void Load(char* section);
 		void Save(CString &section);
 	};
 
-	class CMenuHistoryHandler : public CConfigFile::ConfigHandler
+class CMenuHistoryHandler : public CConfigFile::ConfigHandler
 	{
 	public:
 		void Load(char* section);
 		void Save(CString &section);
 	};
 
-	class CDropDownHistoryHandler : public CConfigFile::ConfigHandler
+class CDropDownHistoryHandler : public CConfigFile::ConfigHandler
 	{
 	public:
 		void Load(char* section);
 		void Save(CString &section);
-		CDropDownHistoryHandler( CMainFrame* frm ) : mainfrm(frm){}
+		CDropDownHistoryHandler(CMainFrame* frm) : mainfrm(frm){}
 		CMainFrame* mainfrm;
 	};
 
-	CHistoryLoader( CMainFrame* frm ) : drop(frm)
+	CHistoryLoader(CMainFrame* frm) : drop(frm)
 	{
-		SetFilePath( ConfigPath + HISTORY_FILENAME );
+		SetFilePath(ConfigPath + HISTORY_FILENAME);
 	}
 
 protected:
-	bool OnDataExchange( bool load );
+	bool OnDataExchange(bool load);
 
 	CTypedHistoryHandler typed;
 	CMenuHistoryHandler menu;

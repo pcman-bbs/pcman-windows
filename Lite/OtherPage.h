@@ -27,7 +27,7 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(COtherPage)
-	public:
+public:
 	virtual void OnOK();
 	//}}AFX_VIRTUAL
 

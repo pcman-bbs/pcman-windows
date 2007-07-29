@@ -28,7 +28,7 @@ public:
 	int time;
 };
 
-class CTriggerList  
+class CTriggerList
 {
 public:
 	void SaveToFile(CFile& file);

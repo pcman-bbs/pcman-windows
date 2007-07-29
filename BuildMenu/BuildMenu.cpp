@@ -55,48 +55,48 @@ struct CMDITEM
 
 */
 
-//		用來產生UI檔的程式碼	
-void UIWriteMenu( CFile& ui,HMENU hmenu, char* text, WORD state )
+//		用來產生UI檔的程式碼
+void UIWriteMenu(CFile& ui, HMENU hmenu, char* text, WORD state)
 {
 	CMenu menu;		menu.Attach(hmenu);
-	SHORT c=menu.GetMenuItemCount();
-	WORD l=strlen(text)+1;
-	BYTE type=(state&(MF_DISABLED|MF_CHECKED|MF_MENUBARBREAK)?CT_CMD:CT_MENU)|CT_HAS_SUB;
-	ui.Write(&type,1);
-	ui.Write(&c,2);
-	if(!(type & CT_MENU))
-		state=0;
-	ui.Write(&state,sizeof(WORD));
-	ui.Write(&l,2);
-	ui.Write(text,l);
+	SHORT c = menu.GetMenuItemCount();
+	WORD l = strlen(text) + 1;
+	BYTE type = (state & (MF_DISABLED | MF_CHECKED | MF_MENUBARBREAK) ? CT_CMD : CT_MENU) | CT_HAS_SUB;
+	ui.Write(&type, 1);
+	ui.Write(&c, 2);
+	if (!(type & CT_MENU))
+		state = 0;
+	ui.Write(&state, sizeof(WORD));
+	ui.Write(&l, 2);
+	ui.Write(text, l);
 
 	CString str;
 	c--;
-	for(int i=0;i<=c;i++)
+	for (int i = 0;i <= c;i++)
 	{
-		menu.GetMenuString(i,str,MF_BYPOSITION);
-		HMENU sub=GetSubMenu(hmenu,i);
-		state=LOWORD(menu.GetMenuState(i,MF_BYPOSITION));
-		if( sub )
-			UIWriteMenu(ui,sub,LPSTR(LPCTSTR(str)),state);
+		menu.GetMenuString(i, str, MF_BYPOSITION);
+		HMENU sub = GetSubMenu(hmenu, i);
+		state = LOWORD(menu.GetMenuState(i, MF_BYPOSITION));
+		if (sub)
+			UIWriteMenu(ui, sub, LPSTR(LPCTSTR(str)), state);
 		else
 		{
-			if(state & MF_SEPARATOR)
+			if (state & MF_SEPARATOR)
 			{
-				BYTE type=0;
-				ui.Write(&type,1);
+				BYTE type = 0;
+				ui.Write(&type, 1);
 				continue;
 			}
-			SHORT id=menu.GetMenuItemID(i);
-			BYTE type=(state&(MF_DISABLED|MF_CHECKED|MF_MENUBARBREAK)?CT_CMD:CT_MENU);
-			ui.Write(&type,1);
-			ui.Write(&id,sizeof(WORD));
-			if( !(type&CT_MENU) )
-				state=0;
-			ui.Write(&state,sizeof(WORD));
-			l=str.GetLength()+1;
-			ui.Write(&l,2);
-			ui.Write(LPCTSTR(str),l);
+			SHORT id = menu.GetMenuItemID(i);
+			BYTE type = (state & (MF_DISABLED | MF_CHECKED | MF_MENUBARBREAK) ? CT_CMD : CT_MENU);
+			ui.Write(&type, 1);
+			ui.Write(&id, sizeof(WORD));
+			if (!(type&CT_MENU))
+				state = 0;
+			ui.Write(&state, sizeof(WORD));
+			l = str.GetLength() + 1;
+			ui.Write(&l, 2);
+			ui.Write(LPCTSTR(str), l);
 		}
 	}
 	menu.Detach();
@@ -104,26 +104,26 @@ void UIWriteMenu( CFile& ui,HMENU hmenu, char* text, WORD state )
 
 BOOL CBuildMenuApp::InitInstance()
 {
-//		用來產生UI檔的程式碼	
+//		用來產生UI檔的程式碼
 	CFile ui;
 	CString OutPath(m_lpCmdLine);
 	OutPath += '\\';
 	OutPath += UI_FILENAME;
 
 //	MessageBox( NULL, OutPath, NULL, MB_OK );
-	ui.Open( OutPath, CFile::modeWrite|CFile::modeCreate );
+	ui.Open(OutPath, CFile::modeWrite | CFile::modeCreate);
 
-	HACCEL hacc=LoadAccelerators(AfxGetInstanceHandle(),LPSTR(IDR_BUILD_UI));
-	WORD c=CopyAcceleratorTable(hacc,NULL,0);
-	ui.Write(&c,2);
-	ACCEL *accels=new ACCEL[c];
-	CopyAcceleratorTable(hacc,accels,c);
-	ui.Write(accels,sizeof(ACCEL)*c);
+	HACCEL hacc = LoadAccelerators(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
+	WORD c = CopyAcceleratorTable(hacc, NULL, 0);
+	ui.Write(&c, 2);
+	ACCEL *accels = new ACCEL[c];
+	CopyAcceleratorTable(hacc, accels, c);
+	ui.Write(accels, sizeof(ACCEL)*c);
 	delete []accels;
 	DestroyAcceleratorTable(hacc);
 
-	HMENU tmp=LoadMenu(AfxGetInstanceHandle(),LPSTR(IDR_BUILD_UI));
-	UIWriteMenu(ui,tmp,"",0);
+	HMENU tmp = LoadMenu(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
+	UIWriteMenu(ui, tmp, "", 0);
 	DestroyMenu(tmp);
 	ui.Close();
 

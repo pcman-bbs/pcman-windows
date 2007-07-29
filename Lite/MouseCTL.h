@@ -39,7 +39,7 @@ struct EXTEND_KEY
 	char VirKey;
 };
 
-const EXTEND_KEY Extend_Key[] = 
+const EXTEND_KEY Extend_Key[] =
 {
 	{"HOME", VK_HOME},
 	{"END", VK_END},

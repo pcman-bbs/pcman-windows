@@ -24,31 +24,31 @@ CSimpXmlParser::~CSimpXmlParser()
 bool CSimpXmlParser::ParseXml(char *buf)
 {
 	// Check BOM
-	if( strnicmp( buf, "\xEF\xBB\xBF", 3 ) == 0)
+	if (strnicmp(buf, "\xEF\xBB\xBF", 3) == 0)
 	{
 		is_utf8 = true;
 		buf += 3;
 	}
 	SKIP_SPACES_AND_CRLF(buf);
-	if( 0 == strncmp( buf, "<?xml", 5 ) )	// has standard declaration
+	if (0 == strncmp(buf, "<?xml", 5))	// has standard declaration
 	{
 		char* tmp = buf + 5;
-		char* end = strstr( tmp,"?>" );
-		if( !end )	// incorrect xml
+		char* end = strstr(tmp, "?>");
+		if (!end)	// incorrect xml
 			return false;
 		// skip declaration
 		buf = end + 2;
-		*( end + 1 ) = '\0';
+		*(end + 1) = '\0';
 
 		// encoding detection
-		if( tmp = strstr( tmp, "encoding" ) )	// encoding
+		if (tmp = strstr(tmp, "encoding"))	// encoding
 		{
 			tmp += 8;
-			while( *tmp && *tmp != '\"' )
+			while (*tmp && *tmp != '\"')
 				++tmp;
-			if( *tmp != '\"' )	// value without ""
+			if (*tmp != '\"')	// value without ""
 				return false;
-			is_utf8 = ( 0 == strnicmp( tmp, "utf-8", 5 ) );
+			is_utf8 = (0 == strnicmp(tmp, "utf-8", 5));
 		}
 	}
 
@@ -56,57 +56,57 @@ bool CSimpXmlParser::ParseXml(char *buf)
 	XmlParsingState state = XmlParseData;
 	const char* current = NULL;
 	CSimpXmlParserStack stack;
-	stack.SetSize( 10 );
+	stack.SetSize(10);
 
-	while( *buf )
+	while (*buf)
 	{
-		switch( state )
+		switch (state)
 		{
 		case XmlParseTagName:
 			{
 				bool end_tag = false;
-				SKIP_SPACES_AND_CRLF( buf );
-                if( 0 == strncmp( buf, "!--", 3) )  // comment
-                {
-                    char* eoc = strstr( buf, "-->" );
-                    if( !eoc )  // error: <!-- without -->
-                        return false;
-                    buf = eoc + 1;
-                    state = XmlParseData;
-                    continue;
-                }
+				SKIP_SPACES_AND_CRLF(buf);
+				if (0 == strncmp(buf, "!--", 3))    // comment
+				{
+					char* eoc = strstr(buf, "-->");
+					if (!eoc)   // error: <!-- without -->
+						return false;
+					buf = eoc + 1;
+					state = XmlParseData;
+					continue;
+				}
 
-				if( *buf == '/' )	// </XXXX> end tag
+				if (*buf == '/')	// </XXXX> end tag
 				{
 					++buf;
 					end_tag = true;
 				}
 				current = buf;
-				for( ;*buf && *buf != '>'; ++buf )
+				for (;*buf && *buf != '>'; ++buf)
 				{
-					if( *buf == ' ' || *buf == '\t' || *buf == '/' )
+					if (*buf == ' ' || *buf == '\t' || *buf == '/')
 						break;
 				}
-				if( ! *buf )	// error: incomplete tag
+				if (! *buf)	// error: incomplete tag
 					return false;
 				char* eot = buf;
-				SKIP_SPACES_AND_CRLF( buf );
+				SKIP_SPACES_AND_CRLF(buf);
 				*eot = '\0';
-				if( ! end_tag )
-					stack.Push( current );
-				if( '\0' == *buf && !end_tag )
+				if (! end_tag)
+					stack.Push(current);
+				if ('\0' == *buf && !end_tag)
 				{
 					const char *attrib = NULL, *value = NULL;
-					BeginElement( current, &attrib, &value );
+					BeginElement(current, &attrib, &value);
 					state = XmlParseData;
 					++buf;
 				}
-				else if( *buf == '/' || end_tag )	// </XXX> or <XXX /> end of element
+				else if (*buf == '/' || end_tag)	// </XXX> or <XXX /> end of element
 				{
 					const char* tag = stack.Pop();
-					if( strcmp( tag, current ) )	// error: open/close tag mismatch
+					if (strcmp(tag, current))	// error: open/close tag mismatch
 						return false;
-					EndElement( current );
+					EndElement(current);
 					current = stack.Top();
 					state = XmlParseData;
 					++buf;
@@ -118,42 +118,43 @@ bool CSimpXmlParser::ParseXml(char *buf)
 		case XmlParseAttrList:
 			{
 				CPtrArray attribs, values;
-				for( ;*buf && *buf != '>'; ++buf )
+				for (;*buf && *buf != '>'; ++buf)
 				{
-					SKIP_SPACES_AND_CRLF( buf );
-					if( *buf == '/' ) // end of element
+					SKIP_SPACES_AND_CRLF(buf);
+					if (*buf == '/')  // end of element
 						break;
 
 					char* attrib = buf;
-					while( *buf && *buf != '=' )
+					while (*buf && *buf != '=')
 						++buf;
-					if( *buf != '=' )	// error: attribute without value
+					if (*buf != '=')	// error: attribute without value
 						return false;
 					*buf = '\0';
 					++buf;
-					SKIP_SPACES_AND_CRLF( buf );
-					if( *buf != '\"' )	// error: value without ""
+					SKIP_SPACES_AND_CRLF(buf);
+					if (*buf != '\"')	// error: value without ""
 						return false;
 					++buf;
 					const char* value = buf;
-					while( *buf && *buf != '\"' )
+					while (*buf && *buf != '\"')
 						++buf;
 
-					if( *buf != '\"' )	// error: incomplete value
+					if (*buf != '\"')	// error: incomplete value
 						return false;
 					*buf = '\0';
-					attribs.Add( (void*)attrib );
-					values.Add( (void*)value );
+					attribs.Add((void*)attrib);
+					values.Add((void*)value);
 				}
-				attribs.Add( NULL );
-				values.Add( NULL );
-				if( ! *buf )	// error: incomplete tag
+				attribs.Add(NULL);
+				values.Add(NULL);
+				if (! *buf)	// error: incomplete tag
 					return false;
-				BeginElement( current, 
-							  (const char**)attribs.GetData(), 
-							  (const char**)values.GetData() );
-				if( *buf == '/' ) {
-					EndElement( current );
+				BeginElement(current,
+							 (const char**)attribs.GetData(),
+							 (const char**)values.GetData());
+				if (*buf == '/')
+				{
+					EndElement(current);
 					stack.Pop();
 					current = stack.Top();
 				}
@@ -162,32 +163,32 @@ bool CSimpXmlParser::ParseXml(char *buf)
 			}
 			break;
 		case XmlParseData:
-			if( *buf == '<' )
+			if (*buf == '<')
 			{
 				current = NULL;
 				state = XmlParseTagName;
 				++buf;
 			}
-			else if( current )
+			else if (current)
 			{
 				CString data;
-				for( ; *buf != '<'; ++buf )
+				for (; *buf != '<'; ++buf)
 				{
-					if( '\0' == *buf ) // error: lack of end tag
+					if ('\0' == *buf)  // error: lack of end tag
 						return false;
-					if( *buf == '&' )	// encoded symbols
+					if (*buf == '&')	// encoded symbols
 					{
-						if( 0 == strncmp( buf, "amp;", 4 ) )
+						if (0 == strncmp(buf, "amp;", 4))
 						{
 							data += '&';
 							buf += 3;
 						}
-						else if( 0 == strncmp( buf, "lt;", 3 ) )
+						else if (0 == strncmp(buf, "lt;", 3))
 						{
 							data += '<';
 							buf += 2;
 						}
-						else if( 0 == strncmp( buf, "gt;", 3 ) )
+						else if (0 == strncmp(buf, "gt;", 3))
 						{
 							data += '>';
 							buf += 2;
@@ -198,7 +199,7 @@ bool CSimpXmlParser::ParseXml(char *buf)
 					else
 						data += *buf;
 				}
-				ElementData( current, LPCTSTR(data) );
+				ElementData(current, LPCTSTR(data));
 			}
 			else
 				++buf;
@@ -209,7 +210,7 @@ bool CSimpXmlParser::ParseXml(char *buf)
 }
 
 
-void CSimpXmlParser::BeginElement( const char* name, const char** attribs, const char **values )
+void CSimpXmlParser::BeginElement(const char* name, const char** attribs, const char **values)
 {
 
 }
@@ -226,14 +227,14 @@ void CSimpXmlParser::ElementData(const char *name, const char *data)
 
 const char* CSimpXmlParser::GetAttrText(const char *key, const char **attribs, const char **values)
 {
-	for( const char** attrib = attribs; *attrib; ++attrib )
-		if( 0 == strcmp( *attrib, key ) )
-			return values[ (attrib - attribs) ];
+	for (const char** attrib = attribs; *attrib; ++attrib)
+		if (0 == strcmp(*attrib, key))
+			return values[(attrib - attribs)];
 	return NULL;
 }
 
 int CSimpXmlParser::GetAttrInt(const char *key, const char **attribs, const char **values, int def)
 {
-	const char *val = GetAttrText( key, attribs, values );
+	const char *val = GetAttrText(key, attribs, values);
 	return val ? atoi(val) : def;
 }

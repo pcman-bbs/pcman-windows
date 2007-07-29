@@ -23,36 +23,36 @@ CCtrlEdit::~CCtrlEdit()
 {
 }
 
-LRESULT CCtrlEdit::OnPaste(WPARAM w,LPARAM l)
+LRESULT CCtrlEdit::OnPaste(WPARAM w, LPARAM l)
 {
-	if( (GetStyle() & ES_READONLY) || !OpenClipboard())
+	if ((GetStyle() & ES_READONLY) || !OpenClipboard())
 		return 0;
 
-	HANDLE hlocmem=GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE,sizeof(LCID));
-	if(hlocmem)
+	HANDLE hlocmem = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, sizeof(LCID));
+	if (hlocmem)
 	{
-		PLCID lcid=(PLCID)GlobalLock(hlocmem);
-		*lcid=MAKELCID(MAKELANGID(LANG_CHINESE,SUBLANG_CHINESE_TRADITIONAL),SORT_CHINESE_BIG5);
+		PLCID lcid = (PLCID)GlobalLock(hlocmem);
+		*lcid = MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_CHINESE_BIG5);
 		GlobalUnlock(hlocmem);
-		SetClipboardData(CF_LOCALE,hlocmem);
+		SetClipboardData(CF_LOCALE, hlocmem);
 	}
-	HANDLE hmem=GetClipboardData(CF_TEXT);
-	if(hmem!=NULL)
+	HANDLE hmem = GetClipboardData(CF_TEXT);
+	if (hmem != NULL)
 	{
-		LPSTR data=(LPSTR)GlobalLock(hmem);
-		if(strstr(data,"\x1b["))	//如果含有色彩控制碼
+		LPSTR data = (LPSTR)GlobalLock(hmem);
+		if (strstr(data, "\x1b["))	//如果含有色彩控制碼
 		{
-			CString tmp=data;
-			tmp.Replace("\x1b[","^[[");
-			ReplaceSel(tmp,FALSE);
-			CStringDlg* pdlg=(CStringDlg*)GetParent();
-			if(pdlg)
+			CString tmp = data;
+			tmp.Replace("\x1b[", "^[[");
+			ReplaceSel(tmp, FALSE);
+			CStringDlg* pdlg = (CStringDlg*)GetParent();
+			if (pdlg)
 			{
 				pdlg->ansi.SetCheck(1);	//勾選控制碼選項
 			}
 		}
 		else
-			ReplaceSel(data,TRUE);
+			ReplaceSel(data, TRUE);
 
 		GlobalUnlock(hmem);
 	}
@@ -71,12 +71,12 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CCtrlEdit message handlers
 
-void CCtrlEdit::OnCancelMode() 
+void CCtrlEdit::OnCancelMode()
 {
-	//CEdit::OnCancelMode();	
+	//CEdit::OnCancelMode();
 }
 
-//DEL LRESULT CCtrlEdit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+//DEL LRESULT CCtrlEdit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 //DEL {
 //DEL 	if(!enabled)
 //DEL 	{
@@ -98,10 +98,10 @@ void CCtrlEdit::OnCancelMode()
 //DEL 	return p;
 //DEL }
 
-HBRUSH CCtrlEdit::CtlColor(CDC* pDC, UINT nCtlColor) 
+HBRUSH CCtrlEdit::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	if( nCtlColor != CTLCOLOR_STATIC )
+	if (nCtlColor != CTLCOLOR_STATIC)
 		return NULL;
-	pDC->SetBkColor( GetSysColor( COLOR_WINDOW ) );
-	return GetSysColorBrush( COLOR_WINDOW );
+	pDC->SetBkColor(GetSysColor(COLOR_WINDOW));
+	return GetSysColorBrush(COLOR_WINDOW);
 }
