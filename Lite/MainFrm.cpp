@@ -727,12 +727,15 @@ void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 			view.doflash=0;
 		}
 #if !defined(_COMBO_)
-	}
 #else
-	::SetFocus(focus?focus:view.m_hWnd);
+		::SetFocus(focus ? focus : view.m_hWnd);
+#endif
 	}
-//	else if(::GetFocus())
-		focus=::GetFocus();
+
+#if !defined(_COMBO_)
+#else
+	//	else if(::GetFocus())
+	focus =::GetFocus();
 #endif
 }
 
