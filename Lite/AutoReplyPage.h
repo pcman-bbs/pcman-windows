@@ -44,10 +44,10 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CAutoReplyPage)
-public:
+	public:
 	virtual void OnOK();
 	virtual void OnCancel();
-protected:
+	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
 

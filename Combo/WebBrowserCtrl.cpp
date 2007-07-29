@@ -16,11 +16,11 @@
 
 void CWebBrowserCtrl::GoBack(int c)
 {
-	LPDISPATCH lpd = get_Application();
-	IWebBrowser2* pwb = NULL;
-	if (SUCCEEDED(lpd->QueryInterface(IID_IWebBrowser2, (void**)&pwb)))
+	LPDISPATCH lpd=get_Application();
+	IWebBrowser2* pwb=NULL;
+	if( SUCCEEDED(lpd->QueryInterface(IID_IWebBrowser2,(void**)&pwb)) )
 	{
-		for (; c > 0; c--)
+		for( ; c > 0; c-- )
 			pwb->GoBack();
 		pwb->Release();
 	}
@@ -29,11 +29,11 @@ void CWebBrowserCtrl::GoBack(int c)
 
 void CWebBrowserCtrl::GoForward(int c)
 {
-	LPDISPATCH lpd = get_Application();
-	IWebBrowser2* pwb = NULL;
-	if (SUCCEEDED(lpd->QueryInterface(IID_IWebBrowser2, (void**)&pwb)))
+	LPDISPATCH lpd=get_Application();
+	IWebBrowser2* pwb=NULL;
+	if( SUCCEEDED(lpd->QueryInterface(IID_IWebBrowser2,(void**)&pwb)) )
 	{
-		for (; c > 0; c--)
+		for( ; c > 0; c-- )
 			pwb->GoForward();
 		pwb->Release();
 	}

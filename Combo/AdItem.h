@@ -21,14 +21,14 @@ public:
 	CString title;
 	//{{AFX_DATA(CAdItem)
 	enum { IDD = IDD_ADITEM };
-	// NOTE: the ClassWizard will add data members here
+		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAdItem)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation

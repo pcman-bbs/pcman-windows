@@ -21,8 +21,8 @@ Defines for the fVirt field of the Accelerator table structure.
 #define FALT      0x10
 */
 
-const UINT WM_HOTKEYDONE = WM_APP + 'H';
-const BYTE FBACK = 1 << 7;
+const UINT WM_HOTKEYDONE =WM_APP+'H';
+const BYTE FBACK = 1<<7;
 
 class CHotkeyEdit : public CEdit
 {

@@ -9,15 +9,16 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-typedef  HRESULT(STDAPICALLTYPE *CreateStreamOnHGlobalFunc)(HGLOBAL, BOOL, LPSTREAM*);
+typedef  HRESULT (STDAPICALLTYPE *CreateStreamOnHGlobalFunc)( HGLOBAL, BOOL, LPSTREAM* );
 CreateStreamOnHGlobalFunc __CreateStreamOnHGlobal = NULL;
-typedef HRESULT(STDAPICALLTYPE *OleLoadPictureFunc)(IStream*, LONG , BOOL , REFIID, VOID**);
+typedef HRESULT (STDAPICALLTYPE *OleLoadPictureFunc)( IStream*, LONG , BOOL , REFIID, VOID** );
 OleLoadPictureFunc __OleLoadPicture = NULL;
 HINSTANCE ole32_dll = NULL;
 HINSTANCE olepro32_dll = NULL;
 
 COleImage::COleImage() : pic(NULL)
 {
+
 }
 
 COleImage::~COleImage()
@@ -28,16 +29,16 @@ COleImage::~COleImage()
 bool COleImage::LoadFromFile(LPCTSTR file_name)
 {
 	HANDLE file = CreateFile(file_name, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	if (INVALID_HANDLE_VALUE == file)
+	if( INVALID_HANDLE_VALUE == file )
 		return false;
-	DWORD size = GetFileSize(file, NULL);
-	if (0 == size)
+	DWORD size = GetFileSize( file, NULL );
+	if( 0 == size )
 		return false;
-	HGLOBAL global = GlobalAlloc(GMEM_MOVEABLE, size);
-	if (global)
+	HGLOBAL global = GlobalAlloc( GMEM_MOVEABLE, size);
+	if( global )
 	{
 		LPVOID data = GlobalLock(global);
-		if (data)
+		if( data )
 		{
 			DWORD dwBytesRead = 0;
 			// read file and store in global memory
@@ -47,7 +48,7 @@ bool COleImage::LoadFromFile(LPCTSTR file_name)
 		}
 	}
 	CloseHandle(file);
-	return LoadFromGlobalMem(global, size);
+	return LoadFromGlobalMem( global, size );
 }
 
 void COleImage::Initialize()
@@ -70,54 +71,54 @@ HBITMAP COleImage::CopyBitmap()
 {
 	OLE_HANDLE handle = NULL;
 	HANDLE result = NULL;
-	if ((handle = (OLE_HANDLE)GetHandle()))
+	if( (handle = (OLE_HANDLE)GetHandle()) )
 	{
 		SHORT type = 0;
 		UINT utype = IMAGE_BITMAP;
-		if (SUCCEEDED(pic->get_Type(&type)))
+		if( SUCCEEDED( pic->get_Type(&type) ) )
 		{
 			ICONINFO inf;
-			if (type == PICTYPE_ICON)
+			if( type == PICTYPE_ICON )
 			{
-				GetIconInfo((HICON)handle, &inf);
+				GetIconInfo( (HICON)handle, &inf );
 				handle = (OLE_HANDLE)inf.hbmColor;
 			}
-			result = CopyImage((HANDLE)handle, IMAGE_BITMAP, 0, 0, LR_COPYRETURNORG);
+			result = CopyImage( (HANDLE)handle, IMAGE_BITMAP, 0, 0, LR_COPYRETURNORG );
 		}
 	}
 	return (HBITMAP)result;
 }
 
-bool COleImage::LoadFromMem(LPVOID data, DWORD size)
+bool COleImage::LoadFromMem( LPVOID data, DWORD size )
 {
-	HGLOBAL global = GlobalAlloc(GMEM_MOVEABLE, size);
-	if (global)
+	HGLOBAL global = GlobalAlloc( GMEM_MOVEABLE, size );
+	if( global )
 	{
 		LPVOID data2 = GlobalLock(global);
-		if (data)
+		if( data )
 		{
-			memcpy(data2, data, size);
+			memcpy( data2, data, size );
 			GlobalUnlock(global);
 		}
 	}
-	return LoadFromGlobalMem(global, size);
+	return LoadFromGlobalMem( global, size );
 }
 
 bool COleImage::LoadFromGlobalMem(HGLOBAL mem, DWORD size)
 {
 	IStream* stream = NULL;
-	if (FAILED(__CreateStreamOnHGlobal(mem, TRUE, &stream)))
+	if( FAILED( __CreateStreamOnHGlobal(mem, TRUE, &stream) ) )
 		return false;
 	Destroy();
-	HRESULT r = __OleLoadPicture(stream, size, FALSE, IID_IPicture, (LPVOID*) & pic);
+	HRESULT r = __OleLoadPicture( stream, size, FALSE, IID_IPicture, (LPVOID*)&pic );
 	stream->Release();
-	GlobalFree(mem);
+	GlobalFree( mem );
 	return SUCCEEDED(r) && pic;
 }
 
 void COleImage::Destroy()
 {
-	if (pic)
+	if( pic )
 	{
 		pic->Release();
 		pic = NULL;
@@ -127,7 +128,7 @@ void COleImage::Destroy()
 HANDLE COleImage::GetHandle()
 {
 	OLE_HANDLE handle = NULL;
-	if (SUCCEEDED(pic->get_Handle(&handle)))
+	if( SUCCEEDED( pic->get_Handle( &handle ) ) )
 		return (HANDLE)handle;
 	return NULL;
 }

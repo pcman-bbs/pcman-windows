@@ -16,12 +16,12 @@ class CMemIniFile
 public:
 	UINT Read4(void *lpBuf);
 	void Close();
-	BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags);
-	UINT Read(void* lpBuf, UINT nCount);
-	UINT Write(void* lpBuf, UINT nCount)
+	BOOL Open( LPCTSTR lpszFileName, UINT nOpenFlags);
+	UINT Read( void* lpBuf, UINT nCount);
+	UINT Write( void* lpBuf, UINT nCount )
 	{
-		DWORD written = 0;
-		if (WriteFile(hfile, lpBuf, nCount, &written, NULL))
+		DWORD written =0;
+		if( WriteFile( hfile, lpBuf, nCount, &written, NULL ) )
 			return written;
 		return -1;
 	}

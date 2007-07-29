@@ -34,7 +34,7 @@ public:
 	void DoDataExchange(CDataExchange* pDX);
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAddressDlg)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -42,7 +42,7 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CAddressDlg)
-	// NOTE: the ClassWizard will add member functions here
+		// NOTE: the ClassWizard will add member functions here
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

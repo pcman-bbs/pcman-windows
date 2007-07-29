@@ -22,22 +22,22 @@
 #endif
 */
 
-bool find_link(char* type, char* str, int& start, int& end);
+bool find_link(char* type,char* str,int& start,int& end);
 //	bool find_email(char* str,int& start,int& end);
 
 class CMainFrame;
 
 
 #ifdef	_COMBO_
-class CWebConn;
-struct MENUMAPITEM;
+	class CWebConn;
+	struct MENUMAPITEM;
 #else	//在不支援 Web 的版本中直接把TCon定義成MySocket省去麻煩
 //	typedef		CTelnetConn	CConn;
 #endif
 
 class CTermView : public CWnd
 {
-	friend class CTelnetConn;
+friend class CTelnetConn;
 
 // Attributes
 protected:
@@ -92,77 +92,77 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CTermView)
-public:
+	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-protected:
+	protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
 public:
-	inline UINT SetDCColors(CDC* dc, BYTE color, BOOL invirt = 0);
+	inline UINT SetDCColors(CDC* dc,BYTE color,BOOL invirt=0);
 	void OnDisConnect();
 	void SetScrollBar();
 	virtual ~CTermView();
 
-	LRESULT OnImeChar(WPARAM wparam, LPARAM lparam);
-	LRESULT OnImeComposition(WPARAM wparam, LPARAM lparam);
-	LRESULT _OnImeCompositionW(WPARAM wparam, LPARAM lparam);
-	LRESULT _OnImeCompositionA(WPARAM wparam, LPARAM lparam);
-	LRESULT OnInputLangChange(WPARAM wparam, LPARAM lparam);
+	LRESULT OnImeChar(WPARAM wparam,LPARAM lparam);
+	LRESULT OnImeComposition(WPARAM wparam,LPARAM lparam);
+	LRESULT _OnImeCompositionW(WPARAM wparam,LPARAM lparam);
+	LRESULT _OnImeCompositionA(WPARAM wparam,LPARAM lparam);
+	LRESULT OnInputLangChange(WPARAM wparam,LPARAM lparam);	
 	inline UINT GetCodePage(){ return cp_id; }
 	void SetCodePage(UINT nCodePageId){ cp_id = nCodePageId; }
 	inline BOOL IsWinNT(){ return os_ver_nt; }
 	DWORD ime_prop;
 
-	inline void ShowCaret()
+inline void ShowCaret()
+{
+	if(!caret_vis)
 	{
-		if (!caret_vis)
-		{
-			::ShowCaret(m_hWnd);
-			caret_vis = TRUE;
-		}
+		::ShowCaret(m_hWnd);
+		caret_vis=TRUE;
 	}
+}
 
-	inline void HideCaret()
+inline void HideCaret()
+{
+	if(caret_vis)
 	{
-		if (caret_vis)
-		{
-			::HideCaret(m_hWnd);
-			caret_vis = FALSE;
-		}
+		::HideCaret(m_hWnd);
+		caret_vis=FALSE;
 	}
+}
 
-	inline void CreateCaret()
-	{
-		caret_vis = 0;
-		::CreateCaret(m_hWnd, NULL, chw, 2);
-	}
+inline void CreateCaret()
+{
+	caret_vis=0;
+	::CreateCaret(m_hWnd,NULL,chw,2);
+}
 
-	char* HyperLinkHitTest(int x, int y, int& len);
-	inline void PtToLineCol(POINT pt, int& x, int& y, bool adjust_x = true);
+char* HyperLinkHitTest(int x,int y, int& len);
+inline void PtToLineCol(POINT pt,int& x,int& y,bool adjust_x=true);
 
 // Generated message map functions
 public:
 	void CopySelText();
-	BOOL ExtTextOut(CDC& dc, int x, int y, UINT nOptions, LPCRECT lpRect, LPCTSTR lpszString, UINT nCount);
+	BOOL ExtTextOut( CDC& dc, int x, int y, UINT nOptions, LPCRECT lpRect, LPCTSTR lpszString, UINT nCount );
 	static CPtrArray all_telnet_conns;
 	void ConnectStr(CString name, CString dir);
-	void AdjustFont(int cx, int cy);
+	void AdjustFont(int cx,int cy);
 	CString GetSelText();
 	void FindStart();
 
 #ifdef	_COMBO_
-	CWebConn* ConnectWeb(CString address, BOOL act);
-	void MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE);
-	BOOL SetWindowPos(const CWnd* pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags);
+	CWebConn* ConnectWeb(CString address,BOOL act);
+	void MoveWindow( int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE );
+	BOOL SetWindowPos( const CWnd* pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags );
 
 #endif
 
 	void OnHistory(UINT id);
-	inline void FillBkRect(CDC& dc, CRect& rc, BYTE atb, BOOL bkinvirt = 0);
+	inline void FillBkRect(CDC& dc,CRect& rc,BYTE atb,BOOL bkinvirt=0);
 	inline void DrawLink(CDC &dc, LPSTR line, LPBYTE atbline, int y);
-	inline void DrawLine(CDC &dc, LPCSTR line, BYTE* pline_selstart, BYTE* pline_selend, int y);
+	inline void DrawLine(CDC &dc, LPCSTR line, BYTE* pline_selstart,BYTE* pline_selend, int y);
 	inline void DrawLineBlink(CDC &dc, LPCSTR line, int y);
 	void DrawBlink();
 	void DrawScreen(CDC& dc);
@@ -182,7 +182,7 @@ public:
 	void OnAnsiCopy();
 	void ReConnect(CTelnetConn* retelnet);
 	LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam);
-	BOOL Connect(CString address, CString name, unsigned short port, LPCTSTR cfg = NULL);
+	BOOL Connect(CString address, CString name, unsigned short port, LPCTSTR cfg=NULL);
 	//{{AFX_MSG(CTermView)
 	afx_msg LRESULT OnFind(WPARAM w, LPARAM l);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -236,10 +236,10 @@ protected:
 	UINT cp_id;
 	BOOL os_ver_nt;
 	void ConnectSocket(CTelnetConn* new_telnet);
-	LRESULT OnSocket(WPARAM wparam, LPARAM lparam);
+	LRESULT OnSocket(WPARAM wparam,LPARAM lparam);
 
 	inline void DrawLineBlinkOld(CDC &dc, LPSTR line, int y);
-	inline void DrawLineOld(CDC &dc, LPSTR line, BYTE* pline_selstart, BYTE* pline_selend, int y);
+	inline void DrawLineOld(CDC &dc, LPSTR line,BYTE* pline_selstart,BYTE* pline_selend, int y);
 };
 
 

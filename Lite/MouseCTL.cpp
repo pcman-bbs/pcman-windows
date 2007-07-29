@@ -5,7 +5,7 @@
 	file base:	MouseCTL
 	file ext:	cpp
 	author:		Omar Lin
-
+	
 	purpose:	Mouse Control
 *********************************************************************/
 
@@ -19,7 +19,7 @@ CTermView *g_pView = NULL;
 CMouseGesture m_gesture;
 char g_szMouseGesture[60];
 
-struct MOUSE_STATE
+struct MOUSE_STATE 
 {
 	DWORD R;
 	DWORD L;
@@ -67,18 +67,18 @@ struct  MOUSE_ACTION_CMD_INFO
 	DWORD	nCmdType;
 };
 
-MOUSE_ACTION_CMD_INFO MouseActionArray_Default[] =
-	{
-		{MA_L_BT_CLICK, "\"ENTER\"", "Enter", CMD_TYPE_KEY_INPUT},
-		{MA_M_BT_CLICK, "\"LEFT\"", "Left", CMD_TYPE_KEY_INPUT},
-		{MA_WHELL_UP, "\"UP\"", "Up", CMD_TYPE_KEY_INPUT},
-		{MA_WHELL_DOWN, "\"DOWN\"", "Down", CMD_TYPE_KEY_INPUT},
-		{MA_R_BT_WHELL_UP, "\"PRIOR\"", "PageUp", CMD_TYPE_KEY_INPUT},
-		{MA_R_BT_WHELL_DOWN, "\"NEXT\"", "PageDown", CMD_TYPE_KEY_INPUT},
-		{MA_L_BT_WHELL_UP, "-", "-", CMD_TYPE_KEY_INPUT},
-		{MA_L_BT_WHELL_DOWN, "+", "+", CMD_TYPE_KEY_INPUT},
-		{0, 0, 0, 0},
-	};
+MOUSE_ACTION_CMD_INFO MouseActionArray_Default[] = 
+{
+	{MA_L_BT_CLICK, "\"ENTER\"", "Enter", CMD_TYPE_KEY_INPUT},
+	{MA_M_BT_CLICK, "\"LEFT\"", "Left", CMD_TYPE_KEY_INPUT},
+	{MA_WHELL_UP, "\"UP\"", "Up", CMD_TYPE_KEY_INPUT},
+	{MA_WHELL_DOWN, "\"DOWN\"", "Down", CMD_TYPE_KEY_INPUT},
+	{MA_R_BT_WHELL_UP, "\"PRIOR\"", "PageUp", CMD_TYPE_KEY_INPUT},
+	{MA_R_BT_WHELL_DOWN, "\"NEXT\"", "PageDown", CMD_TYPE_KEY_INPUT},
+	{MA_L_BT_WHELL_UP, "-", "-", CMD_TYPE_KEY_INPUT},
+	{MA_L_BT_WHELL_DOWN, "+", "+", CMD_TYPE_KEY_INPUT},
+	{0, 0, 0, 0},
+};
 
 MOUSE_ACTION_CMD_INFO *g_pMouseActionArray_Now = NULL;
 
@@ -96,18 +96,18 @@ struct  GESTURE_CMD_INFO
 	DWORD	nCmdType;
 };
 
-GESTURE_CMD_INFO GestureArray_Default[] =
-	{
-		{"rU", "\"HOME\"", "Home", CMD_TYPE_KEY_INPUT},
-		{"rD", "\"END\"", "End", CMD_TYPE_KEY_INPUT},
-		{"rR", "\"ENTER\"", "Enter", CMD_TYPE_KEY_INPUT},
-		{"rL", "\"LEFT\"", "Left", CMD_TYPE_KEY_INPUT},
-		{"rUDU", "=", "=", CMD_TYPE_KEY_INPUT},
-		{"rRLR", "^Q", "Ctrl-q", CMD_TYPE_KEY_INPUT},
-		{"rLDRDL", "S", "S", CMD_TYPE_KEY_INPUT},
-		{"rUD", "\"LEFT\"\"ENTER\"\"END\"", "Reload(Left Enter End)", CMD_TYPE_KEY_INPUT},
-		{0, 0, 0, 0},
-	};
+GESTURE_CMD_INFO GestureArray_Default[] = 
+{
+	{"rU", "\"HOME\"", "Home", CMD_TYPE_KEY_INPUT},
+	{"rD", "\"END\"", "End", CMD_TYPE_KEY_INPUT},
+	{"rR", "\"ENTER\"", "Enter", CMD_TYPE_KEY_INPUT},
+	{"rL", "\"LEFT\"", "Left", CMD_TYPE_KEY_INPUT},
+	{"rUDU", "=", "=", CMD_TYPE_KEY_INPUT},
+	{"rRLR", "^Q", "Ctrl-q", CMD_TYPE_KEY_INPUT},
+	{"rLDRDL", "S", "S", CMD_TYPE_KEY_INPUT},
+	{"rUD", "\"LEFT\"\"ENTER\"\"END\"", "Reload(Left Enter End)", CMD_TYPE_KEY_INPUT},
+	{0, 0, 0, 0},
+};
 
 GESTURE_CMD_INFO *g_pGestureArray_Now = NULL;;
 const char szUnknowtGesture[] = "未知的手勢";
@@ -140,8 +140,9 @@ static HWND m_hWnd_ForTimer = NULL;
 
 static HCURSOR m_CursorNow = NULL;
 
-void MouseCTL_OnLButtonDblClk(HWND hWnd, UINT nFlags, CPoint point)
+void MouseCTL_OnLButtonDblClk(HWND hWnd, UINT nFlags, CPoint point) 
 {
+
 }
 
 void MouseCTL_OnLButtonDown(HWND hWnd, UINT nFlags, CPoint point)
@@ -166,16 +167,15 @@ BOOL MouseCTL_OnLButtonUp_PreProcess(HWND hWnd, UINT nFlags, CPoint point)
 		MouseCTL_SetMouseCursor(hWnd, CURSOR_NORMAL);
 		m_MouseState.R = 0;
 		return FALSE;
-	}
-	else if (m_MouseState.L & MT_STATE_STILL)
+	}else if (m_MouseState.L & MT_STATE_STILL)
 	{
 		MouseCTL_SetMouseCursor(hWnd, CURSOR_NORMAL);
 		m_MouseState.L = 0;
 		return FALSE;
 	}
 	if (m_MouseState.L & MT_STATE_STILL_BY_TIMER)
-	{}
-	else
+	{
+	}else
 	{
 		MouseCTL_SetMouseCursor(hWnd, CURSOR_NORMAL);
 	}
@@ -193,7 +193,7 @@ void MouseCTL_OnLButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 	DWORD dwCounter;
 
 	dwCounter = GetTickCount();
-	if ((dwCounter - m_dwMenuTimeCounter < 200) || (dwCounter - m_dwWndFocusTimeCounter < 200))
+	if ((dwCounter - m_dwMenuTimeCounter < 200) || (dwCounter - m_dwWndFocusTimeCounter < 200) )
 		return ;
 
 	if (m_MouseState.L & MT_STATE_STILL_BY_TIMER)
@@ -206,33 +206,32 @@ void MouseCTL_OnLButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 	{
 		MouseCTL_SetMouseCursor(hWnd, CURSOR_NORMAL);
 		m_MouseState.L = 0;
-	}
-	else if (m_MouseState.L & MT_STATE_WHELL_ACT)
+	}else if (m_MouseState.L & MT_STATE_WHELL_ACT)
 	{
-	}
-	else
+
+	}else
 	{
 		DWORD dw1, dw2;
 
-		dw1 = GetTickCount() & 0x00FFFFFF;
+		dw1 = GetTickCount()&0x00FFFFFF;
 		dw2 = MT_TIME_GET(m_MouseState.L);
 		if (dw1 - dw2 > MT_TIME_STILL)
 		{
 			m_MouseState.L |= MT_STATE_STILL;
 			MouseCTL_SetMouseCursor(hWnd, CURSOR_TOPIC);
-		}
-		else
+		}else 
 		{
 			MouseCTL_OnAction(MA_L_BT_CLICK, 0);
 		}
 	}
 }
 
-void MouseCTL_OnRButtonDblClk(HWND hWnd, UINT nFlags, CPoint point)
+void MouseCTL_OnRButtonDblClk(HWND hWnd, UINT nFlags, CPoint point) 
 {
+
 }
 
-void MouseCTL_OnRButtonDown(HWND hWnd, UINT nFlags, CPoint point)
+void MouseCTL_OnRButtonDown(HWND hWnd, UINT nFlags, CPoint point) 
 {
 	DWORD dwStill;
 
@@ -254,7 +253,7 @@ void MouseCTL_OnRButtonDown(HWND hWnd, UINT nFlags, CPoint point)
 	SetCapture(hWnd);
 }
 
-BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
+BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point) 
 {
 	BOOL xRet;
 
@@ -267,7 +266,7 @@ BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 	MHS.hwnd = hWnd;
 	MHS.pt = point;
 
-	dwGestureID = m_gesture.MouseMessage(WM_RBUTTONUP, (LPARAM) & MHS);
+	dwGestureID = m_gesture.MouseMessage(WM_RBUTTONUP, (LPARAM)&MHS);
 
 	if (MouseCTL_GetCurrentMouseCursor() == NULL)
 		ReleaseCapture();
@@ -280,7 +279,7 @@ BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 		m_MouseState.R |= MT_STATE_STILL;//不好，因為下面有一個也是在設  MT_STATE_STILL
 		goto __Exit;
 	}
-
+	
 	if (dwGestureID != INVALID_GETURE_ID)
 	{
 		MouseCTL_OnAction(MA_MOUSE_GESTURE, dwGestureID);
@@ -296,58 +295,58 @@ BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 	{
 		MouseCTL_SetMouseCursor(hWnd, CURSOR_NORMAL);
 		m_MouseState.R = 0;
-	}
-	else if (m_MouseState.R & MT_STATE_WHELL_ACT)
+	}else if (m_MouseState.R & MT_STATE_WHELL_ACT)
 	{
-	}
-	else
+
+	}else
 	{
 		DWORD dw1, dw2;
 
-		dw1 = GetTickCount() & 0x00FFFFFF;
+		dw1 = GetTickCount()&0x00FFFFFF;
 		dw2 = MT_TIME_GET(m_MouseState.R);
 		if (dw1 - dw2 > MT_TIME_STILL)
 		{
 			if (m_MouseState.L & MT_STATE_STILL)
 			{
-			}
-			else if (m_gesture.m_LastDirection == NULL)
+
+			}else if (m_gesture.m_LastDirection == NULL)
 			{
 				m_MouseState.R |= MT_STATE_STILL;
 				MouseCTL_SetMouseCursor(hWnd, CURSOR_PAGE);
 			}
-		}
-		else if (dwGestureID == INVALID_GETURE_ID)
+		}else if (dwGestureID == INVALID_GETURE_ID)
 		{
 			MouseCTL_Reset();
-
+			
 			POINT pt;
-
+			
 			pt = point;
 			ClientToScreen(hWnd, &pt);
 			SendMessage(hWnd, WM_CONTEXTMENU, (DWORD)NULL, (DWORD)MAKELONG(pt.x, pt.y));
 			m_dwMenuTimeCounter = GetTickCount();
-
+			
 			xRet = TRUE;
 		}
 	}
 	m_MouseState.R &= ~MT_STATE_WHELL_ACT;
-
+	
 __Exit:
 	return xRet;
 }
 
-void MouseCTL_OnMButtonDown(HWND hWnd, UINT nFlags, CPoint point)
+void MouseCTL_OnMButtonDown(HWND hWnd, UINT nFlags, CPoint point) 
 {
+
 }
 
-void MouseCTL_OnMButtonUp(HWND hWnd, UINT nFlags, CPoint point)
+void MouseCTL_OnMButtonUp(HWND hWnd, UINT nFlags, CPoint point) 
 {
 	MouseCTL_OnAction(MA_M_BT_CLICK, 0);
 }
 
-void MouseCTL_OnMButtonDblClk(HWND hWnd, UINT nFlags, CPoint point)
+void MouseCTL_OnMButtonDblClk(HWND hWnd, UINT nFlags, CPoint point) 
 {
+
 }
 
 BOOL MouseCTL_OnMouseWheel(HWND hWnd, UINT nFlags, short zDelta, CPoint pt)
@@ -361,45 +360,40 @@ BOOL MouseCTL_OnMouseWheel(HWND hWnd, UINT nFlags, short zDelta, CPoint pt)
 
 	KillTimer(hWnd, MT_EVENT_STILL);
 
-	nGap = zDelta / WHEEL_DELTA;
+	nGap = zDelta/WHEEL_DELTA;
 	if (nGap == 0)
 		return TRUE;
 
 	bExtendKey = TRUE;
 	bGestureReset = FALSE;
 
-	if (nGap < 0)
+	if (nGap < 0) 
 	{
 		if (m_MouseState.R & MT_STATE_PRESS ||
 			m_MouseState.R & MT_STATE_STILL)
 		{
 			bGestureReset = TRUE;
 			MouseCTL_OnAction(MA_R_BT_WHELL_DOWN, 0);
-		}
-		else if (m_MouseState.L & MT_STATE_PRESS ||
-				 m_MouseState.L & MT_STATE_STILL)
+		}else if (m_MouseState.L & MT_STATE_PRESS ||
+			m_MouseState.L & MT_STATE_STILL)
 		{
 			MouseCTL_OnAction(MA_L_BT_WHELL_DOWN, 0);
-		}
-		else
+		}else
 		{
 			MouseCTL_OnAction(MA_WHELL_DOWN, 0);
 		}
-	}
-	else
+	}else 
 	{
 		if (m_MouseState.R & MT_STATE_PRESS ||
 			m_MouseState.R & MT_STATE_STILL)
 		{
 			bGestureReset = TRUE;
 			MouseCTL_OnAction(MA_R_BT_WHELL_UP, 0);
-		}
-		else if (m_MouseState.L & MT_STATE_PRESS ||
-				 m_MouseState.L & MT_STATE_STILL)
+		}else if (m_MouseState.L & MT_STATE_PRESS ||
+			m_MouseState.L & MT_STATE_STILL)
 		{
 			MouseCTL_OnAction(MA_L_BT_WHELL_UP, 0);
-		}
-		else
+		}else
 		{
 			MouseCTL_OnAction(MA_WHELL_UP, 0);
 		}
@@ -411,17 +405,16 @@ BOOL MouseCTL_OnMouseWheel(HWND hWnd, UINT nFlags, short zDelta, CPoint pt)
 	return TRUE;
 }
 
-void MouseCTL_OnMouseMove(HWND hWnd, UINT nFlags, CPoint point)
+void MouseCTL_OnMouseMove(HWND hWnd, UINT nFlags, CPoint point) 
 {
 	static DWORD s_dwMoveTimes = 0;
 
-	if (nFlags & MK_LBUTTON ||
-		nFlags & MK_MBUTTON ||
-		nFlags & MK_RBUTTON)
+ 	if (nFlags & MK_LBUTTON ||
+ 		nFlags & MK_MBUTTON ||
+ 		nFlags & MK_RBUTTON)
 	{
 		s_dwMoveTimes = 0;
-	}
-	else
+	}else
 	{
 		s_dwMoveTimes++;
 
@@ -433,43 +426,42 @@ void MouseCTL_OnMouseMove(HWND hWnd, UINT nFlags, CPoint point)
 		}
 	}
 
-	if (nFlags & MK_RBUTTON &&
+	if (nFlags & MK_RBUTTON && 
 		!(m_MouseState.R & MT_STATE_WHELL_ACT))
 	{
 		MOUSEHOOKSTRUCT MHS = {0};
-
+		
 		MHS.hwnd = hWnd;
 		MHS.pt = point;
-
+		
 		m_gesture.MouseMessage(WM_MOUSEMOVE, (LPARAM)&MHS);
 	}
 }
 
 void MouseCTL_OnTimer(HWND hWnd, UINT nIDEvent)
 {
-	switch (nIDEvent)
+	switch(nIDEvent)
 	{
 	case MT_EVENT_STILL:
 		{
 			MC_CURSOR Cursor;
 			DWORD *pdwMouseState;
-
+			
 			KillTimer(hWnd, nIDEvent);
 			Cursor = CURSOR_NORMAL;
 			pdwMouseState = NULL;
-
+			
 			if (MouseCTL_IsCursorInSelect())
 			{
 				MouseCTL_Reset(FALSE);
 				return ;
 			}
-
+			
 			if (m_MouseState.R & MT_STATE_PRESS)
 			{
 				Cursor = CURSOR_PAGE;
 				pdwMouseState = &m_MouseState.R;
-			}
-			else if (m_MouseState.L & MT_STATE_PRESS)
+			}else if (m_MouseState.L & MT_STATE_PRESS)
 			{
 				Cursor = CURSOR_TOPIC;
 				pdwMouseState = &m_MouseState.L;
@@ -477,7 +469,7 @@ void MouseCTL_OnTimer(HWND hWnd, UINT nIDEvent)
 			if (m_MouseState.L & MT_STATE_STILL ||
 				m_gesture.m_LastDirection != NULL)
 				Cursor = CURSOR_NORMAL;
-
+			
 			if (Cursor != CURSOR_NORMAL)
 			{
 				MouseCTL_SetMouseCursor(hWnd, Cursor);
@@ -492,7 +484,7 @@ void MouseCTL_OnTimer(HWND hWnd, UINT nIDEvent)
 		break;
 	default:
 		break;
-	}
+	}		
 }
 
 void MouseCTL_OnSetFocus(HWND hWnd)
@@ -520,7 +512,7 @@ char *MouseCTL_GetStatusInfo()
 			pszInfo = pGesture->szCmdInfo;
 
 		dw1 = strlen(g_szMouseGesture);
-		while (dw1 > 0 && g_szMouseGesture[dw1-1] == ',')
+		while(dw1 > 0 && g_szMouseGesture[dw1-1] == ',') 
 			dw1--;
 		if (dw1 > 0)
 			g_szMouseGesture[dw1] = 0;
@@ -529,8 +521,7 @@ char *MouseCTL_GetStatusInfo()
 
 		if (dw1 > 0)
 			g_szMouseGesture[dw1] = ',';
-	}
-	else
+	}else
 		s_StatusInfo[0] = 0;
 
 	return s_StatusInfo;
@@ -553,10 +544,10 @@ void MouseCTL_Init(HWND hWnd)
 	SetTimer(hWnd, MT_EVENT_RELOAD_CURSOR, 1000, NULL);
 
 	m_gesture.m_szDirctionNow = g_szMouseGesture;
-	m_gesture.m_dwDirction_BufLen = sizeof(g_szMouseGesture) / sizeof(TCHAR);
+	m_gesture.m_dwDirction_BufLen = sizeof(g_szMouseGesture)/sizeof(TCHAR);
 	m_gesture.fnUpdateMessage = MouseCTL_UpdateStatus;
 	m_gesture.Attach(hWnd, 20);//設定手勢的靈敏度，值愈大的話，愈不靈敏，方向的改變要大一點，但是滑鼠的動作就要變大
-
+	
 	MouseCTL_MouseAction_Setup_Cmd(MouseActionArray_Default);
 	MouseCTL_Gesture_Setup_Cmd(GestureArray_Default);
 }
@@ -564,14 +555,14 @@ void MouseCTL_Init(HWND hWnd)
 BOOL MouseCTL_IsCursorInSelect()
 {
 	CTelnetConn* telnet;
-
+	
 	telnet = NULL;
 	if (g_pView)
 		telnet = g_pView->telnet;
 
 	if (telnet == NULL)
 		return FALSE;
-
+	
 	if (telnet->sel_start.x != telnet->sel_end.x ||
 		telnet->sel_start.y != telnet->sel_end.y)
 		return TRUE;
@@ -592,8 +583,8 @@ void MouseCTL_SetMouseCursor(HWND hWnd, MC_CURSOR Cursor)
 
 	hCursor = NULL;
 
-	switch (Cursor)
-	{
+	switch(Cursor)
+	{	
 	case CURSOR_NORMAL:
 		if (m_hCursor_Last)
 		{
@@ -683,24 +674,23 @@ BOOL MouseCTL_SendInput(char cKey_In, BOOL bExtendKey, BOOL bControlKey)
 
 	if (bExtendKey)
 	{
-		KeyTable = telnet->key_map->FindKey(cKey_In, bExtendKey ? 0xFFFFFFFF : 0);
+		KeyTable = telnet->key_map->FindKey(cKey_In, bExtendKey?0xFFFFFFFF:0);
 		if (KeyTable == NULL)
 			goto __Exit;
 		StrUnCtl = KeyTable;
-	}
-	else
+	}else
 	{
 		buf[0] = 0;
 		nBNow = 0;
-
+		
 		if (bControlKey)
 			buf[nBNow++] = '^';
 
 		buf[nBNow++] = cKey_In;
 		buf[nBNow++] = 0;
 
-		if (bControlKey)
-			StrUnCtl = UnescapeControlChars(buf);
+ 		if (bControlKey)
+ 			StrUnCtl = UnescapeControlChars(buf);
 		else
 			StrUnCtl = buf;
 	}
@@ -743,9 +733,9 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 		szKeyString++;
 
 		//尋找相鄰的'\"'  但是 ""\\\""要忽略
-		pszBlockEnd = (char*)szKeyString;
+		pszBlockEnd = (char*)szKeyString;	
 		i = 0;
-		while (pszBlockEnd[0] && pszBlockEnd[0] != '\"')
+		while (pszBlockEnd[0] && pszBlockEnd[0] != '\"') 
 		{
 			//若是""\\\""要忽略
 			if (pszBlockEnd[0] == '\\' && pszBlockEnd[1] == '\"')
@@ -765,7 +755,7 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 		pszNext = pszBlockEnd;
 
 		//判斷是否為ExtendKey
-		for (i = 0; i < sizeof(Extend_Key) / sizeof(Extend_Key[0]); i++)
+		for (i=0; i<sizeof(Extend_Key)/sizeof(Extend_Key[0]); i++)
 		{
 			pBuf1 = Extend_Key[i].szName;
 			if (stricmp(szStringBlock, pBuf1) == 0)
@@ -775,11 +765,11 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 				break;
 			}
 		}
-
+		
 		if (*cKey_In)
 			goto __Exit;
-
-
+		
+		
 		//判斷是否為Enter
 		if (stricmp(szStringBlock, KEYSTR_ENTER) == 0)
 		{
@@ -787,7 +777,7 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 		}
 
 		//若沒有符合的命令，但是卻有  ""來包字串，所以這個字串跳過  不看，看下一個區塊
-		goto __Exit;
+		goto __Exit;		
 	}
 
 
@@ -851,7 +841,7 @@ void MouseCTL_OnAction(DWORD dwActionID, DWORD dwActionID_Sub)
 {
 	DBG_PRINT("MouseCTL_OnAction(%d, %d)\r\n", dwActionID, dwActionID_Sub);
 
-	switch (dwActionID)
+	switch(dwActionID)
 	{
 	case MA_R_BT_CLICK:
 		break;
@@ -869,7 +859,7 @@ void MouseCTL_OnAction(DWORD dwActionID, DWORD dwActionID_Sub)
 			pMA = MouseCTL_MouseAction_GeCmdInfo(dwActionID);
 			if (pMA == NULL)
 				break;
-
+			
 			MouseCTL_RunCommand(pMA->szCmd, pMA->nCmdType);
 		}
 		break;
@@ -883,9 +873,9 @@ void MouseCTL_OnAction(DWORD dwActionID, DWORD dwActionID_Sub)
 			pGesture = MouseCTL_Gesture_GeCmdInfo(dwActionID_Sub);
 			if (pGesture == NULL)
 				break;
-
+			
 			MouseCTL_RunCommand(pGesture->szCmd, pGesture->nCmdType);
-
+					
 		}
 		break;
 	}

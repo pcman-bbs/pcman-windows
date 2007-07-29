@@ -11,8 +11,8 @@
 
 #include <afx.h>
 
-#define B2U_TAB_SIZE 39564 +2
-#define U2B_TAB_SIZE 130814+2
+#define B2U_TAB_SIZE 39564 +2 
+#define U2B_TAB_SIZE 130814+2 
 
 class CUcs2Conv
 {
@@ -22,7 +22,7 @@ public:
 	void Ucs22Big5(const wchar_t* text_in, char* text_out);
 	CUcs2Conv();
 	virtual ~CUcs2Conv();
-	void SetTablePath(CString tab_dir);
+	void SetTablePath( CString tab_dir );
 
 protected:
 	CString m_TabDirPath;

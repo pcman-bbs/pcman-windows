@@ -25,7 +25,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAutoComplete)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -36,19 +36,19 @@ public:
 	void Open();
 	void DetachEdit();
 	void AttachEdit(HWND hedit, CStringList* src, HWND hCombo = NULL);
-	CString GetDisplayedItemText(int i){ return m_pSrc->GetAt(m_DisplayedItems[i].strpos); }
+	CString GetDisplayedItemText( int i ){ return m_pSrc->GetAt(m_DisplayedItems[i].strpos); }
 	virtual ~CAutoComplete();
 
 	// Generated message map functions
 protected:
 	void FilterDisplayedItems();
-	static LRESULT CALLBACK MouseProc(int code, WPARAM w, LPARAM l);
+	static LRESULT CALLBACK MouseProc(int code,WPARAM w,LPARAM l);
 	WNDPROC m_OldEditProc;
 	struct ListItemData
 	{
 		ListItemData(){}
 		ListItemData(POSITION _strpos, UINT _strstrpos)
-				: strpos(_strpos), strstrpos(_strstrpos){}
+			: strpos(_strpos), strstrpos(_strstrpos){}
 		POSITION strpos;
 		int strstrpos;
 	};
@@ -57,16 +57,16 @@ protected:
 	HWND m_hEdit;
 	HWND m_hCombo;
 	static HHOOK m_MouseHook;
-	static LRESULT CALLBACK EditProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
+	static LRESULT CALLBACK EditProc(HWND hwnd, UINT msg,WPARAM w,LPARAM l);
 	static CAutoComplete* m_pOpenedList;
-	void DrawItem(LPDRAWITEMSTRUCT lpds);
+	void DrawItem( LPDRAWITEMSTRUCT lpds);
 	//{{AFX_MSG(CAutoComplete)
 	afx_msg int OnMouseActivate(CWnd* pDetelnetopWnd, UINT nHitTest, UINT message);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnNcActivate(BOOL bActive);
-	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized );
 	//}}AFX_MSG
 
 #if _MFC_VER >= 0x0700

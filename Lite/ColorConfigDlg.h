@@ -22,7 +22,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CColorConfigDlg)
 	enum { IDD = IDD_COLOR };
-	// NOTE: the ClassWizard will add data members here
+		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 

@@ -18,8 +18,8 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP(CCustomTabCtrlApp, CWinApp)
 	//{{AFX_MSG_MAP(CCustomTabCtrlApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-	// NOTE - the ClassWizard will add and remove mapping macros here.
-	//    DO NOT EDIT what you see in these blocks of generated code!
+		// NOTE - the ClassWizard will add and remove mapping macros here.
+		//    DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -48,8 +48,8 @@ BOOL CCustomTabCtrlApp::InitInstance()
 	// create and load the frame with its resources
 
 	pFrame->LoadFrame(IDR_MAINFRAME,
-					  WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
-					  NULL);
+		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
+		NULL);
 
 	// The one and only window has been initialized, so show and update it.
 	pFrame->ShowWindow(SW_SHOW);
@@ -80,14 +80,14 @@ public:
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAboutDlg)
-protected:
+	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
 	//{{AFX_MSG(CAboutDlg)
-	// No message handlers
+		// No message handlers
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
@@ -107,7 +107,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-	// No message handlers
+		// No message handlers
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

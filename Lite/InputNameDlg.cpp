@@ -16,11 +16,11 @@ static char THIS_FILE[] = __FILE__;
 
 
 CInputNameDlg::CInputNameDlg(CWnd* pParent /*=NULL*/)
-		: CDialog(CInputNameDlg::IDD, pParent)
+	: CDialog(CInputNameDlg::IDD, pParent)
 {
-	max = 0;
+	max=0;
 	//{{AFX_DATA_INIT(CInputNameDlg)
-	// NOTE: the ClassWizard will add member initialization here
+		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -33,19 +33,19 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CInputNameDlg message handlers
 
-BOOL CInputNameDlg::OnInitDialog()
+BOOL CInputNameDlg::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	CEdit* pedit = (CEdit*)GetDlgItem(IDC_NAME);
+	CEdit* pedit=(CEdit*)GetDlgItem(IDC_NAME);
 	pedit->SetWindowText(name);
-	if (max > 0)
+	if(max>0)
 		pedit->SetLimitText(max);
 	return TRUE;
 }
 
-void CInputNameDlg::OnOK()
+void CInputNameDlg::OnOK() 
 {
 	GetDlgItem(IDC_NAME)->GetWindowText(name);
-	if (!name.IsEmpty())
+	if(!name.IsEmpty())
 		CDialog::OnOK();
 }

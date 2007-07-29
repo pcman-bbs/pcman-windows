@@ -29,7 +29,8 @@ CSitePage::CSitePage() : CPropertyPage(CSitePage::IDD)
 }
 
 CSitePage::~CSitePage()
-{}
+{
+}
 
 void CSitePage::DoDataExchange(CDataExchange* pDX)
 {
@@ -53,24 +54,24 @@ BEGIN_MESSAGE_MAP(CSitePage, CPropertyPage)
 	ON_BN_CLICKED(IDC_USE_GLOBAL_SETTINGS, OnUseGlobalSettings)
 	ON_CBN_SELCHANGE(IDC_KEYMAP, OnSelchangeKeyMap)
 	//}}AFX_MSG_MAP
-	//	ON_BN_CLICKED(IDC_USEDEFAULT, OnUseDefault)
+//	ON_BN_CLICKED(IDC_USEDEFAULT, OnUseDefault)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CSitePage message handlers
 
-BOOL CSitePage::OnInitDialog()
+BOOL CSitePage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
 
-	CheckDlgButton(IDC_USE_GLOBAL_SETTINGS	, psettings->use_global);
+	CheckDlgButton(IDC_USE_GLOBAL_SETTINGS	,psettings->use_global		);
 
 	WIN32_FIND_DATA fd;
-	HANDLE hf = (HANDLE)FindFirstFile(AppPath + "keyboard\\*.*", &fd);
-	if (hf != INVALID_HANDLE_VALUE)
+	HANDLE hf=(HANDLE)FindFirstFile(AppPath+"keyboard\\*.*",&fd);
+	if( hf != INVALID_HANDLE_VALUE )
 	{
-		for (BOOL found = FindNextFile(hf, &fd); found ; found = FindNextFile(hf, &fd))
-			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && *fd.cFileName != '.')
+		for(BOOL found=FindNextFile(hf,&fd); found ; found=FindNextFile(hf,&fd) )
+			if(!(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) && *fd.cFileName!='.' )
 				ckeymap.AddString(fd.cFileName);
 		FindClose(hf);
 	}
@@ -81,79 +82,79 @@ BOOL CSitePage::OnInitDialog()
 	cesc_convert.AddString("^[");
 	cesc_convert.SetWindowText(EscapeControlChars(psettings->esc_convert));
 
-	ctoconv.AddString(LoadString(IDS_DONT_USE));
-	ctoconv.AddString(LoadString(IDS_GB2BIG5));
-	ctoconv.AddString(LoadString(IDS_BIG52GB));
+	ctoconv.AddString( LoadString(IDS_DONT_USE) );
+	ctoconv.AddString( LoadString(IDS_GB2BIG5) );
+	ctoconv.AddString( LoadString(IDS_BIG52GB) );
 	ctoconv.SetCurSel(psettings->text_output_conv);
 
-	cticonv.AddString(LoadString(IDS_DONT_USE));
-	cticonv.AddString(LoadString(IDS_GB2BIG5));
-	cticonv.AddString(LoadString(IDS_BIG52GB));
+	cticonv.AddString( LoadString(IDS_DONT_USE) );
+	cticonv.AddString( LoadString(IDS_GB2BIG5) );
+	cticonv.AddString( LoadString(IDS_BIG52GB) );
 	cticonv.SetCurSel(psettings->text_input_conv);
 
-	if (!show_use_global)
-		::DestroyWindow(::GetDlgItem(m_hWnd, IDC_USE_GLOBAL_SETTINGS));
+	if( !show_use_global )
+		::DestroyWindow( ::GetDlgItem( m_hWnd, IDC_USE_GLOBAL_SETTINGS) );
 
 	UpdateDisplay();
 
-	EnableControls(! psettings->use_global);
+	EnableControls( ! psettings->use_global );
 
 	return TRUE;
 }
 
-void CSitePage::OnOK()
+void CSitePage::OnOK() 
 {
-	psettings->use_global			= IsDlgButtonChecked(IDC_USE_GLOBAL_SETTINGS);
+	psettings->use_global			=IsDlgButtonChecked(IDC_USE_GLOBAL_SETTINGS	);
 
-	if (psettings->use_global)
+	if( psettings->use_global )
 	{
 		*psettings = AppConfig.site_settings;
 		psettings->use_global = 1;
 		return;
 	}
 
-	psettings->showscroll			= IsDlgButtonChecked(IDC_SHOWSCROLL);
-	psettings->localecho			= IsDlgButtonChecked(IDC_LOCALECHO);
-	psettings->line_wrap			= IsDlgButtonChecked(IDC_LINEWRAP);
-	psettings->auto_reconnect		= IsDlgButtonChecked(IDC_AUTORECONNECT);
-	psettings->paste_autowrap		= IsDlgButtonChecked(IDC_PASTE_AUTOWRAP);
-	psettings->prevent_idle			= IsDlgButtonChecked(IDC_PREVENT_IDLE);
-	psettings->auto_dbcs_mouse		= IsDlgButtonChecked(IDC_AUTOBIG5_MOUSE);
-	psettings->auto_dbcs_backspace	= IsDlgButtonChecked(IDC_AUTOBIG5_BACKSPACE);
-	psettings->auto_dbcs_arrow		= IsDlgButtonChecked(IDC_AUTOBIG5_ARROW);
-	psettings->auto_dbcs_del		= IsDlgButtonChecked(IDC_AUTOBIG5_DEL);
+	psettings->showscroll			=IsDlgButtonChecked(IDC_SHOWSCROLL			);
+	psettings->localecho			=IsDlgButtonChecked(IDC_LOCALECHO			);
+	psettings->line_wrap			=IsDlgButtonChecked(IDC_LINEWRAP			);
+	psettings->auto_reconnect		=IsDlgButtonChecked(IDC_AUTORECONNECT		);
+	psettings->paste_autowrap		=IsDlgButtonChecked(IDC_PASTE_AUTOWRAP		);
+	psettings->prevent_idle			=IsDlgButtonChecked(IDC_PREVENT_IDLE		);
+	psettings->auto_dbcs_mouse		=IsDlgButtonChecked(IDC_AUTOBIG5_MOUSE		);
+	psettings->auto_dbcs_backspace	=IsDlgButtonChecked(IDC_AUTOBIG5_BACKSPACE	);
+	psettings->auto_dbcs_arrow		=IsDlgButtonChecked(IDC_AUTOBIG5_ARROW		);
+	psettings->auto_dbcs_del		=IsDlgButtonChecked(IDC_AUTOBIG5_DEL		);
 //	use_default						=IsDlgButtonChecked(IDC_USEDEFAULT			);
 
-	psettings->paste_autowrap_col = GetDlgItemInt(IDC_PASTE_AUTOWRAP_COL, NULL, FALSE);
+	psettings->paste_autowrap_col=GetDlgItemInt(IDC_PASTE_AUTOWRAP_COL,NULL,FALSE);
 
-	long line_count						= GetDlgItemInt(IDC_LCOUNT				, NULL, FALSE);
-	WORD cols_per_page				= GetDlgItemInt(IDC_ONEPAGE_COL			, NULL, FALSE);
-	WORD lines_per_page				= GetDlgItemInt(IDC_ONEPAGE_LINE			, NULL, FALSE);
-	psettings->connect_interval		= GetDlgItemInt(IDC_CONNECTINTERVAL		, NULL, FALSE);
-	psettings->reconnect_interval	= GetDlgItemInt(IDC_RECONNECTINTERVAL	, NULL, FALSE);
-	psettings->idle_interval		= GetDlgItemInt(IDC_IDLEINTERVAL			, NULL, FALSE);
-	psettings->paste_autowrap_col	= GetDlgItemInt(IDC_PASTE_AUTOWRAP_COL	, NULL, FALSE);
+	long line_count						=GetDlgItemInt(IDC_LCOUNT				,NULL,FALSE);
+	WORD cols_per_page				=GetDlgItemInt(IDC_ONEPAGE_COL			,NULL,FALSE);
+	WORD lines_per_page				=GetDlgItemInt(IDC_ONEPAGE_LINE			,NULL,FALSE);
+	psettings->connect_interval		=GetDlgItemInt(IDC_CONNECTINTERVAL		,NULL,FALSE);
+	psettings->reconnect_interval	=GetDlgItemInt(IDC_RECONNECTINTERVAL	,NULL,FALSE);
+	psettings->idle_interval		=GetDlgItemInt(IDC_IDLEINTERVAL			,NULL,FALSE);
+	psettings->paste_autowrap_col	=GetDlgItemInt(IDC_PASTE_AUTOWRAP_COL	,NULL,FALSE);
 
-	if (line_count < CTelnetConn::MIN_LINE_COUNT)line_count = CTelnetConn::MIN_LINE_COUNT;
-	if (line_count > CTelnetConn::MAX_LINE_COUNT)line_count = CTelnetConn::MAX_LINE_COUNT;
+	if(line_count <CTelnetConn::MIN_LINE_COUNT)line_count=CTelnetConn::MIN_LINE_COUNT;
+	if(line_count>CTelnetConn::MAX_LINE_COUNT)line_count=CTelnetConn::MAX_LINE_COUNT;
 
-	psettings->line_count = line_count;
+	psettings->line_count=line_count;
 
-	if (cols_per_page < CTelnetConn::MIN_COLS_PER_PAGE)	cols_per_page = CTelnetConn::MIN_COLS_PER_PAGE;
-	if (cols_per_page > CTelnetConn::MAX_COLS_PER_PAGE)cols_per_page = CTelnetConn::MAX_COLS_PER_PAGE;
+	if(cols_per_page < CTelnetConn::MIN_COLS_PER_PAGE)	cols_per_page=CTelnetConn::MIN_COLS_PER_PAGE;
+	if(cols_per_page > CTelnetConn::MAX_COLS_PER_PAGE)cols_per_page=CTelnetConn::MAX_COLS_PER_PAGE;
 
-	psettings->cols_per_page = cols_per_page;
+	psettings->cols_per_page=cols_per_page;
 
-	if (lines_per_page < CTelnetConn::MIN_LINE_PER_PAGE)	lines_per_page = CTelnetConn::MIN_LINE_PER_PAGE;
-	if (lines_per_page > CTelnetConn::MAX_LINES_PER_PAGE)lines_per_page = CTelnetConn::MAX_LINES_PER_PAGE;
+	if(lines_per_page < CTelnetConn::MIN_LINE_PER_PAGE)	lines_per_page=CTelnetConn::MIN_LINE_PER_PAGE;
+	if(lines_per_page> CTelnetConn::MAX_LINES_PER_PAGE)lines_per_page=CTelnetConn::MAX_LINES_PER_PAGE;
 
-	psettings->lines_per_page = lines_per_page;
+	psettings->lines_per_page=lines_per_page;
 
 	ctermtype.GetWindowText(psettings->termtype);
 	ckeymap.GetWindowText(psettings->key_map_name);
-	GetDlgItemText(IDC_STR, psettings->idle_str);
-	GetDlgItemText(IDC_ESC_CONVERT, psettings->esc_convert);
-	psettings->esc_convert = UnescapeControlChars(psettings->esc_convert);
+	GetDlgItemText(IDC_STR,psettings->idle_str);
+	GetDlgItemText(IDC_ESC_CONVERT,psettings->esc_convert);
+	psettings->esc_convert=UnescapeControlChars(psettings->esc_convert);
 
 	psettings->text_output_conv = ctoconv.GetCurSel();
 	psettings->text_input_conv = cticonv.GetCurSel();
@@ -161,158 +162,158 @@ void CSitePage::OnOK()
 	CPropertyPage::OnOK();
 }
 
-void CSitePage::OnIdlehelp()
+void CSitePage::OnIdlehelp() 
 {
-	MessageBox(LoadString(IDS_IDLE_HELP));
+	MessageBox( LoadString(IDS_IDLE_HELP));
 }
 
-void CSitePage::OnUseGlobalSettings()
+void CSitePage::OnUseGlobalSettings() 
 {
-	if (! show_use_global)
+	if( ! show_use_global )
 		return;
 
 	psettings->use_global = !psettings->use_global;
-	if (psettings->use_global)
+	if( psettings->use_global )
 	{
 		*psettings = AppConfig.site_settings;
 		psettings->use_global = 1;
 		UpdateDisplay();
 	}
-	EnableControls(! psettings->use_global);
+	EnableControls( ! psettings->use_global );
 }
 
-void CSitePage::OnAddMap()
+void CSitePage::OnAddMap() 
 {
 	CInputNameDlg dlg;
-	dlg.max = 11;
-	while (dlg.name.IsEmpty())
-		if (dlg.DoModal() != IDOK)
+	dlg.max=11;
+	while(dlg.name.IsEmpty())
+		if(dlg.DoModal()!=IDOK)
 			return;
 	CKeyMapDlg kmdlg;
 	//產生新的KeyMap
 	//and also load default
-	kmdlg.pmap = CKeyMap::Load(dlg.name);
+	kmdlg.pmap=CKeyMap::Load(dlg.name);
 
 #if 0
 	//載入預設值
-	CKeyMap* defkm = CKeyMap::Load(CKeyMap::default_kmname);
+	CKeyMap* defkm=CKeyMap::Load(CKeyMap::default_kmname);
 	//複製預設值到新的鍵盤對映
-	kmdlg.pmap->Copy(/*(CArray<CKeyMapEntry,CKeyMapEntry&>&)*/*defkm); //144版後會有bug
+	kmdlg.pmap->Copy(/*(CArray<CKeyMapEntry,CKeyMapEntry&>&)*/*defkm); //144版後會有bug 
 	defkm->Release();
 #endif
 
-	if (kmdlg.DoModal() == IDOK)
+	if(kmdlg.DoModal()==IDOK)
 	{
 		ckeymap.AddString(dlg.name);
-		ckeymap.SelectString(0, dlg.name);
+		ckeymap.SelectString(0,dlg.name);
 		OnSelchangeKeyMap();
 	}
 	kmdlg.pmap->Release();
 }
 
-void CSitePage::OnEditMap()
+void CSitePage::OnEditMap() 
 {
 	CKeyMapDlg kmdlg;
 	CString kmname;
 	ckeymap.GetWindowText(kmname);
-	kmdlg.pmap = CKeyMap::Load(kmname);
+	kmdlg.pmap=CKeyMap::Load(kmname);
 	kmdlg.DoModal();
 	kmdlg.pmap->Release();
 }
 
-void CSitePage::OnRenameMap()
+void CSitePage::OnRenameMap() 
 {
 	CInputNameDlg dlg;
-	dlg.max = 11;
+	dlg.max=11;
 	CString oldn;
 	ckeymap.GetWindowText(oldn);
-	dlg.name = oldn;
-	int sel = ckeymap.GetCurSel();
-	if (dlg.DoModal() == IDOK)
+	dlg.name=oldn;
+	int sel=ckeymap.GetCurSel();
+	if(dlg.DoModal()==IDOK)
 	{
-		if (CKeyMap::ReName(oldn, dlg.name))
+		if(CKeyMap::ReName(oldn,dlg.name))
 		{
 			ckeymap.DeleteString(sel);
-			sel = ckeymap.AddString(dlg.name);
+			sel=ckeymap.AddString(dlg.name);
 			ckeymap.SetCurSel(sel);
 		}
 	}
 }
 
-void CSitePage::OnDelMap()
+void CSitePage::OnDelMap() 
 {
 	CString kmn;
 	ckeymap.GetWindowText(kmn);
-	int sel = ckeymap.GetCurSel();
-	if (MessageBox(LoadString(IDS_DEL_CONFIRM), LoadString(IDS_CONFIRM), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
+	int sel=ckeymap.GetCurSel();
+	if(MessageBox( LoadString(IDS_DEL_CONFIRM), LoadString(IDS_CONFIRM),MB_OKCANCEL|MB_ICONQUESTION)==IDCANCEL)
 		return;
-	if (CKeyMap::DelMap(kmn))
+	if(CKeyMap::DelMap(kmn))
 	{
 		ckeymap.DeleteString(sel);
-		ckeymap.SelectString(0, CKeyMap::default_kmname);
+		ckeymap.SelectString(0,CKeyMap::default_kmname);
 		OnSelchangeKeyMap();
 	}
 	else
-		MessageBox(LoadString(IDS_UNABLE_TO_DEL_KEYMAP), LoadString(IDS_ERR), MB_ICONSTOP | MB_OK);
+		MessageBox( LoadString(IDS_UNABLE_TO_DEL_KEYMAP), LoadString(IDS_ERR),MB_ICONSTOP|MB_OK);
 }
 
-void CSitePage::OnSelchangeKeyMap()
+void CSitePage::OnSelchangeKeyMap() 
 {
 	CString kmn;
 	ckeymap.GetWindowText(kmn);
 	BOOL e;
-	if (kmn == CKeyMap::default_kmname)
-		e = FALSE;
+	if(kmn==CKeyMap::default_kmname)
+		e=FALSE;
 	else
-		e = TRUE;
-	::EnableWindow(::GetDlgItem(m_hWnd, IDC_DELMAP), e);
-	::EnableWindow(::GetDlgItem(m_hWnd, IDC_RENAMEMAP), e);
+		e=TRUE;
+	::EnableWindow(::GetDlgItem(m_hWnd,IDC_DELMAP),e);
+	::EnableWindow(::GetDlgItem(m_hWnd,IDC_RENAMEMAP),e);
 }
 
 
 void CSitePage::EnableControls(bool enable)
 {
-	if (! show_use_global)
+	if( ! show_use_global )
 		return;
 
 	HWND child;
-	for (child = ::GetTopWindow(m_hWnd); child; child = ::GetNextWindow(child, GW_HWNDNEXT))
-		::EnableWindow(child, enable);
-	if (enable)
+	for( child = ::GetTopWindow(m_hWnd); child; child = ::GetNextWindow(child, GW_HWNDNEXT) )
+		::EnableWindow( child, enable );
+	if( enable )
 		OnSelchangeKeyMap();
-	::EnableWindow(::GetDlgItem(m_hWnd, IDC_USE_GLOBAL_SETTINGS), TRUE);
+	::EnableWindow( ::GetDlgItem(m_hWnd, IDC_USE_GLOBAL_SETTINGS), TRUE );
 }
 
 void CSitePage::UpdateDisplay()
 {
-	CheckDlgButton(IDC_SHOWSCROLL			, psettings->showscroll);
-	CheckDlgButton(IDC_LOCALECHO			, psettings->localecho);
-	CheckDlgButton(IDC_LINEWRAP				, psettings->line_wrap);
-	CheckDlgButton(IDC_AUTORECONNECT		, psettings->auto_reconnect);
-	CheckDlgButton(IDC_PASTE_AUTOWRAP		, psettings->paste_autowrap);
-	CheckDlgButton(IDC_PREVENT_IDLE			, psettings->prevent_idle);
-	CheckDlgButton(IDC_AUTOBIG5_MOUSE		, psettings->auto_dbcs_mouse);
-	CheckDlgButton(IDC_AUTOBIG5_BACKSPACE	, psettings->auto_dbcs_backspace);
-	CheckDlgButton(IDC_AUTOBIG5_ARROW		, psettings->auto_dbcs_arrow);
-	CheckDlgButton(IDC_AUTOBIG5_DEL			, psettings->auto_dbcs_del);
+	CheckDlgButton(IDC_SHOWSCROLL			,psettings->showscroll		);
+	CheckDlgButton(IDC_LOCALECHO			,psettings->localecho		);
+	CheckDlgButton(IDC_LINEWRAP				,psettings->line_wrap		);
+	CheckDlgButton(IDC_AUTORECONNECT		,psettings->auto_reconnect	);
+	CheckDlgButton(IDC_PASTE_AUTOWRAP		,psettings->paste_autowrap	);
+	CheckDlgButton(IDC_PREVENT_IDLE			,psettings->prevent_idle	);
+	CheckDlgButton(IDC_AUTOBIG5_MOUSE		,psettings->auto_dbcs_mouse	);
+	CheckDlgButton(IDC_AUTOBIG5_BACKSPACE	,psettings->auto_dbcs_backspace	);
+	CheckDlgButton(IDC_AUTOBIG5_ARROW		,psettings->auto_dbcs_arrow	);
+	CheckDlgButton(IDC_AUTOBIG5_DEL			,psettings->auto_dbcs_del	);
 
-	SetDlgItemInt(IDC_LCOUNT			, psettings->line_count, FALSE);
-	SetDlgItemInt(IDC_CONNECTINTERVAL	, psettings->connect_interval, FALSE);
-	SetDlgItemInt(IDC_RECONNECTINTERVAL	, psettings->reconnect_interval, FALSE);
-	SetDlgItemInt(IDC_IDLEINTERVAL		, psettings->idle_interval, FALSE);
-	SetDlgItemInt(IDC_PASTE_AUTOWRAP_COL, psettings->paste_autowrap_col, FALSE);
-	SetDlgItemInt(IDC_ONEPAGE_COL		, psettings->cols_per_page, FALSE);
-	SetDlgItemInt(IDC_ONEPAGE_LINE		, psettings->lines_per_page, FALSE);
+	SetDlgItemInt(IDC_LCOUNT			,psettings->line_count,FALSE			);
+	SetDlgItemInt(IDC_CONNECTINTERVAL	,psettings->connect_interval,FALSE	);
+	SetDlgItemInt(IDC_RECONNECTINTERVAL	,psettings->reconnect_interval,FALSE);
+	SetDlgItemInt(IDC_IDLEINTERVAL		,psettings->idle_interval,FALSE		);
+	SetDlgItemInt(IDC_PASTE_AUTOWRAP_COL,psettings->paste_autowrap_col,FALSE);
+	SetDlgItemInt(IDC_ONEPAGE_COL		,psettings->cols_per_page,FALSE		);
+	SetDlgItemInt(IDC_ONEPAGE_LINE		,psettings->lines_per_page,FALSE		);
 
 	CSpinButtonCtrl spin;
 	spin.m_hWnd = ::GetDlgItem(m_hWnd, IDC_SPINLCOUNT);
-	spin.SetRange32(24, 32767);
+	spin.SetRange32(24,32767);
 	spin.m_hWnd = ::GetDlgItem(m_hWnd, IDC_SPINAUTOWRAPCOL);
-	spin.SetRange32(40, 160);
+	spin.SetRange32(40,160);
 	spin.m_hWnd = ::GetDlgItem(m_hWnd, IDC_SPINONEPAGE_COL);
-	spin.SetRange32(40, 160);
+	spin.SetRange32(40,160);
 	spin.m_hWnd = ::GetDlgItem(m_hWnd, IDC_SPINONEPAGE_LINE);
-	spin.SetRange32(24, 64);
+	spin.SetRange32(24,64);
 	spin.m_hWnd = NULL;
 
 	SetDlgItemText(IDC_STR , psettings->idle_str);
@@ -322,7 +323,7 @@ void CSitePage::UpdateDisplay()
 	ctermtype.AddString("VT220");
 	ctermtype.SetWindowText(psettings->termtype);
 
-	ckeymap.SelectString(0, psettings->key_map_name);
+	ckeymap.SelectString(0,psettings->key_map_name);
 
 	OnSelchangeKeyMap();
 }

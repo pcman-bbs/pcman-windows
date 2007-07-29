@@ -21,14 +21,14 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CPasswdDlg)
 	enum { IDD = IDD_PASSWD };
-	// NOTE: the ClassWizard will add data members here
+		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CPasswdDlg)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation

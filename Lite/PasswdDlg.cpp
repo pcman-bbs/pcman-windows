@@ -16,10 +16,10 @@ static char THIS_FILE[] = __FILE__;
 
 
 CPasswdDlg::CPasswdDlg(CWnd* pParent /*=NULL*/)
-		: CDialog(CPasswdDlg::IDD, pParent)
+	: CDialog(CPasswdDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CPasswdDlg)
-	// NOTE: the ClassWizard will add member initialization here
+		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -32,19 +32,19 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPasswdDlg message handlers
 
-void CPasswdDlg::OnOK()
+void CPasswdDlg::OnOK() 
 {
 	GetDlgItem(IDC_PASSWD)->GetWindowText(passwd);
-	if (!passwd.IsEmpty())
+	if(!passwd.IsEmpty() )
 		CDialog::OnOK();
 }
 
-BOOL CPasswdDlg::OnInitDialog()
+BOOL CPasswdDlg::OnInitDialog() 
 {
 	passwd.Empty();
 	CDialog::OnInitDialog();
 	((CEdit*)GetDlgItem(IDC_PASSWD))->LimitText(16);
-	if (!title.IsEmpty())
+	if( !title.IsEmpty() )
 		SetWindowText(title);
 	return TRUE;
 }

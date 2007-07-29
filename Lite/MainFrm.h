@@ -17,9 +17,9 @@
 #include "AutoComplete.h"	// Added by ClassView
 
 #if defined _COMBO_
-#include "../Combo/adlist.h"
-#include "../Combo/aditem.h"
-#include "../Combo/SearchBar.h"
+	#include "../Combo/adlist.h"
+	#include "../Combo/aditem.h"
+	#include "../Combo/SearchBar.h"
 #endif
 
 #define	CT_MENU		1
@@ -28,8 +28,8 @@
 #define	CT_LAST		4
 #define	CT_CMD		8
 
-const WPARAM AC_MULTIPCMAN	= 0;
-const WPARAM AC_PCMANLOCKED	= 1;
+const WPARAM AC_MULTIPCMAN	=0;
+const WPARAM AC_PCMANLOCKED	=1;
 const char TINY_URL[] = "http://tinyurl.com/create.php?url=";
 const char TINYURL_TEMP_FILENAME[] = "Tinyurl";
 
@@ -49,34 +49,34 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMainFrame)
-public:
+	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void RecalcLayout(BOOL bNotify = TRUE);
-protected:
+	protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
 public:
-	int ConnToIndex(CConn* conn);
-	void SwitchToConn(int index);
-	void SwitchToConn(CConn* conn) { SwitchToConn(ConnToIndex(conn)); }
+	int ConnToIndex( CConn* conn );
+	void SwitchToConn( int index );
+	void SwitchToConn( CConn* conn ) { SwitchToConn( ConnToIndex(conn) ); }
 
 	void UpdateAddressBar();
 	void OnKKmanStyleTab();
 	void OnShowAddressBar();
 	void OnNewConnectionAds(LPCTSTR cmdline);
 	void OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult);
-	LRESULT OnNewConnection(WPARAM wparam, LPARAM lparam);
+	LRESULT OnNewConnection(WPARAM wparam,LPARAM lparam);
 	void OnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 	void UpdateStatus();
 	void UpdateUI();
 
 	void SendFreqStr(CString str , BYTE inf);
 	void LoadFrequentlyUsedStr();
-	void AddToHistoryMenu(CString str);
+	void AddToHistoryMenu(CString str );
 	void AddToTypedHistory(CString address) ;
 	void AddToHistory(CString address);
 
@@ -129,7 +129,7 @@ public:
 
 	CStringArray hotstr;
 	CByteArray hotstr_inf;
-	CArray<ACCEL, ACCEL&> hotstr_acc;
+	CArray<ACCEL,ACCEL&> hotstr_acc;
 	HACCEL hhotstr_acc;
 
 	UINT showcmd;
@@ -150,8 +150,8 @@ public:
 	void OnSwitchBack();
 	void SaveHistory();
 	void LoadHistory();
-	void CloseConn(int i, bool confirm = false);
-	int NewTab(CConn* pCon, BOOL bActive = FALSE, int idx = -1);
+	void CloseConn( int i, bool confirm = false );
+	int NewTab( CConn* pCon, BOOL bActive = FALSE, int idx = -1);
 	void OnUpdateShowAnsiBar(CCmdUI* pCmdUI);
 	void OnUpdateIsSite(CCmdUI* pCmdUI);
 	void OnUpdatePaste(CCmdUI* pCmdUI);
@@ -162,8 +162,8 @@ public:
 	void OnUpdateIsBBS(CCmdUI* pCmdUI);
 	void OnUpdateSetCharset(CCmdUI* pCmdUI);
 	void RestoreWindow();
-	LRESULT OnNotifyIcon(WPARAM wp, LPARAM lp);
-	LRESULT OnHotKey(WPARAM wp, LPARAM lp);
+	LRESULT OnNotifyIcon(WPARAM wp,LPARAM lp);
+	LRESULT OnHotKey(WPARAM wp,LPARAM lp);
 	//{{AFX_MSG(CMainFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSetFocus(CWnd *pOldWnd);
@@ -304,9 +304,9 @@ public:
 
 	void ImportIEFavorites();
 
-	BOOL FindAdFilter(LPCTSTR title, LPCTSTR address);
+	BOOL FindAdFilter(LPCTSTR title,LPCTSTR address );
 	CEdit edit;
-	LRESULT OnRemoveWebConn(WPARAM wparam, LPARAM lparam);
+	LRESULT OnRemoveWebConn(WPARAM wparam,LPARAM lparam);
 	BOOL FilterWebConn(CWebConn* web_conn);
 	void OnToolbarMenuDropDown(NMHDR* pNMHDR, LRESULT* pResult);
 	void OnSearchBarCancel();
@@ -314,14 +314,14 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 protected:
-	void OnUpdateSaveSession(CCmdUI* pCmdUI);
+	void OnUpdateSaveSession( CCmdUI* pCmdUI );
 #if defined(_COMBO_)
 	void OnBrowserFontSize(UINT id);
 #endif
 
-	afx_msg BOOL OnToolTipNeedText(UINT id, NMHDR* nmhdr, LRESULT* r);
+	afx_msg BOOL OnToolTipNeedText(UINT id, NMHDR* nmhdr,LRESULT* r);
 	inline void MinimizeToTray();
-	static LRESULT CALLBACK AddressBarWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	static LRESULT CALLBACK AddressBarWndProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
 	WNDPROC old_address_bar_proc;
 };
 

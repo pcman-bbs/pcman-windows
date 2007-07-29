@@ -1,9 +1,9 @@
 // NOTICE:
 // This piece of code is taken from <http://www.codeproject.com/cpp/aes.asp>.
 // According to that page, the author of this file is George Anescu.
-// Originally, there is no copyright notice in this file, but according to the
+// Originally, there is no copyright notice in this file, but according to the 
 // submission guidlines of CodeProject website <http://www.codeproject.com/info/submit.asp>,
-// if the authors post their code on the website, they should give other developers the
+// if the authors post their code on the website, they should give other developers the 
 // permission to use the code in other projects without further restrictions once the original
 // copyright notice is kept and the users don't take the credit for the work of original authors.
 // This kind of permission is similiar to BSD style, which is compatible with GNU GPL.
@@ -26,7 +26,7 @@ using namespace std;
 //of 128, 192, or 256 bits to encrypt blocks with al length of 128, 192 or 256 bits (all nine combinations of
 //key length and block length are possible). Both block length and key length can be extended very easily to
 // multiples of 32 bits.
-//Rijndael can be implemented very efficiently on a wide range of processors and in hardware.
+//Rijndael can be implemented very efficiently on a wide range of processors and in hardware. 
 //This implementation is based on the Java Implementation used with the Cryptix toolkit found at:
 //http://www.esat.kuleuven.ac.be/~rijmen/rijndael/rijndael.zip
 //Java code authors: Raif S. Naffah, Paulo S. L. M. Barreto
@@ -44,11 +44,11 @@ public:
 	//plaintext block with the previous ciphertext block, and encrypting the resulting value.
 	//In CFB mode a ciphertext block is obtained by encrypting the previous ciphertext block
 	//and xoring the resulting value with the plaintext.
-	enum { ECB = 0, CBC = 1, CFB = 2 };
+	enum { ECB=0, CBC=1, CFB=2 };
 
 private:
-	enum { DEFAULT_BLOCK_SIZE = 16 };
-	enum { MAX_BLOCK_SIZE = 32, MAX_ROUNDS = 14, MAX_KC = 8, MAX_BC = 8 };
+	enum { DEFAULT_BLOCK_SIZE=16 };
+	enum { MAX_BLOCK_SIZE=32, MAX_ROUNDS=14, MAX_KC=8, MAX_BC=8 };
 
 	//Auxiliary Functions
 	//Multiply two elements of GF(2^m)
@@ -60,7 +60,7 @@ private:
 	//Convenience method used in generating Transposition Boxes
 	static int Mul4(int a, char b[])
 	{
-		if (a == 0)
+		if(a == 0)
 			return 0;
 		a = sm_log[a & 0xFF];
 		int a0 = (b[0] != 0) ? sm_alog[(a + sm_log[b[0] & 0xFF]) % 255] & 0xFF : 0;
@@ -82,16 +82,16 @@ public:
 	// chain      - initial chain block for CBC and CFB modes.
 	// keylength  - 16, 24 or 32 bytes
 	// blockSize  - The block size in bytes of this Rijndael (16, 24 or 32 bytes).
-	void MakeKey(char const* key, char const* chain, int keylength = DEFAULT_BLOCK_SIZE, int blockSize = DEFAULT_BLOCK_SIZE);
+	void MakeKey(char const* key, char const* chain, int keylength=DEFAULT_BLOCK_SIZE, int blockSize=DEFAULT_BLOCK_SIZE);
 
 private:
 	//Auxiliary Function
 	void Xor(char* buff, char const* chain)
 	{
-		if (false == m_bKeyInit)
+		if(false==m_bKeyInit)
 			throw exception(sm_szErrorMsg1);
-		for (int i = 0; i < m_blockSize; i++)
-			*(buff++) ^= *(chain++);
+		for(int i=0; i<m_blockSize; i++)
+			*(buff++) ^= *(chain++);	
 	}
 
 	//Convenience method to encrypt exactly one block of plaintext, assuming
@@ -109,22 +109,22 @@ private:
 public:
 	//Encrypt exactly one block of plaintext.
 	// in           - The plaintext.
-	// result       - The ciphertext generated from a plaintext using the key.
-	void EncryptBlock(char const* in, char* result);
-
+    // result       - The ciphertext generated from a plaintext using the key.
+    void EncryptBlock(char const* in, char* result);
+	
 	//Decrypt exactly one block of ciphertext.
 	// in         - The ciphertext.
 	// result     - The plaintext generated from a ciphertext using the session key.
 	void DecryptBlock(char const* in, char* result);
 
-	void Encrypt(char const* in, char* result, size_t n, int iMode = ECB);
-
-	void Decrypt(char const* in, char* result, size_t n, int iMode = ECB);
+	void Encrypt(char const* in, char* result, size_t n, int iMode=ECB);
+	
+	void Decrypt(char const* in, char* result, size_t n, int iMode=ECB);
 
 	//Get Key Length
 	int GetKeyLength()
 	{
-		if (false == m_bKeyInit)
+		if(false==m_bKeyInit)
 			throw exception(sm_szErrorMsg1);
 		return m_keylength;
 	}
@@ -132,15 +132,15 @@ public:
 	//Block Size
 	int	GetBlockSize()
 	{
-		if (false == m_bKeyInit)
+		if(false==m_bKeyInit)
 			throw exception(sm_szErrorMsg1);
 		return m_blockSize;
 	}
-
+	
 	//Number of Rounds
 	int GetRounds()
 	{
-		if (false == m_bKeyInit)
+		if(false==m_bKeyInit)
 			throw exception(sm_szErrorMsg1);
 		return m_iROUNDS;
 	}
@@ -158,21 +158,21 @@ private:
 	static const int sm_alog[256];
 	static const int sm_log[256];
 	static const char sm_S[256];
-	static const char sm_Si[256];
-	static const int sm_T1[256];
-	static const int sm_T2[256];
-	static const int sm_T3[256];
-	static const int sm_T4[256];
-	static const int sm_T5[256];
-	static const int sm_T6[256];
-	static const int sm_T7[256];
-	static const int sm_T8[256];
-	static const int sm_U1[256];
-	static const int sm_U2[256];
-	static const int sm_U3[256];
-	static const int sm_U4[256];
-	static const char sm_rcon[30];
-	static const int sm_shifts[3][4][2];
+    static const char sm_Si[256];
+    static const int sm_T1[256];
+    static const int sm_T2[256];
+    static const int sm_T3[256];
+    static const int sm_T4[256];
+    static const int sm_T5[256];
+    static const int sm_T6[256];
+    static const int sm_T7[256];
+    static const int sm_T8[256];
+    static const int sm_U1[256];
+    static const int sm_U2[256];
+    static const int sm_U3[256];
+    static const int sm_U4[256];
+    static const char sm_rcon[30];
+    static const int sm_shifts[3][4][2];
 	//Error Messages
 	static char const* sm_szErrorMsg1;
 	static char const* sm_szErrorMsg2;
@@ -181,7 +181,7 @@ private:
 	//Encryption (m_Ke) round key
 	int m_Ke[MAX_ROUNDS+1][MAX_BC];
 	//Decryption (m_Kd) round key
-	int m_Kd[MAX_ROUNDS+1][MAX_BC];
+    int m_Kd[MAX_ROUNDS+1][MAX_BC];
 	//Key Length
 	int m_keylength;
 	//Block Size

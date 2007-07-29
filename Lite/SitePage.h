@@ -43,15 +43,15 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CSitePage)
-public:
+	public:
 	virtual void OnOK();
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
 	void UpdateDisplay();
-	void EnableControls(bool enable);
+	void EnableControls( bool enable );
 	// Generated message map functions
 	//{{AFX_MSG(CSitePage)
 	virtual BOOL OnInitDialog();

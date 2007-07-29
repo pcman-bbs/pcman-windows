@@ -15,15 +15,17 @@ static char THIS_FILE[] = __FILE__;
 // CCustomToolBar
 
 CCustomToolBar::CCustomToolBar()
-{}
+{
+}
 
 CCustomToolBar::~CCustomToolBar()
-{}
+{
+}
 
 
 BEGIN_MESSAGE_MAP(CCustomToolBar, CToolBar)
 	//{{AFX_MSG_MAP(CCustomToolBar)
-	ON_NOTIFY_REFLECT(TBN_GETBUTTONINFO, OnToolBarGetButtonInfo)
+	ON_NOTIFY_REFLECT(TBN_GETBUTTONINFO,OnToolBarGetButtonInfo)
 	ON_NOTIFY_REFLECT(TBN_BEGINADJUST, OnToolBarBeginAdjust)
 	ON_NOTIFY_REFLECT(TBN_ENDADJUST, OnToolBarEndAdjust)
 	ON_NOTIFY_REFLECT(TBN_QUERYDELETE, OnToolBarQueryDelete)
@@ -32,7 +34,7 @@ BEGIN_MESSAGE_MAP(CCustomToolBar, CToolBar)
 	ON_NOTIFY_REFLECT(TBN_RESET, OnToolBarReset)
 	ON_WM_CONTEXTMENU()
 	//}}AFX_MSG_MAP
-	ON_COMMAND(1000, OnCustomize)
+	ON_COMMAND(1000,OnCustomize)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -40,25 +42,25 @@ END_MESSAGE_MAP()
 
 void CCustomToolBar::OnToolBarGetButtonInfo(NMHDR *pnmhdr, LRESULT *r)
 {
-	NMTOOLBAR* nmt = (NMTOOLBAR*)pnmhdr;
-	if (nmt->iItem < 0 || nmt->iItem >= inf->allcount)
+	NMTOOLBAR* nmt=(NMTOOLBAR*)pnmhdr;
+	if(nmt->iItem<0 || nmt->iItem >= inf->allcount)
 	{
-		*r = FALSE;
+		*r=FALSE;
 		return;
 	}
-	memcpy(&nmt->tbButton, &inf->pbtns[nmt->iItem], sizeof(TBBUTTON));
+	memcpy(&nmt->tbButton,&inf->pbtns[nmt->iItem],sizeof(TBBUTTON));
 	CString str;
 	str.LoadString(inf->pbtns[nmt->iItem].idCommand);
-	strncpy(nmt->pszText, LPCTSTR(str) + 1, nmt->cchText);
-	*r = TRUE;
+	strncpy(nmt->pszText,LPCTSTR(str)+1,nmt->cchText);
+	*r=TRUE;
 }
 
-void CCustomToolBar::OnContextMenu(CWnd* pWnd, CPoint point)
+void CCustomToolBar::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
 	CMenu pop;
 	pop.CreatePopupMenu();
-	pop.AppendMenu(MF_STRING, 1000, LoadString(IDS_CUSTOMIZE_TOOLBAR));
-	pop.TrackPopupMenu(TPM_LEFTALIGN, point.x, point.y, this);
+	pop.AppendMenu(MF_STRING,1000, LoadString( IDS_CUSTOMIZE_TOOLBAR ) );
+	pop.TrackPopupMenu(TPM_LEFTALIGN,point.x,point.y,this);
 }
 
 void CCustomToolBar::OnCustomize()
@@ -82,6 +84,7 @@ void CCustomToolBar::OnToolBarEndAdjust(NMHDR *pnmhdr, LRESULT *r)
 
 void CCustomToolBar::OnToolBarBeginAdjust(NMHDR *pnmhdr, LRESULT *r)
 {
+
 }
 
 void CCustomToolBar::OnToolBarReset(NMHDR *pnmhdr, LRESULT *r)
@@ -92,21 +95,21 @@ void CCustomToolBar::OnToolBarReset(NMHDR *pnmhdr, LRESULT *r)
 
 BOOL CCustomToolBar::LoadToolBar(CCustomToolBarInfo* _inf)
 {
-	inf = _inf;
-	for (int i = 0;i < inf->count;i++)
-		GetToolBarCtrl().AddButtons(1, &inf->pbtns[ inf->index[i] ]);
+	inf=_inf;
+	for(int i=0;i<inf->count;i++)
+		GetToolBarCtrl().AddButtons(1,&inf->pbtns[ inf->index[i] ]);
 	GetToolBarCtrl().AutoSize();
 	return TRUE;
 }
 
 void CCustomToolBar::Default()
 {
-	GetToolBarCtrl().AddButtons(inf->allcount, inf->pbtns);
+	GetToolBarCtrl().AddButtons(inf->allcount,inf->pbtns);
 }
 
 void CCustomToolBar::DeleteAllButtons()
 {
-	int c = GetToolBarCtrl().GetButtonCount();
-	while (c--)
+	int c=GetToolBarCtrl().GetButtonCount();
+	while(c--)
 		GetToolBarCtrl().DeleteButton(0);
 }

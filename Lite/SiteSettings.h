@@ -13,15 +13,15 @@
 #include "KeyMap.h"	// Added by ClassView
 #include "TriggerList.h"	// Added by ClassView
 
-enum EncodingConv {GB2BIG5 = 1, BIG52GB = 2};
+enum EncodingConv {GB2BIG5=1, BIG52GB=2};
 
-class CSiteSettings
+class CSiteSettings 
 {
 public:
 	CSiteSettings();
 	~CSiteSettings();
 public:
-	static CString GetFilePath(CString cfg_path);
+	static CString GetFilePath( CString cfg_path );
 	void Save(LPCTSTR fpath);
 	BOOL Load(LPCTSTR fpath);
 //	pure data section
@@ -62,50 +62,50 @@ public:
 
 	inline bool operator==(CSiteSettings &ss)
 	{
-		return !memcmp(this, &ss, DWORD(&key_map_name) - DWORD(this)) &&
-			   termtype == ss.termtype &&
-			   idle_str == ss.idle_str &&
-			   esc_convert == ss.esc_convert &&
-			   text_output_conv == ss.text_output_conv &&
-			   text_input_conv == ss.text_input_conv &&
-			   !strncmp(key_map_name, ss.key_map_name, 10);
+		return !memcmp(this,&ss,DWORD(&key_map_name)-DWORD(this)) &&
+			termtype==ss.termtype &&
+			idle_str==ss.idle_str &&
+			esc_convert==ss.esc_convert &&
+			text_output_conv==ss.text_output_conv &&
+			text_input_conv==ss.text_input_conv &&
+			!strncmp(key_map_name,ss.key_map_name,10);
 	}
 
 	inline bool operator !=(CSiteSettings &ss)
 	{	return !operator==(ss);	}
-
+	
 	inline void Default();
 };
 
 inline void CSiteSettings::Default()
 {
-	line_count = 72;
-	idle_interval = 180;
-	connect_interval = 15;
-	reconnect_interval = 0;
+	line_count=72;
+	idle_interval=180;
+	connect_interval=15;
+	reconnect_interval=0;
 
-	prevent_idle = 1;
-	auto_reconnect = 1;
+	prevent_idle=1;
+	auto_reconnect=1;
 
-	showscroll = 1;
-	auto_dbcs_mouse = 1;
-	auto_dbcs_arrow = 1;
-	auto_dbcs_del = 1;
-	auto_dbcs_backspace = 1;
-	localecho = 0;
-	line_wrap = 0;
-	paste_autowrap = 1;
-	paste_autowrap_col = 78;
+	showscroll=1;
+	auto_dbcs_mouse=1;
+	auto_dbcs_arrow=1;
+	auto_dbcs_del=1;
+	auto_dbcs_backspace=1;
+	localecho=0;
+	line_wrap=0;
+	paste_autowrap=1;
+	paste_autowrap_col=78;
 
-	cols_per_page = 80;
-	lines_per_page = 24;
+	cols_per_page=80;
+	lines_per_page=24;
 	key_map_name = CKeyMap::default_kmname;
 
 //	object section
 
-	idle_str = "^[OA^[OB";
-	termtype = "VT100";
-	esc_convert = "\x15";	//	Ctrl+U
+	idle_str="^[OA^[OB";
+	termtype="VT100";
+	esc_convert="\x15";	//	Ctrl+U
 
 	text_output_conv = 0;	// 顯示文字轉碼	0=none, 1=gb2big5, 2=big52gb
 	text_input_conv = 0;		// 輸入文字轉碼	0=none, 1=gb2big5, 2=big52gb
@@ -116,13 +116,12 @@ inline void CSiteSettings::Default()
 //inline void CSiteSettings::CopyFrom(CSiteSettings* newval)
 inline CSiteSettings& CSiteSettings::operator = (CSiteSettings& newval)
 {
-	if (this != &newval)
-	{
-		memcpy(this, &newval, size_t(DWORD(&key_map_name) - DWORD(this)));
-		key_map_name = newval.key_map_name;
-		termtype = newval.termtype;
-		idle_str = newval.idle_str;
-		esc_convert = newval.esc_convert;
+	if( this != &newval ) {
+		memcpy(this,&newval,size_t(DWORD(&key_map_name)-DWORD(this)));
+		key_map_name=newval.key_map_name;
+		termtype=newval.termtype;
+		idle_str=newval.idle_str;
+		esc_convert=newval.esc_convert;
 	}
 	return *this;
 }

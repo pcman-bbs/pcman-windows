@@ -29,14 +29,14 @@ public:
 
 // Implementation
 public:
-	void SetItemText(int i, CString Text);
+	void SetItemText( int i, CString Text );
 
 	inline CConn* GetCon(int i)
 	{
 		TCITEM item;
 		item.mask = TCIF_PARAM;
 		item.lParam = NULL;
-		GetItem(i, &item);
+		GetItem( i, &item);
 		return (CConn*)item.lParam;
 	}
 
@@ -44,7 +44,7 @@ public:
 	CImageList* CreateDragImage(int i);
 	CImageList* dragimg;
 	void UpdateNumberFrom(int idx);
-	BOOL DeleteItem(int nItem);
+	BOOL DeleteItem( int nItem );
 	CPoint oldp;
 	UINT md;
 	int sel;
@@ -53,11 +53,11 @@ public:
 
 	BOOL InsertItem(int nItem, TCITEM* pTabCtrlItem);
 	BOOL InsertItem(UINT nMask, int nItem, LPCTSTR lpszItem,
-					int nImage, LPARAM lParam);
+		int nImage, LPARAM lParam);
 
 	// Generated message map functions
 protected:
-	void DrawItem(LPDRAWITEMSTRUCT LPDS);
+	void DrawItem( LPDRAWITEMSTRUCT LPDS);
 	//{{AFX_MSG(CCustomTabCtrl)
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

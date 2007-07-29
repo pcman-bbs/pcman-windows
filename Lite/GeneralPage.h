@@ -16,7 +16,7 @@ class CGeneralPage : public CPropertyPage
 {
 // Construction
 public:
-
+	
 	CGeneralPage();
 	~CGeneralPage();
 
@@ -30,9 +30,9 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGeneralPage)
-public:
+	public:
 	virtual void OnOK();
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 	void DoDataExchange(CDataExchange* pDX);
 

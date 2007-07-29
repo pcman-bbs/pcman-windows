@@ -21,7 +21,7 @@ Defines for the fVirt field of the Accelerator table structure.
 #define FCONTROL  0x08
 #define FALT      0x10
 */
-const BYTE FNUMPAD = 1 << 6;
+const BYTE FNUMPAD = 1<<6;
 CString HotkeyToStr(BYTE fVirt, WORD key);
 void StrToHotkey(const char* str, BYTE* fVirt, WORD* key);
 

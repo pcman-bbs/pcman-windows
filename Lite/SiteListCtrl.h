@@ -18,7 +18,7 @@ extern const int SEPARATOR_LEN;
 
 class CListDlg;
 
-class CSiteListCtrl : public CDragTreeCtrl
+class CSiteListCtrl : public CDragTreeCtrl  
 {
 public:
 	HTREEITEM GetTopParent(HTREEITEM item);
@@ -29,7 +29,7 @@ public:
 	HTREEITEM FindChildItem(HTREEITEM parent, LPCTSTR key);
 	CString GetItemFilePath(HTREEITEM item);
 	void DeleteItem(HTREEITEM item, BOOL bDelFile);
-	CString GetItemPath(HTREEITEM item, char separator = PATH_SEPARATOR, bool strip = true);
+	CString GetItemPath(HTREEITEM item, char separator = PATH_SEPARATOR, bool strip = true );
 
 	HTREEITEM bbsfavorite;
 	HTREEITEM bbslist;
@@ -38,13 +38,13 @@ public:
 	HTREEITEM wwwfavorite;
 #endif
 	BOOL changed;
-	HTREEITEM CopyTo(HTREEITEM from, HTREEITEM parent, HTREEITEM insert_after, bool prevent_dup = false);
+	HTREEITEM CopyTo(HTREEITEM from, HTREEITEM parent, HTREEITEM insert_after,bool prevent_dup=false);
 	CSiteListCtrl();
 	virtual BOOL CanDrag(HTREEITEM item);
 	virtual ~CSiteListCtrl();
 
 protected:
-	virtual void MoveItem(HTREEITEM item, HTREEITEM target, bool up, bool bcopy);
+	virtual void MoveItem(HTREEITEM item,HTREEITEM target, bool up,bool bcopy);
 
 	//{{AFX_MSG(CSiteListCtrl)
 	//}}AFX_MSG
@@ -59,24 +59,24 @@ inline BOOL CSiteListCtrl::CanCopy(HTREEITEM item)
 
 inline BOOL CSiteListCtrl::CanPaste(HTREEITEM item)
 {
-	return item && !((GetParentItem(item) == home || item == home) && IsItemDir(item));
+	return item && !((GetParentItem(item)==home || item==home) && IsItemDir(item));
 }
 
 inline BOOL CSiteListCtrl::IsItemDir(HTREEITEM item)
 {
-	int image;	GetItemImage(item, image, image);
-	return image == 3;
+	int image;	GetItemImage(item,image,image);
+	return image==3;
 }
 
 
 inline BOOL CSiteListCtrl::IsDefaultItem(HTREEITEM item)
 {
-	return (item == bbsfavorite ||
-			item == bbslist ||
-#if defined(_COMBO_)
-			item == wwwfavorite ||
-#endif
-			item == home);
+	return (item==bbsfavorite ||
+			item==bbslist ||
+		#if defined(_COMBO_)
+			item==wwwfavorite ||
+		#endif
+			item==home);	
 }
 
 

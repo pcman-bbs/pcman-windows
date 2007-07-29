@@ -20,8 +20,8 @@ class CKeyMapDlg : public CDialog
 
 // Construction
 public:
-	inline BOOL CKeyMapDlg::IsAdd(){return ::GetDlgCtrlID(addbtn) == IDC_SAVEKEY;}
-	inline BOOL CKeyMapDlg::IsEdit(){return ::GetDlgCtrlID(editbtn) == IDC_SAVEKEY;}
+	inline BOOL CKeyMapDlg::IsAdd(){return ::GetDlgCtrlID(addbtn)==IDC_SAVEKEY;}
+	inline BOOL CKeyMapDlg::IsEdit(){return ::GetDlgCtrlID(editbtn)==IDC_SAVEKEY;}
 	void CKeyMapDlg::DoDataExchange(CDataExchange* pDX);
 
 	void LeaveEditMode();
@@ -50,9 +50,9 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CKeyMapDlg)
-public:
+	public:
 	virtual void OnOK();
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation

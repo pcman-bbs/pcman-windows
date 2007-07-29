@@ -11,18 +11,18 @@
 
 #include <afx.h>
 
-class CChiConv
+class CChiConv  
 {
 public:
 	void Release();
 	void AddRef(){m_Ref++;}
 	const unsigned char* GetBig52GBTab();
 	const unsigned char* GetGB2Big5Tab();
-	void Big52GB(const char *text_in, char *text_out, int len);
-	void GB2Big5(const char *text_in, char *text_out, int len);
+	void Big52GB( const char *text_in, char *text_out, int len );
+	void GB2Big5( const char *text_in, char *text_out, int len );
 	CChiConv();
 	virtual ~CChiConv();
-	void SetTablePath(CString tab_dir);
+	void SetTablePath( CString tab_dir );
 
 protected:
 	CString m_TabDirPath;

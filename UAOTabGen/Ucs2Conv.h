@@ -11,8 +11,8 @@
 
 #include <windows.h>
 
-#define B2U_TAB_SIZE 39564 +2
-#define U2B_TAB_SIZE 130814+2
+#define B2U_TAB_SIZE 39564 +2 
+#define U2B_TAB_SIZE 130814+2 
 
 class CUcs2Conv
 {

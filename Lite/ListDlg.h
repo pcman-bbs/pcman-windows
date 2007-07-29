@@ -16,8 +16,8 @@
 #include "SiteListCtrl.h"	// Added by ClassView
 #include "SitePage.h"	// Added by ClassView
 
-LPBYTE enc_str(LPCTSTR _src, LPCTSTR key, long& rlen);
-CString dec_str(LPBYTE src, LPCTSTR key, long len);
+LPBYTE enc_str(LPCTSTR _src,LPCTSTR key,long& rlen);
+CString dec_str(LPBYTE src,LPCTSTR key,long len);
 const char SITESLIST_UPDATE_URL[] = "http://free.ym.edu.tw/pcman/site_list.big5";
 
 class CListDlg : public CDialog
@@ -28,9 +28,9 @@ public:
 	HTREEITEM copyitem;
 	CString m_InitPath;
 	void LoadSite(HTREEITEM parent, LPCTSTR fpath);
-	void SaveSite(register CFile& file, HTREEITEM parent);
+	void SaveSite(register CFile& file,HTREEITEM parent);
 	CSiteListCtrl sites;
-	HTREEITEM FindSite(HTREEITEM item, LPCTSTR str);
+	HTREEITEM FindSite(HTREEITEM item,LPCTSTR str);
 	CDlgLayout dlgl;
 
 	void LoadSites();
@@ -44,19 +44,19 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CListDlg)
 	enum { IDD = IDD_LIST };
-	// NOTE: the ClassWizard will add data members here
+		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CListDlg)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	void AddSite(register CArchive* ar, HTREEITEM parent, char* str);
+	void AddSite(register CArchive* ar,HTREEITEM parent, char* str);
 	// Generated message map functions
 	//{{AFX_MSG(CListDlg)
 	afx_msg void OnCancel();

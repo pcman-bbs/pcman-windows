@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "Rijndael.h"
 
-class CAES : public CRijndael
+class CAES : public CRijndael  
 {
 public:
 	void EnterPassword(CString passwd);

@@ -17,7 +17,7 @@ protected :
 
 public :
 
-	CBrowseDirDlg(CWnd* pParent , LPCTSTR lpstrTitle);
+	CBrowseDirDlg( CWnd* pParent , LPCTSTR lpstrTitle);
 	~CBrowseDirDlg();
 	int DoModal();
 	inline LPCTSTR GetPath()

@@ -13,7 +13,7 @@
 #include "webbrowser.h"
 #include <afxtempl.h>
 
-class CWebConn : public CConn
+class CWebConn : public CConn  
 {
 public:
 	void ClearAllFlags()

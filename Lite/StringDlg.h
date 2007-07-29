@@ -17,8 +17,8 @@
 
 class CStringDlgListCtrl : public CListCtrl
 {
-public:
-	afx_msg void CStringDlgListCtrl::OnKeyDown(UINT ch, UINT n, UINT f);
+	public:
+	afx_msg void CStringDlgListCtrl::OnKeyDown(UINT ch,UINT n,UINT f);
 	DECLARE_MESSAGE_MAP()
 };
 
@@ -27,9 +27,9 @@ class CStringDlg : public CDialog
 // Construction
 public:
 
-class MyStringArray : public CStringArray
+	class MyStringArray : public CStringArray
 	{
-	public:
+		public:
 		CDWordArray inf;
 	};
 
@@ -71,7 +71,7 @@ class MyStringArray : public CStringArray
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CStringDlg)
-public:
+	public:
 	//}}AFX_VIRTUAL
 
 // Implementation

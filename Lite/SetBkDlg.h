@@ -21,14 +21,14 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CSetBkDlg)
 	enum { IDD = IDD_SETBK };
-	// NOTE: the ClassWizard will add data members here
+		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CSetBkDlg)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation

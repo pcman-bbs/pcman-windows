@@ -19,20 +19,20 @@ IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CMainFrame)
-	// NOTE - the ClassWizard will add and remove mapping macros here.
-	//    DO NOT EDIT what you see in these blocks of generated code !
+		// NOTE - the ClassWizard will add and remove mapping macros here.
+		//    DO NOT EDIT what you see in these blocks of generated code !
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
-	{
-		ID_SEPARATOR,           // status line indicator
-		ID_INDICATOR_CAPS,
-		ID_INDICATOR_NUM,
-		ID_INDICATOR_SCRL,
-	};
+{
+	ID_SEPARATOR,           // status line indicator
+	ID_INDICATOR_CAPS,
+	ID_INDICATOR_NUM,
+	ID_INDICATOR_SCRL,
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame construction/destruction
@@ -40,11 +40,12 @@ static UINT indicators[] =
 CMainFrame::CMainFrame()
 {
 	// TODO: add member initialization code here
-
+	
 }
 
 CMainFrame::~CMainFrame()
-{}
+{
+}
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -52,20 +53,20 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	// create a view to occupy the client area of the frame
 	if (!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
-						  CRect(0, 0, 0, 0), this, AFX_IDW_PANE_FIRST, NULL))
+		CRect(0, 0, 0, 0), this, AFX_IDW_PANE_FIRST, NULL))
 	{
 		TRACE0("Failed to create view window\n");
 		return -1;
 	}
-
+	
 	if (!m_wndToolBar.CreateEx(this) ||
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
 	{
 		TRACE0("Failed to create toolbar\n");
 		return -1;      // fail to create
 	}
-	if (!m_wndDlgBar.Create(this, IDR_MAINFRAME,
-							CBRS_ALIGN_TOP, AFX_IDW_DIALOGBAR))
+	if (!m_wndDlgBar.Create(this, IDR_MAINFRAME, 
+		CBRS_ALIGN_TOP, AFX_IDW_DIALOGBAR))
 	{
 		TRACE0("Failed to create dialogbar\n");
 		return -1;		// fail to create
@@ -81,7 +82,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	if (!m_wndStatusBar.Create(this) ||
 		!m_wndStatusBar.SetIndicators(indicators,
-									  sizeof(indicators) / sizeof(UINT)))
+		  sizeof(indicators)/sizeof(UINT)))
 	{
 		TRACE0("Failed to create status bar\n");
 		return -1;      // fail to create
@@ -89,7 +90,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// TODO: Remove this if you don't want tool tips
 	m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
-							 CBRS_TOOLTIPS | CBRS_FLYBY);
+		CBRS_TOOLTIPS | CBRS_FLYBY);
 
 	EnableToolTips();
 
@@ -98,7 +99,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	if (!CFrameWnd::PreCreateWindow(cs))
+	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
@@ -145,8 +146,8 @@ BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO*
 
 BOOL CMainFrame::OnToolTipNeedText(UINT id, NMHDR *nmhdr, LRESULT *r)
 {
-	NMTTDISPINFO* ptt = (NMTTDISPINFO*)nmhdr;
-	ptt->lpszText = (LPSTR)(LPCTSTR)"TEST!!!!";
+	NMTTDISPINFO* ptt=(NMTTDISPINFO*)nmhdr;
+	ptt->lpszText=(LPSTR)(LPCTSTR)"TEST!!!!";
 
 	return TRUE;
 }

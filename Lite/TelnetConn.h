@@ -20,20 +20,20 @@
 class CTermView;
 class CDownloadArticleDlg;
 
-int find_sub_str(char* str, char* sub);
+int find_sub_str(char* str,char* sub);
 
 class CTelnetConn : public CConn
 {
-	friend class CDownloadArticleDlg;
+friend class CDownloadArticleDlg;
 // Attributes
 public:
 	enum{
-		MAX_LINES_PER_PAGE = 64,
-		MAX_COLS_PER_PAGE = 160,
-		MIN_LINE_PER_PAGE = 24,
-		MIN_COLS_PER_PAGE = 40,
-		MAX_LINE_COUNT = 32767,
-		MIN_LINE_COUNT = 24
+		MAX_LINES_PER_PAGE=64,
+		MAX_COLS_PER_PAGE=160,
+		MIN_LINE_PER_PAGE=24,
+		MIN_COLS_PER_PAGE=40,
+		MAX_LINE_COUNT=32767,
+		MIN_LINE_COUNT=24
 	};
 
 	unsigned short	port;
@@ -74,15 +74,15 @@ public:
 	BYTE cur_attr;			//目前的螢幕字元屬性
 	BYTE attr_flags;	//螢幕字元屬性用的暫存flag，儲存是否反相等資訊
 
-BYTE ansi_mode: 1;
-BYTE insert_mode: 1;
+	BYTE ansi_mode:1;
+	BYTE insert_mode:1;
 
-BYTE is_getting_article : 1;
-BYTE get_article_with_ansi : 1;
-BYTE get_article_in_editor : 1;
+	BYTE is_getting_article : 1;
+	BYTE get_article_with_ansi : 1;
+	BYTE get_article_in_editor : 1;
 
 //	Delay Send Data
-	CList<CTelnetConnDelayedSend, CTelnetConnDelayedSend> delay_send;
+	CList<CTelnetConnDelayedSend,CTelnetConnDelayedSend> delay_send;
 
 	static CString downloaded_article;
 
@@ -93,8 +93,8 @@ public:
 // Operations
 public:
 	void CopyArticleComplete(bool cancel = false);
-	void CopyArticle(bool with_color, bool in_editor);
-	CString GetLineWithAnsi(long line);
+	void CopyArticle( bool with_color, bool in_editor );
+	CString GetLineWithAnsi( long line );
 	int IsEndOfArticleReached();
 	void SendNaws();
 	void SendMacroString(CString str);
@@ -102,26 +102,26 @@ public:
 	inline int GetLineBufLen(int _cols_per_page);
 	inline LPBYTE GetLineAttr(const char* line);
 	inline LPBYTE GetLineAttr(const int line);
-	inline LPBYTE GetLineAttr(const int line, const int len);
+	inline LPBYTE GetLineAttr(const int line,const int len);
 	inline void InitNewLine(char* line);
 	void Home();
 	void End();
-	void Delete(int num = 1);
-	inline void SetHyperLink(long i, BOOL haslink = TRUE);
+	void Delete(int num=1);
+	inline void SetHyperLink(long i,BOOL haslink=TRUE);
 	inline BOOL GetHyperLink(const char* line);
 	inline BOOL GetHyperLink(long i);
 	inline void SetUpdateWholeLine(long line);
 	inline BOOL GetUpdateLine(long line);
 	inline void RemoveUpdateLine(long line);
-	void SetUpdateLine(long line, BYTE curx);
-	void Back(int num = 1);
-	void EditorLineBack(LPSTR newline, LPBYTE newlineatb, int l);
+	void SetUpdateLine(long line,BYTE curx);
+	void Back(int num=1);
+	void EditorLineBack(LPSTR newline,LPBYTE newlineatb,int l);
 	void EditorCarriageRetiurn();
-	void EditorLineFeed(LPSTR newline, LPBYTE newlineatb, int l);
-	BOOL IsEmptyLine(LPSTR line, int len);
+	void EditorLineFeed(LPSTR newline,LPBYTE newlineatb,int l);
+	BOOL IsEmptyLine(LPSTR line,int len);
 	inline char* AllocNewLine();
-	char* ResizeLine(int line, int newl);
-	void ReSizeBuffer(long new_line_count, int new_cols_per_page, int new_lines_per_page);
+	char* ResizeLine(int line,int newl);
+	void ReSizeBuffer(long new_line_count,int new_cols_per_page,int new_lines_per_page);
 	inline void ProcessAnsiEscapeSequence();
 	inline void SetCurrentAttributes(USHORT clr);
 	inline void GoUp(int p);
@@ -131,8 +131,8 @@ public:
 	inline void LineFeed(int param);
 	inline void ScrollUp();
 	inline void ScrollDown();
-	inline void SetScrollRange(int pt, int progress_bar);
-	inline void GotoXY(int line, int col);
+	inline void SetScrollRange(int pt,int progress_bar);
+	inline void GotoXY(int line,int col);
 	inline void InsertLines(int num);
 	void ClearScreen(int param);
 	inline void ClearCurrentLine(int param);
@@ -150,18 +150,18 @@ public:
 
 	inline int Close();
 	inline int Shutdown();
-	inline int Recv(void* buf, int len);
-	inline void Connect(sockaddr* addr, int len);
+	inline int Recv(void* buf,int len);
+	inline void Connect(sockaddr* addr,int len);
 	BOOL Create();
 	int SendString(LPCTSTR str);
-	void LocalEcho(void* str, int len);
+	void LocalEcho(void* str,int len);
 	void ReceiveData();
 	void CreateBuffer();
 	void CheckStrTrigger();
-	int Send(const void* lpBuf, int nBufLen);
+	int Send( const void* lpBuf, int nBufLen);
 	void CheckHyperLinks();
 	static void SetFgColor(BYTE &attr, BYTE fg);
-	static void SetBgColor(BYTE& attr, BYTE bk);
+	static void SetBgColor(BYTE& attr,BYTE bk);
 	void LineFeed();
 	void UpdateLine(int line);
 	void OnClose(int nErrorCode);
@@ -173,21 +173,21 @@ public:
 	{
 		CConn::ClearAllFlags();
 		is_telnet = true;
-
-		scr_top = 0;
+		
+		scr_top=0;
 		scr_bottom = site_settings.lines_per_page - 1;
 	}
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CTelnetConn)
-public:
+	public:
 	virtual void OnReceive(int nErrorCode);
 	virtual void OnConnect(int nErrorCode);
 	//}}AFX_VIRTUAL
 
 	// Generated message map functions
 	//{{AFX_MSG(CTelnetConn)
-	// NOTE - the ClassWizard will add and remove member functions here.
+		// NOTE - the ClassWizard will add and remove member functions here.
 	//}}AFX_MSG
 
 // Implementation
@@ -197,19 +197,19 @@ protected:
 
 int CTelnetConn::Close()
 {
-	int r =::closesocket(telnet);
-	telnet = 0;
+	int r=::closesocket(telnet);
+	telnet=0;
 	return r;
 }
 
 void CTelnetConn::Connect(sockaddr *addr, int len)
 {
-	::connect(telnet, addr, len);
+	::connect(telnet,addr,len);
 }
 
 int CTelnetConn::Recv(void *buf, int len)
-{
-	return ::recv(telnet, (char*)buf, len, 0);
+{	
+	return ::recv(telnet,(char*)buf,len,0);
 }
 
 
@@ -219,19 +219,19 @@ int CTelnetConn::Recv(void *buf, int len)
 
 int CTelnetConn::Shutdown()
 {
-	return ::shutdown(telnet, SD_SEND);
+	return ::shutdown(telnet,SD_SEND);
 }
 
 inline void CTelnetConn::SetBgColor(BYTE &attr, BYTE bk)
 {
-	attr &= 143;		//1000,1111b=143d;
-	attr |= (bk << 4);
+	attr&=143;		//1000,1111b=143d;
+	attr|=(bk<<4);
 }
 
 inline void CTelnetConn::SetFgColor(BYTE &attr, BYTE fg)
 {
-	attr &= 248;		//1111,1000b=248d
-	attr |= fg;
+	attr&=248;		//1111,1000b=248d
+	attr|=fg;
 }
 
 inline BOOL CTelnetConn::GetHyperLink(long i)
@@ -240,76 +240,76 @@ inline BOOL CTelnetConn::GetHyperLink(long i)
 inline BOOL CTelnetConn::GetHyperLink(const char* line)
 {	return GetLineAttr(line)[site_settings.cols_per_page+1];	}
 
-inline void CTelnetConn::SetHyperLink(long i, BOOL haslink /*=TRUE*/)
-{	GetLineAttr(i)[site_settings.cols_per_page+1] = (BYTE)haslink;	}
+inline void CTelnetConn::SetHyperLink(long i,BOOL haslink /*=TRUE*/ )
+{	GetLineAttr(i)[site_settings.cols_per_page+1]=(BYTE)haslink;	}
 
 
 inline void CTelnetConn::Home()
 {
-	cursor_pos.x = 0;
+	cursor_pos.x=0;
 	UpdateCursorPos();
 }
 
 
 inline LPBYTE CTelnetConn::GetLineAttr(const char *line)
 {
-	return LPBYTE(line + site_settings.cols_per_page + 5);
+	return LPBYTE(line+site_settings.cols_per_page+5);
 }
 
 inline LPBYTE CTelnetConn::GetLineAttr(const int line)
 {
-	return LPBYTE(screen[line] + site_settings.cols_per_page + 5);
+	return LPBYTE(screen[line]+site_settings.cols_per_page+5);
 }
 
-inline LPBYTE CTelnetConn::GetLineAttr(const int line, const int len)
+inline LPBYTE CTelnetConn::GetLineAttr(const int line,const int len)
 {
-	return LPBYTE(screen[line] + len + 5);
+	return LPBYTE(screen[line]+len+5);
 }
 
 inline void CTelnetConn::InitNewLine(char *line)
 {
-	LPBYTE attr = GetLineAttr(line);
-	memset(line, ' ', site_settings.cols_per_page);
-	*(DWORD*)(line + site_settings.cols_per_page) = 0;
-	memset(attr, 7, site_settings.cols_per_page);
-	*(DWORD*)(attr + site_settings.cols_per_page) = 0;
-	*(DWORD*)(attr - 4) = 0;
+	LPBYTE attr=GetLineAttr(line);
+	memset(line,' ',site_settings.cols_per_page);
+	*(DWORD*)(line+site_settings.cols_per_page)=0;
+	memset(attr,7,site_settings.cols_per_page);
+	*(DWORD*)(attr+site_settings.cols_per_page)=0;
+	*(DWORD*)(attr-4)=0;
 }
 
 inline char* CTelnetConn::AllocNewLine()
 {
-	char* str = new char[GetLineBufLen()];
+	char* str=new char[GetLineBufLen()];
 	InitNewLine(str);
 	return str;
 }
 
 
 inline int CTelnetConn::GetLineBufLen()
-{	return site_settings.cols_per_page*2 + 10;	}
+{	return site_settings.cols_per_page*2+10;	}
 
 inline int CTelnetConn::GetLineBufLen(int _cols_per_page)
-{	return _cols_per_page*2 + 10;	}
+{	return _cols_per_page*2+10;	}
 
 inline BYTE GetAttrBkColor(BYTE attr)
 {
-	BYTE bk = (attr & 112) >> 4;		//0111,0000b=112d;
+	BYTE bk=(attr&112)>>4;		//0111,0000b=112d;
 	return bk;
 }
 
 inline BYTE GetAttrFgColor(BYTE attr)
 {
-	BYTE fg = attr & 7;		//0000,0111b=7;
-	if (attr&8)
-		fg += 8;		//0000,1000b=8d;
+	BYTE fg=attr&7;		//0000,0111b=7;
+	if(attr&8)
+		fg+=8;		//0000,1000b=8d;
 	return fg;
 }
 
-inline bool IsAttrBlink(BYTE attr)
+inline bool IsAttrBlink( BYTE attr)
 {
 	return !!(attr&128);	//1000,0000b=128d
 }
 
-CString AttrToStr(BYTE prevatb, BYTE attr);
+CString AttrToStr(BYTE prevatb,BYTE attr);
 
 /////////////////////////////////////////////////////////////////////////////
 

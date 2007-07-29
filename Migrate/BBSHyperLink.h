@@ -23,7 +23,7 @@ class CBBSHyperLink
 {
 public:
 	void Default();
-	CArray<CBBSHyperLinkData, CBBSHyperLinkData&> links;
+	CArray<CBBSHyperLinkData,CBBSHyperLinkData&> links;
 	int email;
 	void Save(CFile& file);
 	void Load(CFile& file);

@@ -21,14 +21,14 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CInputNameDlg)
 	enum { IDD = IDD_INPUTNAME };
-	// NOTE: the ClassWizard will add data members here
+		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CInputNameDlg)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
