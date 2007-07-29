@@ -23,8 +23,7 @@ CConnectPage::CConnectPage() : CPropertyPage(CConnectPage::IDD)
 }
 
 CConnectPage::~CConnectPage()
-{
-}
+{}
 
 void CConnectPage::DoDataExchange(CDataExchange* pDX)
 {
@@ -35,10 +34,10 @@ void CConnectPage::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, port, 1, 65535);
 	DDX_Text(pDX, IDC_PORT, port);
 	//}}AFX_DATA_MAP
-	if(name.IsEmpty())
-		name=address;
-	if(port <= 0)
-		port=23;
+	if (name.IsEmpty())
+		name = address;
+	if (port <= 0)
+		port = 23;
 }
 
 
@@ -53,16 +52,16 @@ END_MESSAGE_MAP()
 BOOL CConnectPage::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
-	CComboBox* combo=(CComboBox*)GetDlgItem(IDC_ADDRESS);
+	CComboBox* combo = (CComboBox*)GetDlgItem(IDC_ADDRESS);
 
-	POSITION pos=AppConfig.history.GetHeadPosition();
+	POSITION pos = AppConfig.history.GetHeadPosition();
 	CString str;
-	while(pos)
+	while (pos)
 	{
-		str=AppConfig.history.GetAt(pos);
+		str = AppConfig.history.GetAt(pos);
 		int i;
-		if((i=str.ReverseFind(':'))>=0)
-			str=str.Left(i);
+		if ((i = str.ReverseFind(':')) >= 0)
+			str = str.Left(i);
 		combo->AddString(str);
 		AppConfig.history.GetNext(pos);
 	}

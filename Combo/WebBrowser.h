@@ -39,7 +39,7 @@ public:
 	CWebBrowser();
 	~CWebBrowser()
 	{
-		if(m_TravelLog)
+		if (m_TravelLog)
 			m_TravelLog->Release();
 	}
 
@@ -49,7 +49,7 @@ public:
 // html Data
 public:
 	//{{AFX_DATA(CWebBrowser)
-		// NOTE: the ClassWizard will add data members here
+	// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 // Attributes
@@ -60,16 +60,16 @@ public:
 	void Find();
 	ITravelLogStg* m_TravelLog;
 
-/*	struct TravelLog_Ent
-	{
-		CString Title;
-		CString URL;
-		CString TargetFrameName;
-	};
-	TravelLog_Ent m_CurTravelLog;
-	POSITION m_CurTravelPos;
-	CList<TravelLog_Ent,TravelLog_Ent&> m_TravelLog;
-*/
+	/*	struct TravelLog_Ent
+		{
+			CString Title;
+			CString URL;
+			CString TargetFrameName;
+		};
+		TravelLog_Ent m_CurTravelLog;
+		POSITION m_CurTravelPos;
+		CList<TravelLog_Ent,TravelLog_Ent&> m_TravelLog;
+	*/
 	void SendString(CString str);
 	LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	BOOL PreCreateWindow(CREATESTRUCT &cs);
@@ -94,7 +94,7 @@ public:
 	afx_msg void OnDocumentComplete(LPDISPATCH pDisp, VARIANT FAR* URL);
 	DECLARE_EVENTSINK_MAP()
 
-	protected:
+protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -109,31 +109,31 @@ protected:
 	WPARAM	m_ClickMsg;
 //	LPARAM	m_ClickPos;
 
-	afx_msg void OnParentNotify( UINT message, LPARAM lParam );
-	LRESULT OnAsyncTitleChange( WPARAM wp, LPARAM lp );
+	afx_msg void OnParentNotify(UINT message, LPARAM lParam);
+	LRESULT OnAsyncTitleChange(WPARAM wp, LPARAM lp);
 };
 
 
 inline CString CWebBrowser::GetLocationURL()
 {
-/*	BSTR bstr=NULL;
-	LPDISPATCH m_pBrowserApp=wb_ctrl.GetApplication();
-	if(m_pBrowserApp)
-		m_pBrowserApp->get_LocationURL(&bstr);
-	CString retVal(bstr);
-	return retVal;
-*/
+	/*	BSTR bstr=NULL;
+		LPDISPATCH m_pBrowserApp=wb_ctrl.GetApplication();
+		if(m_pBrowserApp)
+			m_pBrowserApp->get_LocationURL(&bstr);
+		CString retVal(bstr);
+		return retVal;
+	*/
 	return wb_ctrl.get_LocationURL();
 }
 
 inline CString CWebBrowser::GetLocationName()
 {
-/*	BSTR bstr=NULL;
-	if(m_pBrowserApp)
-		m_pBrowserApp->get_LocationName(&bstr);
-	CString retVal(bstr);
-	return retVal;
-*/
+	/*	BSTR bstr=NULL;
+		if(m_pBrowserApp)
+			m_pBrowserApp->get_LocationName(&bstr);
+		CString retVal(bstr);
+		return retVal;
+	*/
 	return wb_ctrl.get_LocationName();
 }
 

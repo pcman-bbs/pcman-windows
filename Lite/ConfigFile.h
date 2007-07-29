@@ -2,7 +2,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 // Name:        config.h
-// Purpose:     Application configuration class dealing with plain text 
+// Purpose:     Application configuration class dealing with plain text
 //              configuration files automatically.
 // Author:      PCMan (Hong Jen Yee)   http://pcman.sayya.org/
 // E-mail:      pcman.tw@gmail.com
@@ -22,10 +22,10 @@
 //	Copyright (C) 2004 - 2007 PCMan
 //	Author: PCMan (Hong Jen Yee) 2004/07/22	07:51 AM
 //	I finally came up with a really smart way to maintain ini file.
-//	Every time I add a variable to CAppConfig, all I need to do is 
+//	Every time I add a variable to CAppConfig, all I need to do is
 //	adding the variable in my "Config Table," and all the data will
-//	be load and save automatically.  This is not the most efficient way. 
-//	In my first version I use some more efficient method, but at last I change 
+//	be load and save automatically.  This is not the most efficient way.
+//	In my first version I use some more efficient method, but at last I change
 //	my code to what it is now.  Because I think in a program not time-critical,
 //	easy-maintaining is much more important.
 
@@ -36,56 +36,60 @@ class CConfigFile
 public:
 
 	enum ValueType {    // type of recognized config value
-        VT_END=0, // last entry of entry array
-        VT_BOOL=1,
-        VT_INT,
-        VT_LONG,
-        VT_SHORT,
-        VT_BYTE,
-        VT_STR, // CString
-        VT_PSTR,    // LPSTR
-        VT_ESTR,    // Escaped CString
-        VT_COLOR,   // COLORREF
-        VT_CUSTOM,  // user defined callback handler with an additinal argument
-        VT_LAST = VT_CUSTOM,
-        VT_SECT,    // point to array of ConfigEntry
-        VT_CUSTOM_SECT // user defined callback handler with an additinal argument
-    };
+		VT_END = 0, // last entry of entry array
+		VT_BOOL = 1,
+		VT_INT,
+		VT_LONG,
+		VT_SHORT,
+		VT_BYTE,
+		VT_STR, // CString
+		VT_PSTR,    // LPSTR
+		VT_ESTR,    // Escaped CString
+		VT_COLOR,   // COLORREF
+		VT_CUSTOM,  // user defined callback handler with an additinal argument
+		VT_LAST = VT_CUSTOM,
+		VT_SECT,    // point to array of ConfigEntry
+		VT_CUSTOM_SECT // user defined callback handler with an additinal argument
+	};
 
-    struct ConfigEntry { // config key/value entry
-        bool finished;
-    	LPCTSTR name;
-        ValueType type;
-        void* data;
-        // void func( bool load, char* line/CString* ret, void* user_data )
-        //void (*func)(bool, void*, void*);
-    };
+	struct ConfigEntry
+	{ // config key/value entry
+		bool finished;
+		LPCTSTR name;
+		ValueType type;
+		void* data;
+		// void func( bool load, char* line/CString* ret, void* user_data )
+		//void (*func)(bool, void*, void*);
+	};
 
-    struct ConfigHandler {
-        ConfigHandler(){}
-        ~ConfigHandler(){}
-        virtual void Load( char* value ) = 0;
-        virtual void Save( CString& value ) = 0;
-    };
+	struct ConfigHandler
+	{
+		ConfigHandler(){}
+		~ConfigHandler(){}
+		virtual void Load(char* value) = 0;
+		virtual void Save(CString& value) = 0;
+	};
 
-    typedef ConfigEntry* ConfigTable;
+	typedef ConfigEntry* ConfigTable;
 
-    CString GetFilePath() { return file_path; }
-    void SetFilePath(CString path) { file_path = path; }
-    bool Save() {
-	    return OnDataExchange(false);	// call virtual function defined in derived class.
-    }
-	bool Load() {
-	    return OnDataExchange(true);	// call virtual function defined in derived class.
-    }
+	CString GetFilePath() { return file_path; }
+	void SetFilePath(CString path) { file_path = path; }
+	bool Save()
+	{
+		return OnDataExchange(false);	// call virtual function defined in derived class.
+	}
+	bool Load()
+	{
+		return OnDataExchange(true);	// call virtual function defined in derived class.
+	}
 	CConfigFile();
-	virtual bool OnDataExchange( bool load ) = 0;
-	bool DoDataExchange( bool load, ConfigTable table );
+	virtual bool OnDataExchange(bool load) = 0;
+	bool DoDataExchange(bool load, ConfigTable table);
 	virtual ~CConfigFile();
 
 private:
-	bool DoSave( ConfigTable table );
-	bool DoLoad( ConfigTable table );
+	bool DoSave(ConfigTable table);
+	bool DoLoad(ConfigTable table);
 
 	ConfigEntry* cur_sect;
 	CString file_path;
@@ -98,7 +102,7 @@ private:
 #define		END_CFG_FILE()		END_CFG_SECTION()
 
 #define     DEFINE_CFG_ENTRY(name, type, variable) \
-                {0, name, CConfigFile::VT_##type, &variable},
+	{0, name, CConfigFile::VT_##type, &variable},
 
 #define	_CFG_BOOL( name, variable)	DEFINE_CFG_ENTRY( name, BOOL, variable )
 #define	CFG_BOOL( variable)	DEFINE_CFG_ENTRY( #variable, BOOL, variable )

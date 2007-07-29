@@ -16,16 +16,15 @@ static char THIS_FILE[] = __FILE__;
 
 CDragTreeCtrl::CDragTreeCtrl()
 {
-	dragitem=NULL;
-	dragimg=NULL;
-	hoveritem=NULL;
-	auto_expand_time=-1;
-	hovertime=0;
+	dragitem = NULL;
+	dragimg = NULL;
+	hoveritem = NULL;
+	auto_expand_time = -1;
+	hovertime = 0;
 }
 
 CDragTreeCtrl::~CDragTreeCtrl()
-{
-}
+{}
 
 
 BEGIN_MESSAGE_MAP(CDragTreeCtrl, CTreeCtrl)
@@ -44,89 +43,88 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDragTreeCtrl message handlers
 
-void CDragTreeCtrl::MoveItem(HTREEITEM item, HTREEITEM target, bool up,bool bcopy)
+void CDragTreeCtrl::MoveItem(HTREEITEM item, HTREEITEM target, bool up, bool bcopy)
 {
-
 }
 
-void CDragTreeCtrl::OnBeginDrag(NMHDR* pNMHDR, LRESULT* pResult) 
+void CDragTreeCtrl::OnBeginDrag(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
-	dragitem=pNMTreeView->itemNew.hItem;
-	dragimg=CreateDragImage(dragitem);
+	dragitem = pNMTreeView->itemNew.hItem;
+	dragimg = CreateDragImage(dragitem);
 
-	this->ModifyStyle(0,TVS_NOTOOLTIPS);
+	this->ModifyStyle(0, TVS_NOTOOLTIPS);
 
-	dragimg->BeginDrag(0,CPoint(-12,-8));
+	dragimg->BeginDrag(0, CPoint(-12, -8));
 	SetCapture();
-	cursor=CanDrag(dragitem)? AfxGetApp()->LoadCursor(IDC_DRAG_CUR)
-		: AfxGetApp()->LoadStandardCursor(IDC_NO);
-	SetCursor( cursor );
+	cursor = CanDrag(dragitem) ? AfxGetApp()->LoadCursor(IDC_DRAG_CUR)
+			 : AfxGetApp()->LoadStandardCursor(IDC_NO);
+	SetCursor(cursor);
 
-	if(auto_expand_time>0)
-		SetTimer(1,200,NULL);
+	if (auto_expand_time > 0)
+		SetTimer(1, 200, NULL);
 	*pResult = 0;
 }
 
 void CDragTreeCtrl::OnExpanded(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	if(dragimg)
+	if (dragimg)
 		dragimg->DragShowNolock(TRUE);
 }
 
-void CDragTreeCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
+void CDragTreeCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	UINT flag;
-	HTREEITEM newitem=HitTest(point,&flag);
-	if(flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON  )
-		if(newitem && dragitem && newitem != dragitem )
+	HTREEITEM newitem = HitTest(point, &flag);
+	if (flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON)
+		if (newitem && dragitem && newitem != dragitem)
 		{
 			dragimg->DragShowNolock(FALSE);
-			if( CanDrag(dragitem) )
+			if (CanDrag(dragitem))
 			{
 				SelectItem(newitem);
-				MoveItem(dragitem,newitem,
-					GetIndex(dragitem,GetRootItem()) > GetIndex(newitem,GetRootItem()),
-					!!HIBYTE(GetKeyState(VK_CONTROL)) );
+				MoveItem(dragitem, newitem,
+						 GetIndex(dragitem, GetRootItem()) > GetIndex(newitem, GetRootItem()),
+						 !!HIBYTE(GetKeyState(VK_CONTROL)));
 			}
 		}
-	if(dragitem)
+	if (dragitem)
 		EndDrag();
 	SelectDropTarget(NULL);
 	CTreeCtrl::OnLButtonUp(nFlags, point);
 }
 
-void CDragTreeCtrl::OnMouseMove(UINT nFlags, CPoint point) 
+void CDragTreeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if(dragitem)
+	if (dragitem)
 	{
 //		dragimg->DragShowNolock(FALSE);
 		SetCursor(cursor);
 		CRect rc;
 		GetClientRect(rc);
-		if(point.y>rc.bottom)
+		if (point.y > rc.bottom)
 		{
 			dragimg->DragShowNolock(FALSE);
-			SendMessage(WM_VSCROLL,MAKEWPARAM(SB_LINEDOWN,0),0);
+			SendMessage(WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
 		}
-		else if(point.y<0)
+		else if (point.y < 0)
 		{
 			dragimg->DragShowNolock(FALSE);
-			SendMessage(WM_VSCROLL,MAKEWPARAM(SB_LINEUP,0),0);
+			SendMessage(WM_VSCROLL, MAKEWPARAM(SB_LINEUP, 0), 0);
 		}
 		UINT flag;
-		HTREEITEM newitem=HitTest(point,&flag);
-		if(flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON  )
+		HTREEITEM newitem = HitTest(point, &flag);
+		if (flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON)
 		{
 			dragimg->DragShowNolock(FALSE);
-			if(newitem != hoveritem)	//如果移動到其他item，重新計時
-				hovertime=0;
-			hoveritem=newitem;
+			if (newitem != hoveritem)	//如果移動到其他item，重新計時
+				hovertime = 0;
+			hoveritem = newitem;
 			SelectDropTarget(newitem);
 		}
 		else
 		{
-			if(GetDropHilightItem())
+			if (GetDropHilightItem())
 			{
 				dragimg->DragShowNolock(FALSE);
 				SelectDropTarget(NULL);
@@ -140,149 +138,149 @@ void CDragTreeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	CTreeCtrl::OnMouseMove(nFlags, point);
 }
 
-void CDragTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CDragTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if(nChar==VK_CONTROL)
+	if (nChar == VK_CONTROL)
 	{
-		if(CanDrag(dragitem))
+		if (CanDrag(dragitem))
 		{
-			cursor= AfxGetApp()->LoadCursor(IDC_COPY_CUR);
+			cursor = AfxGetApp()->LoadCursor(IDC_COPY_CUR);
 			SetCursor(cursor);
 		}
 	}
-	if(!dragitem)
+	if (!dragitem)
 		CTreeCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
-	else if(nChar==VK_ESCAPE)
+	else if (nChar == VK_ESCAPE)
 	{
 		SelectDropTarget(NULL);
 		EndDrag();
 	}
 }
 
-UINT CDragTreeCtrl::OnGetDlgCode() 
+UINT CDragTreeCtrl::OnGetDlgCode()
 {
-	if(dragitem)
+	if (dragitem)
 		return DLGC_WANTALLKEYS;
 	return CTreeCtrl::OnGetDlgCode();
 }
 
 void CDragTreeCtrl::EndDrag()
 {
-	dragitem=NULL;
+	dragitem = NULL;
 	dragimg->EndDrag();
 	delete dragimg;
-	dragimg=NULL;
+	dragimg = NULL;
 
-	this->ModifyStyle(TVS_NOTOOLTIPS,0);
+	this->ModifyStyle(TVS_NOTOOLTIPS, 0);
 	ReleaseCapture();
-	if(auto_expand_time>0)
+	if (auto_expand_time > 0)
 		KillTimer(1);
 }
 
 void CDragTreeCtrl::SetAutoExpandTarget(int time)
 {
-	auto_expand_time=time;
+	auto_expand_time = time;
 }
 
-void CDragTreeCtrl::OnTimer(UINT nIDEvent) 
+void CDragTreeCtrl::OnTimer(UINT nIDEvent)
 {
 	CPoint point;
 	GetCursorPos(&point);
 	ScreenToClient(&point);
-	UINT flag;	HTREEITEM newitem=HitTest(point,&flag);
-	if(flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON  )
+	UINT flag;	HTREEITEM newitem = HitTest(point, &flag);
+	if (flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON)
 	{
-		if(newitem != hoveritem)	//如果移動到其他item，重新計時
+		if (newitem != hoveritem)	//如果移動到其他item，重新計時
 		{
-			hovertime=0;
-			hoveritem=newitem;
+			hovertime = 0;
+			hoveritem = newitem;
 		}
-		else if(hovertime <= auto_expand_time)
+		else if (hovertime <= auto_expand_time)
 		{
-			hovertime+=200;
-			if(hovertime>auto_expand_time &&
-				ItemHasChildren(hoveritem) )
+			hovertime += 200;
+			if (hovertime > auto_expand_time &&
+				ItemHasChildren(hoveritem))
 			{
 				dragimg->DragShowNolock(FALSE);
-				Expand(hoveritem,TVE_EXPAND);
+				Expand(hoveritem, TVE_EXPAND);
 			}
 		}
 	}
 	else
-		hovertime=0;
+		hovertime = 0;
 
 	CTreeCtrl::OnTimer(nIDEvent);
 }
 
 int CDragTreeCtrl::GetIndex(HTREEITEM item, HTREEITEM from)
 {
-	int i=0;
-	for(HTREEITEM _item=from; _item!=item && _item; _item=GetNextSiblingItem(_item) )
-		if(ItemHasChildren(_item))
-			i+=GetIndex(item,GetChildItem(_item));
+	int i = 0;
+	for (HTREEITEM _item = from; _item != item && _item; _item = GetNextSiblingItem(_item))
+		if (ItemHasChildren(_item))
+			i += GetIndex(item, GetChildItem(_item));
 		else
 			i++;
 	return i;
 }
 
 
-void CDragTreeCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CDragTreeCtrl::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if(nChar==VK_CONTROL)
+	if (nChar == VK_CONTROL)
 	{
-		cursor=!dragitem? AfxGetApp()->LoadStandardCursor(IDC_ARROW) :
-			( CanDrag(dragitem) ? AfxGetApp()->LoadCursor(IDC_DRAG_CUR) :
-			AfxGetApp()->LoadStandardCursor(IDC_NO) );
-		SetCursor( cursor );
+		cursor = !dragitem ? AfxGetApp()->LoadStandardCursor(IDC_ARROW) :
+				 (CanDrag(dragitem) ? AfxGetApp()->LoadCursor(IDC_DRAG_CUR) :
+				  AfxGetApp()->LoadStandardCursor(IDC_NO));
+		SetCursor(cursor);
 	}
 	CTreeCtrl::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 HTREEITEM CDragTreeCtrl::PathToItem(LPCTSTR path, HTREEITEM root, TCHAR separator)
 {
-	static char* path_buf=0;
-	if(!path_buf)
+	static char* path_buf = 0;
+	if (!path_buf)
 	{
-		int l=strlen(path)+1;
-		path_buf=new char[l];
-		memcpy(path_buf,path,l);
-		path=path_buf;
+		int l = strlen(path) + 1;
+		path_buf = new char[l];
+		memcpy(path_buf, path, l);
+		path = path_buf;
 	}
 
 	HTREEITEM item;	LPSTR pch;
-	for(pch=LPSTR(path) ; *pch; pch=CharNextExA(CP_ACP,pch,0) )
+	for (pch = LPSTR(path) ; *pch; pch = CharNextExA(CP_ACP, pch, 0))
 	{
-		if(*pch==separator)
+		if (*pch == separator)
 			break;
 	}
-	char ch=*pch;	*pch=0;
-	for(item=GetChildItem(root); item; item=GetNextSiblingItem(item))
+	char ch = *pch;	*pch = 0;
+	for (item = GetChildItem(root); item; item = GetNextSiblingItem(item))
 	{
-		CString text=GetItemText(item);
-		if(text.CompareNoCase(path)==0)
+		CString text = GetItemText(item);
+		if (text.CompareNoCase(path) == 0)
 			break;
 	}
-	if( ch == separator && item)	//如果還沒到終點
-		return PathToItem( pch+1, item, separator );
+	if (ch == separator && item)	//如果還沒到終點
+		return PathToItem(pch + 1, item, separator);
 
 	delete []path_buf;
-	path_buf=NULL;
+	path_buf = NULL;
 	return item;
 }
 
 CString CDragTreeCtrl::GetItemPath(HTREEITEM item, TCHAR separator)
 {
 	char path[2048];
-	char* pbuf=path+2048;
+	char* pbuf = path + 2048;
 	CString text;
-	for( ; item; item=GetParentItem(item) )
+	for (; item; item = GetParentItem(item))
 	{
-		text=GetItemText(item);
-		char* pbuf2=pbuf-(text.GetLength()+1);
-		strcpy(pbuf2,text);
-		*(pbuf-1)=separator;
-		pbuf=pbuf2;
+		text = GetItemText(item);
+		char* pbuf2 = pbuf - (text.GetLength() + 1);
+		strcpy(pbuf2, text);
+		*(pbuf - 1) = separator;
+		pbuf = pbuf2;
 	}
-	path[2048-1]=0;
+	path[2048-1] = 0;
 	return CString(pbuf);
 }

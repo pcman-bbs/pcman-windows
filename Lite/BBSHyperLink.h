@@ -23,7 +23,7 @@ class CBBSHyperLink : public CConfigFile::ConfigHandler
 public:
 	int GetURLType(const char* url);
 	void Default();
-	CArray<CBBSHyperLinkData,CBBSHyperLinkData&> links;
+	CArray<CBBSHyperLinkData, CBBSHyperLinkData&> links;
 	int email;
 	void OpenURL(LPCTSTR url);
 	void Save(CString& section);

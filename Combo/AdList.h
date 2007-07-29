@@ -20,14 +20,14 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CAdList)
 	enum { IDD = IDD_ADLIST };
-		// NOTE: the ClassWizard will add data members here
+	// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAdList)
-	protected:
+protected:
 	//}}AFX_VIRTUAL
 
 // Implementation

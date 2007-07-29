@@ -16,14 +16,13 @@ static char THIS_FILE[] = __FILE__;
 
 CHotkeyEdit::CHotkeyEdit()
 {
-	fVirt=0;
-	key=0;
-	accepted=FALT|FSHIFT|FCONTROL;
+	fVirt = 0;
+	key = 0;
+	accepted = FALT | FSHIFT | FCONTROL;
 }
 
 CHotkeyEdit::~CHotkeyEdit()
-{
-}
+{}
 
 
 BEGIN_MESSAGE_MAP(CHotkeyEdit, CEdit)
@@ -42,17 +41,17 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CHotkeyEdit message handlers
 
-void CHotkeyEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CHotkeyEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if(key)
+	if (key)
 	{
-		fVirt=0;
-		key=0;
+		fVirt = 0;
+		key = 0;
 	}
 
-	if(accepted & FNUMPAD)	//如果要特別區分Extended和numpad
+	if (accepted & FNUMPAD)	//如果要特別區分Extended和numpad
 	{
-		switch(nChar)
+		switch (nChar)
 		{
 		case VK_PRIOR:
 		case VK_NEXT:
@@ -64,90 +63,88 @@ void CHotkeyEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case VK_DOWN:
 		case VK_INSERT:
 		case VK_DELETE:
-			if( !(nFlags & (1<<8)) )	//如果不是extended，就是Num pad
+			if (!(nFlags & (1 << 8)))	//如果不是extended，就是Num pad
 			{
-				fVirt |=FNUMPAD;
+				fVirt |= FNUMPAD;
 				break;
 			}
 		}
 	}
 
-	switch(nChar)
+	switch (nChar)
 	{
 	case VK_CONTROL:
-		if(accepted & FCONTROL)
-			fVirt|=FCONTROL;
+		if (accepted & FCONTROL)
+			fVirt |= FCONTROL;
 		break;
 	case VK_MENU:
-		if(accepted & FALT)
-			fVirt|=FALT;
+		if (accepted & FALT)
+			fVirt |= FALT;
 		break;
 	case VK_SHIFT:
-		if(accepted & FSHIFT)
-			fVirt|=FSHIFT;
+		if (accepted & FSHIFT)
+			fVirt |= FSHIFT;
 		break;
 	case VK_BACK:
-		if( !fVirt && !(accepted&FBACK) )
+		if (!fVirt && !(accepted&FBACK))
 			break;
 	default:
-		key=nChar;
-		::PostMessage(::GetParent(m_hWnd),WM_HOTKEYDONE,0,0);
+		key = nChar;
+		::PostMessage(::GetParent(m_hWnd), WM_HOTKEYDONE, 0, 0);
 	}
-	SetWindowText(HotkeyToStr(fVirt,key));
+	SetWindowText(HotkeyToStr(fVirt, key));
 }
 
-void CHotkeyEdit::OnContextMenu(CWnd* pWnd, CPoint point) 
-{
-}
+void CHotkeyEdit::OnContextMenu(CWnd* pWnd, CPoint point)
+{}
 
-void CHotkeyEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
-{
-}
+void CHotkeyEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+{}
 
-void CHotkeyEdit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CHotkeyEdit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if(!key)
+	if (!key)
 	{
-		switch(nChar)
+		switch (nChar)
 		{
 		case VK_CONTROL:
-			fVirt&=~FCONTROL;
+			fVirt &= ~FCONTROL;
 			break;
 		case VK_MENU:
-			fVirt&=~FALT;
+			fVirt &= ~FALT;
 			break;
 		case VK_SHIFT:
-			fVirt&=~FSHIFT;
+			fVirt &= ~FSHIFT;
 			break;
 		default:
-			if(!fVirt)
-				key=0;
+			if (!fVirt)
+				key = 0;
 		}
 	}
-	SetWindowText(HotkeyToStr(fVirt,key));
+	SetWindowText(HotkeyToStr(fVirt, key));
 }
 
-void CHotkeyEdit::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CHotkeyEdit::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	OnKeyDown(nChar,nRepCnt,nFlags);
+	OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CHotkeyEdit::OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CHotkeyEdit::OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	OnKeyUp(nChar,nRepCnt,nFlags);
+	OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
-UINT CHotkeyEdit::OnGetDlgCode() 
+UINT CHotkeyEdit::OnGetDlgCode()
 {
 	return DLGC_WANTALLKEYS;
 }
 
-void CHotkeyEdit::OnKillFocus(CWnd* pNewWnd) 
+void CHotkeyEdit::OnKillFocus(CWnd* pNewWnd)
 {
 	CEdit::OnKillFocus(pNewWnd);
-	if(!key)
+	if (!key)
 	{
-		fVirt=0;
-		SetWindowText( ::HotkeyToStr(0,0) );
+		fVirt = 0;
+		SetWindowText(::HotkeyToStr(0, 0));
 	}
 }

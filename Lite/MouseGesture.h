@@ -43,7 +43,7 @@ fix would be nice.
 #   include <algorithm>
 #endif
 
-typedef void (WINAPI UpdateMessage_def)(DWORD);
+typedef void(WINAPI UpdateMessage_def)(DWORD);
 
 //////////////////////////////////////////////////////////////////////
 // MOUSE_GESTURE_MESSAGE_STRING
@@ -59,73 +59,73 @@ typedef void (WINAPI UpdateMessage_def)(DWORD);
 #define INVALID_GETURE_ID	0xFFFFFFFF
 
 
-class CMouseGesture  
+class CMouseGesture
 {
 public:
-    enum Motion { None         = 0x0000,
+	enum Motion { None         = 0x0000,
 
-                  // These are the possible directions
-                  Up           = 0x0001,
-                  Down         = 0x0002,
-                  Left         = 0x0003,
-                  Right        = 0x0004,
+				  // These are the possible directions
+				  Up           = 0x0001,
+				  Down         = 0x0002,
+				  Left         = 0x0003,
+				  Right        = 0x0004,
 
-                  // These are for the shift and control keys
-                  Shift        = 0x0005,
-                  Control      = 0x0006,
+				  // These are for the shift and control keys
+				  Shift        = 0x0005,
+				  Control      = 0x0006,
 
-                  // These are bit flags for the mouse buttons
-                  LeftButton   = 0x0100,
-                  MiddleButton = 0x0200,
-                  RightButton  = 0x0400
-                };
+				  // These are bit flags for the mouse buttons
+				  LeftButton   = 0x0100,
+				  MiddleButton = 0x0200,
+				  RightButton  = 0x0400
+				};
 
-    typedef std::vector<Motion> Gesture;
+	typedef std::vector<Motion> Gesture;
 
-    CMouseGesture();
-    virtual ~CMouseGesture();
+	CMouseGesture();
+	virtual ~CMouseGesture();
 
-    bool Attach(HWND hWnd, UINT Distance = 25);
-    void Detach();
-    int AddGesture(UINT nID, const Motion *Motions, size_t count);
-    int AddGesture(UINT nID, const Gesture &rGesture);
+	bool Attach(HWND hWnd, UINT Distance = 25);
+	void Detach();
+	int AddGesture(UINT nID, const Motion *Motions, size_t count);
+	int AddGesture(UINT nID, const Gesture &rGesture);
 	int AddGesture(UINT ID, const char *szGesture_In);
-    bool RemoveGesture(UINT nID);
+	bool RemoveGesture(UINT nID);
 	int RemoveGesture_All();
-    void KillGesture();
+	void KillGesture();
 
-    UINT MouseMessage(WPARAM wp, LPARAM lp);
+	UINT MouseMessage(WPARAM wp, LPARAM lp);
 
 	char *m_szDirctionNow;
 	int  m_dwDirction_BufLen;
 	UpdateMessage_def *fnUpdateMessage;
-    Motion m_LastDirection;         // The last motion registered
+	Motion m_LastDirection;         // The last motion registered
 
 protected:
-    virtual UINT OnButtonDown(MOUSEHOOKSTRUCT *pMHS);
-    virtual UINT OnMouseMove (MOUSEHOOKSTRUCT *pMHS);
-    virtual UINT OnButtonUp  (MOUSEHOOKSTRUCT *pMHS);
+	virtual UINT OnButtonDown(MOUSEHOOKSTRUCT *pMHS);
+	virtual UINT OnMouseMove(MOUSEHOOKSTRUCT *pMHS);
+	virtual UINT OnButtonUp(MOUSEHOOKSTRUCT *pMHS);
 
 private:
-    static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wp, LPARAM lp);
-    static CMouseGesture *GetGesturePointer(HWND hWnd, POINT pt);
+	static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wp, LPARAM lp);
+	static CMouseGesture *GetGesturePointer(HWND hWnd, POINT pt);
 
-    UINT GetGestureIdFromMap(const Gesture &gesture);
+	UINT GetGestureIdFromMap(const Gesture &gesture);
 
-    static CMouseGesture* Current;  // The CMouseGesture currently reading the mouse movements
+	static CMouseGesture* Current;  // The CMouseGesture currently reading the mouse movements
 
-    DWORD m_ButtonFlag;             // Bitmask for which mouse button can start a mouse gesture
-    Motion m_ButtonDown;            // The mouse button that started the gesture
-    HWND m_hWnd;                    // The window attached to this CMouseGesture object
-    bool m_bCaptured;               // Is mouse captured
-    bool m_bShift;                  // Is Shift key down
-    bool m_bControl;                // Is Control key down
-    UINT m_nDistance;               // Minimum distance mouse has to move to register a motion
-    RECT   m_BoundingSquare;        // Boundary that mouse has to cross to register a motion
-    Gesture m_CurrentGesture;       // The gesture
+	DWORD m_ButtonFlag;             // Bitmask for which mouse button can start a mouse gesture
+	Motion m_ButtonDown;            // The mouse button that started the gesture
+	HWND m_hWnd;                    // The window attached to this CMouseGesture object
+	bool m_bCaptured;               // Is mouse captured
+	bool m_bShift;                  // Is Shift key down
+	bool m_bControl;                // Is Control key down
+	UINT m_nDistance;               // Minimum distance mouse has to move to register a motion
+	RECT   m_BoundingSquare;        // Boundary that mouse has to cross to register a motion
+	Gesture m_CurrentGesture;       // The gesture
 
-    typedef std::map<UINT, Gesture> GestureMap;
-    GestureMap m_GestureMap;        // The gesture patterns. Maps ID numbers to gestures
+	typedef std::map<UINT, Gesture> GestureMap;
+	GestureMap m_GestureMap;        // The gesture patterns. Maps ID numbers to gestures
 };
 
 #endif // !defined(AFX_MOUSEGESTURES_H__8E80AD8B_6FB6_4FF0_99EC_8666996E639E__INCLUDED_)

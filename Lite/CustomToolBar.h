@@ -23,75 +23,79 @@ public:
 	TBBUTTON* pbtns;
 
 	CCustomToolBarInfo(TBBUTTON* _pbtns, int _allcount)
-	{	pbtns=_pbtns;	allcount=_allcount;	}
+	{	pbtns = _pbtns;	allcount = _allcount;	}
 
 	~CCustomToolBarInfo()
 	{	delete []index;	}
 
 	void Save(CString& value)
 	{
-        for( int i =0; i < count; ++i ) {
-            char tmp[10];
-            if( ! value.IsEmpty() )
-                value += ',';
-            sprintf(tmp, "%d", index[i]);
-            value += tmp;
-        }
+		for (int i = 0; i < count; ++i)
+		{
+			char tmp[10];
+			if (! value.IsEmpty())
+				value += ',';
+			sprintf(tmp, "%d", index[i]);
+			value += tmp;
+		}
 	}
 
 	inline void LoadDefault()
 	{
-		index=new BYTE[allcount];
-		count=allcount;
-		for(int i=0;i<count;i++)
-			index[i]=i;
+		index = new BYTE[allcount];
+		count = allcount;
+		for (int i = 0;i < count;i++)
+			index[i] = i;
 	}
 
 	void Load(char* value)
 	{
-        BYTE tmp[ 256 ];
-        BYTE* idx = tmp;
-        char* sep = value - 1;
-        do{
-            value = sep + 1;
-            *idx = atoi(value);
-            ++idx;
-        }while( (sep = strchr(value, ',')) );
+		BYTE tmp[ 256 ];
+		BYTE* idx = tmp;
+		char* sep = value - 1;
+		do
+		{
+			value = sep + 1;
+			*idx = atoi(value);
+			++idx;
+		}
+		while ((sep = strchr(value, ',')));
 
-        count = (idx - tmp);
-        if( count < 0 || count > allcount )
-            count = allcount;
-        if( index )
-            delete []index;
+		count = (idx - tmp);
+		if (count < 0 || count > allcount)
+			count = allcount;
+		if (index)
+			delete []index;
 		index = new BYTE[count];
-        for( int i = 0; i < count; ++i ) {
-            index[i] = tmp[i];
-        }
+		for (int i = 0; i < count; ++i)
+		{
+			index[i] = tmp[i];
+		}
 	}
 
 	int LookupIndex(int id)
 	{
-		for(int i=0;i<allcount;i++)
-			if(pbtns[i].idCommand==id)
+		for (int i = 0;i < allcount;i++)
+			if (pbtns[i].idCommand == id)
 				return i;
 		return -1;
 	}
 
 	int LookupImage(int id)
 	{
-		for(int i=0;i<allcount;i++)
-			if(pbtns[i].idCommand==id)
+		for (int i = 0;i < allcount;i++)
+			if (pbtns[i].idCommand == id)
 				return pbtns[i].iBitmap;
 		return -1;
 	}
 
 	inline void GetState(CToolBar& ctb)
 	{
-		count=ctb.GetToolBarCtrl().GetButtonCount();
+		count = ctb.GetToolBarCtrl().GetButtonCount();
 		delete []index;
-		index= new BYTE[count];
-		for(int i=0;i<count;i++)
-			index[i]=LookupIndex(ctb.GetItemID(i));
+		index = new BYTE[count];
+		for (int i = 0;i < count;i++)
+			index[i] = LookupIndex(ctb.GetItemID(i));
 	}
 };
 

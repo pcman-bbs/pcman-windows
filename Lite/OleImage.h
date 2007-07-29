@@ -11,7 +11,7 @@
 
 #include <olectl.h>
 
-class COleImage  
+class COleImage
 {
 public:
 	HANDLE GetHandle();
@@ -19,13 +19,13 @@ public:
 	HBITMAP CopyBitmap();
 	static void Finalize();
 	static void Initialize();
-	bool LoadFromFile( LPCTSTR file_name );
-	bool LoadFromMem( LPVOID data, DWORD size );
+	bool LoadFromFile(LPCTSTR file_name);
+	bool LoadFromMem(LPVOID data, DWORD size);
 	COleImage();
 	virtual ~COleImage();
 
 protected:
-	bool LoadFromGlobalMem( HGLOBAL mem, DWORD size );
+	bool LoadFromGlobalMem(HGLOBAL mem, DWORD size);
 	IPicture* pic;
 };
 

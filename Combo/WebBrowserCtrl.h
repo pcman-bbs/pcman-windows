@@ -13,22 +13,22 @@ public:
 	CLSID const& GetClsid()
 	{
 		static CLSID const clsid
-			= { 0x8856F961, 0x340A, 0x11D0, { 0xA9, 0x6B, 0x0, 0xC0, 0x4F, 0xD7, 0x5, 0xA2 } };
+		= { 0x8856F961, 0x340A, 0x11D0, { 0xA9, 0x6B, 0x0, 0xC0, 0x4F, 0xD7, 0x5, 0xA2 } };
 		return clsid;
 	}
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle,
-						const RECT& rect, CWnd* pParentWnd, UINT nID, 
+						const RECT& rect, CWnd* pParentWnd, UINT nID,
 						CCreateContext* pContext = NULL)
-	{ 
-		return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID); 
+	{
+		return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID);
 	}
 
-    BOOL Create(LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, 
+	BOOL Create(LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd,
 				UINT nID, CFile* pPersist = NULL, BOOL bStorage = FALSE,
 				BSTR bstrLicKey = NULL)
-	{ 
+	{
 		return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID,
-		pPersist, bStorage, bstrLicKey); 
+							 pPersist, bStorage, bstrLicKey);
 	}
 
 // ÄÝ©Ê
@@ -37,16 +37,16 @@ public:
 // §@·~
 public:
 
-/*
-	void GoBack()
-	{
-		InvokeHelper(0x64, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);
-	}
-	void GoForward()
-	{
-		InvokeHelper(0x65, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);
-	}
-*/
+	/*
+		void GoBack()
+		{
+			InvokeHelper(0x64, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);
+		}
+		void GoForward()
+		{
+			InvokeHelper(0x65, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);
+		}
+	*/
 	void GoHome()
 	{
 		InvokeHelper(0x66, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);

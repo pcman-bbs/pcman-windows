@@ -28,7 +28,7 @@ Revision History:
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
@@ -49,22 +49,22 @@ static char THIS_FILE[]=__FILE__;
 
 //////////////////////////////////////////////////////////////////////
 // Uncomment the #define _SHOW_GESTURE line to draw mouse points and
-// bounding squares on screen when the gesture is being made. 
+// bounding squares on screen when the gesture is being made.
 //////////////////////////////////////////////////////////////////////
 
 //#   define _SHOW_GESTURE  // this line controls visual feedback
 
 #   ifdef _SHOW_GESTURE
 
-        void SHOW_BOUNDING_SQUARE (MOUSEHOOKSTRUCT *pMHS,
-                                   RECT rc)
-        {
-            HWND hWnd = WindowFromPoint(pMHS->pt);
-            MapWindowPoints(NULL, hWnd, (POINT *)&rc, 2);
-            HDC hdc = GetDC(hWnd);
-            DrawFocusRect(hdc, &rc);
-            ReleaseDC(hWnd, hdc);
-        }
+void SHOW_BOUNDING_SQUARE(MOUSEHOOKSTRUCT *pMHS,
+						  RECT rc)
+{
+	HWND hWnd = WindowFromPoint(pMHS->pt);
+	MapWindowPoints(NULL, hWnd, (POINT *)&rc, 2);
+	HDC hdc = GetDC(hWnd);
+	DrawFocusRect(hdc, &rc);
+	ReleaseDC(hWnd, hdc);
+}
 
 #   else // _SHOW_GESTURE
 #       define SHOW_BOUNDING_SQUARE(pMHS, rc)
@@ -103,24 +103,23 @@ CMouseGesture* CMouseGesture::Current = NULL;
 //////////////////////////////////////////////////////////////////////
 
 CMouseGesture::CMouseGesture() :
-m_hWnd(NULL),
-m_bCaptured(false),
-m_bShift(false),
-m_bControl(false),
-m_ButtonFlag(0),
-m_ButtonDown(None),
-m_CurrentGesture(NULL),
-m_nDistance(0),
-m_LastDirection(None),
-m_szDirctionNow(NULL),
-fnUpdateMessage(NULL),
-m_dwDirction_BufLen(10)
-{
-}
+		m_hWnd(NULL),
+		m_bCaptured(false),
+		m_bShift(false),
+		m_bControl(false),
+		m_ButtonFlag(0),
+		m_ButtonDown(None),
+		m_CurrentGesture(NULL),
+		m_nDistance(0),
+		m_LastDirection(None),
+		m_szDirctionNow(NULL),
+		fnUpdateMessage(NULL),
+		m_dwDirction_BufLen(10)
+{}
 
 CMouseGesture::~CMouseGesture()
 {
-    Detach();
+	Detach();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -144,28 +143,28 @@ CMouseGesture::~CMouseGesture()
 //////////////////////////////////////////////////////////////////////
 
 bool CMouseGesture::Attach(HWND hWnd,
-                           UINT Distance /* = 25 */)
+						   UINT Distance /* = 25 */)
 {
-    _ASSERT (Distance > 9);
-    _ASSERT (::IsWindow(hWnd));
+	_ASSERT(Distance > 9);
+	_ASSERT(::IsWindow(hWnd));
 
-    if (Distance < 10 || !IsWindow(hWnd))
-    {
-        return false;
-    }
+	if (Distance < 10 || !IsWindow(hWnd))
+	{
+		return false;
+	}
 
-    if (m_hWnd != NULL)
-    {
-        // This CMouseGesture is already attached to a window
-        // call Detach() before calling Attach()
-        _ASSERT (false);
-        return false;
-    }
+	if (m_hWnd != NULL)
+	{
+		// This CMouseGesture is already attached to a window
+		// call Detach() before calling Attach()
+		_ASSERT(false);
+		return false;
+	}
 
-    m_hWnd = hWnd;
-    m_nDistance = Distance;
+	m_hWnd = hWnd;
+	m_nDistance = Distance;
 
-    return true;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -188,138 +187,138 @@ bool CMouseGesture::Attach(HWND hWnd,
 //////////////////////////////////////////////////////////////////////
 
 int CMouseGesture::AddGesture(UINT ID,
-                              const Motion *Motions,
-                              size_t count)
+							  const Motion *Motions,
+							  size_t count)
 {
-    _ASSERT (Motions != NULL);
-    _ASSERT (count > 1);
+	_ASSERT(Motions != NULL);
+	_ASSERT(count > 1);
 
-    if (Motions == NULL || count < 2)
-    {
-        return 0;
-    }
+	if (Motions == NULL || count < 2)
+	{
+		return 0;
+	}
 
-    Gesture gesture;
-    for (size_t i = 0; i < count; ++i)
-    {
-        gesture.push_back(Motions[i]);
-    }
+	Gesture gesture;
+	for (size_t i = 0; i < count; ++i)
+	{
+		gesture.push_back(Motions[i]);
+	}
 
-    return AddGesture(ID, gesture);
+	return AddGesture(ID, gesture);
 }
 
 int CMouseGesture::AddGesture(UINT ID,
-                              const Gesture &rGesture)
+							  const Gesture &rGesture)
 {
-    _ASSERT (ID > UNKNOWN_GETURE_ID);
-    _ASSERT (rGesture.size() > 1);
+	_ASSERT(ID > UNKNOWN_GETURE_ID);
+	_ASSERT(rGesture.size() > 1);
 
-    if (rGesture.size() < 2 || ID < 1)
-    {
-        return 0;
-    }
+	if (rGesture.size() < 2 || ID < 1)
+	{
+		return 0;
+	}
 
-    // Make sure the supplied gesture is valid
-    if (rGesture[0] != LeftButton &&
-        rGesture[0] != MiddleButton &&
-        rGesture[0] != RightButton)
-    {
-        // The first element must be the mouse button
-        _ASSERT (false);
-        return 0;
-    }
+	// Make sure the supplied gesture is valid
+	if (rGesture[0] != LeftButton &&
+		rGesture[0] != MiddleButton &&
+		rGesture[0] != RightButton)
+	{
+		// The first element must be the mouse button
+		_ASSERT(false);
+		return 0;
+	}
 
-    Motion last = None;
-    for (Gesture::const_iterator it = rGesture.begin(); it != rGesture.end(); ++it)
-    {
-        if (*it == LeftButton ||
-            *it == MiddleButton ||
-            *it == RightButton)
-        {
-            if (it != rGesture.begin())
-            {
-                // mouse button can only be first
-                _ASSERT(false);
-                return 0;
-            }
-            continue;
-        }
+	Motion last = None;
+	for (Gesture::const_iterator it = rGesture.begin(); it != rGesture.end(); ++it)
+	{
+		if (*it == LeftButton ||
+			*it == MiddleButton ||
+			*it == RightButton)
+		{
+			if (it != rGesture.begin())
+			{
+				// mouse button can only be first
+				_ASSERT(false);
+				return 0;
+			}
+			continue;
+		}
 
-        if (*it == Shift)
-        {
-            if (rGesture.size() < 3)
-            {
-                // Gesture must be more than just Shift
-                _ASSERT (false);
-                return 0;
-            }
+		if (*it == Shift)
+		{
+			if (rGesture.size() < 3)
+			{
+				// Gesture must be more than just Shift
+				_ASSERT(false);
+				return 0;
+			}
 
-            if (it != rGesture.begin() + 1)
-            {
-                // Shift must be in second spot
-                _ASSERT (false);
-                return 0;
-            }
-            continue;
-        }
+			if (it != rGesture.begin() + 1)
+			{
+				// Shift must be in second spot
+				_ASSERT(false);
+				return 0;
+			}
+			continue;
+		}
 
-        if (*it == Control)
-        {
-            if (rGesture.size() < 3)
-            {
-                // Gesture must be more than just Control
-                _ASSERT (false);
-                return 0;
-            }
+		if (*it == Control)
+		{
+			if (rGesture.size() < 3)
+			{
+				// Gesture must be more than just Control
+				_ASSERT(false);
+				return 0;
+			}
 
-            if (it != rGesture.begin() + 1 &&
-                it != rGesture.begin() + 2)
-            {
-                // Control must be either second or third
-                _ASSERT (false);
-                return 0;
-            }
+			if (it != rGesture.begin() + 1 &&
+				it != rGesture.begin() + 2)
+			{
+				// Control must be either second or third
+				_ASSERT(false);
+				return 0;
+			}
 
-            if (it == rGesture.begin() + 2 &&
-                (rGesture[1] != Shift || rGesture.size() < 4))
-            {
-                // if control is third, shift must be second, and there must be more motions
-                _ASSERT (false);
-                return 0;
-            }
-            continue;
-        }
+			if (it == rGesture.begin() + 2 &&
+				(rGesture[1] != Shift || rGesture.size() < 4))
+			{
+				// if control is third, shift must be second, and there must be more motions
+				_ASSERT(false);
+				return 0;
+			}
+			continue;
+		}
 
-        if (*it == last ||
-            *it < Up ||
-            *it > Right)
-        {
-            // The motion has to be Up, Down, Left, or Right
-            // The same motion can not immediately repeat
-            _ASSERT (false);
-            return 0;
-        }
-        last = *it;
-    }
+		if (*it == last ||
+			*it < Up ||
+			*it > Right)
+		{
+			// The motion has to be Up, Down, Left, or Right
+			// The same motion can not immediately repeat
+			_ASSERT(false);
+			return 0;
+		}
+		last = *it;
+	}
 
-    // make sure the supplied ID is unique
-    if (m_GestureMap.find(ID) != m_GestureMap.end())
-    {
-        _ASSERT(false);
-        return -1;
-    }
+	// make sure the supplied ID is unique
+	if (m_GestureMap.find(ID) != m_GestureMap.end())
+	{
+		_ASSERT(false);
+		return -1;
+	}
 
-    // make sure the supplied gesture is unique
-    if (GetGestureIdFromMap(rGesture) != UNKNOWN_GETURE_ID)
-    {
-        _ASSERT(false);
-        return -2;
-    }
+	// make sure the supplied gesture is unique
+	if (GetGestureIdFromMap(rGesture) != UNKNOWN_GETURE_ID)
+	{
+		_ASSERT(false);
+		return -2;
+	}
 
-    m_ButtonFlag |= rGesture[0];
-    m_GestureMap.insert(std::make_pair(ID, rGesture));
+	m_ButtonFlag |= rGesture[0];
+	m_GestureMap.insert(std::make_pair(ID, rGesture));
 
-    return m_GestureMap.size();
+	return m_GestureMap.size();
 }
 
 int CMouseGesture::AddGesture(UINT ID, const char *szGesture_In)
@@ -350,7 +349,7 @@ int CMouseGesture::AddGesture(UINT ID, const char *szGesture_In)
 		case 'R':
 			Motion_Now = Right;
 			break;
-		
+
 		case 's':
 			Motion_Now = Shift;
 			break;
@@ -406,19 +405,19 @@ int CMouseGesture::AddGesture(UINT ID, const char *szGesture_In)
 
 bool CMouseGesture::RemoveGesture(UINT nID)
 {
-    bool ret = m_GestureMap.erase(nID) == 1;
+	bool ret = m_GestureMap.erase(nID) == 1;
 
-    if (ret)
-    {
-        // reset the m_ButtonFlag in case a mouse button is eliminated
-        m_ButtonFlag = 0;
-        for (GestureMap::const_iterator it = m_GestureMap.begin(); it != m_GestureMap.end(); ++it)
-        {
-            m_ButtonFlag |= (*it).second[0];
-        }
-    }
+	if (ret)
+	{
+		// reset the m_ButtonFlag in case a mouse button is eliminated
+		m_ButtonFlag = 0;
+		for (GestureMap::const_iterator it = m_GestureMap.begin(); it != m_GestureMap.end(); ++it)
+		{
+			m_ButtonFlag |= (*it).second[0];
+		}
+	}
 
-    return ret;
+	return ret;
 }
 
 int CMouseGesture::RemoveGesture_All()
@@ -439,7 +438,7 @@ int CMouseGesture::RemoveGesture_All()
 
 void CMouseGesture::Detach()
 {
-    m_hWnd = NULL;
+	m_hWnd = NULL;
 
 }
 
@@ -460,86 +459,86 @@ void CMouseGesture::Detach()
 
 UINT CMouseGesture::MouseMessage(WPARAM wp, LPARAM lp)
 {
-    UINT ret = NULL;
-    DWORD Message = (DWORD)wp;
-    MOUSEHOOKSTRUCT *pMHS = (MOUSEHOOKSTRUCT *)lp;
+	UINT ret = NULL;
+	DWORD Message = (DWORD)wp;
+	MOUSEHOOKSTRUCT *pMHS = (MOUSEHOOKSTRUCT *)lp;
 	BOOL bKillGesture;
 	BOOL bClearMsgBuf;
 
 	bKillGesture = FALSE;
 	bClearMsgBuf = FALSE;
 
-    switch (Message)
-    {
-    case WM_LBUTTONDOWN:
-        if (m_ButtonFlag & LeftButton)
-        {
-            m_CurrentGesture.clear();
-            m_CurrentGesture.push_back(LeftButton);
-            m_ButtonDown = LeftButton;
-            ret = OnButtonDown(pMHS);
+	switch (Message)
+	{
+	case WM_LBUTTONDOWN:
+		if (m_ButtonFlag & LeftButton)
+		{
+			m_CurrentGesture.clear();
+			m_CurrentGesture.push_back(LeftButton);
+			m_ButtonDown = LeftButton;
+			ret = OnButtonDown(pMHS);
 			bClearMsgBuf = TRUE;
-        }
-        break;
+		}
+		break;
 
-    case WM_MBUTTONDOWN:
-        if (m_ButtonFlag & MiddleButton)
-        {
-            m_CurrentGesture.clear();
-            m_CurrentGesture.push_back(MiddleButton);
-            m_ButtonDown = MiddleButton;
-            ret = OnButtonDown(pMHS);
+	case WM_MBUTTONDOWN:
+		if (m_ButtonFlag & MiddleButton)
+		{
+			m_CurrentGesture.clear();
+			m_CurrentGesture.push_back(MiddleButton);
+			m_ButtonDown = MiddleButton;
+			ret = OnButtonDown(pMHS);
 			bClearMsgBuf = TRUE;
-        }
-        break;
+		}
+		break;
 
-    case WM_RBUTTONDOWN:
-        if (m_ButtonFlag & RightButton)
-        {
-            m_CurrentGesture.clear();
-            m_CurrentGesture.push_back(RightButton);
-            m_ButtonDown = RightButton;
-            ret = OnButtonDown(pMHS);
+	case WM_RBUTTONDOWN:
+		if (m_ButtonFlag & RightButton)
+		{
+			m_CurrentGesture.clear();
+			m_CurrentGesture.push_back(RightButton);
+			m_ButtonDown = RightButton;
+			ret = OnButtonDown(pMHS);
 			bClearMsgBuf = TRUE;
-        }
-        break;
+		}
+		break;
 
-    case WM_LBUTTONUP:
-        if (m_ButtonDown == LeftButton)
-        {
-            ret = OnButtonUp(pMHS);
-        }
+	case WM_LBUTTONUP:
+		if (m_ButtonDown == LeftButton)
+		{
+			ret = OnButtonUp(pMHS);
+		}
 		bKillGesture = TRUE;
-        break;
+		break;
 
-    case WM_MBUTTONUP:
-        if (m_ButtonDown == MiddleButton)
-        {
-            ret = OnButtonUp(pMHS);
-        }
+	case WM_MBUTTONUP:
+		if (m_ButtonDown == MiddleButton)
+		{
+			ret = OnButtonUp(pMHS);
+		}
 		bKillGesture = TRUE;
-        break;
+		break;
 
-    case WM_RBUTTONUP:
-        if (m_ButtonDown == RightButton)
-        {
-            ret = OnButtonUp(pMHS);
-        }
+	case WM_RBUTTONUP:
+		if (m_ButtonDown == RightButton)
+		{
+			ret = OnButtonUp(pMHS);
+		}
 		bKillGesture = TRUE;
-        break;
+		break;
 
-    case WM_MOUSEMOVE:
-    case WM_NCMOUSEMOVE:
-        if (m_ButtonDown != None)
-        {
-            ret = OnMouseMove(pMHS);
-        }
-    }
+	case WM_MOUSEMOVE:
+	case WM_NCMOUSEMOVE:
+		if (m_ButtonDown != None)
+		{
+			ret = OnMouseMove(pMHS);
+		}
+	}
 
-    if (ret == NULL || bKillGesture)
-    {
-        KillGesture();
-    }
+	if (ret == NULL || bKillGesture)
+	{
+		KillGesture();
+	}
 
 	if (bClearMsgBuf)
 	{
@@ -549,7 +548,7 @@ UINT CMouseGesture::MouseMessage(WPARAM wp, LPARAM lp)
 
 	DBG_PRINT("MouseMessage(0X%04X) = %d, m_ButtonDown:%d\r\n", Message, ret, m_ButtonDown);
 
-    return ret;
+	return ret;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -561,28 +560,28 @@ UINT CMouseGesture::MouseMessage(WPARAM wp, LPARAM lp)
 
 UINT CMouseGesture::OnButtonDown(MOUSEHOOKSTRUCT *pMHS)
 {
-    m_BoundingSquare.left = pMHS->pt.x - m_nDistance;
-    m_BoundingSquare.top = pMHS->pt.y - m_nDistance;
-    m_BoundingSquare.right = pMHS->pt.x + m_nDistance;
-    m_BoundingSquare.bottom = pMHS->pt.y + m_nDistance;
+	m_BoundingSquare.left = pMHS->pt.x - m_nDistance;
+	m_BoundingSquare.top = pMHS->pt.y - m_nDistance;
+	m_BoundingSquare.right = pMHS->pt.x + m_nDistance;
+	m_BoundingSquare.bottom = pMHS->pt.y + m_nDistance;
 
-    SHOW_BOUNDING_SQUARE (pMHS, m_BoundingSquare);
+	SHOW_BOUNDING_SQUARE(pMHS, m_BoundingSquare);
 
-    m_LastDirection = None;
+	m_LastDirection = None;
 
-    if (IsSHIFTpressed())
-    {
-        m_bShift = true;
-        m_CurrentGesture.push_back(Shift);
-    }
+	if (IsSHIFTpressed())
+	{
+		m_bShift = true;
+		m_CurrentGesture.push_back(Shift);
+	}
 
-    if (IsCTRLpressed())
-    {
-        m_bControl = true;
-        m_CurrentGesture.push_back(Control);
-    }
+	if (IsCTRLpressed())
+	{
+		m_bControl = true;
+		m_CurrentGesture.push_back(Control);
+	}
 
-    return 1;
+	return 1;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -595,102 +594,102 @@ UINT CMouseGesture::OnButtonDown(MOUSEHOOKSTRUCT *pMHS)
 UINT CMouseGesture::OnMouseMove(MOUSEHOOKSTRUCT *pMHS)
 {
 #ifdef _SHOW_GESTURE
-    {
-        POINT pt;
-        pt.x = pMHS->pt.x;
-        pt.y = pMHS->pt.y;
-        HWND hWnd = WindowFromPoint(pt);
-        ScreenToClient(hWnd, &pt);
-        HDC hdc = GetDC(hWnd);
-        SetPixel(hdc, pt.x, pt.y, RGB(255, 0, 0));
-        ReleaseDC(hWnd, hdc);
-    }
+	{
+		POINT pt;
+		pt.x = pMHS->pt.x;
+		pt.y = pMHS->pt.y;
+		HWND hWnd = WindowFromPoint(pt);
+		ScreenToClient(hWnd, &pt);
+		HDC hdc = GetDC(hWnd);
+		SetPixel(hdc, pt.x, pt.y, RGB(255, 0, 0));
+		ReleaseDC(hWnd, hdc);
+	}
 #endif
 
-    // make sure the SHIFT and CTRL keys are in
-    // the same state as when the gesture started
-    if (m_bShift != IsSHIFTpressed() ||
-        m_bControl != IsCTRLpressed())
-    {
+	// make sure the SHIFT and CTRL keys are in
+	// the same state as when the gesture started
+	if (m_bShift != IsSHIFTpressed() ||
+		m_bControl != IsCTRLpressed())
+	{
 		DBG_PRINT("OnMouseMove 1\r\n");
-        return NULL;
-    }
+		return NULL;
+	}
 
-    // looking for next direction mouse is taking
-    if (PtInRect(&m_BoundingSquare, pMHS->pt))
-    {
-        // not yet able to determine
-        return 1;
-    }
+	// looking for next direction mouse is taking
+	if (PtInRect(&m_BoundingSquare, pMHS->pt))
+	{
+		// not yet able to determine
+		return 1;
+	}
 
-    Motion Direction = None;
-    if ((pMHS->pt.x >= m_BoundingSquare.right) &&
-        (pMHS->pt.y >= m_BoundingSquare.top) &&
-        (pMHS->pt.y <= m_BoundingSquare.bottom))
-    {
-        Direction = Right;
-    }
-    else if ((pMHS->pt.x <= m_BoundingSquare.left) &&
-             (pMHS->pt.y >= m_BoundingSquare.top) &&
-             (pMHS->pt.y <= m_BoundingSquare.bottom))
-    {
-        Direction = Left;
-    }
-    else if ((pMHS->pt.y >= m_BoundingSquare.bottom) &&
-             (pMHS->pt.x >= m_BoundingSquare.left) &&
-             (pMHS->pt.x <= m_BoundingSquare.right))
-    {
-        Direction = Down;
-    }
-    else if ((pMHS->pt.y <= m_BoundingSquare.top) &&
-             (pMHS->pt.x >= m_BoundingSquare.left) &&
-             (pMHS->pt.x <= m_BoundingSquare.right))
-    {
-        Direction = Up;
-    }
+	Motion Direction = None;
+	if ((pMHS->pt.x >= m_BoundingSquare.right) &&
+		(pMHS->pt.y >= m_BoundingSquare.top) &&
+		(pMHS->pt.y <= m_BoundingSquare.bottom))
+	{
+		Direction = Right;
+	}
+	else if ((pMHS->pt.x <= m_BoundingSquare.left) &&
+			 (pMHS->pt.y >= m_BoundingSquare.top) &&
+			 (pMHS->pt.y <= m_BoundingSquare.bottom))
+	{
+		Direction = Left;
+	}
+	else if ((pMHS->pt.y >= m_BoundingSquare.bottom) &&
+			 (pMHS->pt.x >= m_BoundingSquare.left) &&
+			 (pMHS->pt.x <= m_BoundingSquare.right))
+	{
+		Direction = Down;
+	}
+	else if ((pMHS->pt.y <= m_BoundingSquare.top) &&
+			 (pMHS->pt.x >= m_BoundingSquare.left) &&
+			 (pMHS->pt.x <= m_BoundingSquare.right))
+	{
+		Direction = Up;
+	}
 
-    if (Direction == None)
-    {
-        // Unable to calculate the direction, probably went
-        // diagonally off a corner of the bounding square
+	if (Direction == None)
+	{
+		// Unable to calculate the direction, probably went
+		// diagonally off a corner of the bounding square
 		DBG_PRINT("OnMouseMove 2(0)\r\n");
-        return 2;
-    }
+		return 2;
+	}
 
-    SHOW_BOUNDING_SQUARE (pMHS, m_BoundingSquare);
+	SHOW_BOUNDING_SQUARE(pMHS, m_BoundingSquare);
 
-    // move the bounding square to follow the mouse
-    if (m_LastDirection == Direction)
-    {
-        switch (Direction)
-        {
-        case Left:
-        case Right:
-            m_BoundingSquare.left = pMHS->pt.x - m_nDistance;
-            m_BoundingSquare.right = pMHS->pt.x + m_nDistance;
-            break;
-        case Up:
-        case Down:
-            m_BoundingSquare.top = pMHS->pt.y - m_nDistance;
-            m_BoundingSquare.bottom = pMHS->pt.y + m_nDistance;
-        }
-    }
-    else // m_LastDirection != Direction
-    {
-        m_BoundingSquare.left = pMHS->pt.x - m_nDistance;
-        m_BoundingSquare.right = pMHS->pt.x + m_nDistance;
-        m_BoundingSquare.top = pMHS->pt.y - m_nDistance;
-        m_BoundingSquare.bottom = pMHS->pt.y + m_nDistance;
+	// move the bounding square to follow the mouse
+	if (m_LastDirection == Direction)
+	{
+		switch (Direction)
+		{
+		case Left:
+		case Right:
+			m_BoundingSquare.left = pMHS->pt.x - m_nDistance;
+			m_BoundingSquare.right = pMHS->pt.x + m_nDistance;
+			break;
+		case Up:
+		case Down:
+			m_BoundingSquare.top = pMHS->pt.y - m_nDistance;
+			m_BoundingSquare.bottom = pMHS->pt.y + m_nDistance;
+		}
+	}
+	else // m_LastDirection != Direction
+	{
+		m_BoundingSquare.left = pMHS->pt.x - m_nDistance;
+		m_BoundingSquare.right = pMHS->pt.x + m_nDistance;
+		m_BoundingSquare.top = pMHS->pt.y - m_nDistance;
+		m_BoundingSquare.bottom = pMHS->pt.y + m_nDistance;
 
-        // direction changed, save the new direction
-        m_CurrentGesture.push_back(Direction);
-        m_LastDirection = Direction;
+		// direction changed, save the new direction
+		m_CurrentGesture.push_back(Direction);
+		m_LastDirection = Direction;
 
 		if (m_szDirctionNow)
 		{
 			char buf[4];
 
-			switch(Direction)
+			switch (Direction)
 			{
 			case Left:
 				buf[0] = 'L';
@@ -709,32 +708,32 @@ UINT CMouseGesture::OnMouseMove(MOUSEHOOKSTRUCT *pMHS)
 			buf[2] = 0;
 
 			DWORD dw1;
-			
+
 			dw1 = strlen(buf) + strlen(m_szDirctionNow) + 1;
 			if (dw1 < m_dwDirction_BufLen)
 			{
 				strcat(m_szDirctionNow, buf);
 
 				UINT GestureID = GetGestureIdFromMap(m_CurrentGesture);
-				
+
 				DBG_PRINT("Get GestureID:%d(Move)\r\n", GestureID);
-				
+
 				if (fnUpdateMessage) fnUpdateMessage(GestureID);
 			}
 		}
-    }
+	}
 
-    SHOW_BOUNDING_SQUARE (pMHS, m_BoundingSquare);
+	SHOW_BOUNDING_SQUARE(pMHS, m_BoundingSquare);
 
-    if (GetCapture() == NULL)
-    {
-        // capture the mouse so we can continue recieving messages
-        // if the mouse leaves the window
+	if (GetCapture() == NULL)
+	{
+		// capture the mouse so we can continue recieving messages
+		// if the mouse leaves the window
 //        SetCapture(m_hWnd);
-        m_bCaptured = true;
-    }
+		m_bCaptured = true;
+	}
 
-    return 1;
+	return 1;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -746,71 +745,71 @@ UINT CMouseGesture::OnMouseMove(MOUSEHOOKSTRUCT *pMHS)
 
 UINT CMouseGesture::OnButtonUp(MOUSEHOOKSTRUCT *pMHS)
 {
-    UNREFERENCED_PARAMETER(pMHS);
+	UNREFERENCED_PARAMETER(pMHS);
 
-    // make sure the SHIFT and CTRL keys are in
-    // the same state as when the gesture started
-    if (m_bShift != IsSHIFTpressed() || m_bControl != IsCTRLpressed())
-    {
-        return INVALID_GETURE_ID;
-    }
+	// make sure the SHIFT and CTRL keys are in
+	// the same state as when the gesture started
+	if (m_bShift != IsSHIFTpressed() || m_bControl != IsCTRLpressed())
+	{
+		return INVALID_GETURE_ID;
+	}
 
 	BOOL bHaveMouseMove;
 
 	bHaveMouseMove = FALSE;
 
-    DBG_PRINT("\nDumping gesture:\n");
+	DBG_PRINT("\nDumping gesture:\n");
 
-    for (Gesture::iterator it = m_CurrentGesture.begin(); it != m_CurrentGesture.end(); ++it)
-    {
-        switch (*it)
-        {
-        case Up:
-            DBG_PRINT("Up, ");
+	for (Gesture::iterator it = m_CurrentGesture.begin(); it != m_CurrentGesture.end(); ++it)
+	{
+		switch (*it)
+		{
+		case Up:
+			DBG_PRINT("Up, ");
 			bHaveMouseMove = TRUE;
-            break;
-        case Down:
-            DBG_PRINT("Down, ");
+			break;
+		case Down:
+			DBG_PRINT("Down, ");
 			bHaveMouseMove = TRUE;
-            break;
-        case Left:
-            DBG_PRINT("Left, ");
+			break;
+		case Left:
+			DBG_PRINT("Left, ");
 			bHaveMouseMove = TRUE;
-            break;
-        case Right:
-            DBG_PRINT("Right, ");
+			break;
+		case Right:
+			DBG_PRINT("Right, ");
 			bHaveMouseMove = TRUE;
-            break;
-        case LeftButton:
-            DBG_PRINT("Left Button, ");
-            break;
-        case MiddleButton:
-            DBG_PRINT("Middle Button, ");
-            break;
-        case RightButton:
-            DBG_PRINT("Right Button, ");
-            break;
-        case Shift:
-            DBG_PRINT("Shift, ");
-            break;
-        case Control:
-            DBG_PRINT("Control, ");
-            break;
-        default:
-            DBG_PRINT("Invalid Gesture");
-        }
-    }
-    DBG_PRINT("\r\n");
+			break;
+		case LeftButton:
+			DBG_PRINT("Left Button, ");
+			break;
+		case MiddleButton:
+			DBG_PRINT("Middle Button, ");
+			break;
+		case RightButton:
+			DBG_PRINT("Right Button, ");
+			break;
+		case Shift:
+			DBG_PRINT("Shift, ");
+			break;
+		case Control:
+			DBG_PRINT("Control, ");
+			break;
+		default:
+			DBG_PRINT("Invalid Gesture");
+		}
+	}
+	DBG_PRINT("\r\n");
 
 
-    UINT GestureID = GetGestureIdFromMap(m_CurrentGesture);
+	UINT GestureID = GetGestureIdFromMap(m_CurrentGesture);
 
 	DBG_PRINT("Get GestureID:%d\r\n", GestureID);
 
 	if (GestureID == UNKNOWN_GETURE_ID && bHaveMouseMove == FALSE)
 		return INVALID_GETURE_ID;
-		
-    return GestureID;
+
+	return GestureID;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -830,18 +829,18 @@ UINT CMouseGesture::OnButtonUp(MOUSEHOOKSTRUCT *pMHS)
 
 UINT CMouseGesture::GetGestureIdFromMap(const Gesture &gesture)
 {
-    UINT ret = UNKNOWN_GETURE_ID;
+	UINT ret = UNKNOWN_GETURE_ID;
 
-    for (GestureMap::const_iterator it = m_GestureMap.begin(); it != m_GestureMap.end(); ++it)
-    {
-        if ((*it).second == gesture)
-        {
-            ret = (*it).first;
-            break;
-        }
-    }
+	for (GestureMap::const_iterator it = m_GestureMap.begin(); it != m_GestureMap.end(); ++it)
+	{
+		if ((*it).second == gesture)
+		{
+			ret = (*it).first;
+			break;
+		}
+	}
 
-    return ret;
+	return ret;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -854,15 +853,15 @@ UINT CMouseGesture::GetGestureIdFromMap(const Gesture &gesture)
 void CMouseGesture::KillGesture()
 {
 #ifdef _SHOW_GESTURE
-    // remove any drawing done
-    RedrawWindow(m_hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE);
+	// remove any drawing done
+	RedrawWindow(m_hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE);
 #endif
-    DBG_PRINT("Gesture Ended\n");
+	DBG_PRINT("Gesture Ended\n");
 
-    if (m_bCaptured && GetCapture() == m_hWnd)
-    {
+	if (m_bCaptured && GetCapture() == m_hWnd)
+	{
 //        ReleaseCapture();
-    }
+	}
 
 	if (m_szDirctionNow[0])
 	{
@@ -871,11 +870,11 @@ void CMouseGesture::KillGesture()
 	}
 
 
-    m_ButtonDown = None;
-    m_bShift = false;
-    m_bControl = false;
-    m_CurrentGesture.clear();
-    m_bCaptured = false;
+	m_ButtonDown = None;
+	m_bShift = false;
+	m_bControl = false;
+	m_CurrentGesture.clear();
+	m_bCaptured = false;
 }
 
 //////////////////////////////////////////////////////////////////////

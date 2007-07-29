@@ -23,7 +23,7 @@ public:
 		int size;	// real size of the item
 		bool hilight;	// hilight state of the item
 
-		ItemData( CString txt, int img, LPVOID dat );
+		ItemData(CString txt, int img, LPVOID dat);
 	};
 
 	enum CloseBtnMode{
@@ -45,38 +45,38 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CCustomTabCtrl)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual void PostNcDestroy();
 	//}}AFX_VIRTUAL
 
 // Implementation
 public:
-	CString GetItemTooltip( int idx );
-	void SetItemTooltip( int idx, LPCTSTR text );
-	BOOL RedrawItem( int idx );
-	void SetMinTabSize( int min );
+	CString GetItemTooltip(int idx);
+	void SetItemTooltip(int idx, LPCTSTR text);
+	BOOL RedrawItem(int idx);
+	void SetMinTabSize(int min);
 	void RecalcLayout();
-	LPVOID SetItemData( int idx, LPVOID data );
-	CImageList* SetImageList( CImageList * pImageList );
-	int SetCurSel( int idx );
-	LPVOID GetItemData( int idx ) const;
+	LPVOID SetItemData(int idx, LPVOID data);
+	CImageList* SetImageList(CImageList * pImageList);
+	int SetCurSel(int idx);
+	LPVOID GetItemData(int idx) const;
 	CImageList* GetImageList() const { return image_list; }
 	int GetCurSel() const { return cur_item; }
 	UINT GetItemCount() const { return items.GetSize(); }
 	BOOL GetItemRect(int idx, LPRECT rc) const;
-	BOOL HighlightItem( int idx, BOOL high );
-	int HitTest( int x, int y, int* place = NULL );
+	BOOL HighlightItem(int idx, BOOL high);
+	int HitTest(int x, int y, int* place = NULL);
 	BOOL DeleteAllItems();
-	BOOL DeleteItem( int idx );
-	int InsertItem( int idx, LPCTSTR text, int image = -1, void* data = NULL );
-	int AppendItem( LPCTSTR text, int image = -1, void* data = NULL ) { return InsertItem(-1, text, image, data); }
-	BOOL Create( DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID );
-	BOOL IsLegalIndex( int idx ) const { return ( idx >=0 && idx < GetItemCount() ); }
-	ItemData* GetItem( int idx ) const { return IsLegalIndex(idx) ? (ItemData*)items[idx] : NULL; }
-	void SetFixedTabSize( int size ) { min_size = max_size = size; }
+	BOOL DeleteItem(int idx);
+	int InsertItem(int idx, LPCTSTR text, int image = -1, void* data = NULL);
+	int AppendItem(LPCTSTR text, int image = -1, void* data = NULL) { return InsertItem(-1, text, image, data); }
+	BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
+	BOOL IsLegalIndex(int idx) const { return(idx >= 0 && idx < GetItemCount()); }
+ItemData* GetItem(int idx) const { return IsLegalIndex(idx) ? (ItemData*)items[idx] : NULL; }
+	void SetFixedTabSize(int size) { min_size = max_size = size; }
 	virtual ~CCustomTabCtrl();
 
 	// Generated message map functions
@@ -99,7 +99,7 @@ protected:
 	CloseBtnMode close_btn;	// whether to show close button or not
 	CImageList* image_list;	// image list providing icons for items
 
-	LRESULT ParentNotify( int code, int id = -1 );
+	LRESULT ParentNotify(int code, int id = -1);
 
 	//{{AFX_MSG(CCustomTabCtrl)
 	afx_msg void OnPaint();

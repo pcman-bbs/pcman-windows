@@ -39,19 +39,19 @@ struct EXTEND_KEY
 	char VirKey;
 };
 
-const EXTEND_KEY Extend_Key[] = 
-{
-	{"HOME", VK_HOME},
-	{"END", VK_END},
-	{"NEXT", VK_NEXT},//page down
-	{"PRIOR", VK_PRIOR},//page up
-	{"LEFT", VK_LEFT},
-	{"RIGHT", VK_RIGHT},
-	{"UP", VK_UP},
-	{"DOWN", VK_DOWN},
-	{"INSERT", VK_INSERT},
-	{"DELETE", VK_DELETE},
-};
+const EXTEND_KEY Extend_Key[] =
+	{
+		{"HOME", VK_HOME},
+		{"END", VK_END},
+		{"NEXT", VK_NEXT},//page down
+		{"PRIOR", VK_PRIOR},//page up
+		{"LEFT", VK_LEFT},
+		{"RIGHT", VK_RIGHT},
+		{"UP", VK_UP},
+		{"DOWN", VK_DOWN},
+		{"INSERT", VK_INSERT},
+		{"DELETE", VK_DELETE},
+	};
 
 #define KEYSTR_ENTER "ENTER"
 

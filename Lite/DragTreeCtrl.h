@@ -29,13 +29,13 @@ public:
 
 // Implementation
 public:
-	CString GetItemPath(HTREEITEM item, TCHAR separator='\\');
-	HTREEITEM PathToItem(LPCTSTR path, HTREEITEM root, TCHAR separato='\\');
-	virtual BOOL CanDrag(HTREEITEM item)=0;
+	CString GetItemPath(HTREEITEM item, TCHAR separator = '\\');
+	HTREEITEM PathToItem(LPCTSTR path, HTREEITEM root, TCHAR separato = '\\');
+	virtual BOOL CanDrag(HTREEITEM item) = 0;
 	int GetIndex(HTREEITEM item, HTREEITEM from);
 	void SetAutoExpandTarget(int time);
 	void EndDrag();
-	virtual void MoveItem(HTREEITEM item,HTREEITEM target, bool up,bool bcopy);
+	virtual void MoveItem(HTREEITEM item, HTREEITEM target, bool up, bool bcopy);
 	virtual ~CDragTreeCtrl();
 
 	// Generated message map functions

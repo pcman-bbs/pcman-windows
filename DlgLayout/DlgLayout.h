@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////
 /*
 	Class Name:		CDlgLayout
-	
+
 	Purpose:		Provide an really easy way to manage dialog controls.
 
 	Limitation:		Everyone can freely use this class for any purpose.
@@ -43,27 +43,27 @@
 // Definitions of Anchor Flags
 // the "DLA" prefix stands for "Dialog Layout Anchor"
 
-const UINT DLA_LEFT=1;
-const UINT DLA_TOP=2;
-const UINT DLA_RIGHT=4;
-const UINT DLA_BOTTOM=8;
-const UINT DLA_ALL=15;	//The combination of the other four flags
+const UINT DLA_LEFT = 1;
+const UINT DLA_TOP = 2;
+const UINT DLA_RIGHT = 4;
+const UINT DLA_BOTTOM = 8;
+const UINT DLA_ALL = 15;	//The combination of the other four flags
 
-// This structure is used to define the "Layout Table," 
+// This structure is used to define the "Layout Table,"
 // which is an array of DLGLAYOUT.
 struct DLGLAYOUT
 {
-	DWORD id:28;
-	DWORD layout:4;
+DWORD id: 28;
+DWORD layout: 4;
 };
 
 
-class CDlgLayout  
+class CDlgLayout
 {
 public:
-	void OnSize(WPARAM w,LPARAM l);
+	void OnSize(WPARAM w, LPARAM l);
 	void OnSize(UINT nType, int cx, int cy);
-	void OnGetMinMaxInfo( MINMAXINFO* mminfo );	// MFC version
+	void OnGetMinMaxInfo(MINMAXINFO* mminfo);	// MFC version
 	LRESULT OnGetMinMaxInfo(LPARAM lparam);	// non-MFC version called in WndProc
 	void Load(HWND _hdlg, DLGLAYOUT *table, int size);	//call this in response to WM_INITDIALOG
 
@@ -71,10 +71,10 @@ public:
 	virtual ~CDlgLayout();
 
 protected:
-	void OnSize(int cx,int cy);	// call this in response to WM_SIZE
+	void OnSize(int cx, int cy);	// call this in response to WM_SIZE
 	HWND hdlg;
-	int oldcx,oldcy;
-	int mincx,mincy;
+	int oldcx, oldcy;
+	int mincx, mincy;
 
 	DLGLAYOUT* tab;
 	DLGLAYOUT* tab_end;
@@ -83,36 +83,36 @@ protected:
 //for non-MFC
 inline LRESULT CDlgLayout::OnGetMinMaxInfo(LPARAM lparam)
 {
-	if(mincx)
+	if (mincx)
 	{
-		LPMINMAXINFO(lparam)->ptMinTrackSize.x=mincx;
-		LPMINMAXINFO(lparam)->ptMinTrackSize.y=mincy;
+		LPMINMAXINFO(lparam)->ptMinTrackSize.x = mincx;
+		LPMINMAXINFO(lparam)->ptMinTrackSize.y = mincy;
 	}
-	return 0;	
+	return 0;
 }
 
 //for non-MFC
 inline void CDlgLayout::OnSize(WPARAM w, LPARAM l)
 {
-	if(w != SIZE_MINIMIZED)
-		OnSize(LOWORD(l),HIWORD(l));
+	if (w != SIZE_MINIMIZED)
+		OnSize(LOWORD(l), HIWORD(l));
 }
 
 //for MFC
 inline void CDlgLayout::OnGetMinMaxInfo(MINMAXINFO *mminfo)
 {
-	if(mincx)
+	if (mincx)
 	{
-		mminfo->ptMinTrackSize.x=mincx;
-		mminfo->ptMinTrackSize.y=mincy;
+		mminfo->ptMinTrackSize.x = mincx;
+		mminfo->ptMinTrackSize.y = mincy;
 	}
 }
 
 //for MFC
 inline void CDlgLayout::OnSize(UINT nType, int cx, int cy)
 {
-	if(nType != SIZE_MINIMIZED)
-		OnSize(cx,cy);
+	if (nType != SIZE_MINIMIZED)
+		OnSize(cx, cy);
 }
 
 #endif // !defined(AFX_DLGLAYOUT_H__5B87ECB3_7057_4C3C_8552_CFB73F4EBA76__INCLUDED_)

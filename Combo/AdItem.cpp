@@ -16,10 +16,10 @@ static char THIS_FILE[] = __FILE__;
 
 
 CAdItem::CAdItem(CWnd* pParent /*=NULL*/)
-	: CDialog(CAdItem::IDD, pParent)
+		: CDialog(CAdItem::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CAdItem)
-		// NOTE: the ClassWizard will add member initialization here
+	// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -32,21 +32,21 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CAdItem message handlers
 
-void CAdItem::OnOK() 
+void CAdItem::OnOK()
 {
 	GetDlgItem(IDC_TITLE)->GetWindowText(title);
 	GetDlgItem(IDC_ADS)->GetWindowText(url);
-	if(title.IsEmpty() && url.IsEmpty())
+	if (title.IsEmpty() && url.IsEmpty())
 	{
-		MessageBox( LoadString( IDS_ALL_EMPTY_DISALLOWED ) ,NULL,MB_OK|MB_ICONSTOP);
+		MessageBox(LoadString(IDS_ALL_EMPTY_DISALLOWED) , NULL, MB_OK | MB_ICONSTOP);
 		return;
 	}
 	CDialog::OnOK();
 }
 
-BOOL CAdItem::OnInitDialog() 
+BOOL CAdItem::OnInitDialog()
 {
-	::SetWindowText(::GetDlgItem(m_hWnd,IDC_TITLE),title);
-	::SetWindowText(::GetDlgItem(m_hWnd,IDC_ADS),url);
+	::SetWindowText(::GetDlgItem(m_hWnd, IDC_TITLE), title);
+	::SetWindowText(::GetDlgItem(m_hWnd, IDC_ADS), url);
 	return TRUE;
 }

@@ -26,21 +26,20 @@ public:
 		HotkeyData* pnext;
 		HotkeyData* pprev;
 
-		HotkeyData(){pnext=NULL;}
-		~HotkeyData(){}
-	};
+		HotkeyData(){pnext = NULL;}
+		~HotkeyData(){}};
 
 	CCustomizeDlg(CWnd* pParent = NULL);   // standard constructor
 
 	void DeleteHotkeyForID(HotkeyData* hkdel);
-	HotkeyData* HotkeyDataFromKeys(BYTE fVirt,WORD key);
-	HotkeyData* HotkeyDataFromID(HotkeyData* start,WORD id);
-	char* UIRead(CTreeCtrl& tree,char* buf,HTREEITEM parent);
+	HotkeyData* HotkeyDataFromKeys(BYTE fVirt, WORD key);
+	HotkeyData* HotkeyDataFromID(HotkeyData* start, WORD id);
+	char* UIRead(CTreeCtrl& tree, char* buf, HTREEITEM parent);
 	void UICleanup();
 	void UIWriteAccels();
-	void UIWrite(CFile& ui,HTREEITEM parent);
+	void UIWrite(CFile& ui, HTREEITEM parent);
 	void UpdateItemDisplay(HTREEITEM item);
-	static LRESULT CALLBACK HotkeyEdit2Proc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam);
+	static LRESULT CALLBACK HotkeyEdit2Proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	CWnd assign;
 	WNDPROC old_hkedit2_proc;
 	ACCEL* accels;
@@ -55,21 +54,21 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CCustomizeDlg)
 	enum { IDD = IDD_CUSTOMIZEKEY };
-		// NOTE: the ClassWizard will add data members here
+	// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CCustomizeDlg)
-	protected:
+protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
 	void DeleteHotkeyData(HotkeyData* hkdel);
 	HotkeyData* NewHotkeyData();
-	afx_msg LRESULT OnHotkeyDone(WPARAM wparam,LPARAM lparam);
+	afx_msg LRESULT OnHotkeyDone(WPARAM wparam, LPARAM lparam);
 
 	// Generated message map functions
 	//{{AFX_MSG(CCustomizeDlg)

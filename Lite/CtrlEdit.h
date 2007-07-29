@@ -25,7 +25,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CCtrlEdit)
-	protected:
+protected:
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -38,7 +38,7 @@ protected:
 	afx_msg void OnCancelMode();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	//}}AFX_MSG
-	LRESULT OnPaste(WPARAM w,LPARAM l);
+	LRESULT OnPaste(WPARAM w, LPARAM l);
 
 	DECLARE_MESSAGE_MAP()
 };
