@@ -2057,7 +2057,7 @@ BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint point_In)
 	if (CanUseMouseCTL())
 	{
 		MouseCTL_OnMouseWheel(m_hWnd, nFlags, zDelta, point_In);
-		goto __Exit;
+		return TRUE;
 	}
 
 	SCROLLINFO info;
@@ -2086,7 +2086,6 @@ BOOL CTermView::OnMouseWheel(UINT nFlags, short zDelta, CPoint point_In)
 		}
 	}
 
-__Exit:
 	return CWnd::OnMouseWheel(nFlags, zDelta, pt);
 }
 

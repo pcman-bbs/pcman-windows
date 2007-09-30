@@ -1,5 +1,5 @@
 SET MajorVersion=8
-SET MinorVersion=1
+SET MinorVersion=2
 SET PatchLevel=0
 
 SET BuildNumber=0
