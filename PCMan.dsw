@@ -69,6 +69,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "MFCUpdater"="C:\Documents and Settings\user\орн▒\AutoUpdate+ Sample Code\MFCUpdater\MFCUpdater.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "Migrate"=".\Migrate\Migrate.dsp" - Package Owner=<4>
 
 Package=<5>

@@ -110,6 +110,9 @@ public:
 	int max_history;
 //	int max_history_menu;
 
+//  Charset Setting
+	BYTE saved_charset;
+
 //	AnsiEditor Settings
 	int	ed_cols_per_page;
 	int	ed_lines_per_page;

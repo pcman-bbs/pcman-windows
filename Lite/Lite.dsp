@@ -84,7 +84,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wsock32.lib winmm.lib msimg32.lib /nologo /subsystem:windows /profile /debug /machine:I386 /out:"Debug/PCMan/PCMan.exe"
+# ADD LINK32 wsock32.lib winmm.lib msimg32.lib Version.lib /nologo /subsystem:windows /profile /debug /machine:I386 /out:"Debug/PCMan/PCMan.exe"
 # Begin Special Build Tool
 OutDir=.\Debug
 SOURCE="$(InputPath)"
@@ -123,6 +123,10 @@ SOURCE=.\AutoComplete.cpp
 # Begin Source File
 
 SOURCE=.\AutoReplyPage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AutoUpdate.cpp
 # End Source File
 # Begin Source File
 
@@ -360,6 +364,10 @@ SOURCE=.\AutoComplete.h
 # Begin Source File
 
 SOURCE=.\AutoReplyPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AutoUpdate.h
 # End Source File
 # Begin Source File
 

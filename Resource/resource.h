@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Combo.rc
+// Used by Lite.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -605,13 +605,14 @@
 #define ID_WEB_SEARCH                   33030
 #define IDS_PROMPT_IMPORT               33031
 #define ID_MOUSE_CTL                    33032
+#define ID_AUTO_UPDATE                  33033
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        185
-#define _APS_NEXT_COMMAND_VALUE         33033
+#define _APS_NEXT_COMMAND_VALUE         33034
 #define _APS_NEXT_CONTROL_VALUE         1139
 #define _APS_NEXT_SYMED_VALUE           154
 #endif

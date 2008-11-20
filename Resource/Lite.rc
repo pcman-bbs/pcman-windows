@@ -247,6 +247,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "關於 Open PCMan 2007 (&A)...", ID_ABOUT
     END
+    MENUITEM "檢查更新",                    ID_AUTO_UPDATE
 END
 #endif
 
