@@ -32,6 +32,8 @@
 #include "StrUtils.h"
 #include "MouseCTL.h"
 
+#include "AutoUpdate.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -88,8 +90,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_TOOLBAR, OnUpdateShowToolbar)
 	ON_UPDATE_COMMAND_UI(ID_AUTODBCS_ARROW, OnUpdateAutoDBCSArrow)
 	ON_UPDATE_COMMAND_UI(ID_AUTODBCS_BACKSPACE, OnUpdateAutoDBCSBackspace)
-	ON_UPDATE_COMMAND_UI(ID_MOUSE_CTL, OnUpdateBBSMouseCTL)
-	ON_COMMAND(ID_MOUSE_CTL, OnBBSMouseCTL)
 	ON_COMMAND(ID_AUTODBCS_BACKSPACE, OnAutoDBCSBackspace)
 	ON_COMMAND(ID_AUTODBCS_ARROW, OnAutoDBCSArrow)
 	ON_COMMAND(ID_AUTODBCS_DEL, OnAutoDBCSDel)
@@ -113,6 +113,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_MEASUREITEM()
 	ON_WM_DRAWITEM()
 	ON_COMMAND(ID_TOOL_LOCK, OnToolLock)
+	ON_COMMAND(ID_AUTO_UPDATE, OnAutoUpdate)
 	ON_UPDATE_COMMAND_UI(ID_SELECTALL, OnUpdateSelectAll)
 	ON_COMMAND(ID_CONNECT_CLOSE, OnConnectClose)
 	ON_UPDATE_COMMAND_UI(ID_DISCONNECT, OnUpdateDisconnect)
@@ -148,7 +149,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_SELECTALL, OnSelAll)
 	ON_COMMAND(ID_FILE_EXIT, OnExit)
 	ON_COMMAND(IDM_HELP, OnHelp)
-	ON_COMMAND_RANGE(ID_SET_CHARSET_DEFAULT, ID_SET_CHARSET_UTF8, OnSetCharset) //
+	ON_UPDATE_COMMAND_UI(ID_MOUSE_CTL, OnUpdateBBSMouseCTL)
+	ON_COMMAND(ID_MOUSE_CTL, OnBBSMouseCTL)
 	ON_COMMAND(ID_SWITCH_BACK, OnSwitchBack)
 	ON_UPDATE_COMMAND_UI(ID_SEND_ANSICODE, OnUpdateShowAnsiBar)
 	ON_UPDATE_COMMAND_UI(ID_CURCON_SETTINGS, OnUpdateIsBBSSite)
@@ -177,6 +179,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnSelchangeTab)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
 	ON_WM_ACTIVATEAPP()
+	ON_WM_VSCROLL()
+	ON_MESSAGE(WM_COMMIT_UPDATE, OnUpdate)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_COPYDATA, OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
@@ -527,7 +531,6 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 //DEL 	}
 //DEL }
 
-
 void CMainFrame::OnClose()
 {
 #ifdef _COMBO_
@@ -535,8 +538,16 @@ void CMainFrame::OnClose()
 #else
 	if (view.telnet && AppConfig.close_query)
 #endif
+
 		if (MessageBox(LoadString(IDS_EXIT_CONFIRM), LoadString(IDS_CONFIRM), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
 			return;
+    
+	OnUpdate();
+}
+
+
+void CMainFrame::OnUpdate()
+{
 	WSACancelBlockingCall();
 
 	SaveHistory();
@@ -1920,6 +1931,20 @@ void CMainFrame::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpms)
 		AppConfig.favorites.MeasureItem(lpms);
 }
 
+void CMainFrame::OnAutoUpdate()
+{
+	CAutoUpdater updater;
+	
+	if (CAutoUpdater::Success == updater.CheckForUpdate("http://www.ceshine.net/update_test/"))
+	{
+		MessageBox("The application was updated and will be available next time you run it.", "Updater", MB_ICONINFORMATION|MB_OK);
+	}
+	else
+	{
+		MessageBox("No update action was undertaken at this time.", "Updater", MB_ICONINFORMATION|MB_OK);
+	}	
+}
+
 void CMainFrame::OnToolLock()
 {
 	CPasswdDlg dlg;
@@ -1939,6 +1964,7 @@ void CMainFrame::OnToolLock()
 	// 參考 Delphi VCL，發現方便還原視窗的怪招
 	DefWindowProc(WM_SYSCOMMAND, SC_RESTORE, 0);
 }
+
 
 LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -3770,18 +3796,23 @@ void CMainFrame::OnSetCharset(UINT nID)
 	{
 	case ID_SET_CHARSET_DEFAULT:
 		view.SetCodePage(::GetACP());
+		AppConfig.saved_charset = 1;
 		break;
 	case ID_SET_CHARSET_CP950:
 		view.SetCodePage(950);
+		AppConfig.saved_charset = 2;
 		break;
 	case ID_SET_CHARSET_CP936:
 		view.SetCodePage(936);
+		AppConfig.saved_charset = 3;
 		break;
 	case ID_SET_CHARSET_CP932:
 		view.SetCodePage(932);
+		AppConfig.saved_charset = 4;
 		break;
 	case ID_SET_CHARSET_UTF8:
 		view.SetCodePage(65001);
+		AppConfig.saved_charset = 5;
 		break;
 	}
 
@@ -3838,4 +3869,5 @@ void CMainFrame::OnBBSFont()
 		view.Invalidate(FALSE);
 	}
 }
+
 
