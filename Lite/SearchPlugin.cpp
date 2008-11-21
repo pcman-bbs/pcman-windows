@@ -6,6 +6,7 @@
 #include "OleImage.h"
 
 CSearchPluginCollection SearchPluginCollection;
+CSearchPluginCollection SearchPluginCollection_2;
 
 CSearchPlugin::CSearchPlugin()
 {
@@ -339,14 +340,125 @@ void CSearchPluginCollection::LoadAll()
 
 	plugins.FreeExtra();
 
+
 	// Brute force!! Sort "internal data" of CPtrArray. Anyway, it works!
 	// FIXME: Current sorting result is not very good.
 	void** pdata = plugins.GetData();
 	if (pdata)
 	{
-		qsort(pdata, plugins.GetSize(), sizeof(void*), _ComparePlugin);
+		//qsort(pdata, plugins.GetSize(), sizeof(void*), _ComparePlugin);
 	}
 }
+
+
+void CSearchPluginCollection::LoadAll(int bbcall)
+{
+	int count = 0;
+	extern CString AppPath;
+
+	if (plugins.GetSize() > 0)
+		return;
+
+	COleImage::Initialize();	// Load OLE for GIF/JPEG loading
+
+	CFileFind searchFind;
+	BOOL searchFound;
+	int pluginId;
+	while (bbcall == 1){
+		switch (count){
+			case 0:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku0.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			case 1:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			case 2:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-dict.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			case 3:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google0.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			case 4:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			case 5:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-zh-TW.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			case 6:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\wikipedia-zh.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			case 7:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\youtube.xml");
+				while (searchFound){
+					searchFound = searchFind.FindNextFile();
+					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+				}
+				break;
+			default:
+				bbcall = -1;
+		}
+
+		count++;
+		/*searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\*.xml");
+		while (searchFound)
+		{
+			searchFound = searchFind.FindNextFile();
+			pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+		}*/
+	}
+	if (bbcall == 2){
+		searchFound = searchFind.FindFile(AppPath + "\\searchengines\\*.xml");
+		while (searchFound)
+		{
+			searchFound = searchFind.FindNextFile();
+			pluginId = SearchPluginCollection_2.Load(searchFind.GetFilePath());
+		}
+	}
+
+
+
+	COleImage::Finalize();	// Release OLE for GIF/JPEG loading
+
+	plugins.FreeExtra();
+
+
+	// Brute force!! Sort "internal data" of CPtrArray. Anyway, it works!
+	// FIXME: Current sorting result is not very good.
+	/*void** pdata = plugins.GetData();
+	if (pdata)
+	{
+		qsort(pdata, plugins.GetSize(), sizeof(void*), _ComparePlugin);
+	}*/
+}
+
 
 HMENU CSearchPluginCollection::CreateSearchMenu()
 {
@@ -355,14 +467,26 @@ HMENU CSearchPluginCollection::CreateSearchMenu()
 
 #if ! defined(_COMBO_)
 	// Lite version call this function before showing popup menu to reduce startup time
-	SearchPluginCollection.LoadAll();
+	SearchPluginCollection.LoadAll(1);
 #endif
 
 	if (SearchPluginCollection.GetCount() > 0)
 	{
+		int i = 0;
 		search_menu = CreatePopupMenu();
-		for (int i = 0;i < SearchPluginCollection.GetCount(); i++)
+
+		for (i = 0; i < SearchPluginCollection.GetCount(); i++)
 		{
+			if (i == 0){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢線上翻譯--");
+				continue;
+			}
+
+			if (i == 3){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢搜尋引擎--");
+				continue;
+			}
+			
 			HBITMAP image = SearchPluginCollection.GetImage(i);
 			CString text = "  ";
 			text += SearchPluginCollection.GetField(i, CSearchPluginCollection::SHORTNAME);
@@ -373,7 +497,8 @@ HMENU CSearchPluginCollection::CreateSearchMenu()
 				search_menuiteminfo.hbmpItem = image;
 				SetMenuItemInfo(search_menu, i, TRUE, &search_menuiteminfo);
 			}
-		}
+		} 
 	}
+
 	return search_menu;
 }
