@@ -1,5 +1,5 @@
 <SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
-<ShortName>Nciku</ShortName>
+<ShortName>Nciku Dictionary</ShortName>
 <Description>Nciku Search</Description>
 <InputEncoding>UTF-8</InputEncoding>
 <Image width="16" height="16">logo_sub.gif</Image> 
