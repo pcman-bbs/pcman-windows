@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "stdAfx.h"
 #include "AutoUpdate.h"
 
 #ifdef _DEBUG
@@ -18,6 +18,8 @@ static char THIS_FILE[]=__FILE__;
 //////////////////////////////////////////////////////////////////////
 
 #define TRANSFER_SIZE 4096
+
+CDownloadUpdateDlg *  download_update_dlg;
 
 CAutoUpdater::CAutoUpdater()
 {
@@ -41,7 +43,9 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 		return InternetConnectFailure;
 	}
 
-	bool bTransferSuccess = false;
+
+	bTransferSuccess = false;
+
 
 	// First we must check the remote configuration file to see if an update is necessary
 	CString URL = UpdateServerURL + CString(LOCATION_UPDATE_FILE_CHECK);
@@ -98,7 +102,18 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 
 	// Proceed with the update
 	CString updateFileLocation = directory+InstallerName;
-	bTransferSuccess = DownloadFile(hSession, updateFileLocation);
+	CAutoUpdater_DownloadInfo * Info = new CAutoUpdater_DownloadInfo(hSession, updateFileLocation);
+
+   	CWinThread * controlThread = AfxBeginThread(DownloadUpdateFile,Info);
+
+	LPDWORD lpExitCode = new unsigned long;
+	*lpExitCode = STILL_ACTIVE;
+	while(*lpExitCode==STILL_ACTIVE)
+	{
+		GetExitCodeThread(controlThread->m_hThread,lpExitCode);
+	}
+	bTransferSuccess = (int)(*lpExitCode);
+	
 	InternetCloseHandle(hSession);
 	if (!bTransferSuccess)
 	{
@@ -153,7 +168,7 @@ HINTERNET CAutoUpdater::GetSession(CString &URL)
 	DWORD options = INTERNET_FLAG_NEED_FILE|INTERNET_FLAG_HYPERLINK|INTERNET_FLAG_RESYNCHRONIZE|INTERNET_FLAG_RELOAD;
 	HINTERNET hSession = InternetOpenUrl(hInternet, canonicalURL, NULL, NULL, options, 0);
 	URL = canonicalURL;
-
+    
 	return hSession;
 }
 
@@ -174,14 +189,22 @@ bool CAutoUpdater::DownloadConfig(HINTERNET hSession, BYTE *pBuf, DWORD bufSize)
 
 // Download a file to a specified location
 //
-bool CAutoUpdater::DownloadFile(HINTERNET hSession, LPCTSTR localFile)
+UINT DownloadUpdateFile(LPVOID pParam)
 {	
+    CAutoUpdater_DownloadInfo* pObject = (CAutoUpdater_DownloadInfo*)pParam;
+
+	HINTERNET hSession = pObject->hSession;
+	LPCTSTR localFile = pObject->localFile;
+	
+	download_update_dlg = new CDownloadUpdateDlg();
+	download_update_dlg->DoModal();
+
 	HANDLE	hFile;
 	BYTE	pBuf[TRANSFER_SIZE];
 	DWORD	dwReadSizeOut, dwTotalReadSize = 0;
 
 	hFile = CreateFile(localFile, GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) return false;
+	if (hFile == INVALID_HANDLE_VALUE) {download_update_dlg->OnCancel();return false;}
 
 	do {
 		DWORD dwWriteSize, dwNumWritten;
@@ -193,8 +216,9 @@ bool CAutoUpdater::DownloadFile(HINTERNET hSession, LPCTSTR localFile)
 			WriteFile(hFile, pBuf, dwWriteSize, &dwNumWritten, NULL); 
 			// File write error
 			if (dwWriteSize != dwNumWritten) {
-				CloseHandle(hFile);					
-				return false;
+				CloseHandle(hFile);	
+				download_update_dlg->OnCancel();
+				return 0;
 			}
 		}
 		else {
@@ -202,14 +226,16 @@ bool CAutoUpdater::DownloadFile(HINTERNET hSession, LPCTSTR localFile)
 			{
 				// Error
 				CloseHandle(hFile);	
-				return false;
+				download_update_dlg->OnCancel();
+				return 0;
 			}			
 			break;
 		}
 	} while(1);
 
 	CloseHandle(hFile);
-	return true;
+	download_update_dlg->OnCancel();
+	return 1;
 }
 
 // Get the version of a file

@@ -12,7 +12,7 @@
 #include <Wininet.h>
 
 #define LOCATION_UPDATE_FILE_CHECK _T("update.txt")
-#define WM_COMMIT_UPDATE (WM_APP+'U')
+static UINT NEAR WM_COMMIT_UPDATE = RegisterWindowMessage("COMMDLG_FIND");
 
 class CAutoUpdater  
 {
@@ -29,16 +29,52 @@ public:
 
 	bool InternetOkay();
 	bool DownloadConfig(HINTERNET hSession, BYTE *pBuf, DWORD bufSize);
-	bool DownloadFile(HINTERNET hSession, LPCTSTR localFile);
 
 	CString GetFileVersion(LPCTSTR file);
 	int		CompareVersions(CString ver1, CString ver2);
 	bool	IsDigits(CString text);
 	CString GetExecutable();
 	bool	Switch(CString executable, CString update, bool WaitForReboot);
+	int bTransferSuccess;
 
 private:
 	HINTERNET hInternet;
+	
 };
 
+class CAutoUpdater_DownloadInfo
+{
+public:
+	HINTERNET hSession;
+	LPCTSTR localFile;
+	CAutoUpdater_DownloadInfo(HINTERNET hSession,LPCTSTR localFile)
+	{
+		this->hSession = hSession;
+		this->localFile = localFile;
+	}
+};
+
+class CDownloadUpdateDlg : public CDialog
+{
+public:
+	CDownloadUpdateDlg()
+			: CDialog(IDD_DOWNLOADING_UPDATE)
+	{
+
+	}
+
+	BOOL OnInitDialog()
+	{
+		CDialog::OnInitDialog();
+		return TRUE;
+	}
+
+	void OnCancel()
+	{
+	    CDialog::OnCancel();
+	}
+
+};
+
+UINT DownloadUpdateFile(LPVOID pParam);
 #endif // !defined(AFX_AUTOUPDATER_H__227B2B21_B6AE_4164_B3A5_BFDAAF13D85D__INCLUDED_)
