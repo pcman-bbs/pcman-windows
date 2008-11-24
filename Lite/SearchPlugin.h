@@ -72,7 +72,6 @@ public:
 
 	HMENU CreateSearchMenu();
 	void LoadAll();
-	void LoadAll(int bbcall);
 	enum EField { SHORTNAME, DESCRIPTION, INPUTENCODING, IMAGE, URL, METHOD, IMAGEBYTES };
 	int Load(LPCTSTR path);
 	int GetCount();

@@ -32,8 +32,6 @@
 #include "StrUtils.h"
 #include "MouseCTL.h"
 
-#include "AutoUpdate.h"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -180,7 +178,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
 	ON_WM_ACTIVATEAPP()
 	ON_WM_VSCROLL()
-	ON_REGISTERED_MESSAGE(WM_COMMIT_UPDATE, OnCommitUpdate)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_COPYDATA, OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
@@ -1930,20 +1927,6 @@ void CMainFrame::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpms)
 	CFrameWnd::OnMeasureItem(nIDCtl, lpms);
 	if (lpms->CtlType == ODT_MENU)
 		AppConfig.favorites.MeasureItem(lpms);
-}
-
-void CMainFrame::OnAutoUpdate()
-{
-	CAutoUpdater updater;
-	
-	if (CAutoUpdater::Success == updater.CheckForUpdate("http://www.ceshine.net/update_test/"))
-	{
-		MessageBox("The application was updated and will be available next time you run it.", "Updater", MB_ICONINFORMATION|MB_OK);
-	}
-	else
-	{
-		MessageBox("No update action was undertaken at this time.", "Updater", MB_ICONINFORMATION|MB_OK);
-	}	
 }
 
 void CMainFrame::OnToolLock()

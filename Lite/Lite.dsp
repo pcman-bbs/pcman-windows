@@ -126,10 +126,6 @@ SOURCE=.\AutoReplyPage.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\AutoUpdate.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\BBSHyperLink.cpp
 # End Source File
 # Begin Source File
@@ -364,10 +360,6 @@ SOURCE=.\AutoComplete.h
 # Begin Source File
 
 SOURCE=.\AutoReplyPage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\AutoUpdate.h
 # End Source File
 # Begin Source File
 
