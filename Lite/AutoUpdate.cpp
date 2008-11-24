@@ -41,7 +41,9 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 		return InternetConnectFailure;
 	}
 
-	bool bTransferSuccess = false;
+
+	bTransferSuccess = false;
+
 
 	// First we must check the remote configuration file to see if an update is necessary
 	CString URL = UpdateServerURL + CString(LOCATION_UPDATE_FILE_CHECK);
@@ -98,12 +100,13 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 
 	// Proceed with the update
 	CString updateFileLocation = directory+InstallerName;
-	bTransferSuccess = DownloadFile(hSession, updateFileLocation);
+	CAutoUpdater_DownloadInfo * Info = new CAutoUpdater_DownloadInfo(hSession, updateFileLocation);
+    AfxBeginThread(DownloadUpdateFile,Info);
 	InternetCloseHandle(hSession);
-	if (!bTransferSuccess)
-	{
-		return FileDownloadFailure;
-	}	
+	//if (!bTransferSuccess)
+	//{
+	//	return FileDownloadFailure;
+	//}	
 
     MessageBox(AfxGetMainWnd()->m_hWnd,"PCMan will be terminated for the installation","warning",MB_ICONINFORMATION|MB_OK);
 	if (!::ShellExecute(AfxGetMainWnd()->m_hWnd, "open", updateFileLocation, NULL, NULL,
@@ -174,14 +177,19 @@ bool CAutoUpdater::DownloadConfig(HINTERNET hSession, BYTE *pBuf, DWORD bufSize)
 
 // Download a file to a specified location
 //
-bool CAutoUpdater::DownloadFile(HINTERNET hSession, LPCTSTR localFile)
+UINT DownloadUpdateFile(LPVOID pParam)
 {	
+    CAutoUpdater_DownloadInfo* pObject = (CAutoUpdater_DownloadInfo*)pParam;
+    
+	HINTERNET hSession = pObject->hSession;
+	LPCTSTR localFile = pObject->localFile;
+
 	HANDLE	hFile;
 	BYTE	pBuf[TRANSFER_SIZE];
 	DWORD	dwReadSizeOut, dwTotalReadSize = 0;
 
 	hFile = CreateFile(localFile, GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) return false;
+	if (hFile == INVALID_HANDLE_VALUE) {return false;}
 
 	do {
 		DWORD dwWriteSize, dwNumWritten;
@@ -193,7 +201,7 @@ bool CAutoUpdater::DownloadFile(HINTERNET hSession, LPCTSTR localFile)
 			WriteFile(hFile, pBuf, dwWriteSize, &dwNumWritten, NULL); 
 			// File write error
 			if (dwWriteSize != dwNumWritten) {
-				CloseHandle(hFile);					
+				CloseHandle(hFile);	
 				return false;
 			}
 		}
