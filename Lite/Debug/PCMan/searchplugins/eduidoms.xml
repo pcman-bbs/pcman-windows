@@ -1,0 +1,14 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>教育部成語辭典</ShortName>
+<Description>教育部成語辭典</Description>
+<InputEncoding>Big5</InputEncoding>
+<Image width="16" height="16">data:image/gif;base64,R0lGODdhEAAQAMZQABUVFTg4OD09PUBAQEZGRlBQUFVVVVZWVlhYWFtbW2JiYmpqamtra21tbW5ubnBwcHFxcXNzc3d3d3l5eX19fYCAgIKCgoeHh4uLi4yMjI6OjpGRkZSUlJWVlZeXl5mZmZubm5ycnJ6enp+fn6Ojo6ampqenp6mpqaqqqq+vr7W1tbi4uLm5uby8vL29vb+/v8DAwMXFxcbGxsfHx8jIyMzMzM3Nzc7OztDQ0NHR0dPT097e3uDg4OTk5OXl5efn5+np6erq6uvr6+zs7O7u7u/v7/Dw8PLy8vPz8/f39/j4+Pr6+vv7+/z8/P39/f7+/v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ywAAAAAEAAQAAAHn4BQgoOEhYaDJDs0TYeFC0g9B0eFOEqED0VQNzkWToMbEiOiIwUYoiIgP4MdL4QaNoI+T4QeLElJMUQoKYICHoQcFSYmATM5F1AsEIUZN4IIUE4JTARGhRQ8ggmCChEqhgxJUEAOghwGg56CDUscAzpQMB8MKFBMLYJPE4JETyUrUJYguHBCiCAXNQTJIDGEUAgAMAQFGTTLUBN1jQ4FAgA7</Image>
+<Url type="text/html" method="GET" template="http://140.111.34.46/cgi-bin/chengyu/searchResult.cgi">
+  <Param name="Query0" value="{searchTerms}" />
+  <Param name="page" value="0" />
+  <Param name="tf" value="pho" />
+  <Param name="stype" value="phrase" />
+  <Param name="select" value="phrase" />
+</Url>
+<SearchForm>http://140.111.34.46/chengyu/sort_pho.htm</SearchForm>
+</SearchPlugin>

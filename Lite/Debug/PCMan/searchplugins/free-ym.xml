@@ -1,0 +1,10 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+<os:ShortName>陽明免費軟體站</os:ShortName>
+<os:Description>搜尋免費軟體</os:Description>
+<os:InputEncoding>UTF-8</os:InputEncoding>
+<os:Image width="16" height="16">data:image/gif;base64,R0lGODlhEAAQAOeGAAAAAAUFCAwMlQ4OmBISnBQUlhYWnBkZox0doR4epx8fqCMjniQkniQkqyYmnisrsDo6OjIyqEFBQUhISD8/p09PbVNTU1NTcFNTmlhYd15ec2dnd2VlpGtrfGtrfWxspnBwiWxss3d3d3Z2g29vw3Z2kXV1sXp6i35+h35+jICAl4ODi4qKlYeHtY2NjZGRkZKSkpOTk5KSpJSUlJWVlZWVm5aWlpSUqZaWrpiYppqampmZsJqarpubrJ2dnZ6enp+fn56eq5+fsaKipKGhs6Ojs6Wlpaenp6amsKensaensqmpuaurq6mpvaysrKysra6urq+vtrCwtLGxsbKysrOzs7S0tLW1tbOzzLa2tri4uLe3x7m5ubi4xrq6ury8vL29wcDAzsLCwsTExMTE0cfHyMjIyMnJycrKysvLzMzMzMzMzc3Nzc7O1c/Pz9DQ0tDQ2tLS0tLS19PT09XV1tbW1tjY2Nzc3N7e3t3d597e4eDg4eDg5uHh4uXl5efn5+fn6Ojo6Onp6enp7PHx8vX1+P///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAP8ALAAAAAAQABAAAAjVAP8JrLDBgwaBCBP+uzACho0VGRQmvHHlB5AXPfiEaYJD4pI+YnS8IGKiRZc7hAqRQbijDhoaL4RESNCAAoctgxJ6SRPjBRIGBA4oeEBCT0I5gHoqWSBgAAIMKoYkTLHGxoskDgQUKDHjBxMmWQTK4HIxRwgDH6ZA0WKGjR2EX4686MADSxQxZdq8+ePHjMAaRlAIBOEGD5w8Qc4wcYHwBMIiggLR2cOCiRMfCAMkBGPli5QnVLhYQQjgH4DTFiRMOCNmjBrSpEtDEDFnThyJuKtMQRgQADs=</os:Image>
+<os:Url type="text/html" method="GET" template="http://free.ym.edu.tw/wiki/index.php/%E7%89%B9%E6%AE%8A:Search">
+  <os:Param name="search" value="{searchTerms}"/>
+  <os:Param name="go" value="進入"/>
+</os:Url>
+</SearchPlugin>
