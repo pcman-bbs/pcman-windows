@@ -180,7 +180,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
 	ON_WM_ACTIVATEAPP()
 	ON_WM_VSCROLL()
-	ON_MESSAGE(WM_COMMIT_UPDATE, OnUpdate)
+	ON_REGISTERED_MESSAGE(WM_COMMIT_UPDATE, OnCommitUpdate)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_COPYDATA, OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
@@ -542,11 +542,11 @@ void CMainFrame::OnClose()
 		if (MessageBox(LoadString(IDS_EXIT_CONFIRM), LoadString(IDS_CONFIRM), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
 			return;
     
-	OnUpdate();
+	OnCommitUpdate(NULL, NULL);
 }
 
 
-void CMainFrame::OnUpdate()
+LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
 {
 	WSACancelBlockingCall();
 
@@ -624,6 +624,7 @@ void CMainFrame::OnUpdate()
 	}
 
 	CFrameWnd::OnClose();
+	return 0;
 }
 
 void CMainFrame::UpdateStatus()

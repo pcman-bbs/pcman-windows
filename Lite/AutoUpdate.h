@@ -12,7 +12,7 @@
 #include <Wininet.h>
 
 #define LOCATION_UPDATE_FILE_CHECK _T("update.txt")
-#define WM_COMMIT_UPDATE (WM_APP+'U')
+static UINT NEAR WM_COMMIT_UPDATE = RegisterWindowMessage("COMMDLG_FIND");
 
 class CAutoUpdater  
 {
