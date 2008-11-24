@@ -188,6 +188,29 @@ BOOL CApp::InitInstance()
 
 	pFrame->SwitchToConn(0);
 
+	//Restore Charset Setting
+	switch(AppConfig.saved_charset)
+	{
+		case 0:
+			break;
+			
+		case 1:
+			pFrame->OnSetCharset(ID_SET_CHARSET_DEFAULT);
+			break;
+		case 2:
+			pFrame->OnSetCharset(ID_SET_CHARSET_CP950);
+			break;
+		case 3:
+			pFrame->OnSetCharset(ID_SET_CHARSET_CP936);
+			break;
+		case 4:
+			pFrame->OnSetCharset(ID_SET_CHARSET_CP932);
+			break;
+		case 5:
+			pFrame->OnSetCharset(ID_SET_CHARSET_UTF8);
+			break;
+	}
+
 	//Restore Main Window Position
 	AppConfig.mainwnd_state.Restore(pFrame->m_hWnd);
 	pFrame->UpdateWindow();
