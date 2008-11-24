@@ -1,8 +1,6 @@
 // PCMan4.cpp : Defines the class behaviors for the application.
 //
 
-#include <iostream.h>
-
 #include "stdafx.h"
 #include "PCMan.h"
 
@@ -58,8 +56,6 @@ CApp theApp;
 
 BOOL CApp::InitInstance()
 {
-	cout << "BBcall !!" << endl;
-	
 	DBG_INIT(1);
 
 	// Find other existing instances
