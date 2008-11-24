@@ -1,22 +1,22 @@
 //Generated from Version_Create.bat "Version_Set_Lite.bat" 
 // 
-#define FILEVER            8,2,0,328 
-#define FILEVER_STRA       "8,2,0,328\0" 
-#define FILEVER_DOT_STRA       "8.2.0.328\0" 
-#define FILEVER_DOT_STRW       L"8.2.0.328\0" 
+#define FILEVER            8,2,0,341 
+#define FILEVER_STRA       "8,2,0,341\0" 
+#define FILEVER_DOT_STRA       "8.2.0.341\0" 
+#define FILEVER_DOT_STRW       L"8.2.0.341\0" 
 // 
-#define PRODUCTVER         8,2,0,328 
-#define PRODUCTVER_STRA    "8,2,0,328\0" 
-#define PRODUCTVER_DOT_STRA    "8.2.0.328\0" 
-#define PRODUCTVER_DOT_STRW    L"8.2.0.328\0" 
+#define PRODUCTVER         8,2,0,341 
+#define PRODUCTVER_STRA    "8,2,0,341\0" 
+#define PRODUCTVER_DOT_STRA    "8.2.0.341\0" 
+#define PRODUCTVER_DOT_STRW    L"8.2.0.341\0" 
 // 
 #define Version_Major 8 
 #define Version_Minor 2 
 #define Version_PatchLevel 0 
-#define Version_BuildNumber   328 
+#define Version_BuildNumber   341 
 // 
-#define Version_RevDateA   "2008/11/21 16:16:32" 
-#define Version_RevDateW   L"2008/11/21 16:16:32" 
+#define Version_RevDateA   "2008/11/24 15:17:06" 
+#define Version_RevDateW   L"2008/11/24 15:17:06" 
 // 
 #define Version_UseSvnBuildNumber   1 
 // 
