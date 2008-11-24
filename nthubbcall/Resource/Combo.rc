@@ -1,0 +1,587 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Taiwan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
+#pragma code_page(950)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 1\r\n"
+    "#pragma code_page(950)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""Common.rc""\r\n"
+    "#include ""Version_Resource_Combo.rc2""\r\n"
+    "//#include ""l.cht\\afxres.rc""          // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_POPUP2 MENU DISCARDABLE 
+BEGIN
+    POPUP "WWW"
+    BEGIN
+        MENUITEM "開新瀏覽器分頁 (&W)",         ID_NEW_WWW
+        MENUITEM "開啟網頁 (&O)",               ID_WEBPAGE_OPEN
+        MENUITEM "另存網頁 (&A)",               ID_WEBPAGE_SAVEAS
+        MENUITEM "網頁列印設定 (&P)",           ID_WEBPAGE_PRINTSETTINGS
+        MENUITEM "列印網頁 (&P)",               ID_WEBPAGE_PRINT
+        MENUITEM "檢視網頁原始碼 (&V)",         ID_WEBPAGE_VIEWSRC
+        MENUITEM "將目前網頁加入擋廣告設定 (&A)", ID_WEBPAGE_ADDAD
+    END
+    POPUP "NEWSITE"
+    BEGIN
+        MENUITEM "新增 BBS 站台 (&B)",          4
+        MENUITEM "新增網頁 (&W)",               8
+    END
+    POPUP "RichEdit20"
+    BEGIN
+        MENUITEM "復原 (&U)",                   ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "剪下 (&T)",                   ID_EDIT_CUT
+        MENUITEM "複製 (&C)",                   ID_EDIT_COPY
+        MENUITEM "貼上 (&P)",                   ID_EDIT_PASTE
+        MENUITEM "刪除 (&D)",                   ID_EDIT_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "全選 (&A)",                   ID_EDIT_SELALL
+    END
+END
+
+#if defined(APSTUDIO_INVOKED) || defined(BUILD_UI)
+#if defined(APSTUDIO_INVOKED)
+IDR_BUILD_UI$(BUILD_UI) MENU PRELOAD DISCARDABLE 
+#else
+IDR_BUILD_UI MENU PRELOAD DISCARDABLE 
+#endif
+BEGIN
+    POPUP "連線 (&C)"
+    BEGIN
+        POPUP "新增連線分頁 (&N)"
+        BEGIN
+            MENUITEM "開新空白網頁 (&B)\tAlt+N",    ID_NEW_WWW
+            MENUITEM "目前網頁 (&C)",               ID_NEW_CURPAGE
+            MENUITEM "用 IE 開啟目前網頁 (&I)",     ID_NEW_IE_CURPAGE
+            MENUITEM "IE首頁 (&H)",                 ID_NEW_HOME
+            MENUITEM SEPARATOR
+            MENUITEM "BBS快速連線\tAlt+Q",          ID_CONNECT_NEW
+        END
+        MENUITEM "開啟站台列表 (&S)\tAlt+S",    ID_SITE_LIST
+        MENUITEM SEPARATOR
+        MENUITEM "中斷這個連線 (&D)",           ID_DISCONNECT
+        MENUITEM "關閉這個分頁 (&C)\tCtrl+Del", 32774
+        MENUITEM "重新連線 (&R)\tAlt+R",        ID_RECONNECT
+        MENUITEM "上次的連線 (&P)\tAlt+F",      8023
+        MENUITEM SEPARATOR
+        MENUITEM "開啟網頁 (&O)",               ID_WEBPAGE_OPEN
+        MENUITEM "另存網頁 (&A)",               ID_WEBPAGE_SAVEAS
+        MENUITEM "網頁列印設定 (&P)",           ID_WEBPAGE_PRINTSETTINGS
+        MENUITEM "列印網頁 (&P)",               ID_WEBPAGE_PRINT
+        MENUITEM SEPARATOR
+        MENUITEM "結束 (&X)",                   ID_FILE_EXIT
+    END
+    POPUP "編輯 (&E)"
+    BEGIN
+        MENUITEM "複製 (只有純文字) (&C)\tAlt+O", ID_COPY
+        MENUITEM "複製 (包含ANSI彩色) (&Y)",    ID_ANSICOPY
+        POPUP "下載正在閱讀的文章 (&R)"
+        BEGIN
+            MENUITEM "複製到剪貼簿 (&C)",           ID_COPYARTICLE
+            MENUITEM "複製到剪貼簿 (包含 ANSI 彩色) (&Y)", 
+                                                    ID_COPYARTICLE_WITH_ANSI
+            MENUITEM "在 ANSI 編輯器中檢視 (&N)",   ID_DOWNLOAD_ARTICLE
+        END
+        MENUITEM "貼上 (&P)\tAlt+P",            ID_PASTE
+        MENUITEM SEPARATOR
+        POPUP "選取文字當成超連結開啟 (&O)"
+        BEGIN
+            MENUITEM "直接開啟 (&O)",               ID_EDIT_OPENURL
+            MENUITEM SEPARATOR
+            MENUITEM "當成 http://",                ID_EDIT_OPENURL_HTTP
+            MENUITEM "當成 telnet://",              ID_EDIT_OPENURL_TELNET
+            MENUITEM "當成 ftp://",                 ID_EDIT_OPENURL_FTP
+        END
+        MENUITEM "尋找這個畫面的資料 (&F)\tAlt+I", ID_EDIT_FIND
+        POPUP "語言及字元編碼"
+        BEGIN
+            MENUITEM "Default",                     ID_SET_CHARSET_DEFAULT
+            MENUITEM SEPARATOR
+            MENUITEM "Traditional Chinese (Big5)",  ID_SET_CHARSET_CP950
+            MENUITEM "Simplified Chinese (GB2312)", ID_SET_CHARSET_CP936
+            MENUITEM "Japanese (Shift_JIS)",        ID_SET_CHARSET_CP932
+            MENUITEM "Unicode (UTF-8)",             ID_SET_CHARSET_UTF8
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "複製並貼上 (&S)",             ID_COPYPASTE
+        MENUITEM "從檔案貼上 (&I)",             ID_PASTEFILE
+        MENUITEM "貼上短網址 (&T)",             ID_PASTETINYURL
+        MENUITEM "全選這個畫面 (&A)\tAlt+L",    ID_SELECTALL
+        MENUITEM "全選整個緩衝區 (&L)",         ID_SELALL_BUF
+        MENUITEM SEPARATOR
+        MENUITEM "快速輸入常用文字 (&Q)\tCtrl+Enter", ID_FREQ_STR
+        MENUITEM "播放動畫 (&M)",               ID_PLAY_ANSIMOVIE
+        MENUITEM "複製連結位址",                ID_EDIT_COPYURL
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "向右移動忽略全形自動偵測",    ID_RIGHTNODBCS
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "向左移動忽略全形自動偵測",    ID_LEFTNODBCS
+        , CHECKED, INACTIVE
+        MENUITEM "Backspace 忽略全形自動偵測\tAlt+Backspace", ID_BACKNODBCS
+        , CHECKED, INACTIVE
+        MENUITEM "輸入焦點移到位址列\tAlt+D",   ID_ADSFOCUS
+        , CHECKED, INACTIVE
+        MENUITEM "輸入焦點移到搜尋列\tAlt+K",   ID_SEARCHBAR_FOCUS
+        , CHECKED, INACTIVE
+        MENUITEM "快速輸入WWW網址\tAlt+W",      ID_ADSHTTP
+        , CHECKED, INACTIVE
+        MENUITEM "快速輸入Telnet網址\tAlt+T",   ID_ADSTELNET
+        , CHECKED, INACTIVE
+    END
+    POPUP "BBS畫面切換", CHECKED, INACTIVE, MENUBARBREAK
+    BEGIN
+        MENUITEM "兩連線分頁間來回切換\tCtrl+Tab", ID_SWITCH_BACK
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到上一個分頁\tCtrl+Left", ID_UP
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到下一個分頁\tCtrl+Right", ID_DOWN
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "捲軸往上捲一頁\tCtrl+PageUp", ID_PGU
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "捲軸往下捲一頁\tCtrl+PageDown", ID_PGD
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第1個分頁\tCtrl+1",     8001
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第2個分頁\tCtrl+2",     8002
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第3個分頁\tCtrl+3",     8003
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第4個分頁\tCtrl+4",     8004
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第5個分頁\tCtrl+5",     8005
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第6個分頁\tCtrl+6",     8006
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第7個分頁\tCtrl+7",     8007
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第8個分頁\tCtrl+8",     8008
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第9個分頁\tCtrl+9",     8009
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第10個分頁\tCtrl+0",    8010
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到最後一個分頁\tCtrl+End", ID_LASTCON
+        , CHECKED, INACTIVE, MENUBARBREAK
+    END
+    POPUP "選項 (&V)"
+    BEGIN
+        POPUP "工具列 (&T)"
+        BEGIN
+            MENUITEM "自訂主要工具列 (&C)",         ID_CUSTOMIZE_MAINTB
+            MENUITEM "自訂 Web 工具列 (&U)",        ID_CUSTOMIZE_WB
+            MENUITEM SEPARATOR
+            MENUITEM "主要工具列 (&T)",             ID_TOOLBAR
+            MENUITEM "Web工具列 (&W)",              ID_WEBBAR
+            MENUITEM "狀態列 (&S)",                 ID_STATUSBAR
+            MENUITEM "位址列 (&D)",                 ID_ADS
+            MENUITEM "搜尋列 (&K)",                 ID_SEARCHBAR
+            MENUITEM "連線標籤列 (&B)",             ID_TAB
+            MENUITEM "將連線標籤放在底部 (&M)",     ID_KKTAB
+            MENUITEM "關閉分頁按鈕 (&P)",           ID_CLOSEBTN
+            MENUITEM "ANSI 色彩碼傳送工具 (&N)",    ID_SEND_ANSICODE
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "自訂 PCMan 所有熱鍵 (&U)",    ID_CUSTOMIZE
+        MENUITEM "自訂 PCMan 各項設定 (&O)",    ID_VIEW_CONFIG
+        MENUITEM "修改目前連線的設定值 (&C)",   ID_CURCON_SETTINGS
+        MENUITEM SEPARATOR
+        POPUP "快速 BBS選項 (&Q)"
+        BEGIN
+            MENUITEM "設定BBS字型 (&F)",            ID_BBS_FONT
+            MENUITEM "設定BBS畫面色彩 (&C)",        ID_COLORCONFIG
+            MENUITEM "設定BBS背景圖片 (&K)",        ID_SETBK
+            MENUITEM "BBS畫面右方顯示捲軸 (&S)",    ID_SHOW_SCROLL
+            MENUITEM "BBS來訊自動切換 (&A)",        ID_CONFIG_AUTOSWITCH
+            MENUITEM "啟用平滑繪圖模式 (不建議) (&M)", ID_SMOOTH_DRAW
+        END
+        POPUP "快速 Web選項 (&W)"
+        BEGIN
+            MENUITEM "自動阻擋彈出式廣告視窗 (&A)", ID_BLOCK_POPUP
+            MENUITEM "IE 選項 (&I)",                ID_IESETUP
+            POPUP "字形大小 (&F)"
+            BEGIN
+                MENUITEM "最大 (&G)",                   ID_FONT_LARGEST
+                MENUITEM "較大 (&L)",                   ID_FONT_LARGE
+                MENUITEM "適中 (&M)",                   ID_FONT_MEDIUM
+                MENUITEM "較小 (&S)",                   ID_FONT_SMALL
+                MENUITEM "最小 (&A)",                   ID_FONT_SMALLEST
+            END
+            MENUITEM "編輯所有擋廣告設定 (&C)",     ID_AD
+            MENUITEM "在網址列輸入後開新的網頁 (&R)", ID_ADS_OPENNEW
+        END
+        POPUP "BBS偵測雙位元組中文字 (&B)"
+        BEGIN
+            MENUITEM "滑鼠選取偵測中文 (&M)",       ID_AUTODBCS_MOUSE
+            MENUITEM SEPARATOR
+            MENUITEM "方向鍵偵測中文 (&A)",         ID_AUTODBCS_ARROW
+            MENUITEM "Delete鍵偵測中文",            ID_AUTODBCS_DEL
+            MENUITEM "Backspace 偵測中文",          ID_AUTODBCS_BACKSPACE
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "清除位址列紀錄或連線紀錄選單 (&G)", ID_CLEAR_HISTORY
+        MENUITEM SEPARATOR
+        MENUITEM "檢視網頁原始碼 (&V)",         ID_VIEW_SRC, GRAYED
+        MENUITEM "將目前網頁加入擋廣告設定 (&A)", ID_WEBPAGE_ADDAD, GRAYED
+        MENUITEM "結束時紀錄上次的連線 (&E)",   ID_EXITLOG
+        MENUITEM SEPARATOR
+        MENUITEM "切換全螢幕瀏覽 (&L)\tAlt+Enter", ID_VIEW_FULLSCR
+        MENUITEM "啟用滑鼠瀏覽",                ID_MOUSE_CTL
+    END
+    POPUP "BBS最愛 (&B)"
+    BEGIN
+        MENUITEM "加入目前站台到此處 (&A)",     ID_ADDTOFAVORITE
+        MENUITEM "開啟資料夾下所有站台 (&O)",   ID_FAVORITE_OPENALL
+        MENUITEM "組織我的最愛 (&E)",           ID_FAVORITE_EDIT
+        MENUITEM "目前站台加到首頁 (&H)",       ID_ADDTOHOME
+    END
+    POPUP "Web最愛 (&A)"
+    BEGIN
+        MENUITEM "加入目前站台到此處 (&A)",     ID_ADDTOFAVORITE
+        MENUITEM "開啟資料夾下所有站台 (&O)",   ID_FAVORITE_OPENALL
+        MENUITEM "組織我的最愛 (&E)",           ID_FAVORITE_EDIT
+        MENUITEM "目前站台加到首頁 (&H)",       ID_ADDTOHOME
+    END
+    MENUITEM "紀錄 (&Y)",                   65535
+    POPUP "ANSI編輯 (&N)"
+    BEGIN
+        MENUITEM "開新檔案 (&N)",               ID_ANSIEDITOR
+        MENUITEM "開啟舊檔 (&O)",               ID_ANSI_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "儲存檔案 (&S)",               ID_ANSI_SAVE
+        MENUITEM "另存新檔 (&A)",               ID_ANSI_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "清除畫面 (&L)",               ID_ANSI_CLS
+        MENUITEM "插入模式 (Insert鍵切換) (&W)", ID_ANSI_INS
+    END
+    POPUP "工具 (&T)"
+    BEGIN
+        MENUITEM "標點符號輸入 (&S)",           ID_TOOL_SYMBOLS
+        MENUITEM "PCMan上鎖 (離開座位時使用) (&L)\tCtrl+Alt+L", ID_TOOL_LOCK
+        MENUITEM SEPARATOR
+        MENUITEM "取得本機 IP 位址 (&A)",       ID_GET_LOCALIP
+        MENUITEM "匯入 IE 我的最愛 (&F)",       ID_TOOL_IMPORT_IEFAV
+        MENUITEM "匯出 Web 最愛到 IE  (&X)",    ID_TOOL_EXPORT_IEFAV
+        MENUITEM "將PCMan設為預設程式 &D)",     ID_SETDEFAULT
+        MENUITEM "備份目前設定值 (&B)",         ID_BACKUP_CONFIG
+    END
+    POPUP "說明 (&H)"
+    BEGIN
+        MENUITEM "軟體使用說明 (&H)\tAlt+F1",   IDM_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "關於 Open PCMan 2007 Combo (&A)...", ID_ABOUT
+    END
+END
+#endif
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_WEBPAGE DIALOG DISCARDABLE  0, 0, 346, 63
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "網頁"
+FONT 9, "新細明體"
+BEGIN
+    EDITTEXT        IDC_NAME,75,7,261,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_URL,75,24,261,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "確定",IDOK,232,42,50,14
+    PUSHBUTTON      "取消",IDCANCEL,286,42,50,14
+    LTEXT           "網址：",IDC_URL_STATIC,7,25,65,8
+    LTEXT           "網站名稱：",IDC_NAME_STATIC,7,8,65,8
+END
+
+IDD_ADITEM DIALOG DISCARDABLE  0, 0, 208, 65
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "擋廣告字串"
+FONT 9, "新細明體"
+BEGIN
+    EDITTEXT        IDC_ADS,13,17,132,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TITLE,13,46,132,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "確定",IDOK,151,5,50,14
+    PUSHBUTTON      "取消",IDCANCEL,151,25,50,14
+    LTEXT           "或是　網頁標題包含：",IDC_STATIC,15,33,81,8
+    LTEXT           "如果　網頁網址包含：",IDC_STATIC,15,5,92,8
+END
+
+IDD_ADLIST DIALOG DISCARDABLE  0, 0, 287, 173
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "WWW擋廣告設定"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "擋廣告字串設定：",IDC_TITLE,7,7,202,10
+    LISTBOX         IDC_LIST,7,20,216,146,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON      "取消 (&C)",IDCANCEL,230,152,50,14
+    PUSHBUTTON      "新增 (&A)",IDC_ADD,230,20,50,14
+    PUSHBUTTON      "移除 (&R)",IDC_DEL,230,39,50,14
+    PUSHBUTTON      "編輯 (&E)",IDC_EDIT,230,58,50,14
+    PUSHBUTTON      "確定 (&O)",IDOK,230,134,50,14
+END
+
+IDD_WEB DIALOG DISCARDABLE  0, 0, 241, 129
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Web 設定"
+FONT 9, "新細明體"
+BEGIN
+    CONTROL         "自動阻擋彈出式廣告視窗 ",IDC_DISABLE_POPUP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,7,106,10
+    CONTROL         "關閉 Script 偵錯視窗",IDC_DISABLE_SCRIPT_ERROR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,22,86,10
+    CONTROL         "在網址列輸入後開新的網頁",IDC_ADS_NEW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,37,112,10
+    CONTROL         "Web 最愛和 IE 我的最愛共用",IDC_IE_FAV,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,67,120,10
+    CONTROL         "Web 最愛依名稱排序 (本功能目前僅和 IE共用時有效)",
+                    IDC_AUTO_SORT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,82,
+                    227,10
+    CONTROL         "Web 最愛選單超過螢幕可顯示範圍時換行",IDC_AUTO_WRAP,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,52,182,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_WEBPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 336
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+    END
+
+    IDD_ADITEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 201
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_ADLIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 280
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 166
+    END
+
+    IDD_WEB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 234
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+#if defined(APSTUDIO_INVOKED) || defined(BUILD_UI)
+#if defined(APSTUDIO_INVOKED)
+IDR_BUILD_UI$(BUILD_UI) ACCELERATORS DISCARDABLE 
+#else
+IDR_BUILD_UI ACCELERATORS DISCARDABLE 
+#endif
+BEGIN
+    "0",            ID_SWITCHCON10,         VIRTKEY, CONTROL, NOINVERT
+    "0",            ID_SWITCHCON10,         VIRTKEY, ALT, NOINVERT
+    "1",            ID_SWITCHCON1,          VIRTKEY, CONTROL, NOINVERT
+    "1",            ID_SWITCHCON1,          VIRTKEY, ALT, NOINVERT
+    "2",            ID_SWITCHCON2,          VIRTKEY, CONTROL, NOINVERT
+    "2",            ID_SWITCHCON2,          VIRTKEY, ALT, NOINVERT
+    "3",            ID_SWITCHCON3,          VIRTKEY, CONTROL, NOINVERT
+    "3",            ID_SWITCHCON3,          VIRTKEY, ALT, NOINVERT
+    "4",            ID_SWITCHCON4,          VIRTKEY, CONTROL, NOINVERT
+    "4",            ID_SWITCHCON4,          VIRTKEY, ALT, NOINVERT
+    "5",            ID_SWITCHCON5,          VIRTKEY, CONTROL, NOINVERT
+    "5",            ID_SWITCHCON5,          VIRTKEY, ALT, NOINVERT
+    "6",            ID_SWITCHCON6,          VIRTKEY, CONTROL, NOINVERT
+    "6",            ID_SWITCHCON6,          VIRTKEY, ALT, NOINVERT
+    "7",            ID_SWITCHCON7,          VIRTKEY, CONTROL, NOINVERT
+    "7",            ID_SWITCHCON7,          VIRTKEY, ALT, NOINVERT
+    "8",            ID_SWITCHCON8,          VIRTKEY, CONTROL, NOINVERT
+    "8",            ID_SWITCHCON8,          VIRTKEY, ALT, NOINVERT
+    "9",            ID_SWITCHCON9,          VIRTKEY, CONTROL, NOINVERT
+    "9",            ID_SWITCHCON9,          VIRTKEY, ALT, NOINVERT
+    "D",            ID_ADSFOCUS,            VIRTKEY, ALT, NOINVERT
+    "F",            ID_PREVIOUS_CON,        VIRTKEY, ALT, NOINVERT
+    "I",            ID_EDIT_FIND,           VIRTKEY, ALT, NOINVERT
+    "K",            ID_SEARCHBAR_FOCUS,     VIRTKEY, ALT, NOINVERT
+    "L",            ID_SELECTALL,           VIRTKEY, ALT, NOINVERT
+    "L",            ID_TOOL_LOCK,           VIRTKEY, CONTROL, ALT, NOINVERT
+    "N",            ID_NEW_WWW,             VIRTKEY, ALT, NOINVERT
+    "O",            ID_COPY,                VIRTKEY, ALT, NOINVERT
+    "P",            ID_PASTE,               VIRTKEY, ALT, NOINVERT
+    "Q",            ID_CONNECT_NEW,         VIRTKEY, ALT, NOINVERT
+    "R",            ID_RECONNECT,           VIRTKEY, ALT, NOINVERT
+    "S",            ID_SITE_LIST,           VIRTKEY, ALT, NOINVERT
+    "T",            ID_ADSTELNET,           VIRTKEY, ALT, NOINVERT
+    VK_BACK,        ID_BACKNODBCS,          VIRTKEY, ALT, NOINVERT
+    VK_DELETE,      ID_CONNECT_CLOSE,       VIRTKEY, CONTROL, NOINVERT
+    VK_DOWN,        ID_DOWN,                VIRTKEY, ALT, NOINVERT
+    VK_END,         ID_LASTCON,             VIRTKEY, CONTROL, NOINVERT
+    VK_END,         ID_LASTCON,             VIRTKEY, ALT, NOINVERT
+    VK_F1,          IDM_HELP,               VIRTKEY, ALT, NOINVERT
+    VK_F4,          ID_CONNECT_CLOSE,       VIRTKEY, CONTROL, NOINVERT
+    VK_HOME,        ID_SWITCHCON1,          VIRTKEY, CONTROL, NOINVERT
+    VK_HOME,        ID_SWITCHCON1,          VIRTKEY, ALT, NOINVERT
+    VK_INSERT,      ID_COPY,                VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_PASTE,               VIRTKEY, SHIFT, NOINVERT
+    VK_LEFT,        ID_UP,                  VIRTKEY, CONTROL, NOINVERT
+    VK_LEFT,        ID_GOBACK,              VIRTKEY, ALT, NOINVERT
+    VK_NEXT,        ID_PGD,                 VIRTKEY, CONTROL, NOINVERT
+    VK_PRIOR,       ID_PGU,                 VIRTKEY, CONTROL, NOINVERT
+    VK_RETURN,      ID_FREQ_STR,            VIRTKEY, CONTROL, NOINVERT
+    VK_RETURN,      ID_VIEW_FULLSCR,        VIRTKEY, ALT, NOINVERT
+    VK_RIGHT,       ID_DOWN,                VIRTKEY, CONTROL, NOINVERT
+    VK_RIGHT,       ID_GOFORWARD,           VIRTKEY, ALT, NOINVERT
+    VK_TAB,         ID_SWITCH_BACK,         VIRTKEY, CONTROL, NOINVERT
+    VK_UP,          ID_UP,                  VIRTKEY, ALT, NOINVERT
+    "W",            ID_ADSHTTP,             VIRTKEY, ALT, NOINVERT
+    "X",            ID_DOWN,                VIRTKEY, ALT, NOINVERT
+    "Z",            ID_UP,                  VIRTKEY, ALT, NOINVERT
+END
+#endif
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NEW_WWW              "\n開新空白網頁"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WWWHOME              "\n首頁"
+    ID_ADSHTTP              "\nWWW連線 http:// (可設快速鍵)"
+    ID_ADSTELNET            "\nTelnet連線 telnet:// (可設快速鍵)"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_GOBACK               "\n上一頁"
+    ID_GOFORWARD            "\n下一頁"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NEW_BLANK            "\n開新的連線畫面"
+    ID_BLOCK_POPUP          "\n自動阻擋彈出式廣告視窗"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_RECONNECT            "\n網頁重讀 / BBS 重新連線"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_CONNECT_NEW          "\n新增連線分頁"
+    ID_DISCONNECT           "\n停止載入網頁 / 中斷BBS連線"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WEBPAGE_ADDAD        "\n將目前瀏覽網頁標題網址加到防廣告過濾"
+    IDS_SEARCH_BAR_TITLE    "搜尋："
+END
+
+#endif    // Chinese (Taiwan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+#ifdef _WIN32
+LANGUAGE 4, 1
+#pragma code_page(950)
+#endif //_WIN32
+#include "Common.rc"
+#include "Version_Resource_Combo.rc2"
+//#include "l.cht\afxres.rc"          // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

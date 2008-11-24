@@ -1,0 +1,10 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>Nciku Dictionary</ShortName>
+<Description>Nciku Search</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/gif;base64,R0lGODlhEAAQAMZEACIiIkNDQ0dHR0tLS09PT1JSUlZWVldXV1paWlxcXGBgYGJiYmdnZ2xsbG9vb3d3d3l5eX9/f4aGhoeHh42NjZGRkZKSkpOTk5SUlJWVlZiYmJqampubm5ycnJ+fn6Ojo6Wlpaampqenp6ioqKqqqq2tra6urrGxsbKysrOzs7S0tLa2tre3t7i4uLm5ub29vb+/v8HBwcLCwsnJydPT09XV1dfX19nZ2eHh4eXl5efn5+rq6uzs7O3t7fLy8vb29vf39/j4+Pn5+fv7+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAQABAAAAeUgESCg4SFgziGhDOEBhyOjhYcGY4APIMMhRcTDzpEB4QMMSkspA0YJAQtn5c9OTqvFSqvPquCmAgeFQknLUEFQLVEmJ82ETUaKCOeoEQBIhQOQw4LQ8uXRCFAQEJBBCtEN8EMOzAWER0mEBI/IeIsEDRCGy5EIAEvwQraQDI9+y4lDBAS8KGgwYMDCFVLJGghQ4aBAAA7</Image>
+<Url type="application/x-suggestions+json" method="GET" template="http://www.nciku.com.tw/search/all/{searchTerms}"/>
+<Url type="text/html" method="GET" template="http://www.nciku.com.tw/search/all/{searchTerms}">
+</Url>
+<SearchForm>http://www.nciku.com.tw/search/all/</SearchForm>
+</SearchPlugin>

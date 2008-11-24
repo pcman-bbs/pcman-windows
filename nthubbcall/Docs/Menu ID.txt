@@ -1,0 +1,32 @@
+PCMan 使用的 Command ID
+
+	500  ---> 1000	// BBS Favorite	500
+	1001  ---> 6000	// WWW Favorite	5000
+	6001 ---> 8000	// FUS
+	8001 ---> 8010	// switch window
+	8011 ---> 8022	// OnAnsiPasteMenu
+	8023 ---> 8037	// OnHistory	15
+
+	0x8000 = 32768 ---> ...	// Main Menu
+
+以下節錄自 MFC 官方文件
+
+MFC Command ID
+
+By convention, the ID value of 0 is not used.
+Windows implementation limitations restrict true resource IDs to be less than or equal to 0x7FFF.
+MFC's internal framework implementations reserve several ranges: 0xE000->0xEFFF and 0x7000->0x7FFF.
+Several Windows system commands use the range of 0xF000 -> 0xFFFF.
+Control IDs of 1->7 are reserved by IDOK, IDCANCEL, and so on.
+The range of 0x8000->0xFFFF for strings is reserved for menu prompts for commands. 
+
+We use the generic prefix "ID_" for command IDs. Command IDs are >= 0x8000.
+The message line or status bar will show the command description string if
+there is a STRINGTABLE resource with the same IDs as the command ID.
+
+MFC standard commands fall in the range 0xE000 to 0xEFFF.
+Please do not rely on the specific values of these IDs since
+they are subject to change in future versions of the library.
+Your application should define its commands in the range 0x8000 to 0xDFFF.
+
+標準的 VC++ resource editor 會把 Menu 的 ID 設定在 0x8000 之後，所以之前的 ID 就可以自由使用了。

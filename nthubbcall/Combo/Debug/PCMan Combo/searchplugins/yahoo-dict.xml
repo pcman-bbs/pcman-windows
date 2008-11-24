@@ -1,0 +1,10 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+<ShortName>Yahoo!奇摩字典</ShortName>
+<Description>Yahoo!奇摩字典</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/gif;base64,R0lGODlhEAAQAJECAP8AAAAAAP///wAAACH5BAEAAAIALAAAAAAQABAAAAIplI+py+0NogQuyBDEnEd2kHkfFWUamEzmpZSfmaIHPHrRguUm/fT+UwAAOw==</Image>
+<Url type="text/html" method="GET" template="http://tw.dictionary.yahoo.com/search">
+  <Param name="ei" value="UTF-8"/>
+  <Param name="p" value="{searchTerms}"/>
+</Url>
+</SearchPlugin>

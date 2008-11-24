@@ -1,0 +1,8 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>0rz.tw</ShortName>
+<Description>0rz.tw</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/x-icon;base64,R0lGODlhEAAQAJECAP///wAAAP///wAAACH5BAHoAwIALAAAAAAQABAAAAIihI+py+0f4gPhVHeprlFqw2XgOIrfySFilpKqx3bTTNdPAQA7</Image>
+<Url type="text/html" method="GET" template="http://0rz.tw/{searchTerms}" />
+<SearchForm>http://0rz.tw/</SearchForm>
+</SearchPlugin>

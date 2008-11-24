@@ -1,0 +1,85 @@
+
+Release的步驟:
+
+0.
+效果:
+在GUI的About頁面和檔案的版本頁，會自動同步產生版本資訊
+之後我們由執行檔的about頁中的build，就可以知道在版本庫的版號
+而且可以使用version.h檔內的各項訊息
+其中Version_BuildNumber和Version_RevDate是版本庫的資訊
+
+
+1.
+電腦需安裝TortoiseSVN
+若TortoiseSVN不是安裝在 C:\Program Files\TortoiseSVN\bin\SubWCRev.exe
+則需要到Version_PreBuildEvent_Combo.bat和Version_PreBuildEvent_Lite.bat檔案內
+修改APP_SubWCRev的路徑如
+SET APP_SubWCRev=Z:\TortoiseSVN\bin\SubWCRev.exe
+
+
+
+2.
+Checkout http://svn.openfoundry.org/pcman/trunk
+注意，是使用Checkout不是使用Export，使用Checkout才會得到Subversion版本庫的資訊。
+當我們要release這版時，先要將這版的修改commit到版本庫，然後才開始建造執行檔，
+這樣才能得到最新的版號。
+
+
+  
+3.
+編輯版本設定
+開啟編輯Version_Set_Combo.bat 和 Version_Set_Lite.bat 內的版號(Lite可和Combo版不同)
+SET MajorVersion=8      ==> 設定新號碼
+SET MinorVersion=1      ==> 設定新號碼
+SET PatchLevel=0        ==> 設定新號碼
+其它的設定不動
+
+
+注意: 這下面的參數用法
+SET UseSvnBuildNumber=1 ==> 開啟Svn的自動版號功能，這個project是要開啟的
+                            若未安裝TortoiseSVN或是未使用Checkout出來的程式碼
+                            ，則此參數無用，改用下二個參數的值
+SET BuildNumber=0       ==> 當未安裝TortoiseSVN 又想編譯程式時所用的版號
+SET BuildNumber_Date=2007/6/27 12:24 ==> 當未安裝TortoiseSVN 又想編譯程式時所用的日期
+
+
+4.
+完成前面的設定後，開始建造執行檔，如果是首次從svn下載回來，注意這需要build二次，
+第一次用build(熱鍵F7)，build完後，馬上再執行第二次build
+第二次用build(熱鍵F7)，或是按Excute Program(熱鍵ctrl-F5)，就會再建一次，
+但是，這次build的速度很快。(而平常debug程式時，只需要build一次就行了)
+
+而為什麼build完第一次，再按一次build，還會再build檔案？
+正常不是因為檔案沒改變，所以不會build
+為什麼要這樣，原理如下
+
+
+
+5.
+由於vc6.0沒有pre-build的信號，導致我們無法在程式剛開始build的時後就產生versioh.h
+所以在build要release的程式前，
+要手動去執行Version_PreBuildEvent_Lite.bat和Version_PreBuildEvent_Combo.bat
+來產生各別的versioh.h檔
+若是vs2005則有pre-build的信號，可以完成自動化，
+但是現在是用vc6.0，所以就先用手動的方法去執行
+
+注意1:
+若執行Version_PreBuildEvent_Lite.bat和Version_PreBuildEvent_Combo.bat
+跳出「系統找不到指定的路徑」，則需要開啟命令列模式，跳到現在的工作目錄
+再執行上面的二個bat檔
+
+
+注意2:
+雖然vc6.0沒有pre-build的信號，但是為了方便，還是加了命令在pre-link
+所以可以自動產生versioh.h檔，但是要裡面修改的資料正確，需要build二次才行
+第一次build 產生versioh.h檔，但是因為是最後才產生的，所以未用到
+第二次build的時後，把上次的versioh.h檔包含進去，所以可以得到正確的資訊
+
+
+
+
+
+相關資訊，請參考versionCTL\Version_ReadMe.txt
+
+
+首編: Omar Lin  (ID: badpp) 下午 04:02 2007/6/28

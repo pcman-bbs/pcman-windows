@@ -1,0 +1,8 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>TinyURL</ShortName>
+<Description>Tiny URL</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/x-icon;base64,R0lGODlhEAAQAIAAAP///wAAmSH5BAAAAAAALAAAAAAQABAAQAIpjI9pcAy/Egsu0obrRdNVrYRYpE3iSUHlZXasi8byxpJc1krQ5plzUAAAOw==</Image>
+<Url type="text/html" method="GET" template="http://tinyurl.com/{searchTerms}" />
+<SearchForm>http://tinyurl.com/</SearchForm>
+</SearchPlugin>

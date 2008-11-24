@@ -1,0 +1,9 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+<ShortName>YouTube</ShortName>
+<Description>YouTube - Videos</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/x-icon;base64,R0lGODdhEAAQAMZnAAAAABERESIiIjMzM1VVVXd3d/8AAP8CAv8FBf8KCv8LC/8PD/8QEP8SEv8SE/8WFv8ZGf8dHf8eHv8fHv8gHv8iIv8mJv8nJ/8oKP8rK/8sLP8uLv8vL/8xMf8zM/80NP81Nf82Nv83N/84OP88PP89Pf9BQf9ERP9KSv9NTf9RUf9WVv9XV/9ZWf9aWv9bW/9dXf9hYf9jY/9kZP9lZf9paf9ubv9wcP9ycv92dv95ef98fIiIiLu7u/+Cgv+Dg/+Fhf+Ihv+env+goP+hof+iov+lpf+mpv+pqf+qqv+srP+urv+vr/+wsP+ysv+zs/+3t/+5uczMzN3d3f/Cwv/Gxv/Jyf/Ly//R0f/U1P/Y2P/a2v/d3f/e3v/f3+7u7v/g4P/i4v/m5v/v7//y8v/29v/7+////8zMzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAEAAQAAAHwoBnZwCDgoaHhlMAPABTiI9nBQAEXwIAAoNSAYhfAFJnAl8BPZ6biJ6goqQ8poeelZdnAwCEkLaHTBYOFB4hIxMbLEFUWEmCEFqCFwwGZBwGFhJIOYIeCGcoKCkgXU4iDUcZJYIfB2UXYkJRRGNRQ2FeB9UKZh5VQEVKL0pQW1wL1RKc+XAFh5EmMp5YYaGjgiASAj1kOWMkypklO86AeSAIhgYTGEac2NBBxYYFNCK4MPSjho0YLVy4WDHjhgwfggIBADs=</Image>
+<SearchForm>http://www.youtube.com/index</SearchForm>
+<Url type="text/html" method="GET" template="http://www.youtube.com/results?search_query={searchTerms}&amp;search=Search">
+</Url>
+</SearchPlugin>
