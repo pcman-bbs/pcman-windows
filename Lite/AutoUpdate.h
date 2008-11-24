@@ -35,10 +35,11 @@ public:
 	bool	IsDigits(CString text);
 	CString GetExecutable();
 	bool	Switch(CString executable, CString update, bool WaitForReboot);
+	int bTransferSuccess;
 
 private:
 	HINTERNET hInternet;
-	bool bTransferSuccess;
+	
 };
 
 class CAutoUpdater_DownloadInfo
@@ -53,6 +54,27 @@ public:
 	}
 };
 
+class CDownloadUpdateDlg : public CDialog
+{
+public:
+	CDownloadUpdateDlg()
+			: CDialog(IDD_DOWNLOADING_UPDATE)
+	{
+
+	}
+
+	BOOL OnInitDialog()
+	{
+		CDialog::OnInitDialog();
+		return TRUE;
+	}
+
+	void OnCancel()
+	{
+	    CDialog::OnCancel();
+	}
+
+};
 
 UINT DownloadUpdateFile(LPVOID pParam);
 #endif // !defined(AFX_AUTOUPDATER_H__227B2B21_B6AE_4164_B3A5_BFDAAF13D85D__INCLUDED_)
