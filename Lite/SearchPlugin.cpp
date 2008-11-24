@@ -4,13 +4,45 @@
 #include "StrUtils.h"
 #include "SimpXmlParser.h"
 #include "OleImage.h"
+#include "TermView.h"
+
+#include <wininet.h>
+
+//by BBcall
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
+
+#define AGENT_NAME  "CodeguruBrowser1.0"
+//by BBcall
+
 
 CSearchPluginCollection SearchPluginCollection;
+CSearchPluginCollection SearchPluginCollection_2;
+
+CString TestString;
 
 CSearchPlugin::CSearchPlugin()
 {
 	ShortName = Description = InputEncoding = Method = NULL;
 	Image = NULL;
+
+	//by BBcall
+	DWORD dwError;
+    CString PageContent;
+
+    // Initialize the Win32 Internet functions 
+    m_Session = ::InternetOpen(AGENT_NAME, 
+        INTERNET_OPEN_TYPE_PRECONFIG, // Use registry settings. 
+        NULL, // Proxy name. NULL indicates use default.
+        NULL, // List of local servers. NULL indicates default. 
+        0) ;
+
+    dwError = GetLastError();
+	//by BBcall
+
 }
 
 CSearchPlugin::~CSearchPlugin()
@@ -25,7 +57,64 @@ CSearchPlugin::~CSearchPlugin()
 		DeleteObject(Image);
 	if (Method)
 		free(Method);
+
+	//by BBcall
+	// Closing the session
+    ::InternetCloseHandle(m_Session);
+
 }
+
+// by BBcall //
+CString CSearchPlugin::GetWebPage(const CString& Url)
+{
+    HINTERNET hHttpFile;
+    char szSizeBuffer[32];
+    DWORD dwLengthSizeBuffer = sizeof(szSizeBuffer); 
+    DWORD dwFileSize;
+    DWORD dwBytesRead;
+    BOOL bSuccessful;
+    CString Contents;
+
+    // Setting default error message
+    Contents = m_ErrorMessage;
+    
+    // Opening the Url and getting a Handle for HTTP file
+    hHttpFile = InternetOpenUrl(m_Session, (const char *) Url, NULL, 0, 0, 0);
+
+    if (hHttpFile)
+    {    
+        // Getting the size of HTTP Files
+        BOOL bQuery = ::HttpQueryInfo(hHttpFile,HTTP_QUERY_CONTENT_LENGTH, szSizeBuffer, &dwLengthSizeBuffer, NULL) ;
+
+        if(bQuery==TRUE)
+        {    
+            // Allocating the memory space for HTTP file contents
+            dwFileSize=atol(szSizeBuffer);
+            LPSTR szContents = Contents.GetBuffer(dwFileSize);
+
+            // Read the HTTP file 
+            BOOL bRead = ::InternetReadFile(hHttpFile, szContents, dwFileSize, &dwBytesRead); 
+            
+            if (bRead) 
+                bSuccessful = TRUE;
+
+            ::InternetCloseHandle(hHttpFile); // Close the connection.
+        }
+
+    }
+    else
+    {
+        // Connection failed.
+        bSuccessful = FALSE;
+    } 
+    return Contents;
+}
+
+void CSearchPlugin::SetErrorMessage(CString s)
+{
+    m_ErrorMessage = s;
+}
+// by BBcall //
 
 int CSearchPluginCollection::Load(LPCTSTR filepath)
 {
@@ -155,6 +244,8 @@ CString CSearchPluginCollection::UrlForSearch(int index, CString searchTerm, boo
 			delete []utf8Str;
 	}
 	url.Replace("{searchTerms}", encodedTerm);
+	TestString = encodedTerm;
+
 	return url;
 }
 
@@ -265,6 +356,7 @@ void CSearchPluginParser::ElementData(const char* name, const char* data)
 		else
 			plugin.Description = strdup(data);
 	}
+	//about the image in the xml files
 	if (!plugin.Image && 0 == strcmp(name, "Image"))
 	{
 		if (0 == strncmp(data, "data:image/", 11))
@@ -339,14 +431,107 @@ void CSearchPluginCollection::LoadAll()
 
 	plugins.FreeExtra();
 
+
 	// Brute force!! Sort "internal data" of CPtrArray. Anyway, it works!
 	// FIXME: Current sorting result is not very good.
 	void** pdata = plugins.GetData();
 	if (pdata)
 	{
-		qsort(pdata, plugins.GetSize(), sizeof(void*), _ComparePlugin);
+		//qsort(pdata, plugins.GetSize(), sizeof(void*), _ComparePlugin);
 	}
 }
+
+
+void CSearchPluginCollection::LoadAll(int bbcall)
+{
+	int PagCounter = 0;
+	extern CString AppPath;
+
+	if (plugins.GetSize() > 0)
+		return;
+
+	COleImage::Initialize();	// Load OLE for GIF/JPEG loading
+
+	CFileFind searchFind;
+	BOOL searchFound;
+	int pluginId;
+	while (bbcall == 1){
+		switch (PagCounter){
+			case 0:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku0.xml");				
+				break;
+			case 1:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
+				break;
+			case 2:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-dict.xml");
+				break;
+			case 3:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google0.xml");
+				break;
+			case 4:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google.xml");
+				break;
+			case 5:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-zh-TW.xml");
+				break;
+			case 6:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\wikipedia-zh.xml");
+				break;
+			case 7:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\youtube.xml");
+				break;
+			case 8:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
+				break;
+			case 9:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\0rz.xml");
+				break;
+			case 10:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\tinyurl.xml");
+				break;
+			default:
+				bbcall = -1;
+		}
+
+		while (searchFound){
+			searchFound = searchFind.FindNextFile();
+			pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+		}
+
+		PagCounter++;
+		/*searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\*.xml");
+		while (searchFound)
+		{
+			searchFound = searchFind.FindNextFile();
+			pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+		}*/
+	}
+	if (bbcall == 2){
+		searchFound = searchFind.FindFile(AppPath + "\\searchengines\\*.xml");
+		while (searchFound)
+		{
+			searchFound = searchFind.FindNextFile();
+			pluginId = SearchPluginCollection_2.Load(searchFind.GetFilePath());
+		}
+	}
+
+
+
+	COleImage::Finalize();	// Release OLE for GIF/JPEG loading
+
+	plugins.FreeExtra();
+
+
+	// Brute force!! Sort "internal data" of CPtrArray. Anyway, it works!
+	// FIXME: Current sorting result is not very good.
+	/*void** pdata = plugins.GetData();
+	if (pdata)
+	{
+		qsort(pdata, plugins.GetSize(), sizeof(void*), _ComparePlugin);
+	}*/
+}
+
 
 HMENU CSearchPluginCollection::CreateSearchMenu()
 {
@@ -355,14 +540,31 @@ HMENU CSearchPluginCollection::CreateSearchMenu()
 
 #if ! defined(_COMBO_)
 	// Lite version call this function before showing popup menu to reduce startup time
-	SearchPluginCollection.LoadAll();
+	SearchPluginCollection.LoadAll(1);
 #endif
 
 	if (SearchPluginCollection.GetCount() > 0)
 	{
+		int i = 0;
 		search_menu = CreatePopupMenu();
-		for (int i = 0;i < SearchPluginCollection.GetCount(); i++)
+
+		for (i = 0; i < SearchPluginCollection.GetCount(); i++)
 		{
+			if (i == 0){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢線上翻譯--");
+				continue;
+			}
+
+			if (i == 3){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢搜尋引擎--");
+				continue;
+			}
+
+			if (i == 8){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢其他網頁--");
+				continue;
+			}
+			
 			HBITMAP image = SearchPluginCollection.GetImage(i);
 			CString text = "  ";
 			text += SearchPluginCollection.GetField(i, CSearchPluginCollection::SHORTNAME);
@@ -373,7 +575,40 @@ HMENU CSearchPluginCollection::CreateSearchMenu()
 				search_menuiteminfo.hbmpItem = image;
 				SetMenuItemInfo(search_menu, i, TRUE, &search_menuiteminfo);
 			}
-		}
+		} 
 	}
+
+	return search_menu;
+}
+
+//By BBcall
+HMENU CSearchPluginCollection::CreateSearchMenu_2(CString TextContent)
+{
+	MENUITEMINFO search_menuiteminfo_2 = { sizeof(MENUITEMINFO) };
+	HMENU search_menu = NULL;
+
+#if ! defined(_COMBO_)
+	// Lite version call this function before showing popup menu to reduce startup time
+	SearchPluginCollection_2.LoadAll(2);
+#endif
+
+	CSearchPlugin *plugin_2 = new CSearchPlugin();
+	CString PageContent;
+	
+	if (SearchPluginCollection.GetCount() > 0)
+	{
+		int i = 0;
+		search_menu = CreatePopupMenu();
+
+		InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "N詞酷即時翻譯");
+		InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, TextContent);
+
+		CString URLCString = "http://www.google.com.tw";
+		PageContent = plugin_2->GetWebPage(URLCString);
+
+		//CString tmpString = PageContent[3];
+		InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, PageContent);
+	}
+
 	return search_menu;
 }
