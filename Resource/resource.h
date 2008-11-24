@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Lite.rc
+// Used by Common.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -134,6 +134,8 @@
 #define IDI_PCMAN_16                    178
 #define IDI_PCMAN_96                    179
 #define IDD_DOWNLOADING                 182
+#define IDD_DIALOG1                     186
+#define IDD_DOWNLOADING_UPDATE          186
 #define IDI_ANSFILE                     200
 #define IDD_AUTO_REPLY                  200
 #define IDC_ANSIBAR_FG                  328
@@ -611,7 +613,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        185
+#define _APS_NEXT_RESOURCE_VALUE        187
 #define _APS_NEXT_COMMAND_VALUE         33034
 #define _APS_NEXT_CONTROL_VALUE         1139
 #define _APS_NEXT_SYMED_VALUE           154
