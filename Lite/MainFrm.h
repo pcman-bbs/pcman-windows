@@ -33,6 +33,7 @@ const WPARAM AC_PCMANLOCKED	= 1;
 const char TINY_URL[] = "http://tinyurl.com/create.php?url=";
 const char TINYURL_TEMP_FILENAME[] = "Tinyurl";
 
+
 #define ID_MOUSE_SEL_TIMER	100
 
 class CMainFrame : public CFrameWnd
@@ -257,7 +258,7 @@ public:
 	afx_msg void OnUpdateBBSMouseCTL(CCmdUI* pCmdUI);
 	afx_msg void OnBBSMouseCTL();
 	afx_msg void OnAutoUpdate();
-	afx_msg void OnUpdate();
+	afx_msg LRESULT OnCommitUpdate(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);
