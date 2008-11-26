@@ -260,6 +260,8 @@ CMainFrame::CMainFrame()
 	g_ucs2conv.InitBig52Ucs2Tab();
 	g_ucs2conv.InitUcs22Big5Tab();
 	g_pView = &view;
+	
+	setCharset = false;
 
 #if defined(_COMBO_)
 	focus = NULL;
@@ -861,6 +863,31 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 			param = address;
 	}
 	view.Connect(address, param, port);
+	if(!setCharset)
+	{
+		switch(AppConfig.saved_charset)
+		{
+			case 0:
+				break;
+			
+			case 1:
+				this->OnSetCharset(ID_SET_CHARSET_DEFAULT);
+				break;
+			case 2:
+				this->OnSetCharset(ID_SET_CHARSET_CP950);
+				break;
+			case 3:
+				this->OnSetCharset(ID_SET_CHARSET_CP936);
+				break;
+			case 4:
+				this->OnSetCharset(ID_SET_CHARSET_CP932);
+				break;
+			case 5:
+				this->OnSetCharset(ID_SET_CHARSET_UTF8);
+				break;
+		}	
+		setCharset = true;
+	}
 	BringWindowToTop();
 }
 
@@ -3748,7 +3775,30 @@ void CMainFrame::OpenLastSession()
 			view.ConnectStr(str, adv);
 		}
 		delete []buf;
+		//Restore Charset Setting
+
 	}
+	switch(AppConfig.saved_charset)
+	{
+		case 0:
+			break;
+	
+		case 1:
+			this->OnSetCharset(ID_SET_CHARSET_DEFAULT);
+			break;
+		case 2:
+			this->OnSetCharset(ID_SET_CHARSET_CP950);
+			break;
+		case 3:
+			this->OnSetCharset(ID_SET_CHARSET_CP936);
+			break;
+		case 4:
+			this->OnSetCharset(ID_SET_CHARSET_CP932);
+			break;
+		case 5:
+			this->OnSetCharset(ID_SET_CHARSET_UTF8);
+			break;
+	}	
 }
 
 void CMainFrame::OnNewConn()
@@ -3761,9 +3811,38 @@ void CMainFrame::OnNewConn()
 		dlg.address.Empty();
 		return;
 	}
+
 	view.Connect(dlg.address, dlg.name, dlg.port);
 	dlg.name.Empty();
 	dlg.address.Empty();
+	
+	
+	if(!setCharset)
+	{
+		switch(AppConfig.saved_charset)
+		{
+			case 0:
+				break;
+			
+			case 1:
+				this->OnSetCharset(ID_SET_CHARSET_DEFAULT);
+				break;
+			case 2:
+				this->OnSetCharset(ID_SET_CHARSET_CP950);
+				break;
+			case 3:
+				this->OnSetCharset(ID_SET_CHARSET_CP936);
+				break;
+			case 4:
+				this->OnSetCharset(ID_SET_CHARSET_CP932);
+				break;
+			case 5:
+				this->OnSetCharset(ID_SET_CHARSET_UTF8);
+				break;
+		}	
+		setCharset = true;
+	}
+
 }
 
 void CMainFrame::OnSetCharset(UINT nID)

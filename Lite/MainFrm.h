@@ -326,6 +326,9 @@ protected:
 	inline void MinimizeToTray();
 	static LRESULT CALLBACK AddressBarWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	WNDPROC old_address_bar_proc;
+
+private:
+	bool setCharset;
 };
 
 /////////////////////////////////////////////////////////////////////////////
