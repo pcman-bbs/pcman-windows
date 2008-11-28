@@ -976,7 +976,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
 		search_menuiteminfo.fMask =  MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
 		search_menuiteminfo.wID = CSearchPluginCollection::ID_SEARCHPLUGIN_MENU;
-		search_menuiteminfo.hSubMenu = SearchPluginCollection.CreateSearchMenu();
+		search_menuiteminfo.hSubMenu = SearchPluginCollection.CreateSearchMenu(sel);
 		CString web_search;
 		web_search.LoadString(IDS_WEB_SEARCH);
 		search_menuiteminfo.dwTypeData = (LPTSTR)LPCTSTR(web_search);

@@ -20,6 +20,7 @@ public:
 	//by BBcall
 	void SetErrorMessage(CString s);
     CString GetWebPage(const CString& Url);	
+	CString ProcessContent(CString theContent);
 	
 	bool ParseXml(char* buf);
 	CSearchPlugin();
@@ -82,7 +83,7 @@ public:
 		ID_SEARCHPLUGIN00 = ID_SEARCHPLUGIN01 - 1,
 	};
 
-	HMENU CreateSearchMenu();
+	HMENU CreateSearchMenu(CString TextContent);
 	HMENU CreateSearchMenu_2(CString TextContent);
 	void LoadAll();
 	void LoadAll(int bbcall);
