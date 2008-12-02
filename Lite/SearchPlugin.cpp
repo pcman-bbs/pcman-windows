@@ -19,6 +19,7 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 #define AGENT_NAME  "CodeguruBrowser1.0"
+#define NCIKU	"http://www.nciku.com.tw"
 //by BBcall
 
 
@@ -89,6 +90,7 @@ CString CSearchPlugin::ProcessContent(CString theContent){
 
 	return returnStr;
 }
+
 
 // By BBcall //
 CString CSearchPlugin::GetWebPage(const CString& theUrl)
@@ -484,8 +486,7 @@ void CSearchPluginCollection::LoadAll()
 	}
 }
 
-
-void CSearchPluginCollection::LoadAll(int bbcall)
+void CSearchPluginCollection::LoadAll(int Identify)
 {
 	int count = 0;
 	extern CString AppPath;
@@ -498,7 +499,86 @@ void CSearchPluginCollection::LoadAll(int bbcall)
 	CFileFind searchFind;
 	BOOL searchFound;
 	int pluginId;
-	while (bbcall == 1){
+
+	//while Identify == 1
+	while (Identify == 1){
+		switch (count)
+		{
+			case 0:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku0.xml");
+				break;
+
+			case 1:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku1.xml");
+				break;
+
+			case 2:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku2.xml");
+				break;
+
+			case 3:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku3.xml");
+				break;
+
+			case 4:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
+				break;
+
+			case 5:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-dict.xml");
+				break;
+
+			case 6:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\instant-dict.xml");
+				break;
+
+			case 7:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google0.xml");
+				break;
+
+			case 8:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google.xml");
+				break;
+
+			case 9:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-zh-TW.xml");
+				break;
+
+			case 10:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\wikipedia-zh.xml");
+				break;
+
+			case 11:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\youtube.xml");
+				break;
+
+			case 12:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
+				break;
+
+			case 13:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\0rz.xml");
+				break;
+
+			case 14:
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\tinyurl.xml");
+				break;
+
+			default:
+				Identify = -1;
+		}
+
+		if (Identify > 0 && searchFound)
+		{
+			searchFound = searchFind.FindNextFile();
+			pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
+		}
+
+		count++;
+	}
+
+	//while Identify == 2
+	while (Identify == 2){
 		switch (count){
 			case 0:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku0.xml");
@@ -508,97 +588,76 @@ void CSearchPluginCollection::LoadAll(int bbcall)
 				}
 				break;
 			case 1:
-				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku1.xml");
+				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
 			case 2:
-				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku2.xml");
-				while (searchFound){
-					searchFound = searchFind.FindNextFile();
-					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
-				}
-				break;
-			case 3:
-				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku3.xml");
-				while (searchFound){
-					searchFound = searchFind.FindNextFile();
-					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
-				}
-				break;
-			case 4:
-				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
-				while (searchFound){
-					searchFound = searchFind.FindNextFile();
-					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
-				}
-				break;
-			case 5:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-dict.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 6:
+			case 3:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\instant-dict.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 7:
+			case 4:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google0.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 8:
+			case 5:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\google.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 9:
+			case 6:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\yahoo-zh-TW.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 10:
+			case 7:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\wikipedia-zh.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 11:
+			case 8:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\youtube.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 12:
+			case 9:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\nciku.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 13:
+			case 10:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\0rz.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
 					pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
 				}
 				break;
-			case 14:
+			case 11:
 				searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\tinyurl.xml");
 				while (searchFound){
 					searchFound = searchFind.FindNextFile();
@@ -606,24 +665,10 @@ void CSearchPluginCollection::LoadAll(int bbcall)
 				}
 				break;
 			default:
-				bbcall = -1;
+				Identify = -1;
 		}
 
 		count++;
-		/*searchFound = searchFind.FindFile(AppPath + "\\searchplugins\\*.xml");
-		while (searchFound)
-		{
-			searchFound = searchFind.FindNextFile();
-			pluginId = SearchPluginCollection.Load(searchFind.GetFilePath());
-		}*/
-	}
-	if (bbcall == 2){
-		searchFound = searchFind.FindFile(AppPath + "\\searchengines\\*.xml");
-		while (searchFound)
-		{
-			searchFound = searchFind.FindNextFile();
-			pluginId = SearchPluginCollection_2.Load(searchFind.GetFilePath());
-		}
 	}
 
 
@@ -652,7 +697,7 @@ HMENU CSearchPluginCollection::CreateSearchMenu(CString TextContent)
 	CString showContent, AnsContent, PageContent;
 
 	//抓取即時翻譯
-	if (TextContent.GetLength() <= 10)
+	if (TextContent.GetLength() <= howTranLength && isInstantTran == 1)
 	{
 		showContent = TextContent;	
 		CString URLCString = _T("http://www.e390.com/cgi-bin/e390dic?MYINPUT=" + TextContent + "&&CMP=1&UID=%23%23UID");
@@ -692,34 +737,69 @@ HMENU CSearchPluginCollection::CreateSearchMenu(CString TextContent)
 
 		for (i = 0; i < SearchPluginCollection.GetCount(); i++)
 		{
-			if (i == 0){
-				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<即時翻譯結果>--");
-				continue;
-			}
+			if (isInstantTran == 1)
+			{
+				if (i == 0){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<即時翻譯結果>--");
+					continue;
+				}
 
-			if (i == 1){
-				InsertMenu(search_menu, i, FALSE, ID_SEARCHPLUGIN00 + i, showContent);
-				continue;
-			}
+				if (i == 1){
+					InsertMenu(search_menu, i, FALSE, ID_SEARCHPLUGIN00 + i, showContent);
+					continue;
+				}
 
-			if (i == 2){
-				InsertMenu(search_menu, i, FALSE, ID_SEARCHPLUGIN00 + i, AnsContent);
-				continue;
-			}
+				if (i == 2){
+					InsertMenu(search_menu, i, FALSE, ID_SEARCHPLUGIN00 + i, AnsContent);
+					continue;
+				}
 
-			if (i == 3){
-				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢線上字典>--");
-				continue;
-			}
+				if (i == 3){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢線上字典>--");
+					continue;
+				}
 
-			if (i == 7){
-				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢搜尋引擎>--");
-				continue;
-			}
+				if (i == 7){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢搜尋引擎>--");
+					continue;
+				}
 
-			if (i == 12){
-				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢其他網頁>--");
-				continue;
+				if (i == 12){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢其他網頁>--");
+					continue;
+				}
+			}
+			else
+			{
+				if (i == 0){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<即時翻譯結果>--");
+					continue;
+				}
+
+				if (i == 1){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "即時翻譯已經關閉");
+					continue;
+				}
+
+				if (i == 2){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "即時翻譯已經關閉");
+					continue;
+				}
+
+				if (i == 3){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢線上字典>--");
+					continue;
+				}
+
+				if (i == 7){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢搜尋引擎>--");
+					continue;
+				}
+
+				if (i == 12){
+					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--<查詢其他網頁>--");
+					continue;
+				}
 			}
 			
 			HBITMAP image = SearchPluginCollection.GetImage(i);
@@ -738,52 +818,3 @@ HMENU CSearchPluginCollection::CreateSearchMenu(CString TextContent)
 	return search_menu;
 }
 
-//By BBcall
-HMENU CSearchPluginCollection::CreateSearchMenu_2(CString TextContent)
-{
-	MENUITEMINFO search_menuiteminfo_2 = { sizeof(MENUITEMINFO) };
-	HMENU search_menu = NULL;
-
-#if ! defined(_COMBO_)
-	// Lite version call this function before showing popup menu to reduce startup time
-	SearchPluginCollection_2.LoadAll(2);
-#endif
-
-	CSearchPlugin *plugin_2 = new CSearchPlugin();
-	CString PageContent;
-	
-	if (SearchPluginCollection.GetCount() > 0 )
-	{
-		int i = 0;
-		search_menu = CreatePopupMenu();
-
-		if (TextContent.GetLength() < 10)
-		{
-			InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, TextContent);
-
-			CString URLCString = _T("http://www.e390.com/cgi-bin/e390dic?MYINPUT=" + TextContent + "&&CMP=1&UID=%23%23UID");
-			PageContent = plugin_2->GetWebPage(URLCString);
-
-			if (PageContent.GetLength() > 0)
-			{
-				CString AnsContent = plugin_2->ProcessContent(PageContent);
-				AnsContent.TrimLeft();
-				if (AnsContent.GetLength() > 0)
-					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, AnsContent);
-				else
-					InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, _T("查無此翻譯"));
-			}
-			else{
-				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "查無此詞彙");
-				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "查無此翻譯");
-			}
-
-		}
-		else{
-			InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "查無此詞彙");
-			InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "查無此翻譯");
-		}
-	}
-
-	return search_menu;
-}

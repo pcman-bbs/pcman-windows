@@ -300,6 +300,10 @@ bool CAppConfig::OnDataExchange(bool load)
 	CFG_BYTE(showsb)
 	CFG_BYTE(showtab)
 	CFG_BYTE(showads)
+
+	//BY BBcall
+	CFG_BYTE(tran_show)
+
 	CFG_BYTE(showclose)
 	CFG_BYTE(use_ansi_bar)
 	CFG_BYTE(kktab)

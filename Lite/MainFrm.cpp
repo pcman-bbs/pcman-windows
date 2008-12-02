@@ -2,9 +2,16 @@
 //
 
 #include "stdafx.h"
+
+//BY BBcall
+#pragma once
+#include "InstantTranDlg.h"
+//#include "ListProperty.h"
+
 #include <shlobj.h>
 
 #include "PCMan.h"
+//#include "PCMan.cpp"
 
 #include "MainFrm.h"
 #include "WinUtils.h"
@@ -46,6 +53,9 @@ static char THIS_FILE[] = __FILE__;
 #include "../Combo/WebCfgPage.h"
 #include "../Combo/WebPageDlg.h"
 
+//BY BBcall
+#include "InstantTranDlg.h"
+
 LPSTR CMainFrame::mainfrm_class_name = "PCManCB";
 const char *CMainFrame::window_title = " - Open PCMan 2007 Combo";// (Build: " __DATE__ ")";
 #else
@@ -58,6 +68,7 @@ CUcs2Conv g_ucs2conv;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
+//////////////////
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CMainFrame)
@@ -172,6 +183,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_ADDTOFAVORITE, OnUpdateIsSite)
 	ON_COMMAND(ID_KKTAB, OnKKmanStyleTab)
 	ON_COMMAND(ID_ADS, OnShowAddressBar)
+
+	// BY BBcall
+	ON_COMMAND(ID_INSTANT_TRAN, OnInstantTranslation)
+
 	ON_UPDATE_COMMAND_UI(ID_SET_CHARSET_DEFAULT, OnUpdateSetCharset)
 	ON_UPDATE_COMMAND_UI(ID_EXITLOG, OnUpdateSaveSession)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnSelchangeTab)
@@ -911,6 +926,13 @@ void CMainFrame::OnShowAddressBar()
 	RecalcLayout(FALSE);
 }
 
+// BY BBcall //
+void CMainFrame::OnInstantTranslation()
+{
+	CTranslationDlg tranDlg;
+	tranDlg.DoModal();
+}
+
 void CMainFrame::OnKKmanStyleTab()
 {
 	AppConfig.kktab = !AppConfig.kktab;
@@ -1561,7 +1583,7 @@ void CMainFrame::OnWebHome()
 
 void CMainFrame::RecalcLayout(BOOL bNotify)
 {
-	BYTE showtb, showads, showtab, showsb, use_ansi_bar, showclose;
+	BYTE showtb, showads, showtab, showsb, use_ansi_bar, showclose, tran_show;
 #ifdef	_COMBO_
 	BYTE showwb, showsearchbar;
 #endif
@@ -1570,6 +1592,10 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	{
 		showtb = AppConfig.fullscr_showtb;
 		showads = AppConfig.fullscr_showads;
+
+		//By BBcall
+		tran_show = AppConfig.instant_tran_show;
+
 		showtab = AppConfig.fullscr_showtab;
 		showsb = AppConfig.fullscr_showsb;
 		showclose = AppConfig.fullscr_showclose;
@@ -1583,6 +1609,10 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	{
 		showtb = AppConfig.showtb;
 		showads = AppConfig.showads;
+
+		//By BBcall
+		tran_show = AppConfig.tran_show;
+
 		showtab = AppConfig.showtab;
 		showsb = AppConfig.showsb;
 		showclose = AppConfig.showclose;

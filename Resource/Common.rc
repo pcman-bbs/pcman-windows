@@ -566,6 +566,21 @@ BEGIN
     LTEXT           "正在下載...",IDC_STATIC,7,7,78,8
 END
 
+IDD_INSTANT_TRAN DIALOG DISCARDABLE  0, 0, 170, 85
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "即時翻譯設定"
+FONT 10, "System"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,109,18,50,17
+    PUSHBUTTON      "Cancel",IDCANCEL,109,51,50,18
+    GROUPBOX        "即時翻譯功能啟動選項",IDC_STATIC,7,7,98,33
+    COMBOBOX        IDC_TRAN_COMBO,16,20,55,12,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "即時翻譯長度限制選項",IDC_STATIC,7,46,98,29
+    COMBOBOX        IDC_LENGTH_COMBO,15,58,56,12,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -674,6 +689,14 @@ BEGIN
         RIGHTMARGIN, 84
         TOPMARGIN, 7
         BOTTOMMARGIN, 15
+    END
+
+    IDD_INSTANT_TRAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 78
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -14,6 +14,9 @@
 #include "TermView.h"
 #include "../SimpXmlParser/SimpXmlParser.h"
 
+//By BBcall
+//int isInstantTranForMainFrm; //1¬OEnable, 0¬ODisable
+
 class CSearchPlugin
 {
 public:
@@ -36,7 +39,7 @@ public:
 	//by BBcall
 	CString m_ErrorMessage;
     HINTERNET m_Session;
-	CString PageContent;
+	CString PageContent;	
 };
 
 class CSearchPluginCollection
@@ -86,7 +89,14 @@ public:
 	HMENU CreateSearchMenu(CString TextContent);
 	HMENU CreateSearchMenu_2(CString TextContent);
 	void LoadAll();
-	void LoadAll(int bbcall);
+
+	//By BBcall
+	void LoadAll(int Identify);
+	void setInstantTranslation(int tmpInstant){ isInstantTran = tmpInstant;}
+	void setTranLength(int tmpLength){howTranLength = tmpLength;}
+	int isInstantTran;
+	int howTranLength;
+
 	enum EField { SHORTNAME, DESCRIPTION, INPUTENCODING, IMAGE, URL, METHOD, IMAGEBYTES };
 	int Load(LPCTSTR path);
 	int GetCount();
@@ -99,7 +109,11 @@ public:
 		return ((CSearchPlugin*)plugins[index])->Image;
 	}
 
-	CSearchPluginCollection(){}
+	CSearchPluginCollection()
+	{
+		isInstantTran = 0;
+		howTranLength = 15;
+	}
 	~CSearchPluginCollection()
 	{
 		int n = plugins.GetSize();

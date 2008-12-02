@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Lite.rc
+// Used by Common.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -136,6 +136,7 @@
 #define IDD_DOWNLOADING                 182
 #define IDD_DIALOG1                     186
 #define IDD_DOWNLOADING_UPDATE          186
+#define IDD_INSTANT_TRAN                187
 #define IDI_ANSFILE                     200
 #define IDD_AUTO_REPLY                  200
 #define IDC_ANSIBAR_FG                  328
@@ -319,8 +320,11 @@
 #define IDC_SPINAUTOWRAPCOL             1113
 #define IDC_STREDIT                     1116
 #define IDC_COMBO1                      1117
+#define IDC_TRAN_COMB                   1117
+#define IDC_TRAN_COMBO                  1117
 #define IDC_COMBO2                      1118
 #define IDC_KEYMAP                      1118
+#define IDC_LENGTH_COMBO                1118
 #define IDC_KEYMAP2                     1119
 #define IDC_TRIGGER                     1119
 #define IDC_TICONV                      1119
@@ -608,14 +612,15 @@
 #define IDS_PROMPT_IMPORT               33031
 #define ID_MOUSE_CTL                    33032
 #define ID_AUTO_UPDATE                  33033
+#define ID_INSTANT_TRAN                 33034
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        187
-#define _APS_NEXT_COMMAND_VALUE         33034
-#define _APS_NEXT_CONTROL_VALUE         1139
+#define _APS_NEXT_RESOURCE_VALUE        188
+#define _APS_NEXT_COMMAND_VALUE         33035
+#define _APS_NEXT_CONTROL_VALUE         1141
 #define _APS_NEXT_SYMED_VALUE           154
 #endif
 #endif

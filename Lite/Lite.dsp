@@ -215,6 +215,10 @@ SOURCE=.\InputNameDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\InstantTranDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\KeyMap.cpp
 # End Source File
 # Begin Source File
@@ -448,6 +452,10 @@ SOURCE=.\HyperLinkPage.h
 # Begin Source File
 
 SOURCE=.\InputNameDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\InstantTranDlg.h
 # End Source File
 # Begin Source File
 
