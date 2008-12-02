@@ -24,6 +24,8 @@ static char THIS_FILE[]=__FILE__;
 
 
 CSearchPluginCollection SearchPluginCollection;
+
+//BY BBcall
 CSearchPluginCollection SearchPluginCollection_2;
 
 CString TestString;
@@ -135,7 +137,7 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 		ReadCounter = 0;
 		while (file->ReadString(somecode) != NULL)
 		{
-			if (somecode.Find("¨Ò¥y¡G") > 0 && ReadCounter == 0)
+			if (somecode.Find("¨Ò") > 0 && ReadCounter == 0)
 			{				
 				ReturnContent = somecode;
 				ReadCounter++;
