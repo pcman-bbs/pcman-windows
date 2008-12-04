@@ -6,7 +6,7 @@
 #include "TermView.h"
 
 //記憶ComboBox目前所選取的項次
-int rememberInt1 = 0;
+int rememberInt1 = 1;
 int rememberInt2 = 0;
 
 //記憶ComboBox目前所選取的文字內容
@@ -135,6 +135,7 @@ void CTranslationDlg::InitCombo1(int ID)
 	}
 
 	ComboBox->SetCurSel(rememberInt1);
+	//SearchPluginCollection.setInstantTranslation(1);
 }
 
 void CTranslationDlg::InitCombo2(int ID)

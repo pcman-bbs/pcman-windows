@@ -85,7 +85,8 @@ public:
 		ID_SEARCHPLUGIN01 = ID_SEARCHPLUGIN02 - 1,
 		ID_SEARCHPLUGIN00 = ID_SEARCHPLUGIN01 - 1,
 	};
-
+	
+	HMENU CreateSearchMenu();
 	HMENU CreateSearchMenu(CString TextContent);
 	HMENU CreateSearchMenu_2(CString TextContent);
 	void LoadAll();
@@ -111,8 +112,8 @@ public:
 
 	CSearchPluginCollection()
 	{
-		isInstantTran = 0;
-		howTranLength = 15;
+		isInstantTran = 1;
+		howTranLength = 10;
 	}
 	~CSearchPluginCollection()
 	{

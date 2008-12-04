@@ -689,6 +689,53 @@ void CSearchPluginCollection::LoadAll(int Identify)
 	}*/
 }
 
+HMENU CSearchPluginCollection::CreateSearchMenu()
+{
+	MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
+	HMENU search_menu = NULL;
+
+#if ! defined(_COMBO_)
+	// Lite version call this function before showing popup menu to reduce startup time
+	SearchPluginCollection.LoadAll(1);
+#endif
+
+	if (SearchPluginCollection.GetCount() > 0)
+	{
+		int i = 0;
+		search_menu = CreatePopupMenu();
+
+		for (i = 0; i < SearchPluginCollection.GetCount(); i++)
+		{
+			if (i == 0){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢線上字典--");
+				continue;
+			}
+
+			if (i == 3){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢搜尋引擎--");
+				continue;
+			}
+
+			if (i == 8){
+				InsertMenu(search_menu, i, TRUE, ID_SEARCHPLUGIN00 + i, "--查詢其他網頁--");
+				continue;
+			}
+			
+			HBITMAP image = SearchPluginCollection.GetImage(i);
+			CString text = "  ";
+			text += SearchPluginCollection.GetField(i, CSearchPluginCollection::SHORTNAME);
+			InsertMenu(search_menu, i, MF_BYPOSITION | MF_STRING, ID_SEARCHPLUGIN00 + i, text);
+			if (image)
+			{
+				search_menuiteminfo.fMask =  MIIM_BITMAP;
+				search_menuiteminfo.hbmpItem = image;
+				SetMenuItemInfo(search_menu, i, TRUE, &search_menuiteminfo);
+			}
+		} 
+	}
+
+	return search_menu;
+}
 
 HMENU CSearchPluginCollection::CreateSearchMenu(CString TextContent)
 {
