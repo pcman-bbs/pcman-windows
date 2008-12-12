@@ -6,7 +6,6 @@
 //BY BBcall
 #pragma once
 #include "InstantTranDlg.h"
-//#include "ListProperty.h"
 
 #include <shlobj.h>
 

@@ -26,7 +26,7 @@
 #endif
 
 //BY BBcall
-//#include "InstantTranDlg.h"
+#include "InstantTranDlg.h"
 
 #define	CT_MENU		1
 #define	CT_HAS_SUB	2

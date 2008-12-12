@@ -26,9 +26,8 @@ static char THIS_FILE[]=__FILE__;
 CSearchPluginCollection SearchPluginCollection;
 
 //BY BBcall
-CSearchPluginCollection SearchPluginCollection_2;
-
 CString TestString;
+//CSearchPluginCollection SearchPluginCollection_2;
 
 CSearchPlugin::CSearchPlugin()
 {
@@ -47,8 +46,6 @@ CSearchPlugin::CSearchPlugin()
         0) ;
 
     dwError = GetLastError();
-	//by BBcall
-
 }
 
 CSearchPlugin::~CSearchPlugin()
@@ -70,25 +67,74 @@ CSearchPlugin::~CSearchPlugin()
 
 }
 
+//By BBcall
+CString CSearchPlugin::findHead(CString objectStr)
+{
+	objectStr.TrimLeft();
+	objectStr.TrimRight();
+
+	CString findObject = _T("<br>");
+	int tmpPos;
+	int tmpLen;
+	CString tmpStr;
+
+	tmpPos = objectStr.Find(findObject);
+	while (tmpPos >= 0)
+	{
+		tmpPos = objectStr.Find(findObject);
+		tmpLen = objectStr.GetLength() - tmpPos - findObject.GetLength();
+
+		objectStr = objectStr.Right(tmpLen);
+		tmpPos = objectStr.Find(findObject);
+	}
+
+	return objectStr;
+}
+
 // By BBcall //
 CString CSearchPlugin::ProcessContent(CString theContent){
 	theContent.TrimLeft();
 	
-	int startPos, endPos, deletePos, rightLength;
-	CString startStr = "<p>";
-	CString endStr = "</p>";
 	CString returnStr = "";
+	CString tmpStr = "";
+	int counter = 0;
+	if (theContent.Find("例") > 0)
+	{
+		int startPos, endPos, deletePos, rightLength;
+		CString startStr = "<p>";
+		CString endStr = "</p>";		
 
-	startPos = theContent.Find(startStr) + startStr.GetLength();
-	endPos = theContent.Find(endStr);
-	deletePos = theContent.Find(".");
+		startPos = theContent.Find(startStr) + startStr.GetLength();
+		endPos = theContent.Find(endStr);
+		deletePos = theContent.Find(".");
 		
-	returnStr = theContent.Left(endPos);
-	returnStr.TrimRight();
+		returnStr = theContent.Left(endPos);
+		returnStr.TrimRight();
 
-	rightLength = returnStr.GetLength() - deletePos - 1;
-	returnStr = returnStr.Right(rightLength);
-	returnStr.TrimLeft();
+		rightLength = returnStr.GetLength() - deletePos - 1;
+		returnStr = returnStr.Right(rightLength);
+		returnStr.TrimLeft();
+
+		return returnStr;
+	}
+	
+	CString tagging = _T(".&nbsp;&nbsp;&nbsp;&nbsp;");
+	while (theContent.Find(tagging) > 0 && counter < 5)
+	{
+		int splitPos = theContent.Find(tagging);
+		CString leftStr = theContent.Left(splitPos);
+
+		splitPos = leftStr.Find("&nbsp;&nbsp;&nbsp;&nbsp;");
+		leftStr = theContent.Left(splitPos);
+
+		returnStr += findHead(leftStr) + _T(" ; ");
+		counter++;
+
+		//將搜尋過的部份拿掉
+		int rightLen = theContent.GetLength() - theContent.Find(tagging) - tagging.GetLength();
+		CString rightStr = theContent.Right(rightLen);
+		theContent = rightStr;
+	}	
 
 	return returnStr;
 }
@@ -124,28 +170,43 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 	{
 		CString somecode;
 
-		/*BOOL bIsOk = dataStore.Open(_T("C:\\test.txt"),
+		BOOL bIsOk = dataStore.Open(_T("C:\\test.txt"),
                               CFile::modeCreate
                               | CFile::modeWrite
                               | CFile::shareDenyWrite
                               | CFile::typeText);
 
 		if (!bIsOk)
-			return "No File 2!!";*/
+			return "No File(1)!!";
 
 		// continue fetching code until there is no more
 		ReadCounter = 0;
+		CString a = "$$$$";
 		while (file->ReadString(somecode) != NULL)
 		{
+			//dataStore.WriteString(somecode);
+
 			if (somecode.Find("例") > 0 && ReadCounter == 0)
 			{				
 				ReturnContent = somecode;
 				ReadCounter++;
+				dataStore.WriteString(somecode);
 
 				break;
 			}
+			else if (somecode.Find("&nbsp;&nbsp;&nbsp;&nbsp;") > 0 && ReadCounter == 0)
+			{
+				ReturnContent = somecode;
+				ReadCounter++;
+				dataStore.WriteString(somecode);
+				dataStore.WriteString(a);
+
+				break;
+			}			
+			else if (ReadCounter == 1)
+				break;
 	
-			ReturnContent = _T("No Translations");
+			//ReturnContent = _T("No Translations");
 
 			//dataStore.WriteString(somecode);			
 		}
@@ -488,6 +549,7 @@ void CSearchPluginCollection::LoadAll()
 	}
 }
 
+//By BBcall
 void CSearchPluginCollection::LoadAll(int Identify)
 {
 	int count = 0;
@@ -689,6 +751,7 @@ void CSearchPluginCollection::LoadAll(int Identify)
 	}*/
 }
 
+//By BBcall
 HMENU CSearchPluginCollection::CreateSearchMenu()
 {
 	MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
@@ -737,6 +800,7 @@ HMENU CSearchPluginCollection::CreateSearchMenu()
 	return search_menu;
 }
 
+//By BBcall
 HMENU CSearchPluginCollection::CreateSearchMenu(CString TextContent)
 {
 	MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };

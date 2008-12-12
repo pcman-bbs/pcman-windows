@@ -157,7 +157,7 @@ BOOL CApp::InitInstance()
 #if defined(_COMBO_)
 	// Lite version calls this function before showing popup menu to reduce startup time.
 	// Combo version loads all search plugins here for search bar.
-	SearchPluginCollection.LoadAll();
+	SearchPluginCollection.LoadAll(1);
 #endif
 
 	CMainFrame* pFrame = new CMainFrame;

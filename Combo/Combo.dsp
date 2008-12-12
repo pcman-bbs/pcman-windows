@@ -226,6 +226,10 @@ SOURCE=..\Lite\InputNameDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\InstantTranDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\KeyMap.cpp
 # End Source File
 # Begin Source File

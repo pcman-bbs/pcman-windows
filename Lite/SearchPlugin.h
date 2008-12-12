@@ -24,6 +24,7 @@ public:
 	void SetErrorMessage(CString s);
     CString GetWebPage(const CString& Url);	
 	CString ProcessContent(CString theContent);
+	CString findHead(CString objectStr);
 	
 	bool ParseXml(char* buf);
 	CSearchPlugin();
@@ -128,7 +129,7 @@ public:
 };
 
 extern CSearchPluginCollection SearchPluginCollection;
-extern CSearchPluginCollection SearchPluginCollection_2;
+//extern CSearchPluginCollection SearchPluginCollection_2;
 
 class CSearchPluginParser : public CSimpXmlParser
 {
