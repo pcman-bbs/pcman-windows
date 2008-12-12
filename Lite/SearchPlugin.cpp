@@ -170,14 +170,14 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 	{
 		CString somecode;
 
-		BOOL bIsOk = dataStore.Open(_T("C:\\test.txt"),
+		/*BOOL bIsOk = dataStore.Open(_T("C:\\test.txt"),
                               CFile::modeCreate
                               | CFile::modeWrite
                               | CFile::shareDenyWrite
                               | CFile::typeText);
 
 		if (!bIsOk)
-			return "No File(1)!!";
+			return "No File(1)!!";*/
 
 		// continue fetching code until there is no more
 		ReadCounter = 0;
@@ -190,7 +190,7 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 			{				
 				ReturnContent = somecode;
 				ReadCounter++;
-				dataStore.WriteString(somecode);
+				//dataStore.WriteString(somecode);
 
 				break;
 			}
@@ -198,8 +198,8 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 			{
 				ReturnContent = somecode;
 				ReadCounter++;
-				dataStore.WriteString(somecode);
-				dataStore.WriteString(a);
+				//dataStore.WriteString(somecode);
+				//dataStore.WriteString(a);
 
 				break;
 			}			
