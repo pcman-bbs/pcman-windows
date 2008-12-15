@@ -11,8 +11,15 @@
 
 #include <Wininet.h>
 
-#define LOCATION_UPDATE_FILE_CHECK _T("update.txt")
-static UINT NEAR WM_COMMIT_UPDATE = RegisterWindowMessage("COMMDLG_FIND");
+#ifdef	_COMBO_
+#define UPDATE_FILE "update_combo.txt"
+#else	
+#define UPDATE_FILE "update_lite.txt"
+#endif
+
+#define LOCATION_UPDATE_FILE_CHECK _T(UPDATE_FILE)
+static UINT NEAR WM_COMMIT_UPDATE = RegisterWindowMessage("COMMIT_UPDATE");
+static UINT NEAR WM_DOWNLOAD_UPDATE_COMPLETE = RegisterWindowMessage("DOWNLOAD_UPDATE_COMPLETE");
 
 class CAutoUpdater  
 {
@@ -41,26 +48,14 @@ private:
 	HINTERNET hInternet;
 	
 };
-
-class CAutoUpdater_DownloadInfo
-{
-public:
-	HINTERNET hSession;
-	LPCTSTR localFile;
-	CAutoUpdater_DownloadInfo(HINTERNET hSession,LPCTSTR localFile)
-	{
-		this->hSession = hSession;
-		this->localFile = localFile;
-	}
-};
-
 class CDownloadUpdateDlg : public CDialog
 {
 public:
 	CDownloadUpdateDlg()
-			: CDialog(IDD_DOWNLOADING_UPDATE)
+			: CDialog(IDD_DOWNLOADING_UPDATE,AfxGetMainWnd())
 	{
 
+		//MessageBox("Hello");
 	}
 
 	BOOL OnInitDialog()
@@ -71,10 +66,31 @@ public:
 
 	void OnCancel()
 	{
+		//MessageBox("Hello");
 	    CDialog::OnCancel();
 	}
 
 };
 
+
+
+class CAutoUpdater_DownloadInfo
+{
+public:
+	HINTERNET hSession;
+	HWND hWnd;
+	LPCTSTR localFile;
+	CDownloadUpdateDlg *dlg;
+	CAutoUpdater_DownloadInfo(HINTERNET hSession,LPCTSTR localFile,CDownloadUpdateDlg *dlg)
+	{
+		this->hSession = hSession;
+		this->localFile = localFile;
+		hWnd=AfxGetMainWnd()->GetSafeHwnd();
+		this->dlg =  dlg;
+	}
+};
+
+
 UINT DownloadUpdateFile(LPVOID pParam);
+static CDownloadUpdateDlg *download_update_dlg;
 #endif // !defined(AFX_AUTOUPDATER_H__227B2B21_B6AE_4164_B3A5_BFDAAF13D85D__INCLUDED_)

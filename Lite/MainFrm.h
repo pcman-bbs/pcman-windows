@@ -16,17 +16,13 @@
 #include "CustomToolBar.h"
 #include "AutoComplete.h"	// Added by ClassView
 
-//BY BBcall
-#include "InstantTranDlg.h"
+#include "AutoUpdate.h"
 
 #if defined _COMBO_
 #include "../Combo/adlist.h"
 #include "../Combo/aditem.h"
 #include "../Combo/SearchBar.h"
 #endif
-
-//BY BBcall
-#include "InstantTranDlg.h"
 
 #define	CT_MENU		1
 #define	CT_HAS_SUB	2
@@ -74,10 +70,6 @@ public:
 	void UpdateAddressBar();
 	void OnKKmanStyleTab();
 	void OnShowAddressBar();
-
-	//BY BBcall
-	void OnInstantTranslation();
-
 	void OnNewConnectionAds(LPCTSTR cmdline);
 	void OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult);
 	LRESULT OnNewConnection(WPARAM wparam, LPARAM lparam);
@@ -269,6 +261,7 @@ public:
 	afx_msg void OnBBSMouseCTL();
 	afx_msg void OnAutoUpdate();
 	afx_msg LRESULT OnCommitUpdate(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnDownLoadUpdateComplete(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);

@@ -976,7 +976,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		MENUITEMINFO search_menuiteminfo = { sizeof(MENUITEMINFO) };
 		search_menuiteminfo.fMask =  MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
 		search_menuiteminfo.wID = CSearchPluginCollection::ID_SEARCHPLUGIN_MENU;
-		search_menuiteminfo.hSubMenu = SearchPluginCollection.CreateSearchMenu(sel);
+		search_menuiteminfo.hSubMenu = SearchPluginCollection.CreateSearchMenu();
 		CString web_search;
 		web_search.LoadString(IDS_WEB_SEARCH);
 		search_menuiteminfo.dwTypeData = (LPTSTR)LPCTSTR(web_search);
@@ -998,6 +998,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 			InsertMenu(parent->edit_menu, 0, MF_STRING | MF_BYPOSITION, ID_EDIT_COPYURL, LoadString(IDS_COPY_URL));
 		}
 	}
+
 
 	int c = GetMenuItemCount(parent->edit_menu);
 	AppendMenu(parent->edit_menu, MF_SEPARATOR, 0, NULL);
@@ -1021,6 +1022,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 			return;
 		}
 	}
+
 	if (sel.GetLength() > 0)
 		DeleteMenu(parent->edit_menu, 5, MF_BYPOSITION);
 	if (cmd > 0)

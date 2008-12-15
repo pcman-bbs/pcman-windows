@@ -11,7 +11,11 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
-#define InstallerName "PCMan.exe"
+#ifdef	_COMBO_
+#define InstallerName "PCManCB"
+#else	
+#define InstallerName "PCMan"
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -19,7 +23,7 @@ static char THIS_FILE[]=__FILE__;
 
 #define TRANSFER_SIZE 4096
 
-CDownloadUpdateDlg *  download_update_dlg;
+
 
 CAutoUpdater::CAutoUpdater()
 {
@@ -87,40 +91,56 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 	CString installerName = InstallerName;
 	URL = UpdateServerURL + installerName;
 	
+	TCHAR *pToken = strtok(updateVersion.GetBuffer(256),_T("."));
+	while(pToken!=NULL)
+	{	
+		if(IsDigits(pToken[0]))
+			URL.Insert(URL.GetLength(),pToken[0]);
+		pToken = strtok(NULL, _T("."));
+	}
+	CString exe = ".exe";
+	URL += exe;
+	updateVersion.ReleaseBuffer();
+	
 	hSession = GetSession(URL);
 	if (!hSession)
 	{
 		return InternetSessionFailure;
 	}
 
-	CString msg;
-	msg.Format(_T("An update of %s is now available. Proceed with the update?"), InstallerName);
-	if (IDNO == MessageBox(GetActiveWindow(), msg, _T("Update is available"), MB_YESNO|MB_ICONQUESTION))
+	CString msg = "發現新版PCMan，要下載並安裝更新嗎？";
+	if (IDNO == MessageBox(GetActiveWindow(), msg, _T("發現新版"), MB_YESNO|MB_ICONQUESTION))
 	{
 		return UpdateNotComplete;	
 	}
 
 	// Proceed with the update
 	CString updateFileLocation = directory+InstallerName;
-	CAutoUpdater_DownloadInfo * Info = new CAutoUpdater_DownloadInfo(hSession, updateFileLocation);
+	updateFileLocation += exe;
+	download_update_dlg = new CDownloadUpdateDlg();
+	CAutoUpdater_DownloadInfo * Info = new CAutoUpdater_DownloadInfo(hSession, updateFileLocation,download_update_dlg);
+	
 
-   	CWinThread * controlThread = AfxBeginThread(DownloadUpdateFile,Info);
-
+   	CWinThread * controlThread = AfxBeginThread(DownloadUpdateFile,Info,THREAD_PRIORITY_NORMAL);
+	download_update_dlg->DoModal();
+	
+	//download_update_dlg->OnCancel();
 	LPDWORD lpExitCode = new unsigned long;
 	*lpExitCode = STILL_ACTIVE;
-	while(*lpExitCode==STILL_ACTIVE)
-	{
-		GetExitCodeThread(controlThread->m_hThread,lpExitCode);
-	}
-	bTransferSuccess = (int)(*lpExitCode);
+	//while(*lpExitCode==STILL_ACTIVE)
+	//{
+	//	GetExitCodeThread(controlThread->m_hThread,lpExitCode);
+	//	::Sleep(1000);
+	//}
+	//bTransferSuccess = (int)(*lpExitCode);
 	
-	InternetCloseHandle(hSession);
-	if (!bTransferSuccess)
-	{
-		return FileDownloadFailure;
-	}	
+	//InternetCloseHandle(hSession);
+//	if (!bTransferSuccess)
+//	{
+//		return FileDownloadFailure;
+//	}	
 
-    MessageBox(AfxGetMainWnd()->m_hWnd,"PCMan will be terminated for the installation","warning",MB_ICONINFORMATION|MB_OK);
+    MessageBox(AfxGetMainWnd()->m_hWnd,"PCMan現在會關閉以安裝更新","PCMan即將關閉",MB_ICONINFORMATION|MB_OK);
 	if (!::ShellExecute(AfxGetMainWnd()->m_hWnd, "open", updateFileLocation, NULL, NULL,
 						   SW_SHOWNORMAL))
 	{
@@ -129,7 +149,7 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
    
 	
 	ASSERT(AfxGetMainWnd() != NULL);
-    //SetActiveWindow(AfxGetMainWnd()->m_hWnd);
+    SetActiveWindow(AfxGetMainWnd()->m_hWnd);
 	
 
 	AfxGetMainWnd()->SendMessage(WM_COMMIT_UPDATE);
@@ -196,15 +216,13 @@ UINT DownloadUpdateFile(LPVOID pParam)
 	HINTERNET hSession = pObject->hSession;
 	LPCTSTR localFile = pObject->localFile;
 	
-	download_update_dlg = new CDownloadUpdateDlg();
-	download_update_dlg->DoModal();
 
 	HANDLE	hFile;
 	BYTE	pBuf[TRANSFER_SIZE];
 	DWORD	dwReadSizeOut, dwTotalReadSize = 0;
 
 	hFile = CreateFile(localFile, GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) {download_update_dlg->OnCancel();return false;}
+	if (hFile == INVALID_HANDLE_VALUE) {return false;}
 
 	do {
 		DWORD dwWriteSize, dwNumWritten;
@@ -217,7 +235,7 @@ UINT DownloadUpdateFile(LPVOID pParam)
 			// File write error
 			if (dwWriteSize != dwNumWritten) {
 				CloseHandle(hFile);	
-				download_update_dlg->OnCancel();
+				//download_update_dlg->OnCancel();
 				return 0;
 			}
 		}
@@ -226,15 +244,15 @@ UINT DownloadUpdateFile(LPVOID pParam)
 			{
 				// Error
 				CloseHandle(hFile);	
-				download_update_dlg->OnCancel();
+				//download_update_dlg->OnCancel();
 				return 0;
 			}			
 			break;
 		}
 	} while(1);
-
 	CloseHandle(hFile);
-	download_update_dlg->OnCancel();
+	SendMessage(pObject->hWnd,WM_DOWNLOAD_UPDATE_COMPLETE,(WPARAM)pObject->dlg,0);
+	//AfxGetMainWnd()->SendMessage(WM_DOWNLOAD_UPDATE_COMPLETE);
 	return 1;
 }
 
@@ -273,7 +291,7 @@ CString CAutoUpdater::GetFileVersion(LPCTSTR file)
 		// Are lo-words used?
 		if (ver[2] != 0 || ver[3] != 0)
 		{
-			version.Format(_T("%d.%d.%d.%d"), ver[0], ver[1], ver[2], ver[3]);
+			version.Format(_T("%d.%d.%d"), ver[0], ver[1], ver[2]);
 		}
 		else if (ver[0] != 0 || ver[1] != 0)
 		{
@@ -310,10 +328,10 @@ int CAutoUpdater::CompareVersions(CString ver1, CString ver2)
 		return -21;
 	}
 
-	i=3;
-	while(pToken != NULL)
+	i=2;
+	while(pToken != NULL&&i>=0)
 	{
-		if (i<0 || !IsDigits(pToken)) 
+		if (!IsDigits(pToken)) 
 		{			
 			return -21;	// Error in structure, too many parameters
 		}		
@@ -330,10 +348,10 @@ int CAutoUpdater::CompareVersions(CString ver1, CString ver2)
 		return -22;
 	}
 
-	i=3;
-	while(pToken != NULL)
+	i=2;
+	while(pToken != NULL && i>=0)
 	{
-		if (i<0 || !IsDigits(pToken)) 
+		if (!IsDigits(pToken)) 
 		{
 			return -22;	// Error in structure, too many parameters
 		}		
@@ -344,7 +362,7 @@ int CAutoUpdater::CompareVersions(CString ver1, CString ver2)
 	ver2.ReleaseBuffer();
 
 	// Compare the versions
-	for (i=3; i>=0; i--)
+	for (i=2; i>=0; i--)
 	{
 		if (wVer1[i] > wVer2[i])
 		{

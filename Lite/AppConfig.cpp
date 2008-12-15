@@ -63,6 +63,7 @@ TBBUTTON CAppConfig::maintb_btns[] =
 
 	{18, ID_ABOUT,		TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 18},
 
+	{19, ID_AUTO_UPDATE,TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 19}
 };
 
 TBBUTTON CAppConfig::webbar_btns[] =
@@ -103,6 +104,7 @@ TBBUTTON CAppConfig::maintb_btns[] =
 
 	{16, ID_ABOUT,		TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 16},
 	
+	{17, ID_AUTO_UPDATE,TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 17}
 };
 #endif
 
@@ -300,10 +302,6 @@ bool CAppConfig::OnDataExchange(bool load)
 	CFG_BYTE(showsb)
 	CFG_BYTE(showtab)
 	CFG_BYTE(showads)
-
-	//BY BBcall
-	CFG_BYTE(tran_show)
-
 	CFG_BYTE(showclose)
 	CFG_BYTE(use_ansi_bar)
 	CFG_BYTE(kktab)

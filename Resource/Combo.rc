@@ -248,8 +248,6 @@ BEGIN
             MENUITEM "BBS畫面右方顯示捲軸 (&S)",    ID_SHOW_SCROLL
             MENUITEM "BBS來訊自動切換 (&A)",        ID_CONFIG_AUTOSWITCH
             MENUITEM "啟用平滑繪圖模式 (不建議) (&M)", ID_SMOOTH_DRAW
-            MENUITEM SEPARATOR
-            MENUITEM "即時翻譯功能選項",            ID_INSTANT_TRAN
         END
         POPUP "快速 Web選項 (&W)"
         BEGIN
@@ -325,7 +323,7 @@ BEGIN
     BEGIN
         MENUITEM "軟體使用說明 (&H)\tAlt+F1",   IDM_HELP
         MENUITEM SEPARATOR
-        MENUITEM "關於 Open PCMan 2007 Combo (&A)...", ID_ABOUT
+        MENUITEM "關於 Open PCMan CE 2009 Combo (Beta) (&A)...", ID_ABOUT
     END
 END
 #endif

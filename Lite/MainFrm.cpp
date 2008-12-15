@@ -2,15 +2,9 @@
 //
 
 #include "stdafx.h"
-
-//BY BBcall
-#pragma once
-#include "InstantTranDlg.h"
-
 #include <shlobj.h>
 
 #include "PCMan.h"
-//#include "PCMan.cpp"
 
 #include "MainFrm.h"
 #include "WinUtils.h"
@@ -38,6 +32,7 @@
 #include "StrUtils.h"
 #include "MouseCTL.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -52,14 +47,11 @@ static char THIS_FILE[] = __FILE__;
 #include "../Combo/WebCfgPage.h"
 #include "../Combo/WebPageDlg.h"
 
-//BY BBcall
-#include "InstantTranDlg.h"
-
 LPSTR CMainFrame::mainfrm_class_name = "PCManCB";
-const char *CMainFrame::window_title = " - Open PCMan 2007 Combo";// (Build: " __DATE__ ")";
+const char *CMainFrame::window_title = " - Open PCMan CE 2009 Combo (Beta)";// (Build: " __DATE__ ")";
 #else
 LPSTR CMainFrame::mainfrm_class_name = "PCMan";
-const char *CMainFrame::window_title = " - Open PCMan 2007";// (Build: " __DATE__ ")";
+const char *CMainFrame::window_title = " - Open PCMan CE 2009 (Beta)";// (Build: " __DATE__ ")";
 #endif
 
 extern CFont fnt;
@@ -67,7 +59,6 @@ CUcs2Conv g_ucs2conv;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
-//////////////////
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CMainFrame)
@@ -182,16 +173,14 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_ADDTOFAVORITE, OnUpdateIsSite)
 	ON_COMMAND(ID_KKTAB, OnKKmanStyleTab)
 	ON_COMMAND(ID_ADS, OnShowAddressBar)
-
-	// BY BBcall
-	ON_COMMAND(ID_INSTANT_TRAN, OnInstantTranslation)
-
 	ON_UPDATE_COMMAND_UI(ID_SET_CHARSET_DEFAULT, OnUpdateSetCharset)
 	ON_UPDATE_COMMAND_UI(ID_EXITLOG, OnUpdateSaveSession)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnSelchangeTab)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
 	ON_WM_ACTIVATEAPP()
 	ON_WM_VSCROLL()
+	ON_REGISTERED_MESSAGE(WM_COMMIT_UPDATE, OnCommitUpdate)
+	ON_REGISTERED_MESSAGE(WM_DOWNLOAD_UPDATE_COMPLETE, OnDownLoadUpdateComplete)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_COPYDATA, OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
@@ -559,6 +548,13 @@ void CMainFrame::OnClose()
 }
 
 
+LRESULT CMainFrame::OnDownLoadUpdateComplete(WPARAM wparam, LPARAM lparam)
+{
+	CDownloadUpdateDlg *dlg = (CDownloadUpdateDlg *) wparam;
+	dlg->OnCancel();
+	return 0;
+}
+
 LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
 {
 	WSACancelBlockingCall();
@@ -923,13 +919,6 @@ void CMainFrame::OnShowAddressBar()
 	BYTE& showads = AppConfig.is_full_scr ? AppConfig.fullscr_showads : AppConfig.showads;
 	showads = !showads;
 	RecalcLayout(FALSE);
-}
-
-// BY BBcall //
-void CMainFrame::OnInstantTranslation()
-{
-	CTranslationDlg tranDlg;
-	tranDlg.DoModal();
 }
 
 void CMainFrame::OnKKmanStyleTab()
@@ -1582,7 +1571,7 @@ void CMainFrame::OnWebHome()
 
 void CMainFrame::RecalcLayout(BOOL bNotify)
 {
-	BYTE showtb, showads, showtab, showsb, use_ansi_bar, showclose, tran_show;
+	BYTE showtb, showads, showtab, showsb, use_ansi_bar, showclose;
 #ifdef	_COMBO_
 	BYTE showwb, showsearchbar;
 #endif
@@ -1591,10 +1580,6 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	{
 		showtb = AppConfig.fullscr_showtb;
 		showads = AppConfig.fullscr_showads;
-
-		//By BBcall
-		tran_show = AppConfig.instant_tran_show;
-
 		showtab = AppConfig.fullscr_showtab;
 		showsb = AppConfig.fullscr_showsb;
 		showclose = AppConfig.fullscr_showclose;
@@ -1608,10 +1593,6 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	{
 		showtb = AppConfig.showtb;
 		showads = AppConfig.showads;
-
-		//By BBcall
-		tran_show = AppConfig.tran_show;
-
 		showtab = AppConfig.showtab;
 		showsb = AppConfig.showsb;
 		showclose = AppConfig.showclose;
@@ -1983,6 +1964,20 @@ void CMainFrame::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpms)
 	CFrameWnd::OnMeasureItem(nIDCtl, lpms);
 	if (lpms->CtlType == ODT_MENU)
 		AppConfig.favorites.MeasureItem(lpms);
+}
+
+void CMainFrame::OnAutoUpdate()
+{
+	CAutoUpdater updater;
+	updater.CheckForUpdate("http://nchc.dl.sourceforge.net/sourceforge/pcmance/");
+	/* if (CAutoUpdater::Success == updater.CheckForUpdate("http://downloads.sourceforge.net/pcmance/"))
+	{
+		MessageBox("更新完成", "Updater", MB_ICONINFORMATION|MB_OK);
+	}
+	else
+	{
+		MessageBox("目前沒有更新", "Updater", MB_ICONINFORMATION|MB_OK);
+	} */	
 }
 
 void CMainFrame::OnToolLock()

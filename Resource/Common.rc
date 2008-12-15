@@ -543,7 +543,7 @@ BEGIN
     EDITTEXT        IDC_EDIT,7,55,270,149,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
     ICON            IDR_MAINFRAME,IDC_STATIC,10,9,20,20
-    CTEXT           "Open PCMan 2007 - 開放原始碼的全方位 BBS 瀏覽軟體",
+    CTEXT           "Open PCMan CE - 開放原始碼的全方位 BBS 瀏覽軟體",
                     IDC_STATIC,39,7,207,8
     PUSHBUTTON      "參觀開發專案網頁",IDC_WEB2,157,208,69,14
     LTEXT           "",IDC_VERSION,42,45,220,8
@@ -558,27 +558,12 @@ BEGIN
     LTEXT           "正在下載...",IDC_STATIC,7,7,128,8
 END
 
-IDD_DOWNLOADING_UPDATE DIALOG DISCARDABLE  0, 0, 91, 22
+IDD_DOWNLOADING_UPDATE DIALOG DISCARDABLE  0, 0, 81, 23
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "下載中"
 FONT 10, "System"
 BEGIN
-    LTEXT           "正在下載...",IDC_STATIC,7,7,78,8
-END
-
-IDD_INSTANT_TRAN DIALOG DISCARDABLE  0, 0, 170, 85
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "即時翻譯設定"
-FONT 10, "System"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,109,18,50,17
-    PUSHBUTTON      "Cancel",IDCANCEL,109,51,50,18
-    GROUPBOX        "即時翻譯功能啟動選項",IDC_STATIC,7,7,98,33
-    COMBOBOX        IDC_TRAN_COMBO,16,20,55,12,CBS_DROPDOWN | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "即時翻譯長度限制選項",IDC_STATIC,7,46,98,29
-    COMBOBOX        IDC_LENGTH_COMBO,15,58,56,12,CBS_DROPDOWN | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "正在下載...",IDC_STATIC,7,7,96,9
 END
 
 
@@ -686,17 +671,9 @@ BEGIN
     IDD_DOWNLOADING_UPDATE, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 84
+        RIGHTMARGIN, 74
         TOPMARGIN, 7
-        BOTTOMMARGIN, 15
-    END
-
-    IDD_INSTANT_TRAN, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 163
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 78
+        BOTTOMMARGIN, 16
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -860,6 +837,7 @@ BEGIN
     IDS_BBS_FAVORITE_NAME   "BBS我的最愛"
     IDS_WWW_FAVORITE_NAME   "Web我的最愛"
     IDS_COPY_URL            "複製連結位址"
+    IDS_TEST                "TEST"
     IDS_WAV_FILTER          "WAV音效檔 (*.wav)|*.wav|"
     IDS_SITELIST_UPDATE_SUCCESS "更新完成!"
 END
@@ -867,8 +845,8 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_SITELIST_UPDATE_FAIL "更新失敗!"
-    IDS_WEB_SEARCH          "搜尋翻譯或網頁"
-    IDS_PROMPT_IMPORT       "Open PCMan 2007 偵測到目錄中有舊版 PCMan 2004 設定檔，格式和新版使用的並不相容。\n\n建議您上官方網站 http://pcman.openfoundry.org/faq.html 參考如何匯入舊版設定檔的說明。"
+    IDS_WEB_SEARCH          "搜尋網頁"
+    IDS_PROMPT_IMPORT       "Open PCMan CE 偵測到目錄中有舊版 PCMan 2004 設定檔，格式和新版使用的並不相容。\n\n建議您上官方網站 http://pcman.openfoundry.org/faq.html 參考如何匯入舊版設定檔的說明。"
 END
 
 STRINGTABLE DISCARDABLE 

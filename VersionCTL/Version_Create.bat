@@ -57,6 +57,13 @@ REM echo #pragma once > %VersionFile_tmp%
 echo //Generated from Version_Create.bat %VersionFile_In% >> %VersionFile_tmp%
 
 
+REM echo #pragma once > %Update_File_Path%
+REM ¬ö¿ýª©¥»¸¹½X¨ìupdate.txt
+if exist %Update_File_Path% (
+	del /f /q %Update_File_Path%
+)
+echo %MajorVersion%.%MinorVersion%.%PatchLevel%. > %Update_File_Path%
+
 echo // >> %VersionFile_tmp%
 echo #define FILEVER            %MajorVersion%,%MinorVersion%,%PatchLevel%,%BuildNumber% >> %VersionFile_tmp%
 echo #define FILEVER_STRA       "%MajorVersion%,%MinorVersion%,%PatchLevel%,%BuildNumber%\0" >> %VersionFile_tmp%
@@ -77,7 +84,7 @@ echo #define Version_BuildNumber   %BuildNumber% >> %VersionFile_tmp%
 
 echo // >> %VersionFile_tmp%
 echo #define Version_RevDateA   "%BuildNumber_Date%" >> %VersionFile_tmp%
-echo #define Version_RevDateW   L"%BuildNumber_Date%" >> %VersionFile_tmp%
+echo #define Version_RevDateW   "%BuildNumber_Date%" >> %VersionFile_tmp%
 
 echo // >> %VersionFile_tmp%
 if "%UseSvnBuildNumber%" == "1" (
@@ -117,8 +124,6 @@ if not "%ERRORLEVEL%"=="0" (
 	copy /y %VersionFile_tmp% %VersionFile_Out%
 )
 
-
-
 :exit
 
 if exist %VersionFile_tmp% (
@@ -128,6 +133,7 @@ if exist %VersionFile_tmp% (
 if exist %VersionFile_tmp2% (
 	del /f /q %VersionFile_tmp2%
 )
+
 
 SET MajorVersion=
 SET MinorVersion=

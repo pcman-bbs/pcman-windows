@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wininet.lib wsock32.lib winmm.lib msimg32.lib /nologo /subsystem:windows /machine:I386 /out:"Release/PCMan Combo/PCMan.exe"
+# ADD LINK32 wininet.lib wsock32.lib winmm.lib msimg32.lib version.lib /nologo /subsystem:windows /machine:I386 /out:"Release/PCMan Combo/PCMan.exe"
 # Begin Special Build Tool
 OutDir=.\Release
 SOURCE="$(InputPath)"
@@ -84,7 +84,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wininet.lib wsock32.lib winmm.lib msimg32.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/PCMan Combo/PCMan.exe" /pdbtype:sept
+# ADD LINK32 wininet.lib wsock32.lib winmm.lib msimg32.lib version.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/PCMan Combo/PCMan.exe" /pdbtype:sept
 # Begin Special Build Tool
 OutDir=.\Debug
 SOURCE="$(InputPath)"
@@ -131,6 +131,10 @@ SOURCE=..\Lite\AutoComplete.cpp
 # Begin Source File
 
 SOURCE=..\Lite\AutoReplyPage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\AutoUpdate.cpp
 # End Source File
 # Begin Source File
 
@@ -223,10 +227,6 @@ SOURCE=..\Lite\HyperLinkPage.cpp
 # Begin Source File
 
 SOURCE=..\Lite\InputNameDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\Lite\InstantTranDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -395,6 +395,10 @@ SOURCE=..\Lite\AutoComplete.h
 # Begin Source File
 
 SOURCE=..\Lite\AutoReplyPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\AutoUpdate.h
 # End Source File
 # Begin Source File
 

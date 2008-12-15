@@ -1,8 +1,6 @@
 // PCMan4.cpp : Defines the class behaviors for the application.
 //
 
-#include <iostream.h>
-
 #include "stdafx.h"
 #include "PCMan.h"
 
@@ -58,8 +56,6 @@ CApp theApp;
 
 BOOL CApp::InitInstance()
 {
-	cout << "BBcall !!" << endl;
-	
 	DBG_INIT(1);
 
 	// Find other existing instances
@@ -157,7 +153,7 @@ BOOL CApp::InitInstance()
 #if defined(_COMBO_)
 	// Lite version calls this function before showing popup menu to reduce startup time.
 	// Combo version loads all search plugins here for search bar.
-	SearchPluginCollection.LoadAll(1);
+	SearchPluginCollection.LoadAll();
 #endif
 
 	CMainFrame* pFrame = new CMainFrame;
@@ -194,6 +190,7 @@ BOOL CApp::InitInstance()
 
 //如果只允許執行一個 PCMan，則把User data設為1
 	SetWindowLong(m_pMainWnd->m_hWnd, GWL_USERDATA, !AppConfig.multiple_instance);
+	pFrame->OnAutoUpdate();
 	return TRUE;
 }
 

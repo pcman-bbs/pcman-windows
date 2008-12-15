@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "Base64Test"=".\Base64Test\Base64Test.dsp" - Package Owner=<4>
+Project: "Base64Test"=.\Base64Test\Base64Test.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "BuildMenuCombo"=".\Combo\BuildMenuCombo.dsp" - Package Owner=<4>
+Project: "BuildMenuCombo"=.\Combo\BuildMenuCombo.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -27,7 +27,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "BuildMenuLite"=".\LITE\BuildMenuLite.dsp" - Package Owner=<4>
+Project: "BuildMenuLite"=.\LITE\BuildMenuLite.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -39,7 +39,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Combo"=".\Combo\Combo.dsp" - Package Owner=<4>
+Project: "Combo"=.\Combo\Combo.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -54,7 +54,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Lite"=".\Lite\Lite.dsp" - Package Owner=<4>
+Project: "Lite"=.\Lite\Lite.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -69,7 +69,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "MFCUpdater"="C:\Documents and Settings\user\орн▒\AutoUpdate+ Sample Code\MFCUpdater\MFCUpdater.dsp" - Package Owner=<4>
+Project: "Migrate"=.\Migrate\Migrate.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -81,19 +81,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Migrate"=".\Migrate\Migrate.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "UAOTabGen"=".\UAOTabGen\UAOTabGen.dsp" - Package Owner=<4>
+Project: "UAOTabGen"=.\UAOTabGen\UAOTabGen.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

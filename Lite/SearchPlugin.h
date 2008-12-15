@@ -4,28 +4,16 @@
 #include <afxtempl.h>
 #include <afxwin.h>
 
-#include <wininet.h>
-
 #if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible
 #include <atlenc.h>
 #include <atlstr.h>
 #endif
 
-#include "TermView.h"
-#include "../SimpXmlParser/SimpXmlParser.h"
-
-//By BBcall
-//int isInstantTranForMainFrm; //1¬OEnable, 0¬ODisable
+#include "SimpXmlParser.h"
 
 class CSearchPlugin
 {
 public:
-	//by BBcall
-	void SetErrorMessage(CString s);
-    CString GetWebPage(const CString& Url);	
-	CString ProcessContent(CString theContent);
-	CString findHead(CString objectStr);
-	
 	bool ParseXml(char* buf);
 	CSearchPlugin();
 	~CSearchPlugin();
@@ -36,11 +24,6 @@ public:
 	CString Url;
 	// CString Suggestions;
 	char* Method;
-
-	//by BBcall
-	CString m_ErrorMessage;
-    HINTERNET m_Session;
-	CString PageContent;	
 };
 
 class CSearchPluginCollection
@@ -86,19 +69,9 @@ public:
 		ID_SEARCHPLUGIN01 = ID_SEARCHPLUGIN02 - 1,
 		ID_SEARCHPLUGIN00 = ID_SEARCHPLUGIN01 - 1,
 	};
-	
+
 	HMENU CreateSearchMenu();
-	HMENU CreateSearchMenu(CString TextContent);
-	HMENU CreateSearchMenu_2(CString TextContent);
 	void LoadAll();
-
-	//By BBcall
-	void LoadAll(int Identify);
-	void setInstantTranslation(int tmpInstant){ isInstantTran = tmpInstant;}
-	void setTranLength(int tmpLength){howTranLength = tmpLength;}
-	int isInstantTran;
-	int howTranLength;
-
 	enum EField { SHORTNAME, DESCRIPTION, INPUTENCODING, IMAGE, URL, METHOD, IMAGEBYTES };
 	int Load(LPCTSTR path);
 	int GetCount();
@@ -111,11 +84,7 @@ public:
 		return ((CSearchPlugin*)plugins[index])->Image;
 	}
 
-	CSearchPluginCollection()
-	{
-		isInstantTran = 1;
-		howTranLength = 10;
-	}
+	CSearchPluginCollection(){}
 	~CSearchPluginCollection()
 	{
 		int n = plugins.GetSize();
@@ -129,7 +98,6 @@ public:
 };
 
 extern CSearchPluginCollection SearchPluginCollection;
-//extern CSearchPluginCollection SearchPluginCollection_2;
 
 class CSearchPluginParser : public CSimpXmlParser
 {
