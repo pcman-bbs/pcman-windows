@@ -170,14 +170,14 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 	{
 		CString somecode;
 
-		BOOL bIsOk = dataStore.Open(_T("C:\\test.txt"),
+		/*BOOL bIsOk = dataStore.Open(_T("C:\\test.txt"),
                               CFile::modeCreate
                               | CFile::modeWrite
                               | CFile::shareDenyWrite
                               | CFile::typeText);
 
 		if (!bIsOk)
-			return "No File(1)!!";
+			return "No File(1)!!";*/
 
 		// continue fetching code until there is no more
 		ReadCounter = 0;
@@ -190,7 +190,7 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 			{				
 				ReturnContent = somecode;
 				ReadCounter++;
-				dataStore.WriteString(somecode);
+				//dataStore.WriteString(somecode);
 
 				break;
 			}
@@ -198,8 +198,8 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 			{
 				ReturnContent = somecode;
 				ReadCounter++;
-				dataStore.WriteString(somecode);
-				dataStore.WriteString(a);
+				//dataStore.WriteString(somecode);
+				//dataStore.WriteString(a);
 
 				break;
 			}			
@@ -813,22 +813,8 @@ HMENU CSearchPluginCollection::CreateSearchMenu(CString TextContent)
 	if (TextContent.GetLength() <= howTranLength && isInstantTran == 1)
 	{
 		showContent = TextContent;	
-		CString URLCString = _T("http://www.e390.com/cgi-bin/e390dic?MYINPUT=" + TextContent + "&&CMP=1&UID=%23%23UID");
-		PageContent = plugin_2->GetWebPage(URLCString);
-
-		if (PageContent.GetLength() > 0)
-		{
-			AnsContent = plugin_2->ProcessContent(PageContent);
-			AnsContent.TrimLeft();
-			if (AnsContent.GetLength() > 0)
-				AnsContent.TrimRight();
-			else
-				AnsContent = _T("查無此翻譯");
-		}
-		else
-		{			
-			AnsContent = _T("查無此翻譯");
-		}
+		AnsContent = _T("-查無此翻譯");
+		
 	}
 	else
 	{

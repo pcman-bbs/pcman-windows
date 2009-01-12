@@ -251,10 +251,6 @@ SOURCE=.\MouseGesture.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MouseGesture.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\OleImage.cpp
 # End Source File
 # Begin Source File
@@ -476,6 +472,10 @@ SOURCE=.\MainFrm.h
 # Begin Source File
 
 SOURCE=.\MemIniFile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MouseGesture.h
 # End Source File
 # Begin Source File
 
