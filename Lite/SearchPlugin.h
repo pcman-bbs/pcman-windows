@@ -11,16 +11,13 @@
 #include <atlstr.h>
 #endif
 
+#include "pcman.h"
 #include "TermView.h"
 #include "../SimpXmlParser/SimpXmlParser.h"
-
-//By BBcall
-//int isInstantTranForMainFrm; //1¬OEnable, 0¬ODisable
 
 class CSearchPlugin
 {
 public:
-	//by BBcall
 	void SetErrorMessage(CString s);
     CString GetWebPage(const CString& Url);	
 	CString ProcessContent(CString theContent);
@@ -37,7 +34,6 @@ public:
 	// CString Suggestions;
 	char* Method;
 
-	//by BBcall
 	CString m_ErrorMessage;
     HINTERNET m_Session;
 	CString PageContent;	
@@ -85,24 +81,20 @@ public:
 		ID_SEARCHPLUGIN02 = ID_SEARCHPLUGIN03 - 1,
 		ID_SEARCHPLUGIN01 = ID_SEARCHPLUGIN02 - 1,
 		ID_SEARCHPLUGIN00 = ID_SEARCHPLUGIN01 - 1,
+		ID_TRANSLATION = ID_SEARCHPLUGIN00 - 1,
 	};
 	
 	HMENU CreateSearchMenu();
-	HMENU CreateSearchMenu(CString TextContent);
-	HMENU CreateSearchMenu_2(CString TextContent);
+	HMENU CreateTranMenu(CString TextContent);
 	void LoadAll();
 
-	//By BBcall
-	void LoadAll(int Identify);
-	void setInstantTranslation(int tmpInstant){ isInstantTran = tmpInstant;}
-	void setTranLength(int tmpLength){howTranLength = tmpLength;}
-	int isInstantTran;
-	int howTranLength;
+	int MaxTranLength;
 
 	enum EField { SHORTNAME, DESCRIPTION, INPUTENCODING, IMAGE, URL, METHOD, IMAGEBYTES };
 	int Load(LPCTSTR path);
 	int GetCount();
 	CString UrlForSearch(int index, CString searchTerm, bool utf8 = false);
+	CString UrlForTranslate(CString searchTerm, bool utf8 = false);
 	char* GetField(int index, EField f);
 	HBITMAP GetImage(int index)
 	{
@@ -113,8 +105,7 @@ public:
 
 	CSearchPluginCollection()
 	{
-		isInstantTran = 1;
-		howTranLength = 10;
+		MaxTranLength = AppConfig.max_translation_length;
 	}
 	~CSearchPluginCollection()
 	{

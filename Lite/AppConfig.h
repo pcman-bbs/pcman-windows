@@ -28,6 +28,7 @@
 #define WM_MULTIPCMAN		(WM_APP+'M')
 #define WM_QUERY_APPCONFIG	(WM_APP+'P')
 #define WM_WBTITLECHANGE	(WM_APP+ 128)
+#define WM_DOWNLOAD_PAGE	(WM_APP+'D')
 
 const char CONFIG_DIR[] = "Config\\";
 const char CONFIG_FILENAME[] = "Config.ini";
@@ -112,6 +113,12 @@ public:
 
 //  Charset Setting
 	BYTE saved_charset;
+
+//  AutoUpdate Setting
+	BYTE autoupdate_disable;
+
+//  Instant Translation
+	int max_translation_length;
 
 //	AnsiEditor Settings
 	int	ed_cols_per_page;
@@ -236,6 +243,9 @@ inline void CAppConfig::Default()
 //	AnsiEditor Settings
 	ed_cols_per_page = 80;
 	ed_lines_per_page = 24;
+
+//	Instant Translation
+	max_translation_length = 20;
 
 //Main window
 	mainwnd_state.showcmd = SW_SHOWMAXIMIZED;

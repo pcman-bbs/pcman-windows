@@ -1,24 +1,53 @@
 <?xml version="1.0" encoding="big5"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="Lite"
+	ProjectGUID="{AC6C940E-CBB8-4FD8-AEF9-756EA50AF5C6}"
 	SccProjectName="&quot;$/Lite&quot;, EAAAAAAA"
 	SccLocalPath="."
-	Keyword="MFCProj">
+	Keyword="MFCProj"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\../Debug"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="1"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/Lite.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -32,115 +61,150 @@
 				ProgramDataBaseFileName=".\../Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1028"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				CommandLine="$(OutDir)\BuildMenu.exe $(OutDir)\PCMan\Config"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib winmm.lib"
 				OutputFile="Debug/PCMan/PCMan.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/PCMan.pdb"
 				SubSystem="2"
-				TargetMachine="1"/>
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Lite.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"
-				CommandLine="$(OutDir)\BuildMenu.exe $(OutDir)\PCMan\Config"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1028"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="1"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/Lite.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\SimpXmlParser"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/Lite.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1028"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				CommandLine="&quot;$(OutDir)&quot;\BuildMenu.exe &quot;$(OutDir)&quot;\PCMan\Config"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib winmm.lib"
 				OutputFile="Release/PCMan/PCMan.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/PCMan.pdb"
 				SubSystem="2"
-				TargetMachine="1"/>
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/Lite.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"
-				CommandLine="&quot;$(OutDir)&quot;\BuildMenu.exe &quot;$(OutDir)&quot;\PCMan\Config"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1028"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -148,1316 +212,1649 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath="AddressDlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="AES.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="AnsiBar.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="AppConfig.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="AutoComplete.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="AutoReplyPage.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="BBSHyperLink.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="BrowseDirDlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\ChiConv\ChiConv.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Clipboard.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="ColorConfigDlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Resource\Common.rc">
+				RelativePath="AddressDlg.cpp"
+				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
+					>
 					<Tool
-						Name="VCResourceCompilerTool"
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"/>
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="TRUE">
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="AES.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="AnsiBar.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="AppConfig.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="AutoComplete.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="AutoReplyPage.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="BBSHyperLink.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="BrowseDirDlg.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ChiConv\ChiConv.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="Clipboard.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="ColorConfigDlg.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\Resource\Common.rc"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="ConfigFile.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Conn.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="ConnectPage.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="CtrlEdit.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="CustomizeDlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="CustomTabCtrl.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="CustomToolBar.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\DlgLayout\DlgLayout.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="DragTreeCtrl.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="FavMenu.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="GeneralPage.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Hotkey.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="HotkeyEdit.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="HyperLinkPage.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="InputNameDlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="KeyMap.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="KeyMapDlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="ListDlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Resource\Lite.rc">
-				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"/>
+						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="ConfigFile.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="Conn.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="ConnectPage.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="CtrlEdit.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="CustomizeDlg.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="CustomTabCtrl.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="CustomToolBar.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\DlgLayout\DlgLayout.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DragTreeCtrl.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="FavMenu.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="GeneralPage.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="Hotkey.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="HotkeyEdit.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="HyperLinkPage.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="InputNameDlg.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="KeyMap.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="KeyMapDlg.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="ListDlg.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\Resource\Lite.rc"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"/>
+						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+						AdditionalIncludeDirectories="\Documents and Settings\洪任諭\桌面\Open PCMan 2007\trunk\Resource"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="MainFrm.cpp">
+				RelativePath="MainFrm.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="MemIniFile.cpp">
+				RelativePath="MemIniFile.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="OtherPage.cpp">
+				RelativePath="OtherPage.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="PasswdDlg.cpp">
+				RelativePath="PasswdDlg.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="PCMan.cpp">
+				RelativePath="PCMan.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="ReBarState.cpp">
+				RelativePath="ReBarState.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Rijndael.cpp">
+				RelativePath="Rijndael.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SearchPlugin.cpp">
+				RelativePath="SearchPlugin.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SetBkDlg.cpp">
+				RelativePath="SetBkDlg.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\SimpXmlParser\SimpXmlParser.cpp">
+				RelativePath="..\SimpXmlParser\SimpXmlParser.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="sitelistctrl.cpp">
+				RelativePath="sitelistctrl.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SitePage.cpp">
+				RelativePath="SitePage.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SiteSettings.cpp">
+				RelativePath="SiteSettings.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="StdAfx.cpp">
+				RelativePath="StdAfx.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="StringDlg.cpp">
+				RelativePath="StringDlg.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="strutils.cpp">
+				RelativePath="strutils.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="TelnetConn.cpp">
+				RelativePath="TelnetConn.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="TermView.cpp">
+				RelativePath="TermView.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="TriggerList.cpp">
+				RelativePath="TriggerList.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Ucs2Conv.cpp">
+				RelativePath="Ucs2Conv.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="WindowState.cpp">
+				RelativePath="WindowState.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="WinUtils.cpp">
+				RelativePath="WinUtils.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 			<File
-				RelativePath="AddressDlg.h">
+				RelativePath="AddressDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="AES.h">
+				RelativePath="AES.h"
+				>
 			</File>
 			<File
-				RelativePath="AnsiBar.h">
+				RelativePath="AnsiBar.h"
+				>
 			</File>
 			<File
-				RelativePath="AppConfig.h">
+				RelativePath="AppConfig.h"
+				>
 			</File>
 			<File
-				RelativePath="AutoComplete.h">
+				RelativePath="AutoComplete.h"
+				>
 			</File>
 			<File
-				RelativePath="AutoReplyPage.h">
+				RelativePath="AutoReplyPage.h"
+				>
 			</File>
 			<File
-				RelativePath="BBSHyperLink.h">
+				RelativePath="BBSHyperLink.h"
+				>
 			</File>
 			<File
-				RelativePath="BrowseDirDlg.h">
+				RelativePath="BrowseDirDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="..\ChiConv\ChiConv.h">
+				RelativePath="..\ChiConv\ChiConv.h"
+				>
 			</File>
 			<File
-				RelativePath="Clipboard.h">
+				RelativePath="Clipboard.h"
+				>
 			</File>
 			<File
-				RelativePath="ColorConfigDlg.h">
+				RelativePath="ColorConfigDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="ConfigFile.h">
+				RelativePath="ConfigFile.h"
+				>
 			</File>
 			<File
-				RelativePath="Conn.h">
+				RelativePath="Conn.h"
+				>
 			</File>
 			<File
-				RelativePath="ConnectPage.h">
+				RelativePath="ConnectPage.h"
+				>
 			</File>
 			<File
-				RelativePath="CtrlEdit.h">
+				RelativePath="CtrlEdit.h"
+				>
 			</File>
 			<File
-				RelativePath="CustomizeDlg.h">
+				RelativePath="CustomizeDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="CustomTabCtrl.h">
+				RelativePath="CustomTabCtrl.h"
+				>
 			</File>
 			<File
-				RelativePath="CustomToolBar.h">
+				RelativePath="CustomToolBar.h"
+				>
 			</File>
 			<File
-				RelativePath="..\DlgLayout\DlgLayout.h">
+				RelativePath="..\DlgLayout\DlgLayout.h"
+				>
 			</File>
 			<File
-				RelativePath="DragTreeCtrl.h">
+				RelativePath="DragTreeCtrl.h"
+				>
 			</File>
 			<File
-				RelativePath="FavMenu.h">
+				RelativePath="FavMenu.h"
+				>
 			</File>
 			<File
-				RelativePath="FileUtil.h">
+				RelativePath="FileUtil.h"
+				>
 			</File>
 			<File
-				RelativePath="GeneralPage.h">
+				RelativePath="GeneralPage.h"
+				>
 			</File>
 			<File
-				RelativePath="Hotkey.h">
+				RelativePath="Hotkey.h"
+				>
 			</File>
 			<File
-				RelativePath="HotkeyEdit.h">
+				RelativePath="HotkeyEdit.h"
+				>
 			</File>
 			<File
-				RelativePath="HyperLinkPage.h">
+				RelativePath="HyperLinkPage.h"
+				>
 			</File>
 			<File
-				RelativePath="InputNameDlg.h">
+				RelativePath="InputNameDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="KeyMap.h">
+				RelativePath="KeyMap.h"
+				>
 			</File>
 			<File
-				RelativePath="KeyMapDlg.h">
+				RelativePath="KeyMapDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="ListDlg.h">
+				RelativePath="ListDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="MainFrm.h">
+				RelativePath="MainFrm.h"
+				>
 			</File>
 			<File
-				RelativePath="MemIniFile.h">
+				RelativePath="MemIniFile.h"
+				>
 			</File>
 			<File
-				RelativePath="OtherPage.h">
+				RelativePath="OtherPage.h"
+				>
 			</File>
 			<File
-				RelativePath="PasswdDlg.h">
+				RelativePath="PasswdDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="PCMan.h">
+				RelativePath="PCMan.h"
+				>
 			</File>
 			<File
-				RelativePath="ReBarState.h">
+				RelativePath="ReBarState.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Resource\resource.h">
+				RelativePath="..\Resource\resource.h"
+				>
 			</File>
 			<File
-				RelativePath="RFC854.H">
+				RelativePath="RFC854.H"
+				>
 			</File>
 			<File
-				RelativePath="Rijndael.h">
+				RelativePath="Rijndael.h"
+				>
 			</File>
 			<File
-				RelativePath="SearchPlugin.h">
+				RelativePath="SearchPlugin.h"
+				>
 			</File>
 			<File
-				RelativePath="SetBkDlg.h">
+				RelativePath="SetBkDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="..\SimpXmlParser\SimpXmlParser.h">
+				RelativePath="..\SimpXmlParser\SimpXmlParser.h"
+				>
 			</File>
 			<File
-				RelativePath="sitelistctrl.h">
+				RelativePath="sitelistctrl.h"
+				>
 			</File>
 			<File
-				RelativePath="SitePage.h">
+				RelativePath="SitePage.h"
+				>
 			</File>
 			<File
-				RelativePath="SiteSettings.h">
+				RelativePath="SiteSettings.h"
+				>
 			</File>
 			<File
-				RelativePath="StdAfx.h">
+				RelativePath="StdAfx.h"
+				>
 			</File>
 			<File
-				RelativePath="StringDlg.h">
+				RelativePath="StringDlg.h"
+				>
 			</File>
 			<File
-				RelativePath="strutils.h">
+				RelativePath="strutils.h"
+				>
 			</File>
 			<File
-				RelativePath="TelnetConn.h">
+				RelativePath="TelnetConn.h"
+				>
 			</File>
 			<File
-				RelativePath="TermView.h">
+				RelativePath="TermView.h"
+				>
 			</File>
 			<File
-				RelativePath="TriggerList.h">
+				RelativePath="TriggerList.h"
+				>
 			</File>
 			<File
-				RelativePath="Ucs2Conv.h">
+				RelativePath="Ucs2Conv.h"
+				>
 			</File>
 			<File
-				RelativePath="WindowState.h">
+				RelativePath="WindowState.h"
+				>
 			</File>
 			<File
-				RelativePath="WinUtils.h">
+				RelativePath="WinUtils.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 			<File
-				RelativePath="..\Resource\res\ansfile.ico">
+				RelativePath="..\Resource\res\ansfile.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\ansfile.ico">
+				RelativePath="res\ansfile.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\Resource\res\copy_cur.cur">
+				RelativePath="..\Resource\res\copy_cur.cur"
+				>
 			</File>
 			<File
-				RelativePath="res\copy_cur.cur">
+				RelativePath="res\copy_cur.cur"
+				>
 			</File>
 			<File
-				RelativePath="res\drag_cur.cur">
+				RelativePath="res\drag_cur.cur"
+				>
 			</File>
 			<File
-				RelativePath="..\Resource\res\drag_cur.cur">
+				RelativePath="..\Resource\res\drag_cur.cur"
+				>
 			</File>
 			<File
-				RelativePath="..\Resource\res\hand.cur">
+				RelativePath="..\Resource\res\hand.cur"
+				>
 			</File>
 			<File
-				RelativePath="res\hand.cur">
+				RelativePath="res\hand.cur"
+				>
 			</File>
 			<File
-				RelativePath="..\Resource\res\idr_main.ico">
+				RelativePath="..\Resource\res\idr_main.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\idr_main.ico">
+				RelativePath="res\idr_main.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\Resource\Res\toolbar1.bmp">
+				RelativePath="..\Resource\Res\toolbar1.bmp"
+				>
 			</File>
 		</Filter>
 	</Files>

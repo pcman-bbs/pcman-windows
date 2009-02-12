@@ -86,6 +86,7 @@ BYTE get_article_in_editor : 1;
 	CList<CTelnetConnDelayedSend, CTelnetConnDelayedSend> delay_send;
 
 	static CString downloaded_article;
+    static int current_download_line;
 
 public:
 	CTelnetConn();
@@ -127,7 +128,7 @@ public:
 	inline void SetCurrentAttributes(USHORT clr);
 	inline void GoUp(int p);
 	inline void GoDown(int p);
-	inline void GoRight(int p);
+	void GoRight(int p);
 	inline void GoLeft(int p);
 	inline void LineFeed(int param);
 	inline void ScrollUp();

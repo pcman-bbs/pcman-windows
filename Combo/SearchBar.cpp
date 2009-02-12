@@ -221,7 +221,7 @@ bool CSearchBar::GetSearchTerm(CString& term)
 			len = WideCharToMultiByte(CP_UTF8, 0, tmp, wlen, buf, len, NULL, NULL);
 			term.ReleaseBuffer();
 			delete tmp;
-			::SetWindowText(hedit, "");
+			//::SetWindowText(hedit, "");
 		}
 		if (len <= 0)
 			term.Empty();

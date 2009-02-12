@@ -51,6 +51,7 @@ BOOL CGeneralPage::OnInitDialog()
 	CheckDlgButton(IDC_TAB_BUTTON, AppConfig.tab_button);
 	CheckDlgButton(IDC_MINIMIZE_TO_TRAY, AppConfig.minimize_to_tray);
 	CheckDlgButton(IDC_SWITCH_BACK, AppConfig.switch_back_on_close);
+	CheckDlgButton(IDC_ENABLE_AUTOUPDATE, !AppConfig.autoupdate_disable);
 
 	CheckDlgButton(IDC_FULL_SHOWTB, AppConfig.fullscr_showtb);
 	CheckDlgButton(IDC_FULL_SHOWADS, AppConfig.fullscr_showads);
@@ -98,6 +99,7 @@ void CGeneralPage::OnOK()
 	AppConfig.fullscr_showsb = IsDlgButtonChecked(IDC_FULL_SHOWSB);
 	AppConfig.fullscr_showclose = IsDlgButtonChecked(IDC_FULL_SHOWCLOSE);
 	AppConfig.full_use_ansi_bar = IsDlgButtonChecked(IDC_FULL_USE_ANSIBAR);
+	AppConfig.autoupdate_disable = !IsDlgButtonChecked(IDC_ENABLE_AUTOUPDATE);
 
 #ifdef	_COMBO_
 	AppConfig.fullscr_showwb = IsDlgButtonChecked(IDC_FULL_SHOWWB);

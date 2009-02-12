@@ -114,6 +114,11 @@ public:
 	BYTE is_full_scr;
 	BYTE use_MouseCTL;
 
+	//By BBcall
+	BYTE is_instant_tran;
+	BYTE instant_tran_show;
+	BYTE tran_show;
+
 	BYTE fullscr_showtb;
 	BYTE fullscr_showsb;
 	BYTE fullscr_showtab;
@@ -215,6 +220,11 @@ inline void CAppConfig::Default()
 	is_full_scr = 0;
 	use_MouseCTL = 0;
 	use_ansi_bar = 1;
+
+	//By BBcall
+	is_instant_tran = 1;
+	instant_tran_show = 1;
+	tran_show = 1;
 
 	fullscr_showtb = 0;
 	fullscr_showsb = 0;

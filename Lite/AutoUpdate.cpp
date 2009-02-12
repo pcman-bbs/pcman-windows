@@ -4,17 +4,13 @@
 
 #include "stdAfx.h"
 #include "AutoUpdate.h"
+#include "AutoUpdateDlg.h"
+#include "AppConfig.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
-#endif
-
-#ifdef	_COMBO_
-#define InstallerName "PCManCB"
-#else	
-#define InstallerName "PCMan"
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -40,7 +36,7 @@ CAutoUpdater::~CAutoUpdater()
 
 // Check if an update is required
 //
-CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
+CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate()
 {		
 	if (!InternetOkay())
 	{
@@ -52,7 +48,7 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 
 
 	// First we must check the remote configuration file to see if an update is necessary
-	CString URL = UpdateServerURL + CString(LOCATION_UPDATE_FILE_CHECK);
+	CString URL = CString(UPDATE_CHECK_URL) + CString(LOCATION_UPDATE_FILE_CHECK);
 	HINTERNET hSession = GetSession(URL);
 	if (!hSession)
 	{
@@ -88,9 +84,7 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 	CString directory = path;
 	
 	// Download the updated file
-	CString installerName = InstallerName;
-	URL = UpdateServerURL + installerName;
-	
+	/*
 	TCHAR *pToken = strtok(updateVersion.GetBuffer(256),_T("."));
 	while(pToken!=NULL)
 	{	
@@ -98,9 +92,13 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 			URL.Insert(URL.GetLength(),pToken[0]);
 		pToken = strtok(NULL, _T("."));
 	}
-	CString exe = ".exe";
-	URL += exe;
+	*/
+	updateVersion.TrimLeft();
+	updateVersion.TrimRight();
+	updateVersion.TrimRight(_T("."));
+	URL = CString(UPDATE_DOWNLOAD_URL) + updateVersion + CString("/") + CString(InstallerName) + CString(".exe");
 	updateVersion.ReleaseBuffer();
+	DBG_PRINT(URL);
 	
 	hSession = GetSession(URL);
 	if (!hSession)
@@ -108,15 +106,20 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 		return InternetSessionFailure;
 	}
 
-	CString msg = "發現新版PCMan，要下載並安裝更新嗎？";
-	if (IDNO == MessageBox(GetActiveWindow(), msg, _T("發現新版"), MB_YESNO|MB_ICONQUESTION))
+	CAutoUpdateDlg autoupdate_dlg;
+	int nResult = autoupdate_dlg.DoModal();
+	if (nResult==0)
 	{
+		AppConfig.autoupdate_disable=1;
 		return UpdateNotComplete;	
+	}
+	else if (nResult==2)
+	{
+		return UpdateNotComplete;
 	}
 
 	// Proceed with the update
-	CString updateFileLocation = directory+InstallerName;
-	updateFileLocation += exe;
+	CString updateFileLocation = directory+InstallerName+CString(".exe");
 	download_update_dlg = new CDownloadUpdateDlg();
 	CAutoUpdater_DownloadInfo * Info = new CAutoUpdater_DownloadInfo(hSession, updateFileLocation,download_update_dlg);
 	
@@ -140,7 +143,7 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate(LPCTSTR UpdateServerURL)
 //		return FileDownloadFailure;
 //	}	
 
-    MessageBox(AfxGetMainWnd()->m_hWnd,"PCMan現在會關閉以安裝更新","PCMan即將關閉",MB_ICONINFORMATION|MB_OK);
+    MessageBox(AfxGetMainWnd()->m_hWnd, LoadString(IDS_INSTALL_UPDATE), LoadString(IDS_PCMAN_CLOSE), MB_ICONINFORMATION|MB_OK);
 	if (!::ShellExecute(AfxGetMainWnd()->m_hWnd, "open", updateFileLocation, NULL, NULL,
 						   SW_SHOWNORMAL))
 	{

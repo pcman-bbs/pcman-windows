@@ -125,6 +125,10 @@ BOOL CApp::InitInstance()
 				CopyFile(DefaultConfigPath + WEB_ICON_BMP_FILENAME, ConfigPath + WEB_ICON_BMP_FILENAME, TRUE);
 #endif
 			}
+			if (!IsFileExist(ConfigPath + UI_FILENAME))
+			{
+				CopyFile(DefaultConfigPath + UI_FILENAME, ConfigPath + UI_FILENAME, TRUE);
+			}
 		}
 		else
 			ConfigPath.ReleaseBuffer();
@@ -322,7 +326,7 @@ BOOL CAboutDlg::OnInitDialog()
 
 	char buf1[0x100];
 
-	wsprintf(buf1, "%s - %d.%d.%d, Build %d, %s",
+	wsprintf(buf1, "%s - %d.%d.%d (Novus), Build %d, %s",
 			 Version_InternalNameA, Version_Major, Version_Minor, Version_PatchLevel, Version_BuildNumber, Version_RevDateA);
 
 	GetDlgItem(IDC_VERSION)->SetWindowText(buf1);

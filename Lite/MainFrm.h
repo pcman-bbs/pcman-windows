@@ -17,6 +17,7 @@
 #include "AutoComplete.h"	// Added by ClassView
 
 #include "AutoUpdate.h"
+#include "InstantTranDlg.h"
 
 #if defined _COMBO_
 #include "../Combo/adlist.h"
@@ -70,6 +71,9 @@ public:
 	void UpdateAddressBar();
 	void OnKKmanStyleTab();
 	void OnShowAddressBar();
+
+	void OnInstantTranslation();
+
 	void OnNewConnectionAds(LPCTSTR cmdline);
 	void OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult);
 	LRESULT OnNewConnection(WPARAM wparam, LPARAM lparam);
@@ -262,9 +266,12 @@ public:
 	afx_msg void OnAutoUpdate();
 	afx_msg LRESULT OnCommitUpdate(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnDownLoadUpdateComplete(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu,UINT nIndex,BOOL bSysMenu);
+	afx_msg void OnCheckUpdate();
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);
+	void OnDownloadPage();
 
 #if	_MFC_VER >= 0x0700
 	afx_msg void OnActivateApp(BOOL bActive, DWORD hTask);

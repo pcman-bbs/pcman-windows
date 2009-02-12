@@ -192,6 +192,8 @@ BEGIN
                     NOT WS_VISIBLE | WS_TABSTOP,141,172,40,10
     CONTROL         "Web 工具列",IDC_FULL_SHOWWB,"Button",BS_AUTOCHECKBOX | 
                     NOT WS_VISIBLE | WS_TABSTOP,195,172,57,10
+    CONTROL         "啟動自動更新",IDC_ENABLE_AUTOUPDATE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,167,87,64,10
 END
 
 IDD_HYPERLINK DIALOG DISCARDABLE  0, 0, 276, 209
@@ -538,12 +540,12 @@ BEGIN
     PUSHBUTTON      "建議或錯誤回報",IDC_MAIL,7,208,61,14
     PUSHBUTTON      "參觀原作者網頁",IDC_WEB,82,208,61,14
     PUSHBUTTON      "軟體說明",IDB_HELP,240,208,37,14
-    LTEXT           "授權方式： GNU General Public License 第二版\nCopyright (C) 2001-2007 原作者：陽明大學醫學系 洪任諭\nCopyright (C) 2007 cole945, neopro, rocet, Open PCMan 開發團隊",
+    LTEXT           "授權方式： GNU General Public License 第二版\nCopyright (C) 2001-2009 原作者：陽明大學醫學系 洪任諭\nCopyright (C) 2007-2009 PCMan 開發團隊",
                     IDC_STATIC,41,19,220,27
     EDITTEXT        IDC_EDIT,7,55,270,149,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
     ICON            IDR_MAINFRAME,IDC_STATIC,10,9,20,20
-    CTEXT           "Open PCMan CE - 開放原始碼的全方位 BBS 瀏覽軟體",
+    CTEXT           "PCMan - 開放原始碼的全方位 BBS 瀏覽軟體",
                     IDC_STATIC,39,7,207,8
     PUSHBUTTON      "參觀開發專案網頁",IDC_WEB2,157,208,69,14
     LTEXT           "",IDC_VERSION,42,45,220,8
@@ -564,6 +566,37 @@ CAPTION "下載中"
 FONT 10, "System"
 BEGIN
     LTEXT           "正在下載...",IDC_STATIC,7,7,96,9
+END
+
+IDD_INSTANT_TRAN DIALOG DISCARDABLE  0, 0, 112, 66
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "即時翻譯設定"
+FONT 9, "新細明體"
+BEGIN
+    DEFPUSHBUTTON   "確定",IDOK,17,45,36,14
+    PUSHBUTTON      "取消",IDCANCEL,58,45,36,14
+    LTEXT           "翻譯長度限制",IDC_STATIC,7,10,48,8
+    EDITTEXT        IDC_MAX_TRANLEN,57,7,39,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_MAX_TRANLENSPIN,"msctls_updown32",
+                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS,94,7,11,14
+    LTEXT           "若要關閉即時翻譯功能，\n請將長度限制設為 0。",
+                    IDC_STATIC,7,25,98,16
+END
+
+IDD_AUTOUPDATE DIALOG DISCARDABLE  0, 0, 132, 81
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "發現新版"
+FONT 10, "System"
+BEGIN
+    DEFPUSHBUTTON   "是",IDOK,27,60,30,14
+    PUSHBUTTON      "否",IDCANCEL,76,60,29,14
+    LTEXT           "發現新版 PCMan！ \n請問要下載並且安裝更新嗎？",
+                    IDC_STATIC,16,9,109,18
+    CONTROL         "我不想使用自動更新",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,23,32,85,10
+    PUSHBUTTON      "至下載網頁(可攜版)",IDC_OPEN_DLPAGE,19,45,92,10,
+                    BS_CENTER
 END
 
 
@@ -675,6 +708,22 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 16
     END
+
+    IDD_INSTANT_TRAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 105
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+
+    IDD_AUTOUPDATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 125
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 74
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -699,16 +748,16 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     ID_VIEW_FULLSCR         "\n切換全螢幕瀏覽"
-    ID_VIEW_CONFIG          "\nPCMan各項設定"
+    ID_VIEW_CONFIG          "\nPCMan 各項設定"
     ID_ADDTOFAVORITE        "\n將正在瀏覽的站台加到我的最愛"
     ID_ABOUT                "\n關於這個軟體"
     ID_TOOL_SYMBOLS         "\n標點符號輸入程式"
-    ID_ANSICOPY             "\n複製 (包含ANSI彩色)"
+    ID_ANSICOPY             "\n複製 (包含 ANSI 彩色)"
 END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_SETBK                "\n設定BBS背景"
+    ID_SETBK                "\n設定 BBS 背景"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -737,7 +786,7 @@ BEGIN
     IDS_MODIFY_BTN          "修改 (&M)"
     IDS_DEL_BTN             "刪除 (&D)"
     IDS_PASSWD_ERR          "密碼錯誤!"
-    IDS_AUTO_HELP           "以上填入文字的地方，都可以使用像是Enter，方向鍵，等等的各種控制字元\n\n\n使用本功能正確設定，可在登入BBS站的時候，完全免輸入帳號密碼自動登入\n\n\n這是個非常方便的功能請多加利用，詳細設定方式請見教學文件。\n"
+    IDS_AUTO_HELP           "以上填入文字的地方，都可以使用像是 Enter，方向鍵，等等的各種控制字元\n\n\n使用本功能正確設定，可在登入 BBS 站的時候，完全免輸入帳號密碼自動登入\n\n\n這是個非常方便的功能請多加利用，詳細設定方式請見教學文件。\n"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -772,25 +821,25 @@ BEGIN
     IDS_ADS_BAR_TITLE       "位址："
     IDS_EXIT_CONFIRM        "還有連線分頁正在開啟中，您確定要結束本程式？"
     IDS_CON_STATUS          "\t連線時間：%d 小時 %d 分 %d 秒　　位址：%s"
-    IDS_ANSIED_STATUS       "ANSI彩色編輯\t編輯模式：%s\t檔案：%s"
+    IDS_ANSIED_STATUS       "ANSI 彩色編輯\t編輯模式：%s\t檔案：%s"
     IDS_INSERT              "插入"
     IDS_REPLACE             "取代"
     IDS_NOT_SAVED           "尚未儲存"
     IDS_CLOSE_THIS_PAGE     "關閉這個分頁 (&C)"
-    IDS_SET_DEFALT_TELNET   "是否將 PCMan 設為預設的Telnet程式?"
+    IDS_SET_DEFALT_TELNET   "是否將 PCMan 設為預設的 Telnet 程式?"
     IDS_SET_DEFAULT_BROWSER "是否將 PCMan 設為預設的瀏覽器?"
 END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_SET_TO_DEFAULT_ANS  "是否預設使用 PCMan 來開啟ANSI彩色檔(*.ans)?"
+    IDS_SET_TO_DEFAULT_ANS  "是否預設使用 PCMan 來開啟 ANSI 彩色檔 (*.ans)?"
     IDS_WEBPAGE_FILTER      "網頁 (*.html)|*.htm;*.html|所有檔案 (*.*)|*.*||"
     IDS_LOCAL_IP            "本機 IP 位址"
-    IDS_CHOOSE_BACKUP_DIR   "請選擇要把PCMan設定值備份到哪裡?"
-    IDS_CHOOSE_2003_DIR     "請選擇PCMan 2003設定值所在資料夾"
+    IDS_CHOOSE_BACKUP_DIR   "請選擇要把 PCMan 設定值備份到哪裡?"
+    IDS_CHOOSE_2003_DIR     "請選擇 PCMan 2003 設定值所在資料夾"
     IDS_IMPORT_IE_FAV       "匯入 IE 我的最愛"
     IDS_IMPORT_IE_FAV_PROMPT 
-                            "使用此功能將會匯入 IE 我的最愛，取代原有\nPCMan Combo 的 Web 最愛，您確定要繼續?\n(本功能只有在選擇不共用IE我的最愛時有用)"
+                            "使用此功能將會匯入 IE 我的最愛，取代原有\nPCMan Combo 的 Web 最愛，您確定要繼續?\n(本功能只有在選擇不共用 IE 我的最愛時有用)"
     IDS_IMPORT_COMPLETE     "匯入完成"
     IDS_FINISHED            "完成"
     IDS_EXPORT_COMPLETE     "匯出完成!"
@@ -805,7 +854,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_BIG52GB             "繁體轉簡體"
-    IDS_IDLE_HELP           "本欄空白，則送出零字元，可用控制字元。\n控制字元使用方式如下：\n可以^表示Ctrl，例如^M就等於Ctrl+M。也可以用\\x直接加上\n字元的十六進位碼，\n例如\\x7f，\\x0a...等 ( 詳見說明文件)。"
+    IDS_IDLE_HELP           "本欄空白，則送出零字元，可用控制字元。\n控制字元使用方式如下：\n可以 ^ 表示 Ctrl，例如 ^M 就等於 Ctrl+M。也可以用 \\x 直接加上\n字元的十六進位碼，\n例如 \\x7f，\\x0a...等 (詳見說明文件)。"
     IDS_UNABLE_TO_DEL_KEYMAP "無法刪除，可能此鍵盤對映正在使用中"
     IDS_FREQ_USED_TEXT      "常用文字"
     IDS_HOTKEY              "快速鍵"
@@ -818,27 +867,27 @@ BEGIN
     IDS_PCMAN_ALL_SETTINGS  "PCMan 所有選項設定"
     IDS_SET_FONT_PROMPT     "由於您設定為不使用字型大小隨視窗大小動態調整，\n您必須選擇一種固定字體作為顯示之用。"
     IDS_ATTENTION           "注意"
-    IDS_TAB_STYLE_ERR_MSG   "由於新版Windows本身的錯誤會造成不正常顯示，\n\n此選項重新啟動PCMan後才會作用"
-    IDS_ANSI_EDIT           "ANSI彩色編輯"
+    IDS_TAB_STYLE_ERR_MSG   "由於新版 Windows 本身的錯誤會造成不正常顯示，\n\n此選項重新啟動 PCMan 後才會作用"
+    IDS_ANSI_EDIT           "ANSI 彩色編輯"
 END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_ANS_FILTER          "ANSI彩色檔案 (*.ans)|*.ans|所有檔案 (*.*)|*.*|"
-    IDS_TXT_AND_ANS_FILTER  "ANSI彩色檔案 (*.ans)|*.ans|純文字檔案 (*.txt)|*.txt|所有檔案 (*.*)|*.*|"
+    IDS_ANS_FILTER          "ANSI 彩色檔案 (*.ans)|*.ans|所有檔案 (*.*)|*.*|"
+    IDS_TXT_AND_ANS_FILTER  "ANSI 彩色檔案 (*.ans)|*.ans|純文字檔案 (*.txt)|*.txt|所有檔案 (*.*)|*.*|"
     IDS_LOAD_PIC_FAILED     "載入圖檔失敗"
     IDS_CLEAR_ADS_CONFIRM   "清除位址列所有紀錄?"
     IDS_CLEAR_HISTORY_CONFIRM "清除連線紀錄選單?"
-    IDS_SMOOTH_DRAW_INFO    "啟用平滑繪圖模式可以使BBS畫面輸出更平順，完全避免任何閃爍，\n\n但是會耗用比較多的記憶體和系統資源，除非吹毛求疵，建議不必使用！"
+    IDS_SMOOTH_DRAW_INFO    "啟用平滑繪圖模式可以使 BBS 畫面輸出更平順，完全避免任何閃爍，\n\n但是會耗用比較多的記憶體和系統資源，除非吹毛求疵，建議不必使用！"
     IDS_FIND_IN_ALL_BUF     "尋找整個緩衝區(&B)"
     IDS_CUR_CON_SETTINGS    "修改目前連線的設定值"
-    IDS_BBS_LIST_NAME       "BBS站台列表"
+    IDS_BBS_LIST_NAME       "BBS 站台列表"
     IDS_HOMEPAGE_NAME       "首頁"
-    IDS_BBS_FAVORITE_NAME   "BBS我的最愛"
-    IDS_WWW_FAVORITE_NAME   "Web我的最愛"
+    IDS_BBS_FAVORITE_NAME   "BBS 我的最愛"
+    IDS_WWW_FAVORITE_NAME   "Web 我的最愛"
     IDS_COPY_URL            "複製連結位址"
     IDS_TEST                "TEST"
-    IDS_WAV_FILTER          "WAV音效檔 (*.wav)|*.wav|"
+    IDS_WAV_FILTER          "WAV 音效檔 (*.wav)|*.wav|"
     IDS_SITELIST_UPDATE_SUCCESS "更新完成!"
 END
 
@@ -846,7 +895,12 @@ STRINGTABLE DISCARDABLE
 BEGIN
     IDS_SITELIST_UPDATE_FAIL "更新失敗!"
     IDS_WEB_SEARCH          "搜尋網頁"
-    IDS_PROMPT_IMPORT       "Open PCMan CE 偵測到目錄中有舊版 PCMan 2004 設定檔，格式和新版使用的並不相容。\n\n建議您上官方網站 http://pcman.openfoundry.org/faq.html 參考如何匯入舊版設定檔的說明。"
+    IDS_PROMPT_IMPORT       "PCMan 偵測到目錄中有舊版 PCMan 2004 設定檔，格式和新版使用的並不相容。\n\n建議您上官方網站 http://pcman.openfoundry.org/faq.html 參考如何匯入舊版設定檔的說明。"
+    IDS_PCMAN_CLOSE         "PCMan 即將關閉"
+    IDS_INSTALL_UPDATE      "PCMan 現在會關閉以安裝更新"
+    IDS_MOUSE_GESTURE       "滑鼠手勢"
+    IDS_UNKNOWN_GESTURE     "未知的手勢"
+    IDS_TRANSLATION         "即時翻譯"
 END
 
 STRINGTABLE DISCARDABLE 

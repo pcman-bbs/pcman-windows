@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Combo.rc
+// Used by Common.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -21,6 +21,7 @@
 #define IDC_URLHEAD                     100
 #define IDC_URLSCHEME                   100
 #define IDC_URL_STATIC                  100
+#define IDC_MAX_TRANLEN                 100
 #define ID_MAINTIMER                    101
 #define IDC_TRANSPARENT                 101
 #define IDC_EDIT2                       101
@@ -136,6 +137,8 @@
 #define IDD_DOWNLOADING                 182
 #define IDD_DIALOG1                     186
 #define IDD_DOWNLOADING_UPDATE          186
+#define IDD_INSTANT_TRAN                187
+#define IDD_AUTOUPDATE                  188
 #define IDI_ANSFILE                     200
 #define IDD_AUTO_REPLY                  200
 #define IDC_ANSIBAR_FG                  328
@@ -221,6 +224,7 @@
 #define IDC_DBLCLK_CLOSE                1057
 #define IDC_AUTOJUMP                    1058
 #define IDC_LINKAUTOSWITCH              1058
+#define IDC_ENABLE_AUTOUPDATE           1058
 #define IDC_AUTOJUMP2                   1059
 #define IDC_PASTE_AUTOWRAP_COL          1060
 #define IDC_AUTOJUMP3                   1060
@@ -278,6 +282,7 @@
 #define IDC_IDLEHELP                    1097
 #define IDC_FIND                        1097
 #define IDC_DBLCLKSELECT                1097
+#define IDC_OPEN_DLPAGE                 1097
 #define IDC_BUTTON2                     1098
 #define IDC_AUTOCANCELSEL               1098
 #define IDC_DELPAGE                     1098
@@ -319,8 +324,11 @@
 #define IDC_SPINAUTOWRAPCOL             1113
 #define IDC_STREDIT                     1116
 #define IDC_COMBO1                      1117
+#define IDC_TRAN_COMB                   1117
+#define IDC_TRAN_COMBO                  1117
 #define IDC_COMBO2                      1118
 #define IDC_KEYMAP                      1118
+#define IDC_LENGTH_COMBO                1118
 #define IDC_KEYMAP2                     1119
 #define IDC_TRIGGER                     1119
 #define IDC_TICONV                      1119
@@ -337,6 +345,7 @@
 #define IDC_MAX_HISTORYSPIN             1136
 #define IDC_USE_GLOBAL_SETTINGS         1137
 #define IDC_VERSION                     1138
+#define IDC_MAX_TRANLENSPIN             1141
 #define IDR_BUILD_UI                    1234
 #define IDR_MAINMENU                    1236
 #define ID_LAST_WEB_FAVORITE            6000
@@ -608,15 +617,22 @@
 #define ID_WEB_SEARCH                   33030
 #define IDS_PROMPT_IMPORT               33031
 #define ID_MOUSE_CTL                    33032
+#define IDS_PCMAN_CLOSE                 33032
 #define ID_AUTO_UPDATE                  33033
+#define IDS_INSTALL_UPDATE              33033
+#define IDS_MOUSE_GESTURE               33034
+#define IDS_UNKNOWN_GESTURE             33035
+#define ID_INSTANT_TRAN                 33036
+#define IDS_TRANSLATION                 33036
+#define ID_CHECK_UPDATE                 33037
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        188
-#define _APS_NEXT_COMMAND_VALUE         33034
-#define _APS_NEXT_CONTROL_VALUE         1139
+#define _APS_NEXT_RESOURCE_VALUE        189
+#define _APS_NEXT_COMMAND_VALUE         33038
+#define _APS_NEXT_CONTROL_VALUE         1142
 #define _APS_NEXT_SYMED_VALUE           154
 #endif
 #endif

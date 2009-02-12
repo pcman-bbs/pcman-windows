@@ -229,6 +229,7 @@ public:
 	//}}AFX_MSG
 	afx_msg void OnEditOpenURL(UINT id);
 	afx_msg void OnSearchPlugin(UINT id);
+	afx_msg void OnTranslation();
 
 	DECLARE_MESSAGE_MAP()
 protected:

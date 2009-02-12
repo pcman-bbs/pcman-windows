@@ -1,3 +1,18 @@
+PCMan 9.1.5 (codename Novus)簡介：
+
+PCMan 2007版本在加入滑鼠流覽之後，之後長達一年的時間沒有人繼續
+參與開發於2008年11月起陸續有ceshine、BBCall加入專案，PCMan的社
+群才重新開始熱絡起來。
+
+期間ceshine為了測試方便，在SourceForge另開了一個PCMan CE project
+，與BBCall和ewn合作寫出了具備即時翻譯、自動更新、還有許多小修正
+的PCMan CE。
+
+在PCMan CE開發逐漸成熟之後，rocet提供了最後的補強，於是PCMan CE
+功成身退，開發團隊於2009農曆新年前夕發布了最新版的PCMan，並且給
+予代碼Novus(拉丁語New的意思)，代表了PCMan的新生。
+
+
 PCMan 系列 BBS 專用連線軟體的歷史：
 
 PCMan 系列 BBS 連線軟體，最早由陽明大學醫學系學生 洪任諭 製作

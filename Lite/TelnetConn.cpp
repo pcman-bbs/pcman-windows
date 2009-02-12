@@ -66,6 +66,7 @@ struct ANSI_TAB ansi_tab[]={
 
 BYTE CTelnetConn::buffer[];
 CString CTelnetConn::downloaded_article;
+int CTelnetConn::current_download_line;
 
 CTelnetConn::CTelnetConn()
 {
@@ -463,13 +464,43 @@ void CTelnetConn::OnText()
 			while (*last_line_txt == ' ')
 				last_line_txt++;
 
-			if ((int)(last_line_txt - screen[ last_line ]) < (int)strlen(screen[ last_line ]))
-			{
+            char* pos = last_line_txt;
+            while (*pos != '~') ++pos;
+            ++pos;
+            int current_line = atoi(pos);
 
-				if (get_article_with_ansi)
+            if ((int)(last_line_txt - screen[ last_line ]) < (int)strlen(screen[ last_line ]))
+			{
+                int stamp = 1;
+                if (current_download_line == 0)
+                    current_download_line = current_line;
+                else
+				{
+                    stamp = current_line - current_download_line;
+                    current_download_line = current_line;
+                }
+
+                CString tmp;
+                if (get_article_with_ansi)
+				{
+                    if(stamp == 2)
+					{
+                        downloaded_article += GetLineWithAnsi(last_line - 2);
+                        downloaded_article.TrimRight(" ");
+                        downloaded_article += "\r\n";
+                    }
 					downloaded_article += GetLineWithAnsi(last_line - 1);
+                }
 				else
+				{
+                    if(stamp == 2)
+					{
+                        downloaded_article += screen[ last_line - 2 ];
+                        downloaded_article.TrimRight(" ");
+                        downloaded_article += "\r\n";
+                    }
 					downloaded_article += screen[ last_line - 1 ];
+                }
 				downloaded_article.TrimRight(" ");
 				downloaded_article += "\r\n";
 
@@ -1039,7 +1070,7 @@ int CTelnetConn::SendString(LPCTSTR str)
 			char* eol;
 			int x = cursor_pos.x;
 			int rl = 0;
-			while (eol = strchr(str, 13))
+            while (eol = const_cast<char*>(strchr(str, 13)))
 			{
 				rl += Send(str, eol - str);
 				cursor_pos.x = x;
@@ -1790,7 +1821,8 @@ void CTelnetConn::Back(int num)
 			LPBYTE newlineatb = GetLineAttr(cursor_pos.y);
 			cursor_pos.y--;
 			End();	//End
-			LPSTR eonl = newline + site_settings.cols_per_page - 1;	LPBYTE eonla = newlineatb + site_settings.cols_per_page - 1;
+			LPSTR eonl = newline + site_settings.cols_per_page - 1;	
+			LPBYTE eonla = newlineatb + site_settings.cols_per_page - 1;
 			while (eonl >= newline && *eonl == ' ' && *eonla == 7)
 				eonl--, eonla--;
 			eonl++;
@@ -1892,21 +1924,22 @@ void CTelnetConn::SendMacroString(CString str)
 {
 //	先檢查是否有巨集指令，像是暫停
 	const char* _pstr = str;
-	for (const char*pstr = _pstr; *pstr; pstr += get_chw(pstr))
+    const char* pstr;
+    for (pstr = _pstr; *pstr; pstr += get_chw(pstr))
 	{
 		if (*pstr == '#' && *(pstr + 1))
 		{
 			pstr++;
 			switch (*pstr)
 			{
-			case 'p':
-				{
+                case 'p': {
+                    POSITION pos;
 					if (pstr > _pstr)
 						Send(_pstr, int(pstr) - int(_pstr) - 1);
 
 					pstr++;
 					int pause = atoi(pstr);
-					for (POSITION pos = delay_send.GetHeadPosition(); pos ;delay_send.GetNext(pos))
+                    for (pos = delay_send.GetHeadPosition(); pos ;delay_send.GetNext(pos))
 					{
 						if (pause > delay_send.GetAt(pos).time)
 							break;
@@ -1914,7 +1947,9 @@ void CTelnetConn::SendMacroString(CString str)
 					while (isdigit(*pstr))
 						*pstr++;
 
-					CTelnetConnDelayedSend ds;	ds.str = pstr;	ds.time = pause;
+					CTelnetConnDelayedSend ds;
+					ds.str = pstr;
+					ds.time = pause;
 					if (pos)
 						delay_send.InsertBefore(pos, ds);
 					else
@@ -2071,6 +2106,7 @@ CString AttrToStr(BYTE prevatb, BYTE attr)
 void CTelnetConn::CopyArticle(bool with_color, bool in_editor)
 {
 //	downloaded_article.Empty();
+    current_download_line = 0;
 	get_article_in_editor = in_editor;
 	get_article_with_ansi = with_color;
 	for (int y = scroll_pos; y < last_line; ++y)

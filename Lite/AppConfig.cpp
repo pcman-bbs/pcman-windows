@@ -321,6 +321,8 @@ bool CAppConfig::OnDataExchange(bool load)
 
 	CFG_INT(max_history)
 	CFG_BYTE(saved_charset)
+	CFG_BYTE(autoupdate_disable)
+	CFG_INT(max_translation_length)
 
 	END_CFG_SECTION()
 

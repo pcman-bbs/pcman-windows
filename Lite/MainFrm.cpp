@@ -31,7 +31,8 @@
 #include "Clipboard.h"
 #include "StrUtils.h"
 #include "MouseCTL.h"
-
+#include "SearchPlugin.h"
+#include "InstantTranDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,14 +49,22 @@ static char THIS_FILE[] = __FILE__;
 #include "../Combo/WebPageDlg.h"
 
 LPSTR CMainFrame::mainfrm_class_name = "PCManCB";
-const char *CMainFrame::window_title = " - Open PCMan CE 2009 Combo (Beta)";// (Build: " __DATE__ ")";
+const char *CMainFrame::window_title = " - PCMan Combo";// (Build: " __DATE__ ")";
 #else
 LPSTR CMainFrame::mainfrm_class_name = "PCMan";
-const char *CMainFrame::window_title = " - Open PCMan CE 2009 (Beta)";// (Build: " __DATE__ ")";
+const char *CMainFrame::window_title = " - PCMan";// (Build: " __DATE__ ")";
 #endif
 
 extern CFont fnt;
 CUcs2Conv g_ucs2conv;
+
+/////////////////////////////////////////////////////////////////////////////
+UINT BackgroundAutoUpdate(LPVOID pParam)
+{
+	CAutoUpdater updater;
+	updater.CheckForUpdate();
+	return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
@@ -66,6 +75,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
 	ON_WM_SIZE()
+	ON_WM_INITMENUPOPUP()
 	ON_WM_CLOSE()
 	ON_WM_ACTIVATE()
 	ON_COMMAND(ID_TAB, OnShowTabBar)
@@ -173,6 +183,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_ADDTOFAVORITE, OnUpdateIsSite)
 	ON_COMMAND(ID_KKTAB, OnKKmanStyleTab)
 	ON_COMMAND(ID_ADS, OnShowAddressBar)
+
+	ON_COMMAND(ID_INSTANT_TRAN, OnInstantTranslation)
 	ON_UPDATE_COMMAND_UI(ID_SET_CHARSET_DEFAULT, OnUpdateSetCharset)
 	ON_UPDATE_COMMAND_UI(ID_EXITLOG, OnUpdateSaveSession)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_MAINTAB, OnSelchangeTab)
@@ -181,11 +193,13 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_VSCROLL()
 	ON_REGISTERED_MESSAGE(WM_COMMIT_UPDATE, OnCommitUpdate)
 	ON_REGISTERED_MESSAGE(WM_DOWNLOAD_UPDATE_COMPLETE, OnDownLoadUpdateComplete)
+	ON_COMMAND(ID_CHECK_UPDATE, OnCheckUpdate)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_COPYDATA, OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
 	ON_MESSAGE(WM_NOTIFYICON, OnNotifyIcon)
 	ON_MESSAGE(WM_QUERY_APPCONFIG, OnQueryAppConfig)
+	ON_MESSAGE(WM_DOWNLOAD_PAGE, OnDownloadPage)
 	ON_COMMAND_RANGE(ID_FIRST_HOTSTR, ID_LAST_HOTSTR, OnFrequentlyUsedStr)	//熱鍵送出字串
 	ON_COMMAND_RANGE(ID_FIRST_BBS_FAVORITE, ID_LAST_WEB_FAVORITE, OnFavorite)	//我的最愛
 	ON_COMMAND_RANGE(ID_SWITCHCON1, ID_SWITCHCON10, OnHotkeySwitch)	//視窗切換
@@ -659,7 +673,7 @@ void CMainFrame::UpdateStatus()
 
 			if (szMouseGesture && szMouseGesture[0])
 			{
-				text += "\t\t滑鼠手勢: ";
+				text += "\t\t" + LoadString(IDS_MOUSE_GESTURE) + ": ";
 				text += szMouseGesture;
 			}
 		}
@@ -896,7 +910,6 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 				this->OnSetCharset(ID_SET_CHARSET_UTF8);
 				break;
 		}	
-		setCharset = true;
 	}
 	BringWindowToTop();
 }
@@ -919,6 +932,12 @@ void CMainFrame::OnShowAddressBar()
 	BYTE& showads = AppConfig.is_full_scr ? AppConfig.fullscr_showads : AppConfig.showads;
 	showads = !showads;
 	RecalcLayout(FALSE);
+}
+
+void CMainFrame::OnInstantTranslation()
+{
+	CTranslationDlg tranDlg;
+	tranDlg.DoModal();
 }
 
 void CMainFrame::OnKKmanStyleTab()
@@ -1968,16 +1987,8 @@ void CMainFrame::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpms)
 
 void CMainFrame::OnAutoUpdate()
 {
-	CAutoUpdater updater;
-	updater.CheckForUpdate("http://nchc.dl.sourceforge.net/sourceforge/pcmance/");
-	/* if (CAutoUpdater::Success == updater.CheckForUpdate("http://downloads.sourceforge.net/pcmance/"))
-	{
-		MessageBox("更新完成", "Updater", MB_ICONINFORMATION|MB_OK);
-	}
-	else
-	{
-		MessageBox("目前沒有更新", "Updater", MB_ICONINFORMATION|MB_OK);
-	} */	
+	if(!AppConfig.autoupdate_disable)
+		CWinThread * controlThread = AfxBeginThread(BackgroundAutoUpdate,NULL,THREAD_PRIORITY_NORMAL);
 }
 
 void CMainFrame::OnToolLock()
@@ -2479,15 +2490,6 @@ void CMainFrame::OnSwitchBack()
 
 void CMainFrame::OnUpdateBBSMouseCTL(CCmdUI* pCmdUI)
 {
-
-	BOOL bEnable;
-
-	bEnable = TRUE;
-	if (view.telnet && view.telnet->is_ansi_editor)
-		bEnable = FALSE;
-
-	pCmdUI->Enable(bEnable);
-
 	pCmdUI->SetCheck(AppConfig.use_MouseCTL);
 }
 
@@ -3797,32 +3799,32 @@ void CMainFrame::OpenLastSession()
 				}
 			}
 			view.ConnectStr(str, adv);
+			switch(AppConfig.saved_charset)
+			{
+				case 0:
+					break;
+	
+				case 1:
+					this->OnSetCharset(ID_SET_CHARSET_DEFAULT);
+					break;
+				case 2:
+					this->OnSetCharset(ID_SET_CHARSET_CP950);
+					break;
+				case 3:
+					this->OnSetCharset(ID_SET_CHARSET_CP936);
+					break;
+				case 4:
+					this->OnSetCharset(ID_SET_CHARSET_CP932);
+					break;
+				case 5:
+					this->OnSetCharset(ID_SET_CHARSET_UTF8);
+					break;
+			}
 		}
 		delete []buf;
 		//Restore Charset Setting
-
 	}
-	switch(AppConfig.saved_charset)
-	{
-		case 0:
-			break;
-	
-		case 1:
-			this->OnSetCharset(ID_SET_CHARSET_DEFAULT);
-			break;
-		case 2:
-			this->OnSetCharset(ID_SET_CHARSET_CP950);
-			break;
-		case 3:
-			this->OnSetCharset(ID_SET_CHARSET_CP936);
-			break;
-		case 4:
-			this->OnSetCharset(ID_SET_CHARSET_CP932);
-			break;
-		case 5:
-			this->OnSetCharset(ID_SET_CHARSET_UTF8);
-			break;
-	}	
+		
 }
 
 void CMainFrame::OnNewConn()
@@ -3864,7 +3866,7 @@ void CMainFrame::OnNewConn()
 				this->OnSetCharset(ID_SET_CHARSET_UTF8);
 				break;
 		}	
-		setCharset = true;
+		
 	}
 
 }
@@ -3902,6 +3904,7 @@ void CMainFrame::OnSetCharset(UINT nID)
 		AppConfig.saved_charset = 5;
 		break;
 	}
+	setCharset = true;
 
 	CMenu* menu = GetMenu();
 	menu->CheckMenuItem(prev_id, MF_UNCHECKED);
@@ -3957,4 +3960,52 @@ void CMainFrame::OnBBSFont()
 	}
 }
 
+void CMainFrame::OnDownloadPage()
+{
+	const char url[] = "http://of.openfoundry.org/projects/744/download";
+#ifdef	_COMBO_
+	((CMainFrame*)AfxGetApp()->GetMainWnd())->view.ConnectWeb(url, TRUE);
+#else
+	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
+#endif
+}
 
+
+void CMainFrame::OnInitMenuPopup(CMenu* pMenu,UINT nIndex,BOOL bSysMenu)
+{
+	if(nIndex==6)
+	{
+		int c = pMenu->GetMenuItemCount();
+		CString text,result;
+		pMenu->GetMenuString(1,text,MF_BYPOSITION);
+		if(strlen(text)==0||text[0] != '-')
+			return;
+		
+		pMenu->GetMenuString(0,text,MF_BYPOSITION);
+		CSearchPlugin *plugin_2 = new CSearchPlugin();
+		CString URLCString = _T("http://www.e390.com/cgi-bin/e390dic?MYINPUT=" + text + "&&CMP=1&UID=%23%23UID");
+		result = plugin_2->GetWebPage(URLCString);
+		if (result.GetLength() > 0)
+		{
+			result = plugin_2->ProcessContent(result);
+			result.TrimLeft();
+			if (result.GetLength() > 0)
+				result.TrimRight();
+			else
+				result = _T("查無此翻譯");
+		}
+		else
+		{			
+			result = _T("查無此翻譯");
+		}
+		pMenu->RemoveMenu(1, MF_BYPOSITION);
+		pMenu->InsertMenu(1, MF_BYPOSITION, CSearchPluginCollection::ID_TRANSLATION, result);
+	}
+	CFrameWnd::OnInitMenuPopup(pMenu, nIndex, bSysMenu);
+}
+
+void CMainFrame::OnCheckUpdate()
+{
+	CWinThread * controlThread = AfxBeginThread(BackgroundAutoUpdate,NULL,THREAD_PRIORITY_NORMAL);
+	//TODO: 沒有更新的話不會有任何訊息
+}

@@ -129,7 +129,7 @@ find_2004:
 
 	if (dest_dir.IsEmpty())
 	{
-		CBrowseDirDlg dlg(NULL, "請選取 Open PCMan CE 2009 (Beta) 安裝的資料夾");
+		CBrowseDirDlg dlg(NULL, "請選取PCMan安裝的資料夾");
 		if (dlg.DoModal() != IDOK)
 			return 1;
 		dest_dir = dlg.GetPath();

@@ -11,10 +11,15 @@
 
 #include <Wininet.h>
 
+#define UPDATE_CHECK_URL "http://of.openfoundry.org/download_path/pcman/update.feed/"
+#define UPDATE_DOWNLOAD_URL "http://of.openfoundry.org/download_path/pcman/"
+
 #ifdef	_COMBO_
-#define UPDATE_FILE "update_combo.txt"
+	#define UPDATE_FILE "update_combo.txt"
+	#define InstallerName "PCManCB"
 #else	
-#define UPDATE_FILE "update_lite.txt"
+	#define UPDATE_FILE "update_lite.txt"
+	#define InstallerName "PCMan"
 #endif
 
 #define LOCATION_UPDATE_FILE_CHECK _T(UPDATE_FILE)
@@ -31,7 +36,7 @@ public:
 						ConfigDownloadFailure, FileDownloadFailure, NoExecutableVersion,
 						UpdateNotRequired, UpdateNotComplete };
 
-	ErrorType CheckForUpdate(LPCTSTR UpdateServerURL);	
+	ErrorType CheckForUpdate();	
 	HINTERNET GetSession(CString &URL);
 
 	bool InternetOkay();
@@ -54,8 +59,6 @@ public:
 	CDownloadUpdateDlg()
 			: CDialog(IDD_DOWNLOADING_UPDATE,AfxGetMainWnd())
 	{
-
-		//MessageBox("Hello");
 	}
 
 	BOOL OnInitDialog()
@@ -66,7 +69,6 @@ public:
 
 	void OnCancel()
 	{
-		//MessageBox("Hello");
 	    CDialog::OnCancel();
 	}
 

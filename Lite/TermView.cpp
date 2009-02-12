@@ -122,6 +122,7 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_COMMAND_RANGE(ID_FIRST_HISTORY, ID_LAST_HISTORY, OnHistory)	//³s½u¬ö¿ý
 	ON_REGISTERED_MESSAGE(WM_FINDREPLACE, OnFind)
 	ON_COMMAND_RANGE(CSearchPluginCollection::ID_SEARCHPLUGIN00, CSearchPluginCollection::ID_SEARCHPLUGIN31, OnSearchPlugin)
+	ON_COMMAND(CSearchPluginCollection::ID_TRANSLATION, OnTranslation)
 END_MESSAGE_MAP()
 
 CFont fnt;
@@ -981,6 +982,19 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		web_search.LoadString(IDS_WEB_SEARCH);
 		search_menuiteminfo.dwTypeData = (LPTSTR)LPCTSTR(web_search);
 		InsertMenuItem(parent->edit_menu, 5, TRUE, &search_menuiteminfo);
+
+		SearchPluginCollection.MaxTranLength = AppConfig.max_translation_length;
+		if (sel.GetLength() <= SearchPluginCollection.MaxTranLength)
+		{
+			MENUITEMINFO tran_menuiteminfo = { sizeof(MENUITEMINFO) };
+			tran_menuiteminfo.fMask =  MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
+			tran_menuiteminfo.wID = CSearchPluginCollection::ID_SEARCHPLUGIN_MENU;
+			tran_menuiteminfo.hSubMenu = SearchPluginCollection.CreateTranMenu(sel);
+			CString web_search;
+			web_search.LoadString(IDS_TRANSLATION);
+			tran_menuiteminfo.dwTypeData = (LPTSTR)LPCTSTR(web_search);
+			InsertMenuItem(parent->edit_menu, 6, TRUE, &tran_menuiteminfo);
+		}
 	}
 
 	char* link = NULL;
@@ -998,7 +1012,6 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 			InsertMenu(parent->edit_menu, 0, MF_STRING | MF_BYPOSITION, ID_EDIT_COPYURL, LoadString(IDS_COPY_URL));
 		}
 	}
-
 
 	int c = GetMenuItemCount(parent->edit_menu);
 	AppendMenu(parent->edit_menu, MF_SEPARATOR, 0, NULL);
@@ -1024,7 +1037,13 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 	}
 
 	if (sel.GetLength() > 0)
+	{
 		DeleteMenu(parent->edit_menu, 5, MF_BYPOSITION);
+		if (sel.GetLength() <= SearchPluginCollection.MaxTranLength)
+		{
+			DeleteMenu(parent->edit_menu, 5, MF_BYPOSITION);
+		}
+	}
 	if (cmd > 0)
 		AfxGetMainWnd()->SendMessage(WM_COMMAND, cmd, 0);
 }
@@ -3238,6 +3257,10 @@ void CTermView::OnSearchPlugin(UINT id)
 	AppConfig.hyper_links.OpenURL(SearchPluginCollection.UrlForSearch(id, GetSelText()));
 }
 
+void CTermView::OnTranslation()
+{
+	AppConfig.hyper_links.OpenURL(SearchPluginCollection.UrlForTranslate(GetSelText()));
+}
 
 void CTermView::OnRButtonDblClk(UINT nFlags, CPoint point_In)
 {

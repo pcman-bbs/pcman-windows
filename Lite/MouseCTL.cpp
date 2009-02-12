@@ -110,7 +110,6 @@ GESTURE_CMD_INFO GestureArray_Default[] =
 };
 
 GESTURE_CMD_INFO *g_pGestureArray_Now = NULL;;
-const char szUnknowtGesture[] = "未知的手勢";
 #define GESTURE_FIRST_ID	1
 
 BOOL MouseCTL_Gesture_Setup_Cmd(GESTURE_CMD_INFO *pGestureArray);
@@ -513,7 +512,6 @@ DWORD m_LastGestureID = UNKNOWN_GETURE_ID;
 char *MouseCTL_GetStatusInfo()
 {
 	static char s_StatusInfo[0x100] = {0};
-	const char *pszInfo;
 	DWORD dw1;
 
 	if (g_szMouseGesture[0])
@@ -522,10 +520,6 @@ char *MouseCTL_GetStatusInfo()
 		GESTURE_CMD_INFO *pGesture;
 
 		pGesture = MouseCTL_Gesture_GeCmdInfo(m_LastGestureID);
-		if (pGesture == NULL)
-			pszInfo = szUnknowtGesture;
-		else
-			pszInfo = pGesture->szCmdInfo;
 
 		dw1 = strlen(g_szMouseGesture);
 		while (dw1 > 0 && g_szMouseGesture[dw1-1] == ',')
@@ -533,7 +527,8 @@ char *MouseCTL_GetStatusInfo()
 		if (dw1 > 0)
 			g_szMouseGesture[dw1] = 0;
 
-		wsprintf(s_StatusInfo, "%s  (%s)", g_szMouseGesture, pszInfo);
+		wsprintf(s_StatusInfo, "%s  (%s)", g_szMouseGesture, 
+			(pGesture ? pGesture->szCmdInfo : LoadString(IDS_UNKNOWN_GESTURE)));
 
 		if (dw1 > 0)
 			g_szMouseGesture[dw1] = ',';

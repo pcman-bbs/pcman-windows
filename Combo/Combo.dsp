@@ -138,6 +138,10 @@ SOURCE=..\Lite\AutoUpdate.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Lite\AutoUpdateDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Lite\BBSHyperLink.cpp
 # End Source File
 # Begin Source File
@@ -227,6 +231,10 @@ SOURCE=..\Lite\HyperLinkPage.cpp
 # Begin Source File
 
 SOURCE=..\Lite\InputNameDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Lite\InstantTranDlg.cpp
 # End Source File
 # Begin Source File
 

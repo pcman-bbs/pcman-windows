@@ -18,7 +18,7 @@
 
 LPBYTE enc_str(LPCTSTR _src, LPCTSTR key, long& rlen);
 CString dec_str(LPBYTE src, LPCTSTR key, long len);
-const char SITESLIST_UPDATE_URL[] = "http://free.ym.edu.tw/pcman/site_list.big5";
+const char SITESLIST_UPDATE_URL[] = "http://pcman.openfoundry.org/datas/BBSList";
 
 class CListDlg : public CDialog
 {
