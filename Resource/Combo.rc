@@ -265,6 +265,7 @@ BEGIN
             END
             MENUITEM "編輯所有擋廣告設定 (&C)",     ID_AD
             MENUITEM "在網址列輸入後開新的網頁 (&R)", ID_ADS_OPENNEW
+            MENUITEM "自動清除搜尋列",              ID_SEARCHBAR_CLEANUP
         END
         POPUP "BBS偵測雙位元組中文字 (&B)"
         BEGIN
@@ -326,7 +327,7 @@ BEGIN
         MENUITEM "軟體使用說明 (&H)\tAlt+F1",   IDM_HELP
         MENUITEM "檢查更新 (&U)",               ID_CHECK_UPDATE
         MENUITEM SEPARATOR
-        MENUITEM "關於 PCMan Combo (&A)...", ID_ABOUT
+        MENUITEM "關於 PCMan Combo (&A)...",    ID_ABOUT
     END
 END
 #endif
@@ -396,6 +397,8 @@ BEGIN
                     227,10
     CONTROL         "Web 最愛選單超過螢幕可顯示範圍時換行",IDC_AUTO_WRAP,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,52,182,10
+    CONTROL         "自動清除搜尋列",IDC_SEARCHBAR_CLEANUP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,97,227,10
 END
 
 

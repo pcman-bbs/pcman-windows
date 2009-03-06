@@ -753,6 +753,8 @@ BEGIN
     ID_ABOUT                "\n關於這個軟體"
     ID_TOOL_SYMBOLS         "\n標點符號輸入程式"
     ID_ANSICOPY             "\n複製 (包含 ANSI 彩色)"
+	ID_NCIKU				"\n英漢字典(查詢反白文字)"
+	ID_WIKIPEDIA			"\n維基百科(查詢反白文字)"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -826,6 +828,7 @@ BEGIN
     IDS_REPLACE             "取代"
     IDS_NOT_SAVED           "尚未儲存"
     IDS_CLOSE_THIS_PAGE     "關閉這個分頁 (&C)"
+	IDS_CLOSE_ALL_OTHER_PAGES "關閉所有其他分頁"
     IDS_SET_DEFALT_TELNET   "是否將 PCMan 設為預設的 Telnet 程式?"
     IDS_SET_DEFAULT_BROWSER "是否將 PCMan 設為預設的瀏覽器?"
 END

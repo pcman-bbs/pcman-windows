@@ -50,7 +50,7 @@ BOOL CWebCfgPage::OnInitDialog()
 	GetDlgItem(IDC_AUTO_SORT)->EnableWindow(AppConfig.use_ie_fav);
 	CheckDlgButton(IDC_AUTO_SORT, AppConfig.autosort_favorite);
 	CheckDlgButton(IDC_AUTO_WRAP, AppConfig.autowrap_favorite);
-
+	CheckDlgButton(IDC_SEARCHBAR_CLEANUP, AppConfig.searchbar_cleanup);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -63,6 +63,7 @@ void CWebCfgPage::OnOK()
 	AppConfig.use_ie_fav		= IsDlgButtonChecked(IDC_IE_FAV);
 	AppConfig.autosort_favorite = IsDlgButtonChecked(IDC_AUTO_SORT);
 	AppConfig.autowrap_favorite = IsDlgButtonChecked(IDC_AUTO_WRAP);
+	AppConfig.searchbar_cleanup = IsDlgButtonChecked(IDC_SEARCHBAR_CLEANUP);
 	CPropertyPage::OnOK();
 }
 

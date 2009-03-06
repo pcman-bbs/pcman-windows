@@ -2,18 +2,20 @@
 
 ; HM NIS Edit Wizard helper defines
 !ifdef _COMBO_
-!define PRODUCT_NAME "Open PCMan Combo"
+!define PRODUCT_NAME "PCMan Combo"
 !define SRC_DIR "Combo\Release\PCMan Combo"
+!define CONFIG_FOLDER "PCMAN Combo"
 OutFile ".\Release\PCManCB.exe"
 !else
-!define PRODUCT_NAME "Open PCMan Combo"
-!define SRC_DIR "Combo\Release\PCMan Combo"
-OutFile ".\Release\PCManCB.exe"
+!define PRODUCT_NAME "PCMan"
+!define SRC_DIR "Lite\Release\PCMan"
+!define CONFIG_FOLDER "PCMAN"
+OutFile ".\Release\PCMan.exe"
 !endif
 
 !define PRODUCT_DIR "${PRODUCT_NAME}"
-!define PRODUCT_VERSION "2007"
-!define PRODUCT_PUBLISHER "Open PCMan Team"
+!define PRODUCT_VERSION "Novus"
+!define PRODUCT_PUBLISHER "PCMan Team"
 !define PRODUCT_WEB_SITE "http://pcman.openfoundry.org/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\PCMan.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -38,7 +40,7 @@ SetCompressor /SOLID lzma
 
 ;BGGradient 0000FF 000000 FFFFFF
 ;Caption "${PRODUCT_NAME} ${PRODUCT_VERSION} ${BUILD_TIME}"
-BrandingText "Copyright (C) 2007 Open PCMan Team  /  Build Time: ${BUILD_TIME}"
+BrandingText "Copyright (C) 2009 PCMan Team  /  Build Time: ${BUILD_TIME}"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -51,7 +53,7 @@ BrandingText "Copyright (C) 2007 Open PCMan Team  /  Build Time: ${BUILD_TIME}"
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
 !define MUI_FINISHPAGE_RUN "$INSTDIR\PCMan.exe"
-!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\Story.txt"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\changelog.txt"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -79,21 +81,11 @@ FunctionEnd
 
 Section SEC01
   SetOutPath "$INSTDIR"
+  
   SetOverwrite on
   ;SetOverwrite ifnewer
   File /r /x "Symbols.txt" /x "Config" /x "*.svn" "${SRC_DIR}\*.*"
   File "Migrate\Release\Migrate.exe"
-
-  StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi2 Eng2
-  Chi2:
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "你要從網路上更新 BBS 站台列表嗎？" IDNO +5
-    Goto +2
-  Eng2:
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Do you want to update the BBS list from internet?" IDNO +2
-  NSISdl::download "http://free.ym.edu.tw/pcman/site_list.big5" "BBSList"
-  Pop $R0 ;Get the return value
-  StrCmp $R0 "success" +2
-    MessageBox MB_OK "Download failed: $R0"
 
   SetOverwrite off
   File "${SRC_DIR}\Symbols.txt"
@@ -123,6 +115,18 @@ Section SEC01
 ; Check if we are under Windows NT
    ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
   IfErrors Finish 0
+
+; Delete the previous UI file
+  !define SHELLFOLDERS \
+        "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+
+  ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
+           StrCmp $0 "" 0 +2
+       ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
+  StrCmp $0 "" 0 +2
+         StrCpy $0 "$WINDIR\Application Data"
+
+  Delete "$0\${CONFIG_FOLDER}\UI"
 
   StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi3 Eng3
   Chi3:

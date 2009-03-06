@@ -224,6 +224,7 @@ public:
 	afx_msg void OnToolLock();
 	afx_msg void OnUpdateSelectAll(CCmdUI* pCmdUI);
 	afx_msg void OnConnectClose();
+	afx_msg void OnConnectCloseAllOthers();
 	afx_msg void OnUpdateDisconnect(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateReconnect(CCmdUI* pCmdUI);
 	afx_msg void OnSaveSession();
@@ -268,6 +269,8 @@ public:
 	afx_msg LRESULT OnDownLoadUpdateComplete(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu,UINT nIndex,BOOL bSysMenu);
 	afx_msg void OnCheckUpdate();
+	afx_msg void OnNciku();
+	afx_msg void OnWikipedia();
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);
@@ -302,11 +305,13 @@ public:
 	afx_msg void OnNewCurPageInIE();
 	afx_msg void OnWebPageSaveAs();
 	afx_msg void OnBlockPopup();
+	afx_msg void OnSearchbarCleanup();
 	afx_msg void OnAdsOpenNew();
 	afx_msg void OnUpdateAddressBarOpenNew(CCmdUI* pCmdUI);
 	afx_msg void OnImportIEFavorites();
 	afx_msg void OnExportIEFavorites();
 	afx_msg void OnUpdateBlockPopup(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateSearchbarCleanup(CCmdUI* pCmdUI);
 	afx_msg void OnCustomizeWebBar();
 	afx_msg void OnShowWebBar();
 	afx_msg void OnUpdateShowWebBar(CCmdUI* pCmdUI);

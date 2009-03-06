@@ -75,7 +75,7 @@ Version_PreBuildEvent.bat的參數解說
 set Version_H_PATH=Version.h  ==> Version.h檔案的位址，有可能在別的目錄，如..\Version.h
 set Version_Set_PATH=Version_Set.bat ==> Version_Set.bath檔案的位址，有可能在別的目錄，如..\Version_Set.bat
 set Version_Create_PATH=Version_Create.bat ==> Version_Create.bat檔案的位址，有可能在別的目錄，如..\Version_Create.bat
-SET APP_SubWCRev=C:\Program Files\TortoiseSVN\bin\SubWCRev.exe ==> SubWCRev.exe這個檔案的位址，需要安裝TortoiseSVN
+SET APP_SubWCRev=d:\Program Files\TortoiseSVN\bin\SubWCRev.exe ==> SubWCRev.exe這個檔案的位址，需要安裝TortoiseSVN
 set Svn_WorkingCopyPath=. ==> svn的WorkingCopyPath，用來取得這個目錄的revision，而 . 表示現在的目錄
 
 

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by Common.rc
+// Used by Combo.rc
 //
 #define IDC_DEFAULT                     3
 #define IDC_ADD                         3
@@ -119,6 +119,7 @@
 #define IDB_WWWB                        151
 #define IDC_AUTO_WRAP                   151
 #define IDC_SEARCHBAR                   151
+#define IDC_SEARCHBAR_CLEANUP           152
 #define IDD_HOTSTR                      153
 #define ID_MOVIETIMER                   153
 #define IDD_CUSTOMIZEKEY                154
@@ -625,13 +626,18 @@
 #define ID_INSTANT_TRAN                 33036
 #define IDS_TRANSLATION                 33036
 #define ID_CHECK_UPDATE                 33037
+#define ID_NCIKU                        33039
+#define ID_WIKIPEDIA                    33040
+#define ID_SEARCHBAR_CLEANUP            33040
+#define IDS_CLOSE_ALL_OTHER_PAGES       33041
+#define ID_CONNECT_CLOSE_ALL_OTHERS     33042
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        189
-#define _APS_NEXT_COMMAND_VALUE         33038
+#define _APS_NEXT_COMMAND_VALUE         33041
 #define _APS_NEXT_CONTROL_VALUE         1142
 #define _APS_NEXT_SYMED_VALUE           154
 #endif

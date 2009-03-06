@@ -63,7 +63,8 @@ TBBUTTON CAppConfig::maintb_btns[] =
 
 	{18, ID_ABOUT,		TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 18},
 
-	{19, ID_AUTO_UPDATE,TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 19}
+	{19, ID_NCIKU,      TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 19},
+	{20, ID_WIKIPEDIA,      TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 20},
 };
 
 TBBUTTON CAppConfig::webbar_btns[] =
@@ -103,8 +104,9 @@ TBBUTTON CAppConfig::maintb_btns[] =
 	{0, ID_SEPARATOR,	TBSTATE_ENABLED, TBSTYLE_SEP,	0, 0},
 
 	{16, ID_ABOUT,		TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 16},
+	{17, ID_NCIKU,      TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 17},
+	{18, ID_WIKIPEDIA,      TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 18},
 	
-	{17, ID_AUTO_UPDATE,TBSTATE_ENABLED, TBSTYLE_BUTTON,	0, 17}
 };
 #endif
 
@@ -459,6 +461,7 @@ bool CAppConfig::OnDataExchange(bool load)
 	BEGIN_CFG_SECTION(Web)
 	CFG_BYTE(ads_open_new)
 	CFG_BYTE(disable_popup)
+	CFG_BYTE(searchbar_cleanup)
 	CFG_BYTE(showwb)
 	CFG_BYTE(fullscr_showwb)
 	CFG_BYTE(showsearchbar)

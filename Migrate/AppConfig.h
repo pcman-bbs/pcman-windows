@@ -188,6 +188,7 @@ public:
 	CCustomToolBarInfo webbar_inf;
 	BYTE ads_open_new;
 	BYTE disable_popup;
+	BYTE searchbar_cleanup;
 	BYTE showwb;
 	BYTE fullscr_showwb;
 	BYTE autosort_favorite;

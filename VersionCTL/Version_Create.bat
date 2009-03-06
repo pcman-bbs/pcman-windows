@@ -9,7 +9,7 @@ if exist Version_Path.bat (
 )
 
 if "%APP_SubWCRev%"=="" (
-	SET APP_SubWCRev=C:\Program Files\TortoiseSVN\bin\SubWCRev.exe
+	SET APP_SubWCRev=D:\Program Files\TortoiseSVN\bin\SubWCRev.exe
 )
 
 if %VersionFile_In% == "" (

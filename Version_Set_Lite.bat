@@ -1,6 +1,6 @@
 SET MajorVersion=9
-SET MinorVersion=1
-SET PatchLevel=5
+SET MinorVersion=2
+SET PatchLevel=0
 
 SET BuildNumber=0
 SET BuildNumber_Date=2007/6/27 12:24

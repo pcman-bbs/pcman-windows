@@ -125,6 +125,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_TOOL_LOCK, OnToolLock)
 	ON_UPDATE_COMMAND_UI(ID_SELECTALL, OnUpdateSelectAll)
 	ON_COMMAND(ID_CONNECT_CLOSE, OnConnectClose)
+	ON_COMMAND(ID_CONNECT_CLOSE_ALL_OTHERS, OnConnectCloseAllOthers)
 	ON_UPDATE_COMMAND_UI(ID_DISCONNECT, OnUpdateDisconnect)
 	ON_UPDATE_COMMAND_UI(ID_RECONNECT, OnUpdateReconnect)
 	ON_COMMAND(ID_EXITLOG, OnSaveSession)
@@ -194,6 +195,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_REGISTERED_MESSAGE(WM_COMMIT_UPDATE, OnCommitUpdate)
 	ON_REGISTERED_MESSAGE(WM_DOWNLOAD_UPDATE_COMPLETE, OnDownLoadUpdateComplete)
 	ON_COMMAND(ID_CHECK_UPDATE, OnCheckUpdate)
+	ON_COMMAND(ID_NCIKU, OnNciku)
+	ON_COMMAND(ID_WIKIPEDIA, OnWikipedia)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_COPYDATA, OnNewConnection)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
@@ -223,6 +226,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_WEBPAGE_SAVEAS, OnWebPageSaveAs)
 	ON_COMMAND(ID_WEBPAGE_VIEWSRC, OnWebPageViewSrc)
 	ON_COMMAND(ID_BLOCK_POPUP, OnBlockPopup)
+	ON_COMMAND(ID_SEARCHBAR_CLEANUP,OnSearchbarCleanup)
 	ON_COMMAND(ID_ADS_OPENNEW, OnAdsOpenNew)
 	ON_COMMAND(ID_TOOL_IMPORT_IEFAV, OnImportIEFavorites)
 	ON_COMMAND(ID_TOOL_EXPORT_IEFAV, OnExportIEFavorites)
@@ -239,6 +243,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_WEBPAGE_VIEWSRC, OnUpdateIsWebPage)
 	ON_UPDATE_COMMAND_UI(ID_ADS_OPENNEW, OnUpdateAddressBarOpenNew)
 	ON_UPDATE_COMMAND_UI(ID_BLOCK_POPUP, OnUpdateBlockPopup)
+	ON_UPDATE_COMMAND_UI(ID_SEARCHBAR_CLEANUP, OnUpdateSearchbarCleanup)
 	ON_UPDATE_COMMAND_UI(ID_WEBBAR, OnUpdateShowWebBar)
 	ON_UPDATE_COMMAND_UI(ID_SEARCHBAR, OnUpdateShowSearchBar)
 	ON_COMMAND(ID_WEBBAR, OnShowWebBar)
@@ -315,12 +320,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SIZE sizebtn;
 	SIZE sizeimg;
 	BITMAP bmp;
-	toolbar.CreateEx(this, TBSTYLE_TRANSPARENT | TBSTYLE_FLAT, CCS_ADJUSTABLE | CBRS_ALIGN_TOP | CBRS_TOOLTIPS |
+	toolbar.CreateEx(this,  TBSTYLE_FLAT, CCS_ADJUSTABLE | CBRS_ALIGN_TOP | CBRS_TOOLTIPS |
 					 WS_CHILD | WS_VISIBLE, tmprc, IDC_TOOLBAR);
-
+	
 	CBitmap toolbar_bkgnd;
+
 	toolbar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(), ConfigPath + TOOLBAR_BMP_FILENAME,
-											IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE));
+											IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE|LR_LOADTRANSPARENT));
 	toolbar_bkgnd.GetBitmap(&bmp);
 
 	//img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, ILC_COLOR32|ILC_MASK, 9,0);
@@ -330,7 +336,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 #else
 	img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 17, 0);
 #endif
-	ImageList_AddMasked(img_toolbar.m_hImageList, (HBITMAP)toolbar_bkgnd.m_hObject, RGB(192, 192, 192));
+	ImageList_AddMasked(img_toolbar.m_hImageList, (HBITMAP)toolbar_bkgnd.m_hObject, RGB(190, 190, 190));
 
 #ifdef _COMBO_
 	toolbar.GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
@@ -736,18 +742,23 @@ void CMainFrame::OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult)
 		int pos = AppConfig.kktab ? GetMenuItemCount(popup) : 0;
 		InsertMenu(popup, pos, MF_SEPARATOR | MF_BYPOSITION, 0, NULL);
 		CString close_this_page;
+		CString close_all_other_pages;
 		close_this_page.LoadString(IDS_CLOSE_THIS_PAGE);
+		close_all_other_pages.LoadString(IDS_CLOSE_ALL_OTHER_PAGES);
 		if (0 == pos)
 		{
+			InsertMenu(popup, 0, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE_ALL_OTHERS, close_all_other_pages);
 			InsertMenu(popup, 0, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE, close_this_page);
-			pos++;
+			pos+=2;
 		}
 		else
 			InsertMenu(popup, pos + 1, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE, close_this_page);
 
 		::TrackPopupMenu(popup, TPM_RIGHTBUTTON | TPM_LEFTALIGN, pt.x, pt.y, 0, m_hWnd, NULL);
 		DeleteMenu(popup, pos, MF_BYPOSITION);
+		DeleteMenu(popup, ID_CONNECT_CLOSE_ALL_OTHERS, MF_BYCOMMAND);
 		DeleteMenu(popup, ID_CONNECT_CLOSE, MF_BYCOMMAND);
+
 	}
 	*pResult = 0;
 }
@@ -1407,6 +1418,11 @@ void CMainFrame::OnUpdateBlockPopup(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(AppConfig.disable_popup);
 }
 
+void CMainFrame::OnUpdateSearchbarCleanup(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(AppConfig.searchbar_cleanup);
+}
+
 LRESULT CMainFrame::OnRemoveWebConn(WPARAM wparam, LPARAM lparam)
 {
 	CWebConn* web_conn = reinterpret_cast<CWebConn*>(lparam);
@@ -1495,6 +1511,12 @@ void CMainFrame::OnBlockPopup()
 {
 	AppConfig.disable_popup = !AppConfig.disable_popup;
 }
+
+void CMainFrame::OnSearchbarCleanup()
+{
+	AppConfig.searchbar_cleanup = !AppConfig.searchbar_cleanup;
+}
+
 
 void CMainFrame::OnToolbarMenuDropDown(NMHDR *pNMHDR, LRESULT *pResult)
 {
@@ -2363,6 +2385,16 @@ void CMainFrame::OnConnectClose()
 {
 	int sel = tab.GetCurSel();
 	CloseConn(sel, true);
+}
+
+void CMainFrame::OnConnectCloseAllOthers()
+{
+	int sel = tab.GetCurSel();
+	int all = tab.GetItemCount();
+	for(int i=0;i<sel;i++)
+		CloseConn(0, true);
+	for(i=sel+1;i<all;i++)
+		CloseConn(1,true);
 }
 
 void CMainFrame::CloseConn(int i, bool confirm)
@@ -3478,6 +3510,52 @@ void CMainFrame::OnAddToHome()
 	}
 }
 
+void CMainFrame::OnNciku()
+{
+	CTelnetConn* telnet = view.telnet;
+	if (!telnet)
+	{
+#if defined	_COMBO_
+		CConn* con = view.con;
+		if (con)
+		{
+			((CWebConn*)view.con)->web_browser.SetFocus();
+			((CWebConn*)view.con)->web_browser.wb_ctrl.ExecWB(OLECMDID_COPY, OLECMDEXECOPT_DODEFAULT, NULL, NULL);
+		}
+#endif
+		return;
+	}
+	CString tmp = "http://www.nciku.com.tw/search/all/"+view.GetSelText();
+#if defined _COMBO_
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tmp, TRUE);
+#else
+	ShellExecute(m_hWnd, "open", tmp, NULL, NULL, SW_SHOWMAXIMIZED);
+#endif
+}
+
+void CMainFrame::OnWikipedia()
+{
+	CTelnetConn* telnet = view.telnet;
+	if (!telnet)
+	{
+#if defined	_COMBO_
+		CConn* con = view.con;
+		if (con)
+		{
+			((CWebConn*)view.con)->web_browser.SetFocus();
+			((CWebConn*)view.con)->web_browser.wb_ctrl.ExecWB(OLECMDID_COPY, OLECMDEXECOPT_DODEFAULT, NULL, NULL);
+		}
+#endif
+		return;
+	}
+	CString tmp = "http://zh.wikipedia.org/wiki/"+view.GetSelText();
+#if defined _COMBO_
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tmp, TRUE);
+#else
+	ShellExecute(m_hWnd, "open", tmp, NULL, NULL, SW_SHOWMAXIMIZED);
+#endif
+}
+
 void CMainFrame::OnCopy()
 {
 	CTelnetConn* telnet = view.telnet;
@@ -3495,7 +3573,6 @@ void CMainFrame::OnCopy()
 	}
 	view.CopySelText();
 }
-
 
 void CMainFrame::OnFont()
 {

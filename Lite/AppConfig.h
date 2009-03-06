@@ -180,6 +180,7 @@ public:
 	static TBBUTTON webbar_btns[];
 	BYTE ads_open_new;
 	BYTE disable_popup;
+	BYTE searchbar_cleanup;
 	BYTE showwb;
 	BYTE fullscr_showwb;
 	BYTE showsearchbar;
@@ -318,6 +319,7 @@ inline void CAppConfig::Default()
 	webbar_inf.LoadDefault();
 	ads_open_new = 0;
 	disable_popup = 1;
+	searchbar_cleanup = 0;
 	autosort_favorite = 1;
 	disable_script_error = 1;
 	use_ie_fav = 1;

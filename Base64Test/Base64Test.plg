@@ -6,13 +6,13 @@
 --------------------Configuration: Base64Test - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\user\LOCALS~1\Temp\RSPB.tmp" with contents
+Creating temporary file "C:\DOCUME~1\user\LOCALS~1\Temp\RSP3F.tmp" with contents
 [
 /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"Debug/Base64Test.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"D:\Project\Open PCMan\trunk\Base64Test\base64.cpp"
-"D:\Project\Open PCMan\trunk\Lite\strutils.cpp"
+"D:\Project\PCMAN\branches\PCMan Novus\Base64Test\base64.cpp"
+"D:\Project\PCMAN\branches\PCMan Novus\Lite\strutils.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\user\LOCALS~1\Temp\RSPB.tmp" 
+Creating command line "cl.exe @C:\DOCUME~1\user\LOCALS~1\Temp\RSP3F.tmp" 
 Creating command line "link.exe /nologo /subsystem:console /incremental:yes /pdb:"Debug/Base64Test.pdb" /debug /machine:I386 /out:"Debug/Base64Test.exe" /pdbtype:sept  ".\Debug\base64.obj" ".\Debug\StrUtils.obj" "
 <h3>Output Window</h3>
 Compiling...
