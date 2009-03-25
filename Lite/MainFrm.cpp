@@ -752,7 +752,10 @@ void CMainFrame::OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult)
 			pos+=2;
 		}
 		else
-			InsertMenu(popup, pos + 1, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE, close_this_page);
+		{
+			InsertMenu(popup, pos + 1, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE_ALL_OTHERS, close_all_other_pages);
+			InsertMenu(popup, pos + 2, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE, close_this_page);
+		}
 
 		::TrackPopupMenu(popup, TPM_RIGHTBUTTON | TPM_LEFTALIGN, pt.x, pt.y, 0, m_hWnd, NULL);
 		DeleteMenu(popup, pos, MF_BYPOSITION);
@@ -2953,7 +2956,8 @@ void CMainFrame::OnFavorite(UINT id)
 				{
 					typedef	DWORD (WINAPI DOFD)(HWND, LPCTSTR);
 					DOFD* pfunc = NULL;
-					HMODULE hmod = LoadLibrary("Shdocvw.dll");
+					HMODULE hmod = LoadLibrary("IEFRAME.dll");
+					if (!hmod) hmod = LoadLibrary("Shdocvw.dll");
 					pfunc = (DOFD*)GetProcAddress(hmod, "DoOrganizeFavDlg");
 					if (!hmod || !pfunc)
 						return;
