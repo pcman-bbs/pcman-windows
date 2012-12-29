@@ -998,7 +998,8 @@ void CMainFrame::UpdateAddressBar()
 		CString address = view.con->address;
 		if (view.telnet && !view.telnet->is_ansi_editor)
 		{
-			if (view.telnet->port != 23)
+            unsigned short portDefault = view.telnet->IsSSH() ? 22 : 23;
+			if (view.telnet->port != portDefault)
 			{
 				char port_str[16];
 				sprintf(port_str, ":%d", view.telnet->port);
@@ -2938,12 +2939,14 @@ void CMainFrame::OnFavorite(UINT id)
 					{
 						name = 's';	name += telnet->name;
 						name += '\t';
-#ifdef _COMBO_
-						name += telnet->address.Mid(9);
-#else
-						name += telnet->address;
-#endif
-						if (telnet->port != 23 && telnet->port > 0)
+//#ifdef _COMBO_
+//						name += telnet->address.Mid(9);
+//#else
+//						name += telnet->address;
+//#endif
+                        name += telnet->address;
+                        unsigned short portDefault = telnet->IsSSH() ? 22 : 23;
+                        if (telnet->port != portDefault && telnet->port > 0)
 						{
 							char port_str[16];
 							sprintf(port_str, ":%d", telnet->port);
