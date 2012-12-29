@@ -840,18 +840,24 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 
 	AddToTypedHistory(cmdline);
 
+    short portDefault = 23;
+    bool ssh = false;
+
 	if (0 == strnicmp(cmdline, "telnet:", 7))
 	{
-		cmdline += 7;
-		while (*cmdline == '/')
-			cmdline++;
+        portDefault = 23;
+        ssh = false;
 	}
 	else if (0 == strnicmp(cmdline, "bbs:", 4))
 	{
-		cmdline += 4;
-		while (*cmdline == '/')
-			cmdline++;
+        portDefault = 23;
+        ssh = false;
 	}
+    else if (0 == strnicmp(cmdline, "telnets:", 8))
+    {
+        portDefault = 22;
+        ssh = true;
+    }
 	else if (IsFileExist(cmdline))
 	{
 		int l = strlen(cmdline);
@@ -883,22 +889,23 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 	if (param[param.GetLength()-1] == '/')
 		param = param.Left(param.GetLength() - 1);
 
-	int pos = param.Find(':');
+    int rfindPos = param.ReverseFind(':');
+    int findPos = param.Find(':');
 
 	CString address;
 	unsigned short port;
-	if (pos == -1)
+	if (rfindPos == findPos)
 	{
 		address = param;
 		port = 23;
 	}
 	else
 	{
-		address = param.Left(pos);
-		CString port_str = param.Mid(pos + 1);
+		address = param.Left(rfindPos);
+		CString port_str = param.Mid(rfindPos + 1);
 		port = (unsigned short)atoi(port_str);
-		if (port == 23)
-			param = address;
+		//if (port == 23)
+		//	param = address;
 	}
 	view.Connect(address, param, port);
 	if(!setCharset)
@@ -2396,7 +2403,7 @@ void CMainFrame::OnConnectCloseAllOthers()
 	int all = tab.GetItemCount();
 	for(int i=0;i<sel;i++)
 		CloseConn(0, true);
-	for(i=sel+1;i<all;i++)
+	for(int i=sel+1;i<all;i++)
 		CloseConn(1,true);
 }
 
@@ -4041,7 +4048,7 @@ void CMainFrame::OnBBSFont()
 	}
 }
 
-void CMainFrame::OnDownloadPage()
+LRESULT CMainFrame::OnDownloadPage( WPARAM, LPARAM )
 {
 	const char url[] = "http://of.openfoundry.org/projects/744/download";
 #ifdef	_COMBO_
@@ -4049,6 +4056,7 @@ void CMainFrame::OnDownloadPage()
 #else
 	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
 #endif
+    return TRUE;
 }
 
 

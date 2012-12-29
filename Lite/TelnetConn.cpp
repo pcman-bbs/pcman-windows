@@ -108,6 +108,8 @@ CTelnetConn::CTelnetConn()
 	site_settings.paste_autowrap = 0;
 
 	key_map = NULL;
+
+    m_isSSH = false;
 }
 
 CTelnetConn::~CTelnetConn()
@@ -862,20 +864,27 @@ void CTelnetConn::OnConnect(int nErrorCode)
 		item.iImage = 0;
 		view->parent->tab.SetItem(idx, &item);
 		CString ads_port = address;
-		if (port != 23)
+
+        unsigned short defaultPort = this->IsSSH() ? 22 : 23;
+
+		if (port != defaultPort) //22: ssh 
 		{
 			char port_str[16];
 			sprintf(port_str, ":%d", port);
 			ads_port += port_str;
 		}
+
 		CString str("s");
 		str += name;
 		str += '\t';
-#ifdef _COMBO_
-		str += LPCTSTR(ads_port) + 9;	// strlen("telnet://") = 9;
-#else
-		str += ads_port;
-#endif
+
+//#ifdef _COMBO_
+//        str += LPCTSTR(ads_port) + (this->IsSSH() ? 10 : 9);	// strlen("telnet://") = 9; strlen("telnets://") = 10;
+//#else
+//		str += ads_port;
+//#endif
+
+        str += ads_port; //EDIT. make a difference between telnet and telnets when add history.
 		str += '\t';
 		if (!cfg_path.IsEmpty())
 			str += cfg_path.Left(cfg_path.GetLength() - name.GetLength());
@@ -893,7 +902,7 @@ int CTelnetConn::Send(const void *lpBuf, int nBufLen)
 
 	if (!is_ansi_editor)
 	{
-		int r = ::send(telnet, (char*)lpBuf, nBufLen, 0);
+		int r = this->SendImpl(lpBuf, nBufLen);
 		return r;
 	}
 
@@ -2161,4 +2170,28 @@ void CTelnetConn::CopyArticleComplete(bool cancel)
 	get_article_in_editor = false;
 	get_article_with_ansi = false;
 	downloaded_article.Empty();
+}
+
+
+int CTelnetConn::RecvImpl( void *buf, int len )
+{
+    return ::recv(telnet, static_cast<char *>(buf), len, 0);
+}
+
+
+int CTelnetConn::SendImpl( const void *lpBuf, int nBufLen )
+{
+    return ::send(telnet, static_cast<const char *>(lpBuf), nBufLen, 0);
+}
+
+void CTelnetConn::ConnectImpl( sockaddr *addr, int len )
+{
+    ::connect(telnet, addr, len);
+}
+
+int CTelnetConn::CloseImpl()
+{
+    int r = ::closesocket(telnet);
+    telnet = 0;
+    return r;
 }

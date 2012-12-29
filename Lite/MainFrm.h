@@ -274,7 +274,7 @@ public:
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);
-	void OnDownloadPage();
+    LRESULT OnDownloadPage(WPARAM, LPARAM);
 
 #if	_MFC_VER >= 0x0700
 	afx_msg void OnActivateApp(BOOL bActive, DWORD hTask);
