@@ -752,10 +752,7 @@ void CMainFrame::OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult)
 			pos+=2;
 		}
 		else
-		{
-			InsertMenu(popup, pos + 1, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE_ALL_OTHERS, close_all_other_pages);
-			InsertMenu(popup, pos + 2, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE, close_this_page);
-		}
+			InsertMenu(popup, pos + 1, MF_STRING | MF_BYPOSITION, ID_CONNECT_CLOSE, close_this_page);
 
 		::TrackPopupMenu(popup, TPM_RIGHTBUTTON | TPM_LEFTALIGN, pt.x, pt.y, 0, m_hWnd, NULL);
 		DeleteMenu(popup, pos, MF_BYPOSITION);
@@ -840,24 +837,18 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 
 	AddToTypedHistory(cmdline);
 
-    short portDefault = 23;
-    bool ssh = false;
-
 	if (0 == strnicmp(cmdline, "telnet:", 7))
 	{
-        portDefault = 23;
-        ssh = false;
+		cmdline += 7;
+		while (*cmdline == '/')
+			cmdline++;
 	}
 	else if (0 == strnicmp(cmdline, "bbs:", 4))
 	{
-        portDefault = 23;
-        ssh = false;
+		cmdline += 4;
+		while (*cmdline == '/')
+			cmdline++;
 	}
-    else if (0 == strnicmp(cmdline, "telnets:", 8))
-    {
-        portDefault = 22;
-        ssh = true;
-    }
 	else if (IsFileExist(cmdline))
 	{
 		int l = strlen(cmdline);
@@ -889,23 +880,22 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 	if (param[param.GetLength()-1] == '/')
 		param = param.Left(param.GetLength() - 1);
 
-    int rfindPos = param.ReverseFind(':');
-    int findPos = param.Find(':');
+	int pos = param.Find(':');
 
 	CString address;
 	unsigned short port;
-	if (rfindPos == findPos)
+	if (pos == -1)
 	{
 		address = param;
 		port = 23;
 	}
 	else
 	{
-		address = param.Left(rfindPos);
-		CString port_str = param.Mid(rfindPos + 1);
+		address = param.Left(pos);
+		CString port_str = param.Mid(pos + 1);
 		port = (unsigned short)atoi(port_str);
-		//if (port == 23)
-		//	param = address;
+		if (port == 23)
+			param = address;
 	}
 	view.Connect(address, param, port);
 	if(!setCharset)
@@ -998,8 +988,7 @@ void CMainFrame::UpdateAddressBar()
 		CString address = view.con->address;
 		if (view.telnet && !view.telnet->is_ansi_editor)
 		{
-            unsigned short portDefault = view.telnet->IsSSH() ? 22 : 23;
-			if (view.telnet->port != portDefault)
+			if (view.telnet->port != 23)
 			{
 				char port_str[16];
 				sprintf(port_str, ":%d", view.telnet->port);
@@ -2404,7 +2393,7 @@ void CMainFrame::OnConnectCloseAllOthers()
 	int all = tab.GetItemCount();
 	for(int i=0;i<sel;i++)
 		CloseConn(0, true);
-	for(int i=sel+1;i<all;i++)
+	for(i=sel+1;i<all;i++)
 		CloseConn(1,true);
 }
 
@@ -2939,14 +2928,12 @@ void CMainFrame::OnFavorite(UINT id)
 					{
 						name = 's';	name += telnet->name;
 						name += '\t';
-//#ifdef _COMBO_
-//						name += telnet->address.Mid(9);
-//#else
-//						name += telnet->address;
-//#endif
-                        name += telnet->address;
-                        unsigned short portDefault = telnet->IsSSH() ? 22 : 23;
-                        if (telnet->port != portDefault && telnet->port > 0)
+#ifdef _COMBO_
+						name += telnet->address.Mid(9);
+#else
+						name += telnet->address;
+#endif
+						if (telnet->port != 23 && telnet->port > 0)
 						{
 							char port_str[16];
 							sprintf(port_str, ":%d", telnet->port);
@@ -2966,8 +2953,7 @@ void CMainFrame::OnFavorite(UINT id)
 				{
 					typedef	DWORD (WINAPI DOFD)(HWND, LPCTSTR);
 					DOFD* pfunc = NULL;
-					HMODULE hmod = LoadLibrary("IEFRAME.dll");
-					if (!hmod) hmod = LoadLibrary("Shdocvw.dll");
+					HMODULE hmod = LoadLibrary("Shdocvw.dll");
 					pfunc = (DOFD*)GetProcAddress(hmod, "DoOrganizeFavDlg");
 					if (!hmod || !pfunc)
 						return;
@@ -4051,7 +4037,7 @@ void CMainFrame::OnBBSFont()
 	}
 }
 
-LRESULT CMainFrame::OnDownloadPage( WPARAM, LPARAM )
+void CMainFrame::OnDownloadPage()
 {
 	const char url[] = "http://of.openfoundry.org/projects/744/download";
 #ifdef	_COMBO_
@@ -4059,7 +4045,6 @@ LRESULT CMainFrame::OnDownloadPage( WPARAM, LPARAM )
 #else
 	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
 #endif
-    return TRUE;
 }
 
 

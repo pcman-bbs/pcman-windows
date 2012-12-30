@@ -26,7 +26,6 @@
 #include "MouseCTL.h"
 
 #include "OleImage.h"
-#include "TelnetSSHConnSurrogate.h"
 
 #if defined	_COMBO_
 #include "../Combo/WebPageDlg.h"
@@ -1329,18 +1328,16 @@ LRESULT CTermView::_OnImeCompositionA(WPARAM wparam, LPARAM lparam)
 	return 0;
 }
 
-BOOL CTermView::Connect( CString address, CString name, unsigned short port, LPCTSTR cfg_path /*= NULL*/ )
+BOOL CTermView::Connect(CString address, CString name, unsigned short port, LPCTSTR cfg_path)
 {
 	if (name.IsEmpty())
 		return FALSE;
+#if defined	_COMBO_
+	if (port > 0 && address.Find("telnet://") == -1)
+		address = "telnet://" + address;
+#endif
 
-//#if defined	_COMBO_
-//    if (port > 0 && address.Find("telnet://") == -1)
-//        address = "telnet://" + address;
-//#endif
-
-    bool ssh = address.Find("telnets:") != -1;
-	CConn* ncon = NewConn(address, name, port, ssh, cfg_path);	//產生了新的連線畫面，完成所有設定
+	CConn* ncon = NewConn(address, name, port, cfg_path);	//產生了新的連線畫面，完成所有設定
 	if (!ncon)
 		return FALSE;
 
@@ -1480,7 +1477,7 @@ void CTermView::OnAnsiCopy()
 
 void CTermView::OnAnsiEditor()
 {
-	Connect(LoadString(IDS_NOT_SAVED), LoadString(IDS_ANSI_EDIT), false, 0);
+	Connect(LoadString(IDS_NOT_SAVED), LoadString(IDS_ANSI_EDIT), 0);
 }
 
 
@@ -1922,11 +1919,10 @@ void CTermView::OnBackspaceNoDBCS()
 	}
 }
 
-inline CConn* CTermView::NewConn( CString address, CString name, unsigned short port, bool ssh, LPCTSTR cfg_path )
+CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_path)
 {
 	CConn* newcon = NULL;
-	//newcon = ssh ? new TelnetSSHConn("bbs", "") : new CTelnetConn;
-    newcon = ssh ? new TelnetSSHConnSurrogate : new CTelnetConn;
+	newcon = new CTelnetConn;
 	newcon->address = address;
 	newcon->name = name;
 
@@ -2030,7 +2026,7 @@ void CTermView::ConnectSocket(CTelnetConn *new_telnet)
 	new_telnet->Create();
 
 #if defined	_COMBO_
-	const LPCTSTR paddress = LPCTSTR(new_telnet->address) + (new_telnet->IsSSH() ? 10 : 9);
+	const LPCTSTR paddress = LPCTSTR(new_telnet->address) + 9;
 #else
 	CString &paddress = new_telnet->address;
 #endif
@@ -2963,34 +2959,23 @@ void CTermView::ConnectStr(CString name, CString dir)
 		ConnectWeb(address, TRUE);
 		return;
 	}
+	if (0 == strncmp("telnet:", address, 7))
+	{
+		LPCTSTR p = address;
+		p += 7;
+		while (*p && *p == '/')
+			++p;
+		address = p;
+	}
 #endif
 
-    bool ssh = false;
-    short portDefault = 23;
-    if (0 == strncmp("telnet:", address, 7))
-    {
-        ssh = false;
-        portDefault = 23;
-    }
-    else if (0 == strncmp("telnets:", address, 8))
-    {
-        ssh = true;
-        portDefault = 22;
-    }
-    else
-    {
-        address = "telnet://" + address;
-    }
-
-    int rfindPos = address.ReverseFind(':');
-    int findPos = address.Find(':');
-
-	if (rfindPos == findPos)
-		port = portDefault;
+	i = address.ReverseFind(':');
+	if (i == -1)
+		port = 23;
 	else
 	{
-		port = (unsigned short)atoi(LPCTSTR(address.Mid(rfindPos + 1)));
-		address = address.Left(rfindPos);
+		port = (unsigned short)atoi(LPCTSTR(address.Mid(i + 1)));
+		address = address.Left(i);
 	}
 	SetFocus();
 

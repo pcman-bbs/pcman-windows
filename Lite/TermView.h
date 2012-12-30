@@ -170,7 +170,7 @@ public:
 	BOOL OpenAnsFile(LPCTSTR filepath);
 	UINT mouse_sel_timer;
 	static DWORD DNSLookupThread(LPVOID param);
-    inline CConn* NewConn(CString address, CString name, unsigned short port, bool ssh, LPCTSTR cfg_path);
+	inline CConn* NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_path);
 	void OnInitialUpdate();
 	inline void FillBk(CDC& dc);
 	void UpdateBkgnd();
@@ -182,7 +182,7 @@ public:
 	void OnAnsiCopy();
 	void ReConnect(CTelnetConn* retelnet);
 	LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam);
-    BOOL Connect(CString address, CString name, unsigned short port, LPCTSTR cfg_path = NULL);
+	BOOL Connect(CString address, CString name, unsigned short port, LPCTSTR cfg = NULL);
 	//{{AFX_MSG(CTermView)
 	afx_msg LRESULT OnFind(WPARAM w, LPARAM l);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

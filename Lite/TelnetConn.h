@@ -185,7 +185,6 @@ public:
 public:
 	virtual void OnReceive(int nErrorCode);
 	virtual void OnConnect(int nErrorCode);
-
 	//}}AFX_VIRTUAL
 
 	// Generated message map functions
@@ -195,35 +194,26 @@ public:
 
 // Implementation
 protected:
-    bool m_isSSH;
-
-public:
-    virtual void ConnectImpl(sockaddr *addr, int len);
-    virtual int RecvImpl(void* buf, int len);
-    virtual int SendImpl(const void* lpBuf, int nBufLen);
-    virtual int CloseImpl();
-
-    bool IsSSH() const
-    {
-        return m_isSSH;
-    }
 };
 
 
 int CTelnetConn::Close()
 {
-    return this->CloseImpl();
+	int r =::closesocket(telnet);
+	telnet = 0;
+	return r;
 }
 
 void CTelnetConn::Connect(sockaddr *addr, int len)
 {
-	this->ConnectImpl(addr, len);
+	::connect(telnet, addr, len);
 }
 
 int CTelnetConn::Recv(void *buf, int len)
 {
-	return this->RecvImpl(buf, len);
+	return ::recv(telnet, (char*)buf, len, 0);
 }
+
 
 #ifndef SD_SEND
 #define	SD_SEND	1
@@ -231,7 +221,7 @@ int CTelnetConn::Recv(void *buf, int len)
 
 int CTelnetConn::Shutdown()
 {
-    return ::shutdown(telnet, SD_SEND);
+	return ::shutdown(telnet, SD_SEND);
 }
 
 inline void CTelnetConn::SetBgColor(BYTE &attr, BYTE bk)
