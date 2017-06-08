@@ -20,7 +20,9 @@ static char THIS_FILE[] = __FILE__;
 #include "../Lite/mainfrm.h"
 #include "WebConn.h"
 
+namespace internal {
 static const IID IID_ITravelLogStg	= { 0x7EBFDD80, 0xAD18, 0x11d3, {0xA4, 0xC5, 0x00, 0xC0, 0x4F, 0x72, 0xD6, 0xB8}};
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CWebBrowser
@@ -133,7 +135,7 @@ int CWebBrowser::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{
 		CComQIPtr<IServiceProvider, &IID_IServiceProvider> psp(pwb);
 		if (psp.p)
-			psp.p->QueryService(SID_STravelLogCursor, IID_ITravelLogStg, (void**) &m_TravelLog);
+			psp.p->QueryService(SID_STravelLogCursor, internal::IID_ITravelLogStg, (void**) &m_TravelLog);
 	}
 
 	HMODULE urlmon = LoadLibrary("urlmon.dll");
