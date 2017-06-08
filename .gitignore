@@ -1,0 +1,12 @@
+*.bsc
+*.exe
+*.idb
+*.ilk
+*.log
+*.obj
+*.pdb
+*.res
+*.sbr
+*.tlog
+*.vcxproj.user
+.vs/
