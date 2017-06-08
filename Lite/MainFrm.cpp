@@ -2393,7 +2393,7 @@ void CMainFrame::OnConnectCloseAllOthers()
 	int all = tab.GetItemCount();
 	for(int i=0;i<sel;i++)
 		CloseConn(0, true);
-	for(i=sel+1;i<all;i++)
+	for(int i=sel+1;i<all;i++)
 		CloseConn(1,true);
 }
 
@@ -4037,7 +4037,7 @@ void CMainFrame::OnBBSFont()
 	}
 }
 
-void CMainFrame::OnDownloadPage()
+LRESULT CMainFrame::OnDownloadPage(WPARAM, LPARAM)
 {
 	const char url[] = "http://of.openfoundry.org/projects/744/download";
 #ifdef	_COMBO_
@@ -4045,6 +4045,7 @@ void CMainFrame::OnDownloadPage()
 #else
 	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
 #endif
+	return 0;
 }
 
 
