@@ -10,8 +10,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include"TelnetConn.h"
-#include"addressdlg.h"
+#include "Address.h"
+#include "TelnetConn.h"
+#include "addressdlg.h"
 #include "AnsiBar.h"	// Added by ClassView
 #include "Ucs2Conv.h"
 #include <afxtempl.h>
@@ -21,6 +22,8 @@
 	#include"../Combo/menumapitem.h"
 #endif
 */
+
+#define WM_CONN_EVENT (WM_USER + 100)
 
 bool find_link(char* type, char* str, int& start, int& end);
 //	bool find_email(char* str,int& start,int& end);
@@ -153,7 +156,7 @@ public:
 	void FindStart();
 
 #ifdef	_COMBO_
-	CWebConn* ConnectWeb(CString address, BOOL act);
+	CWebConn* ConnectWeb(CAddress address, BOOL act);
 	void MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE);
 	BOOL SetWindowPos(const CWnd* pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags);
 
@@ -170,7 +173,7 @@ public:
 	BOOL OpenAnsFile(LPCTSTR filepath);
 	UINT mouse_sel_timer;
 	static DWORD DNSLookupThread(LPVOID param);
-	inline CConn* NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_path);
+	inline CConn* NewConn(CAddress address, CString name, LPCTSTR cfg_path);
 	void OnInitialUpdate();
 	inline void FillBk(CDC& dc);
 	void UpdateBkgnd();
@@ -182,7 +185,7 @@ public:
 	void OnAnsiCopy();
 	void ReConnect(CTelnetConn* retelnet);
 	LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam);
-	BOOL Connect(CString address, CString name, unsigned short port, LPCTSTR cfg = NULL);
+	BOOL Connect(CAddress address, CString name, LPCTSTR cfg = NULL);
 	//{{AFX_MSG(CTermView)
 	afx_msg LRESULT OnFind(WPARAM w, LPARAM l);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -237,7 +240,9 @@ protected:
 	UINT cp_id;
 	BOOL os_ver_nt;
 	void ConnectSocket(CTelnetConn* new_telnet);
+	void ConnectTcp(CTelnetConn* new_telnet, CString host, unsigned short port);
 	LRESULT OnSocket(WPARAM wparam, LPARAM lparam);
+	LRESULT OnConnEvent(WPARAM wparam, LPARAM lparam);
 
 	inline void DrawLineBlinkOld(CDC &dc, LPSTR line, int y);
 	inline void DrawLineOld(CDC &dc, LPSTR line, BYTE* pline_selstart, BYTE* pline_selend, int y);

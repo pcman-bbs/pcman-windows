@@ -35,6 +35,7 @@
 
 #include <wininet.h>
 #include <afxtempl.h>
+#include <afxinet.h>
 
 #if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible
 #include <atlimage.h>
@@ -69,6 +70,7 @@ inline void swap(long& v1, long& v2)		{	long t;	t = v1;	v1 = v2;	v2 = t;	}
 
 BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_MESSAGE(WM_SOCKET, OnSocket)
+	ON_MESSAGE(WM_CONN_EVENT, OnConnEvent)
 	//{{AFX_MSG_MAP(CTermView)
 	ON_WM_ERASEBKGND()
 	ON_WM_CHAR()
@@ -126,6 +128,13 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 END_MESSAGE_MAP()
 
 CFont fnt;
+
+CAddress AnsiAddressFromPath(const CString& path)
+{
+	CString url;
+	url.Format("file://%s", path);
+	return CAddress(url);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CTermView construction/destruction
@@ -1328,16 +1337,18 @@ LRESULT CTermView::_OnImeCompositionA(WPARAM wparam, LPARAM lparam)
 	return 0;
 }
 
-BOOL CTermView::Connect(CString address, CString name, unsigned short port, LPCTSTR cfg_path)
+BOOL CTermView::Connect(CAddress address, CString name, LPCTSTR cfg_path)
 {
-	if (name.IsEmpty())
-		return FALSE;
-#if defined	_COMBO_
-	if (port > 0 && address.Find("telnet://") == -1)
-		address = "telnet://" + address;
+#ifdef _DEBUG
+	CString s;
+	s.Format(_T("[Connect address=%s name=%s]\n"), address.Description(), name);
+	OutputDebugString(s);
 #endif
 
-	CConn* ncon = NewConn(address, name, port, cfg_path);	//產生了新的連線畫面，完成所有設定
+	if (name.IsEmpty())
+		return FALSE;
+
+	CConn* ncon = NewConn(address, name, cfg_path);	//產生了新的連線畫面，完成所有設定
 	if (!ncon)
 		return FALSE;
 
@@ -1357,7 +1368,9 @@ LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam)
 	SOCKADDR_IN& sockaddr = data->sockaddr;
 //設定好相關資訊
 	sockaddr.sin_family = AF_INET;
-	sockaddr.sin_port = htons((u_short)new_telnet->port);
+	// XXX: This path only serves telnet, but we might server others as well later.
+	// Don't hard code default port 23.
+	sockaddr.sin_port = htons((u_short)new_telnet->address.Port(23));
 //	sockaddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
 
 	if (found)
@@ -1431,7 +1444,7 @@ void CTermView::ReConnect(CTelnetConn *retelnet)
 	}
 	else
 	{
-		Connect(retelnet->address, retelnet->name, retelnet->port, retelnet->cfg_path);
+		Connect(retelnet->address, retelnet->name, retelnet->cfg_path);
 	}
 }
 
@@ -1477,7 +1490,7 @@ void CTermView::OnAnsiCopy()
 
 void CTermView::OnAnsiEditor()
 {
-	Connect(LoadString(IDS_NOT_SAVED), LoadString(IDS_ANSI_EDIT), 0);
+	Connect(CAddress(_T("file://")), LoadString(IDS_ANSI_EDIT));
 }
 
 
@@ -1520,7 +1533,7 @@ void CTermView::OnAnsiSaveAs()
 			telnet->sel_end = telnet->sel_start;
 			file.Write(LPCTSTR(str), str.GetLength());
 			file.Abort();
-			telnet->address = dlg.GetPathName();
+			telnet->address = AnsiAddressFromPath(dlg.GetPathName());
 			telnet->name = dlg.GetFileName();
 
 			parent->tab.SetItemText(parent->tab.GetCurSel(), telnet->name);
@@ -1681,14 +1694,14 @@ void CTermView::OnAnsiSave()
 	if (!telnet)
 		return;
 
-	if (!telnet->address.Compare(LoadString(IDS_NOT_SAVED)))
+	if (telnet->address.Path().IsEmpty())
 	{
 		OnAnsiSaveAs();
 	}
 	else
 	{
 		CFile file;
-		if (file.Open(telnet->address, CFile::modeCreate | CFile::modeWrite))
+		if (file.Open(telnet->address.Path(), CFile::modeCreate | CFile::modeWrite))
 		{
 			OnSelAllBuf();
 			while (telnet->sel_end.y > telnet->sel_start.y && telnet->IsEmptyLine(telnet->screen[telnet->sel_end.y], telnet->site_settings.cols_per_page))
@@ -1919,19 +1932,16 @@ void CTermView::OnBackspaceNoDBCS()
 	}
 }
 
-CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_path)
+CConn* CTermView::NewConn(CAddress address, CString name, LPCTSTR cfg_path)
 {
-	CConn* newcon = NULL;
-	newcon = new CTelnetConn;
-	newcon->address = address;
-	newcon->name = name;
+	CTelnetConn* new_telnet = new CTelnetConn;
+	new_telnet->address = address;
+	new_telnet->name = name;
 
 #if defined	_COMBO_
-	if (!newcon->is_web)	//如果是連線BBS,新開BBS畫面
+	if (!new_telnet->is_web)	//如果是連線BBS,新開BBS畫面
 	{
 #endif
-		CTelnetConn* new_telnet = (CTelnetConn*)newcon;
-		new_telnet->port = port;
 		new_telnet->cfg_path = cfg_path;
 
 		//為新的socket載入設定值
@@ -1946,7 +1956,7 @@ CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LP
 		if (new_telnet->site_settings.text_input_conv || new_telnet->site_settings.text_output_conv)
 			chi_conv.AddRef();
 
-		if (0 == port)  // port = 0 代表 ansi editor ( dirty hack :( )
+		if (address.Protocol() == "file")
 		{
 			new_telnet->ClearAllFlags();
 			new_telnet->is_ansi_editor = true;
@@ -1960,9 +1970,9 @@ CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LP
 #if defined	_COMBO_
 	}
 #endif
-	parent->NewTab(newcon);
-	all_telnet_conns.Add(newcon);
-	return newcon;
+	parent->NewTab(new_telnet);
+	all_telnet_conns.Add(new_telnet);
+	return new_telnet;
 }
 
 DWORD CTermView::DNSLookupThread(LPVOID param)
@@ -1995,21 +2005,29 @@ LRESULT CTermView::OnSocket(WPARAM wparam, LPARAM lparam)
 	for (; pptelnet < plasttelnet; pptelnet++)
 	{
 		CTelnetConn* ptelnet = *pptelnet;
-		if (ptelnet->is_telnet && ptelnet->telnet == (SOCKET)wparam)
+		if (ptelnet->HasSocket() && ptelnet->GetSocket() == (SOCKET)wparam)
 		{
-			WORD err = HIWORD(lparam);
+			ptelnet->OnSocket(wparam, lparam);
+		}
+	} //end for
+	return 0;
+}
 
-			switch (LOWORD(lparam))
-			{
-			case FD_READ:
-				ptelnet->OnReceive(err);
-				break;
-			case FD_CONNECT:
-				ptelnet->OnConnect(err);
-				break;
-			case FD_CLOSE:
-				ptelnet->OnClose(err);
-			}
+LRESULT CTermView::OnConnEvent(WPARAM wparam, LPARAM lparam)
+{
+	if (!all_telnet_conns.GetData())
+		return 0;
+
+	std::unique_ptr<CConnEvent> event((CConnEvent*)wparam);
+	CTelnetConn** pptelnet = (CTelnetConn**)all_telnet_conns.GetData();
+	CTelnetConn** plasttelnet = pptelnet + all_telnet_conns.GetSize();
+	for (; pptelnet < plasttelnet; pptelnet++)
+	{
+		CTelnetConn* ptelnet = *pptelnet;
+		if (ptelnet->GetConnectionID() == event->connection_id)
+		{
+			ptelnet->HandleConnEvent(std::move(event));
+			return 0;
 		}
 	} //end for
 	return 0;
@@ -2025,16 +2043,28 @@ void CTermView::ConnectSocket(CTelnetConn *new_telnet)
 
 	new_telnet->Create();
 
-#if defined	_COMBO_
-	const LPCTSTR paddress = LPCTSTR(new_telnet->address) + 9;
-#else
-	CString &paddress = new_telnet->address;
-#endif
+	const CAddress& address = new_telnet->address;
+	const CString& protocol = address.Protocol();
+
+	if (protocol == "telnet" ||
+		protocol == "bbs")
+	{
+		ConnectTcp(new_telnet, address.Server(), address.Port(23));
+	}
+	else if (protocol == "ws" ||
+			 protocol == "wss")
+	{
+		new_telnet->ConnectWebsocket();
+	}
+}
+
+void CTermView::ConnectTcp(CTelnetConn* new_telnet, CString host, unsigned short port)
+{
 	SOCKADDR_IN sockaddr;
 	memset(&sockaddr, 0, sizeof(SOCKADDR_IN));
 	sockaddr.sin_family = AF_INET;
-	sockaddr.sin_port = htons((u_short) new_telnet->port);
-	sockaddr.sin_addr.s_addr = inet_addr(paddress);
+	sockaddr.sin_port = htons(port);
+	sockaddr.sin_addr.s_addr = inet_addr(host);
 	if (sockaddr.sin_addr.s_addr != INADDR_NONE)
 	{
 		new_telnet->ClearAllFlags();
@@ -2046,7 +2076,7 @@ void CTermView::ConnectSocket(CTelnetConn *new_telnet)
 //	加入新執行緒
 	DNSLookupData *newfind = new DNSLookupData;
 	newfind->new_telnet = new_telnet;
-	newfind->address = paddress;
+	newfind->address = host;
 	DWORD tid;
 //	開始新的執行緒
 	memset(&sockaddr, 0, sizeof(SOCKADDR_IN));
@@ -2423,7 +2453,7 @@ BOOL CTermView::OpenAnsFile(LPCTSTR filepath)
 		SetScrollBar();
 		UnlockWindowUpdate();
 		delete []data;
-		telnet->address = filepath;
+		telnet->address = AnsiAddressFromPath(filepath);
 		parent->UpdateStatus();
 		parent->UpdateAddressBar();
 		return TRUE;
@@ -2499,21 +2529,21 @@ void CTermView::MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint)
 		((CWebConn*)con)->web_browser.MoveWindow(x, y, nWidth, nHeight, bRepaint);
 }
 
-CWebConn* CTermView::ConnectWeb(CString address, BOOL act)
+CWebConn* CTermView::ConnectWeb(CAddress address, BOOL act)
 {
 	CWebConn* newcon = new CWebConn;
 	newcon->web_browser.view = this;
-	newcon->name = newcon->address = address;
+	newcon->name = (newcon->address = address).URL();
 	newcon->web_browser.parent = parent;
 	newcon->web_browser.Create(NULL, NULL, WS_CHILD, CRect(0, 0, 0, 0), parent, 0);
 	newcon->web_browser.wb_ctrl.put_RegisterAsBrowser(TRUE);
 	newcon->web_browser.wb_ctrl.put_RegisterAsDropTarget(TRUE);
 	parent->NewTab(newcon);
 
-	if (!address.IsEmpty())
+	if (address.IsValid())
 	{
 		COleVariant v;
-		COleVariant url = address;
+		COleVariant url = address.URL();
 		newcon->web_browser.wb_ctrl.Navigate2(&url, &v, &v, &v, &v);
 	}
 	if (act)
@@ -2946,38 +2976,26 @@ void CTermView::AdjustFont(int cx, int cy)
 
 void CTermView::ConnectStr(CString name, CString dir)
 {
-	CString address;
+	CString url;
 	unsigned short port;
 	int i = name.Find('\t');
-	address = name.Mid(i + 1);
+	url = name.Mid(i + 1);
 	char type = name[0];
 	name = name.Mid(1, i - 1);
 
 #if defined(_COMBO_)
 	if (type != 's')
 	{
-		ConnectWeb(address, TRUE);
+		ConnectWeb(CAddress(url), TRUE);
 		return;
-	}
-	if (0 == strncmp("telnet:", address, 7))
-	{
-		LPCTSTR p = address;
-		p += 7;
-		while (*p && *p == '/')
-			++p;
-		address = p;
 	}
 #endif
 
-	i = address.ReverseFind(':');
-	if (i == -1)
-		port = 23;
-	else
-	{
-		port = (unsigned short)atoi(LPCTSTR(address.Mid(i + 1)));
-		address = address.Left(i);
-	}
 	SetFocus();
+
+	CAddress address = ParseAddress(url);
+	if (!address.IsValid())
+		return;
 
 	CString conf;
 	if (dir.IsEmpty())
@@ -2987,7 +3005,7 @@ void CTermView::ConnectStr(CString name, CString dir)
 		conf = dir;
 		conf += name;
 	}
-	Connect(address, name, port, conf);
+	Connect(address, name, conf);
 }
 
 

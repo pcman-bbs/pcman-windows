@@ -171,6 +171,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
     </ClCompile>
+    <ClCompile Include="Address.cpp" />
     <ClCompile Include="AddressDlg.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -429,6 +430,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
     </ClCompile>
+    <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="TelnetConn.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -453,6 +455,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
     </ClCompile>
+    <ClCompile Include="Websocket.cpp" />
     <ClCompile Include="WindowState.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -483,6 +486,7 @@
     <ClInclude Include="..\DlgLayout\DlgLayout.h" />
     <ClInclude Include="..\Resource\resource.h" />
     <ClInclude Include="..\SimpXmlParser\SimpXmlParser.h" />
+    <ClInclude Include="Address.h" />
     <ClInclude Include="AddressDlg.h" />
     <ClInclude Include="AES.h" />
     <ClInclude Include="AnsiBar.h" />
@@ -503,6 +507,7 @@
     <ClInclude Include="CustomTabCtrl.h" />
     <ClInclude Include="CustomToolBar.h" />
     <ClInclude Include="DragTreeCtrl.h" />
+    <ClInclude Include="ConnIO.h" />
     <ClInclude Include="FavMenu.h" />
     <ClInclude Include="FileUtil.h" />
     <ClInclude Include="GeneralPage.h" />
@@ -533,10 +538,12 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="StringDlg.h" />
     <ClInclude Include="strutils.h" />
+    <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="TelnetConn.h" />
     <ClInclude Include="TermView.h" />
     <ClInclude Include="TriggerList.h" />
     <ClInclude Include="Ucs2Conv.h" />
+    <ClInclude Include="Websocket.h" />
     <ClInclude Include="WindowState.h" />
     <ClInclude Include="WinUtils.h" />
   </ItemGroup>

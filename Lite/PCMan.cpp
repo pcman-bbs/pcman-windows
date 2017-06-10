@@ -264,11 +264,11 @@ void CApp::OnAppAbout()
 
 void CAboutDlg::OnReport()
 {
-	const char tracker[] = "http://rt.openfoundry.org/Foundry/Project/Tracker/?Queue=744";
+	CAddress tracker("http://rt.openfoundry.org/Foundry/Project/Tracker/?Queue=744");
 #ifdef	_COMBO_
 	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tracker, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", tracker, NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", tracker.URL(), NULL, NULL, SW_SHOW);
 #endif
 }
 
@@ -276,7 +276,7 @@ void CAboutDlg::OnWeb()
 {
 	web[20] = 0;
 #ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(web, TRUE);
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(CAddress(web), TRUE);
 #else
 	ShellExecute(m_hWnd, "open", web, NULL, NULL, SW_SHOW);
 #endif
@@ -285,18 +285,18 @@ void CAboutDlg::OnWeb()
 
 void CAboutDlg::OnWeb2()
 {
-	const char url[] = "http://pcman.openfoundry.org/";
+	CAddress url("http://pcman.openfoundry.org/");
 #ifdef	_COMBO_
 	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(url, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", url.URL(), NULL, NULL, SW_SHOW);
 #endif
 }
 
 void CAboutDlg::OnHelp()
 {
 #ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(web, TRUE);
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(CAddress(web), TRUE);
 #else
 	if ((long)ShellExecute(m_hWnd, "open", AppPath + "pcman.html", NULL, NULL, SW_SHOWMAXIMIZED) <= 32)
 		ShellExecute(m_hWnd, "open", web, NULL, NULL, SW_SHOWMAXIMIZED);

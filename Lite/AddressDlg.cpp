@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "AddressDlg.h"
 #include "AppConfig.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
