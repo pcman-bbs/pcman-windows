@@ -823,6 +823,7 @@ BEGIN
     IDS_ADS_BAR_TITLE       "位址："
     IDS_EXIT_CONFIRM        "還有連線分頁正在開啟中，您確定要結束本程式？"
     IDS_CON_STATUS          "\t連線時間：%d 小時 %d 分 %d 秒　　位址：%s"
+	IDS_CON_SECURE          " (安全)"
     IDS_ANSIED_STATUS       "ANSI 彩色編輯\t編輯模式：%s\t檔案：%s"
     IDS_INSERT              "插入"
     IDS_REPLACE             "取代"

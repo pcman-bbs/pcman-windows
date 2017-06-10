@@ -362,7 +362,7 @@ void CWebBrowser::OnNewWindow2(LPDISPATCH FAR* ppDisp, BOOL FAR* Cancel)
 	}
 
 	IDispatch* p = *ppDisp;
-	CWebConn* nweb_conn = (CWebConn*)view->ConnectWeb("", FALSE);
+	CWebConn* nweb_conn = (CWebConn*)view->ConnectWeb(CAddress(), FALSE);
 	*ppDisp = nweb_conn->web_browser.wb_ctrl.get_Application();
 }
 
@@ -402,7 +402,7 @@ void CWebBrowser::OnNavigateComplete2(LPDISPATCH pDisp, VARIANT FAR* URL)
 	RegSetValueEx(hk, _T("Disable Script Debugger"), 0, REG_SZ, (LPBYTE)yes, 3);
 	RegCloseKey(hk);
 
-	web_conn->address = GetLocationURL();
+	web_conn->address = CAddress(GetLocationURL());
 	if (view->con == web_conn)
 		parent->UpdateAddressBar();
 }

@@ -1,6 +1,8 @@
 // TelnetConn.cpp : implementation file
 //
 
+#include <algorithm>
+
 #include "stdafx.h"
 #include "TelnetConn.h"
 
@@ -10,14 +12,9 @@
 #include "StrUtils.h"
 #include "WinUtils.h"
 #include "Clipboard.h"
+#include "Websocket.h"
 
 #include <mmsystem.h>
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /*
 typedef void (CTelnetConn::*ansi_func)(int);
@@ -67,8 +64,10 @@ struct ANSI_TAB ansi_tab[]={
 BYTE CTelnetConn::buffer[];
 CString CTelnetConn::downloaded_article;
 int CTelnetConn::current_download_line;
+std::atomic<uint64_t> CTelnetConn::connection_counter;
 
 CTelnetConn::CTelnetConn()
+	: connection_id(++connection_counter)
 {
 	screen = NULL;
 	idle_time = 0;
@@ -145,7 +144,112 @@ CTelnetConn::~CTelnetConn()
 /////////////////////////////////////////////////////////////////////////////
 // CTelnetConn member functions
 
-void CTelnetConn::OnReceive(int nErrorCode)
+int CTelnetConn::Close()
+{
+	if (conn_io)
+		conn_io->Close();
+	return 0;
+}
+
+// Delegate implementation to send connection info to window.
+class CWindowMessageConnEventDelegate : public CConnEventDelegate
+{
+public:
+	CWindowMessageConnEventDelegate(HWND handle, UINT msg, uint64_t connection_id)
+		: handle_(handle), msg_(msg), connection_id_(connection_id)
+	{}
+
+	void OnReceive(const void* data, size_t length) override
+	{
+		auto event = CConnEvent::MakeUnique(connection_id_, CConnEvent::EVENT_DATA);
+		event->data.assign((const char*)data, length);
+		PostMessage(handle_, msg_, (WPARAM)event.release(), (LPARAM)0);
+	}
+
+	void OnConnect(bool success) override
+	{
+		auto event = CConnEvent::MakeUnique(
+			connection_id_,
+			success ? CConnEvent::EVENT_CONNECT : CConnEvent::EVENT_CONNECT_FAILED);
+		PostMessage(handle_, msg_, (WPARAM)event.release(), (LPARAM)0);
+	}
+
+	void OnClose() override
+	{
+		auto event = CConnEvent::MakeUnique(connection_id_, CConnEvent::EVENT_CLOSE);
+		PostMessage(handle_, msg_, (WPARAM)event.release(), (LPARAM)0);
+	}
+
+private:
+	HWND handle_;
+	UINT msg_;
+	uint64_t connection_id_;
+};
+
+void CTelnetConn::Connect(sockaddr *addr, int len)
+{
+	auto delegate = std::make_shared<CWindowMessageConnEventDelegate>(
+		view->m_hWnd, WM_CONN_EVENT, GetConnectionID());
+	tcp_socket = std::make_shared<CTcpSocket>(*addr, len, delegate);
+	conn_io = tcp_socket;
+
+	// Start select before connect, ensuring FD_CONNECT will be received.
+	WSAAsyncSelect(tcp_socket->GetSocket(), view->m_hWnd, WM_SOCKET, FD_READ | FD_CLOSE | FD_CONNECT);
+	tcp_socket->Connect();
+}
+
+void CTelnetConn::ConnectWebsocket()
+{
+	auto delegate = std::make_shared<CWindowMessageConnEventDelegate>(
+		view->m_hWnd, WM_CONN_EVENT, GetConnectionID());
+	conn_io = CreateWebsocket(address, delegate);
+	conn_io->Connect();
+}
+
+#ifndef SD_SEND
+#define	SD_SEND	1
+#endif
+
+int CTelnetConn::Shutdown()
+{
+	if (conn_io)
+		conn_io->Shutdown();
+	return 0;
+}
+
+void CTelnetConn::HandleConnEvent(std::unique_ptr<CConnEvent> event)
+{
+	switch (event->event_type) {
+	case CConnEvent::EVENT_CONNECT:
+		OnConnect(true);
+		break;
+
+	case CConnEvent::EVENT_CONNECT_FAILED:
+		OnConnect(false);
+		break;
+
+	case CConnEvent::EVENT_CLOSE:
+		OnClose();
+		break;
+
+	case CConnEvent::EVENT_DATA:
+		for (size_t i = 0; i < event->data.size(); i += sizeof(buffer)) {
+			size_t s = min(event->data.size() - i, sizeof(buffer));
+			memcpy(buffer, event->data.data() + i, s);
+			OnReceive(s);
+		}
+		break;
+	}
+}
+
+void CTelnetConn::OnSocket(WPARAM wparam, LPARAM lparam)
+{
+	if (!tcp_socket)
+		return;
+	tcp_socket->OnSocketMessage(wparam, lparam);
+}
+
+void CTelnetConn::OnReceive(int len)
 {
 	if (view->telnet != this)
 	{
@@ -172,7 +276,7 @@ void CTelnetConn::OnReceive(int nErrorCode)
 			view->Invalidate(FALSE);
 		}
 	}
-	ReceiveData();
+	ProcessData(len);
 }
 
 inline void CTelnetConn::OnIAC()
@@ -549,7 +653,7 @@ void CTelnetConn::UpdateCursorPos()
 	}
 }
 
-void CTelnetConn::OnClose(int nErrorCode)
+void CTelnetConn::OnClose()
 {
 	ClearAllFlags();
 	is_disconnected = true;
@@ -834,11 +938,11 @@ int find_sub_str(char* str, char* sub)
 	return -1;
 }
 
-void CTelnetConn::OnConnect(int nErrorCode)
+void CTelnetConn::OnConnect(bool success)
 {
 	TCITEM item;
 	item.mask = TCIF_IMAGE;
-	if (nErrorCode)
+	if (!success)
 	{
 		CString con_failed;
 		con_failed.LoadString(IDS_CON_FAILED);
@@ -861,27 +965,16 @@ void CTelnetConn::OnConnect(int nErrorCode)
 		int idx = view->parent->ConnToIndex(this);
 		item.iImage = 0;
 		view->parent->tab.SetItem(idx, &item);
-		CString ads_port = address;
-		if (port != 23)
-		{
-			char port_str[16];
-			sprintf(port_str, ":%d", port);
-			ads_port += port_str;
-		}
 		CString str("s");
 		str += name;
 		str += '\t';
-#ifdef _COMBO_
-		str += LPCTSTR(ads_port) + 9;	// strlen("telnet://") = 9;
-#else
-		str += ads_port;
-#endif
+		str += address.URL();
 		str += '\t';
 		if (!cfg_path.IsEmpty())
 			str += cfg_path.Left(cfg_path.GetLength() - name.GetLength());
 
 		view->parent->AddToHistoryMenu(str);
-		view->parent->AddToHistory(ads_port);
+		view->parent->AddToHistory(address.URL());
 	}
 }
 
@@ -893,8 +986,9 @@ int CTelnetConn::Send(const void *lpBuf, int nBufLen)
 
 	if (!is_ansi_editor)
 	{
-		int r = ::send(telnet, (char*)lpBuf, nBufLen, 0);
-		return r;
+		if (conn_io)
+			return conn_io->Send(lpBuf, nBufLen);
+		return -1;
 	}
 
 	buf = (LPBYTE)lpBuf;
@@ -1001,10 +1095,8 @@ void CTelnetConn::CreateBuffer()
 		screen[i] = AllocNewLine();
 }
 
-inline void CTelnetConn::ReceiveData()
+inline void CTelnetConn::ProcessData(int len)
 {
-	int len = Recv(buffer, 4096);
-
 	last_byte = buffer + len;
 	for (buf = buffer; buf < last_byte ; buf++)
 	{
@@ -1180,14 +1272,6 @@ int CTelnetConn::SendString(LPCTSTR str)
 
 BOOL CTelnetConn::Create()
 {
-	telnet = socket(AF_INET, SOCK_STREAM, 0);
-	sockaddr_in addr;
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	if (bind(telnet, (sockaddr*)&addr, sizeof(addr)))
-		return FALSE;
-
-	WSAAsyncSelect(telnet, view->m_hWnd, WM_SOCKET, FD_READ | FD_CLOSE | FD_CONNECT);
 	return TRUE;
 }
 

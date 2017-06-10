@@ -15,6 +15,7 @@
 #include "CustomTabCtrl.h"
 #include "CustomToolBar.h"
 #include "AutoComplete.h"	// Added by ClassView
+#include "Address.h"
 
 #include "AutoUpdate.h"
 #include "InstantTranDlg.h"
@@ -36,6 +37,8 @@ const WPARAM AC_PCMANLOCKED	= 1;
 const char TINY_URL[] = "http://tinyurl.com/create.php?url=";
 const char TINYURL_TEMP_FILENAME[] = "Tinyurl";
 
+CAddress ParseAddress(const CString& url);
+CString NameFromAddress(const CAddress& address);
 
 #define ID_MOUSE_SEL_TIMER	100
 

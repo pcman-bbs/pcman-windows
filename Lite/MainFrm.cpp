@@ -255,6 +255,39 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 END_MESSAGE_MAP()
 
+CAddress ParseAddress(const CString& url)
+{
+	CAddress address;
+	if (url.Find(_T("://")) >= 0)
+		address.Parse(url);
+	else
+		address.Parse(_T("telnet://") + url);
+	return address;
+}
+
+CString NameFromAddress(const CAddress& address)
+{
+	const CString& protocol = address.Protocol();
+
+	unsigned short default_port;
+	if (protocol == "telnet" || protocol == "bbs")
+		default_port = 23;
+	else if (protocol == "ws")
+		default_port = 80;
+	else if (protocol == "wss")
+		default_port = 443;
+	else
+		return address.URL();  // Non-BBS. Show full URL.
+
+	if (address.Port(default_port) != default_port)
+	{
+		CString s;
+		s.Format(_T("%s:%d"), address.Server(), address.Port());
+		return s;
+	}
+	return address.Server();
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame construction/destruction
 
@@ -610,21 +643,12 @@ LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
 					continue;
 				CString line = (pcon->is_web ? 'w' : 's') + pcon->name;
 				line += '\t';
-				if (0 == strnicmp("telnet://", pcon->address, 9))	// BBS
-					line += LPCTSTR(pcon->address) + 9;	// skip "telnet://"
-				else	// Web
-					line += pcon->address;
+				line += pcon->address.URL();
 #ifdef	_COMBO_
 				// FIXME: should this be pcon->is_telnet? what about ansi editor?
 				if (!pcon->is_web)
 				{
 #endif
-					if (static_cast<CTelnetConn*>(pcon)->port != 23)
-					{
-						char port_str[16];
-						sprintf(port_str, ":%d", static_cast<CTelnetConn*>(pcon)->port);
-						line += port_str;
-					}
 					CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
 					if (! telnet->cfg_path.IsEmpty())
 					{
@@ -671,7 +695,20 @@ void CMainFrame::UpdateStatus()
 			int hr = telnet->time / 3600;
 			min = min % 60;
 //			text.Format("\t連線時間：%d 小時 %d 分 %d 秒\t\t位址：%s",hr,min,sec,(LPCTSTR)telnet->address);
-			text.Format(con_status, hr, min, sec, (LPCTSTR)telnet->address);
+			text.Format(con_status, hr, min, sec, (LPCTSTR)telnet->address.URL());
+
+			if (telnet->IsSecureConn())
+			{
+				text += LoadString(IDS_CON_SECURE);
+			}
+
+#ifdef _DEBUG
+			if (telnet->conn_io)
+			{
+				text += " ";
+				text += telnet->conn_io->Description().c_str();
+			}
+#endif
 
 			char *szMouseGesture;
 
@@ -688,10 +725,10 @@ void CMainFrame::UpdateStatus()
 			CString mode;
 			mode.LoadString(telnet->insert_mode ? IDS_INSERT : IDS_REPLACE);
 			CString file;
-			if (telnet->address.IsEmpty())
+			if (telnet->address.Path().IsEmpty())
 				file.LoadString(IDS_NOT_SAVED);
 			else
-				file = telnet->address;
+				file = telnet->address.Path();
 //			text.Format( "ANSI彩色編輯\t編輯模式：%s\t檔案：%s", LPCTSTR(mode), LPCTSTR(file) );
 			text.Format(ansied_status, LPCTSTR(mode), LPCTSTR(file));
 		}
@@ -756,8 +793,8 @@ void CMainFrame::OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult)
 
 		::TrackPopupMenu(popup, TPM_RIGHTBUTTON | TPM_LEFTALIGN, pt.x, pt.y, 0, m_hWnd, NULL);
 		DeleteMenu(popup, pos, MF_BYPOSITION);
-		DeleteMenu(popup, ID_CONNECT_CLOSE_ALL_OTHERS, MF_BYCOMMAND);
-		DeleteMenu(popup, ID_CONNECT_CLOSE, MF_BYCOMMAND);
+DeleteMenu(popup, ID_CONNECT_CLOSE_ALL_OTHERS, MF_BYCOMMAND);
+DeleteMenu(popup, ID_CONNECT_CLOSE, MF_BYCOMMAND);
 
 	}
 	*pResult = 0;
@@ -781,7 +818,7 @@ void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 #if !defined(_COMBO_)
 #else
 	//	else if(::GetFocus())
-	focus =::GetFocus();
+	focus = ::GetFocus();
 #endif
 }
 
@@ -837,20 +874,33 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 
 	AddToTypedHistory(cmdline);
 
-	if (0 == strnicmp(cmdline, "telnet:", 7))
+	CAddress addr = ParseAddress(cmdline);
+	OutputDebugString(addr.Description());
+	if (!addr.IsValid())
 	{
-		cmdline += 7;
-		while (*cmdline == '/')
-			cmdline++;
+		return;
 	}
-	else if (0 == strnicmp(cmdline, "bbs:", 4))
+	const CString& protocol = addr.Protocol();
+
+	if (protocol == "telnet" ||
+		protocol == "bbs" ||
+		protocol == "ws" ||
+		protocol == "wss")
 	{
-		cmdline += 4;
-		while (*cmdline == '/')
-			cmdline++;
+		// BBS.
+	}
+	else if (protocol == "file" && addr.Path().Right(4) == ".ans")
+	{
+		// Support "file://{...}.ans".
+		if (IsFileExist(addr.Path()))
+		{
+			view.OpenAnsFile(addr.Path());
+			return;
+		}
 	}
 	else if (IsFileExist(cmdline))
 	{
+		// Plain path.
 		int l = strlen(cmdline);
 		if (l > 4)
 		{
@@ -862,7 +912,7 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 			else
 			{
 #if defined(_COMBO_)
-				view.ConnectWeb(cmdline, TRUE);
+				view.ConnectWeb(addr, TRUE);
 #endif
 				return;
 			}
@@ -871,33 +921,13 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 #if defined(_COMBO_)
 	else
 	{
-		view.ConnectWeb(cmdline, TRUE);
+		view.ConnectWeb(addr, TRUE);
 		return;
 	}
 #endif
 
-	CString param = cmdline;
-	if (param[param.GetLength()-1] == '/')
-		param = param.Left(param.GetLength() - 1);
+	view.Connect(addr, NameFromAddress(addr));
 
-	int pos = param.Find(':');
-
-	CString address;
-	unsigned short port;
-	if (pos == -1)
-	{
-		address = param;
-		port = 23;
-	}
-	else
-	{
-		address = param.Left(pos);
-		CString port_str = param.Mid(pos + 1);
-		port = (unsigned short)atoi(port_str);
-		if (port == 23)
-			param = address;
-	}
-	view.Connect(address, param, port);
 	if(!setCharset)
 	{
 		switch(AppConfig.saved_charset)
@@ -985,17 +1015,7 @@ void CMainFrame::UpdateAddressBar()
 	if (view.con)
 	{
 		SetWindowText(view.con->name + window_title);
-		CString address = view.con->address;
-		if (view.telnet && !view.telnet->is_ansi_editor)
-		{
-			if (view.telnet->port != 23)
-			{
-				char port_str[16];
-				sprintf(port_str, ":%d", view.telnet->port);
-				address += port_str;
-			}
-		}
-		address_bar.SetWindowText(address);
+		address_bar.SetWindowText(view.con->address.URL());
 	}
 	else
 	{
@@ -1005,17 +1025,7 @@ void CMainFrame::UpdateAddressBar()
 #else
 	if (view.telnet)
 	{
-		CString address = view.telnet->address;
-		if (!view.telnet->is_ansi_editor)
-		{
-			if (view.telnet->port != 23)
-			{
-				char port_str[16];
-				sprintf(port_str, ":%d", view.telnet->port);
-				address += port_str;
-			}
-		}
-		address_bar.SetWindowText(address);
+		address_bar.SetWindowText(view.telnet->address.URL());
 	}
 	else
 		address_bar.SetWindowText("");
@@ -1393,13 +1403,13 @@ void CMainFrame::OnAdsTelnet()
 
 void CMainFrame::OnNewWebConn()
 {
-	view.ConnectWeb("", TRUE);
+	view.ConnectWeb(CAddress(), TRUE);
 	OnAdsHttp();
 }
 
 void CMainFrame::OnNewHome()
 {
-	view.ConnectWeb("", TRUE);
+	view.ConnectWeb(CAddress(), TRUE);
 	((CWebConn*)view.con)->web_browser.wb_ctrl.GoHome();
 }
 
@@ -1467,7 +1477,7 @@ void CMainFrame::OnWebPageOpen()
 {
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, LoadString(IDS_WEBPAGE_FILTER), this);
 	if (dlg.DoModal() == IDOK)
-		view.ConnectWeb(dlg.GetPathName(), TRUE);
+		view.ConnectWeb(CAddress(dlg.GetPathName()), TRUE);
 }
 
 void CMainFrame::OnWebPageViewSrc()
@@ -1488,13 +1498,13 @@ void CMainFrame::OnWebPageViewSrc()
 
 void CMainFrame::OnNewCurPage()
 {
-	view.ConnectWeb((view.con && !view.telnet) ? view.con->address : "about:blank", TRUE);
+	view.ConnectWeb((view.con && !view.telnet) ? view.con->address : CAddress(), TRUE);
 }
 
 void CMainFrame::OnNewCurPageInIE()
 {
 	if (view.con && view.con->is_web)
-		::ShellExecute(m_hWnd, "open", GetIEPath(), view.con->address, NULL, SW_SHOW);
+		::ShellExecute(m_hWnd, "open", GetIEPath(), view.con->address.URL(), NULL, SW_SHOW);
 }
 
 void CMainFrame::OnWebPageSaveAs()
@@ -1603,7 +1613,7 @@ void CMainFrame::OnWebHome()
 			return;
 		}
 	}
-	view.ConnectWeb("", TRUE)->web_browser.wb_ctrl.GoHome();
+	view.ConnectWeb(CAddress(), TRUE)->web_browser.wb_ctrl.GoHome();
 }
 
 #endif
@@ -2417,7 +2427,7 @@ void CMainFrame::CloseConn(int i, bool confirm)
 		CString str("w");
 		str += pCon->name;
 		str += '\t';
-		str += pCon->address;
+		str += pCon->address.URL();
 		AddToHistoryMenu(str);
 	}
 #endif
@@ -2928,17 +2938,7 @@ void CMainFrame::OnFavorite(UINT id)
 					{
 						name = 's';	name += telnet->name;
 						name += '\t';
-#ifdef _COMBO_
-						name += telnet->address.Mid(9);
-#else
-						name += telnet->address;
-#endif
-						if (telnet->port != 23 && telnet->port > 0)
-						{
-							char port_str[16];
-							sprintf(port_str, ":%d", telnet->port);
-							name += port_str;
-						}
+						name += telnet->address.URL();
 						fav->InsertAt(id - 1, name);
 						AppConfig.favorites.SaveFavorites(TRUE);
 						LoadBBSFavorites();
@@ -3444,19 +3444,13 @@ void CMainFrame::OnAddToHome()
 	{
 		txt = "w" + view.con->name;
 		txt += '\t';
-		txt += view.con->address;
+		txt += view.con->address.URL();
 	}
 	else
 	{
 		txt = 's' + view.telnet->name;
 		txt += '\t';
-		txt += view.telnet->address.Mid(9);
-		if (view.telnet->port != 23)
-		{
-			char port_str[16];
-			sprintf(port_str, ":%d", view.telnet->port);
-			txt += port_str;
-		}
+		txt += view.telnet->address.URL();
 	}
 #else
 	if (!view.telnet || view.telnet->is_ansi_editor)
@@ -3464,13 +3458,7 @@ void CMainFrame::OnAddToHome()
 
 	txt = "s" + view.telnet->name;
 	txt += '\t';
-	txt += view.telnet->address;
-	if (view.telnet->port != 23)
-	{
-		char port_str[16];
-		sprintf(port_str, ":%d", view.telnet->port);
-		txt += port_str;
-	}
+	txt += view.telnet->address.URL();
 #endif
 
 	txt += "\x0d\x0a";
@@ -3525,11 +3513,11 @@ void CMainFrame::OnNciku()
 #endif
 		return;
 	}
-	CString tmp = "http://www.nciku.com.tw/search/all/"+view.GetSelText();
+	CAddress tmp("http://www.nciku.com.tw/search/all/" + view.GetSelText());
 #if defined _COMBO_
 	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tmp, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", tmp, NULL, NULL, SW_SHOWMAXIMIZED);
+	ShellExecute(m_hWnd, "open", tmp.URL(), NULL, NULL, SW_SHOWMAXIMIZED);
 #endif
 }
 
@@ -3548,11 +3536,11 @@ void CMainFrame::OnWikipedia()
 #endif
 		return;
 	}
-	CString tmp = "http://zh.wikipedia.org/wiki/"+view.GetSelText();
+	CAddress tmp("http://zh.wikipedia.org/wiki/" + view.GetSelText());
 #if defined _COMBO_
 	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tmp, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", tmp, NULL, NULL, SW_SHOWMAXIMIZED);
+	ShellExecute(m_hWnd, "open", tmp.URL(), NULL, NULL, SW_SHOWMAXIMIZED);
 #endif
 }
 
@@ -3760,7 +3748,7 @@ void CMainFrame::OnExit()
 void CMainFrame::OnHelp()
 {
 #if defined	_COMBO_
-	view.ConnectWeb("http://pcman.ptt.cc/pcman_help.html", TRUE);
+	view.ConnectWeb(CAddress("http://pcman.ptt.cc/pcman_help.html"), TRUE);
 #else
 //	if((long)ShellExecute(m_hWnd,"open",AppPath+"pcman.html",NULL,NULL,SW_SHOWMAXIMIZED)<=32)
 	ShellExecute(m_hWnd, "open", "http://pcman.ptt.cc/pcman_help.html", NULL, NULL, SW_SHOWMAXIMIZED);
@@ -3787,48 +3775,16 @@ void CMainFrame::OpenHomepage()
 				int p = str.Find('\t');
 				if (p < 0)
 					break;
-				CString address = str.Mid(p + 1);
-				int port = 0;
-				CTelnetConn* telnet = NULL;
-				if (str[0] == 's')	// telnet
-				{
-					p = address.Find(':');
-					if (p > 0)
-					{
-						port = atoi((LPCTSTR(address) + p + 1));
-						address = address.Left(p);
-					}
-					else
-						port = 23;
-
-#if defined(_COMBO_)
-					address = "telnet://" + address;
-#endif
-				}
+				CAddress address = ParseAddress(str.Mid(p + 1));
 				int i;
 				int c = tab.GetItemCount();
 				for (i = 0; i < c; i++)
 				{
 					CConn* pcon = tab.GetCon(i);
 					// The same site has been opened
-					if (0 == pcon->address.CompareNoCase(address))
+					if (0 == pcon->address.URL().CompareNoCase(address.URL()))
 					{
-						if (pcon->is_telnet)	// this is a telnet connection
-						{
-							CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
-							if (port == telnet->port)  // both address and port are duplicated
-							{
-								// If the site has been loaded with advanced settings, or
-								// we cannot provide more useful advanced settings over the loaded one,
-								// just skip this site.
-								if (! telnet->cfg_path.IsEmpty() || adv.IsEmpty())
-									break;
-							}
-						}
-						else
-						{
-							break;
-						}
+						break;
 					}
 				}
 				if (i < c)
@@ -3915,7 +3871,11 @@ void CMainFrame::OnNewConn()
 		return;
 	}
 
-	view.Connect(dlg.address, dlg.name, dlg.port);
+	CAddress address = ParseAddress(dlg.address);
+	if (!address.IsValid())
+		return;
+
+	view.Connect(address, dlg.name);
 	dlg.name.Empty();
 	dlg.address.Empty();
 	
@@ -4039,11 +3999,11 @@ void CMainFrame::OnBBSFont()
 
 LRESULT CMainFrame::OnDownloadPage(WPARAM, LPARAM)
 {
-	const char url[] = "http://of.openfoundry.org/projects/744/download";
+	CAddress url("http://of.openfoundry.org/projects/744/download");
 #ifdef	_COMBO_
 	((CMainFrame*)AfxGetApp()->GetMainWnd())->view.ConnectWeb(url, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", url.URL(), NULL, NULL, SW_SHOW);
 #endif
 	return 0;
 }

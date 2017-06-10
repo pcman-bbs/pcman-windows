@@ -631,6 +631,7 @@
 #define ID_SEARCHBAR_CLEANUP            33040
 #define IDS_CLOSE_ALL_OTHER_PAGES       33041
 #define ID_CONNECT_CLOSE_ALL_OTHERS     33042
+#define IDS_CON_SECURE                  33043
 
 // Next default values for new objects
 // 

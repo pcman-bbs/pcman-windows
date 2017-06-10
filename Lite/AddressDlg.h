@@ -31,7 +31,7 @@ public:
 
 	CString address;
 // Overrides
-	void DoDataExchange(CDataExchange* pDX);
+	void DoDataExchange(CDataExchange* pDX) override;
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAddressDlg)
 protected:

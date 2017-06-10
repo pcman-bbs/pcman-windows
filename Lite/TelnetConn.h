@@ -7,6 +7,9 @@
 // TelnetConn.h : header file
 //
 
+#include <memory>
+#include <atomic>
+
 #include <winsock2.h>
 // #include <WS2TCPIP.h> // for future IPV6 support
 
@@ -14,11 +17,38 @@
 #include "SiteSettings.h"
 #include "KeyMap.h"	// Added by ClassView
 #include "TriggerList.h"	// Added by ClassView
+#include "ConnIO.h"
+#include "TcpSocket.h"
 
 /////////////////////////////////////////////////////////////////////////////
 
 class CTermView;
 class CDownloadArticleDlg;
+
+struct CConnEvent
+{
+	enum EventType
+	{
+		EVENT_CONNECT = 0,
+		EVENT_CLOSE = 1,
+		EVENT_DATA = 2,
+		EVENT_CONNECT_FAILED = 3,
+	};
+	uint64_t connection_id;
+	EventType event_type;
+	std::string data;
+
+	CConnEvent(uint64_t connection_id, EventType event_type)
+		: connection_id(connection_id)
+		, event_type(event_type)
+	{}
+
+	static std::unique_ptr<CConnEvent> MakeUnique(
+		uint64_t connection_id, EventType event_type) {
+		return std::unique_ptr<CConnEvent>(new CConnEvent(
+			connection_id, event_type));
+	}
+};
 
 int find_sub_str(char* str, char* sub);
 
@@ -37,12 +67,14 @@ public:
 		MIN_LINE_COUNT = 24
 	};
 
-	unsigned short	port;
 	CString cfg_path;	//站台進階設定檔相對路徑
 	CKeyMap* key_map;	//鍵盤對映
 
 //	Socket handle
 	SOCKET telnet;
+	uint64_t connection_id;
+	std::shared_ptr<CConnIO> conn_io;
+	std::shared_ptr<CTcpSocket> tcp_socket;
 
 //	Screen Data
 	LPSTR *screen;	//screen buffer
@@ -87,6 +119,8 @@ BYTE get_article_in_editor : 1;
 
 	static CString downloaded_article;
     static int current_download_line;
+
+	static std::atomic<uint64_t> connection_counter;
 
 public:
 	CTelnetConn();
@@ -150,14 +184,20 @@ public:
 	inline void ResetMode(int p);
 	inline void DeviceStatusReport(int p);
 
-	inline int Close();
-	inline int Shutdown();
-	inline int Recv(void* buf, int len);
-	inline void Connect(sockaddr* addr, int len);
+	size_t GetConnectionID() const { return connection_id; }
+	bool HasSocket() const { return tcp_socket.operator bool(); }
+	SOCKET GetSocket() const { return tcp_socket->GetSocket(); }
+	bool IsSecureConn() const { return conn_io && conn_io->IsSecure(); }
+	void OnSocket(WPARAM wparam, LPARAM lparam);
+	int Close();
+	int Shutdown();
+	void HandleConnEvent(std::unique_ptr<CConnEvent> event);
+	void Connect(sockaddr* addr, int len);
+	void ConnectWebsocket();
 	BOOL Create();
 	int SendString(LPCTSTR str);
 	void LocalEcho(void* str, int len);
-	void ReceiveData();
+	void ProcessData(int len);
 	void CreateBuffer();
 	void CheckStrTrigger();
 	int Send(const void* lpBuf, int nBufLen);
@@ -166,7 +206,7 @@ public:
 	static void SetBgColor(BYTE& attr, BYTE bk);
 	void LineFeed();
 	void UpdateLine(int line);
-	void OnClose(int nErrorCode);
+	void OnClose();
 	void UpdateCursorPos();
 	void OnText();
 	void OnIAC();
@@ -183,8 +223,8 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CTelnetConn)
 public:
-	virtual void OnReceive(int nErrorCode);
-	virtual void OnConnect(int nErrorCode);
+	virtual void OnReceive(int len);
+	virtual void OnConnect(bool success);
 	//}}AFX_VIRTUAL
 
 	// Generated message map functions
@@ -195,34 +235,6 @@ public:
 // Implementation
 protected:
 };
-
-
-int CTelnetConn::Close()
-{
-	int r =::closesocket(telnet);
-	telnet = 0;
-	return r;
-}
-
-void CTelnetConn::Connect(sockaddr *addr, int len)
-{
-	::connect(telnet, addr, len);
-}
-
-int CTelnetConn::Recv(void *buf, int len)
-{
-	return ::recv(telnet, (char*)buf, len, 0);
-}
-
-
-#ifndef SD_SEND
-#define	SD_SEND	1
-#endif
-
-int CTelnetConn::Shutdown()
-{
-	return ::shutdown(telnet, SD_SEND);
-}
 
 inline void CTelnetConn::SetBgColor(BYTE &attr, BYTE bk)
 {
