@@ -113,8 +113,7 @@ CTelnetConn::~CTelnetConn()
 {
 	if (is_connected)
 		Shutdown();
-	if (telnet)
-		Close();
+	Close();
 
 	for (int i = 0; i < CTermView::all_telnet_conns.GetSize(); i++)
 	{

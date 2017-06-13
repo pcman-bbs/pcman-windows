@@ -2454,6 +2454,7 @@ void CMainFrame::CloseConn(int i, bool confirm)
 
 	if (pCon->is_lookup_host)
 	{
+		// In DNS lookup, the lookup callback is responsible for deleting.
 		pCon->is_lookup_host = false;
 		pCon->is_cancelled = true;
 	}

@@ -1389,7 +1389,7 @@ LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam)
 		if (new_telnet->is_cancelled)
 			delete new_telnet;
 		else
-			new_telnet->OnConnect(WSAEADDRNOTAVAIL);	//Connection failed
+			new_telnet->OnConnect(false);	//Connection failed
 	}
 	WaitForSingleObject(data->hTask, INFINITE);
 	CloseHandle(data->hTask);
@@ -1434,7 +1434,6 @@ void CTermView::ReConnect(CTelnetConn *retelnet)
 		parent->tab.SetItem(idx, &item);
 		retelnet->time = 0;
 		retelnet->ClearAllFlags();
-		retelnet->is_lookup_host = true;
 		retelnet->Close();
 		retelnet->ClearScreen(2);
 		retelnet->site_settings.Load(retelnet->cfg_path);
@@ -1444,6 +1443,7 @@ void CTermView::ReConnect(CTelnetConn *retelnet)
 	}
 	else
 	{
+		// Open in a new tab.
 		Connect(retelnet->address, retelnet->name, retelnet->cfg_path);
 	}
 }
@@ -2037,7 +2037,7 @@ void CTermView::ConnectSocket(CTelnetConn *new_telnet)
 {
 	if (InternetAttemptConnect(0) != ERROR_SUCCESS)
 	{
-		new_telnet->OnConnect(WSAENOTCONN);
+		new_telnet->OnConnect(false);
 		return;
 	}
 
@@ -2073,6 +2073,7 @@ void CTermView::ConnectTcp(CTelnetConn* new_telnet, CString host, unsigned short
 		return;
 	}
 //	如果不是IP，必須尋找主機
+	new_telnet->is_lookup_host = true;
 //	加入新執行緒
 	DNSLookupData *newfind = new DNSLookupData;
 	newfind->new_telnet = new_telnet;
