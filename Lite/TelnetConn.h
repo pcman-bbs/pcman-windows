@@ -71,7 +71,6 @@ public:
 	CKeyMap* key_map;	//¡‰ΩLπÔ¨M
 
 //	Socket handle
-	SOCKET telnet;
 	uint64_t connection_id;
 	std::shared_ptr<CConnIO> conn_io;
 	std::shared_ptr<CTcpSocket> tcp_socket;
