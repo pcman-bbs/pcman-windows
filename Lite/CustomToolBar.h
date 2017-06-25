@@ -35,7 +35,7 @@ public:
 			char tmp[10];
 			if (! value.IsEmpty())
 				value += ',';
-			sprintf(tmp, "%d", index[i]);
+			sprintf_s(tmp, "%d", index[i]);
 			value += tmp;
 		}
 	}

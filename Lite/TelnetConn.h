@@ -183,7 +183,7 @@ public:
 	inline void ResetMode(int p);
 	inline void DeviceStatusReport(int p);
 
-	size_t GetConnectionID() const { return connection_id; }
+	uint64_t GetConnectionID() const { return connection_id; }
 	bool HasSocket() const { return tcp_socket.operator bool(); }
 	SOCKET GetSocket() const { return tcp_socket->GetSocket(); }
 	bool IsSecureConn() const { return conn_io && conn_io->IsSecure(); }
