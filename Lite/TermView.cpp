@@ -2834,7 +2834,9 @@ void CTermView::OnUpdateBBSList()
 CString CTermView::GetSelText()
 {
 	CString ret;
-	if (telnet->sel_end.x != telnet->sel_start.x || telnet->sel_end.y != telnet->sel_start.y)
+	if (telnet != nullptr &&
+		(telnet->sel_end.x != telnet->sel_start.x ||
+			telnet->sel_end.y != telnet->sel_start.y))
 	{
 		UINT tmp;
 
