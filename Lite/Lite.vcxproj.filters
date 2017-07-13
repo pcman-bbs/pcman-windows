@@ -195,6 +195,9 @@
     <ClCompile Include="Address.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\BuildMenu\BuildMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\Resource\Common.rc">
@@ -395,6 +398,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TcpSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BuildMenu\BuildMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

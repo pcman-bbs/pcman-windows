@@ -7,6 +7,7 @@
 #include "PCMan.h"
 
 #include "MainFrm.h"
+#include "../BuildMenu/BuildMenu.h"
 #include "WinUtils.h"
 #include "CustomizeDlg.h"
 #include "PasswdDlg.h"
@@ -2547,7 +2548,13 @@ BOOL CMainFrame::LoadUI()
 	CFile ui;
 	if (!ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead)
 		&& !ui.Open(DefaultConfigPath + UI_FILENAME, CFile::modeRead))
-		return FALSE;
+	{
+		// Creates a UI file at user config directory.
+		if (!CreateUIFile(ConfigPath + UI_FILENAME))
+			return FALSE;
+		if (!ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead))
+			return FALSE;
+	}
 
 	main_menu = CreateMenu();
 	DWORD l = ui.GetLength();

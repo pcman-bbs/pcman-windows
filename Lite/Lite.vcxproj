@@ -94,7 +94,8 @@
       <Culture>0x0404</Culture>
     </ResourceCompile>
     <PreLinkEvent>
-      <Command>"$(OutDir)..\BuildMenu.exe" $(OutDir)..\PCMan\Config</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
     <Link>
       <AdditionalDependencies>wsock32.lib;winmm.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -139,7 +140,8 @@
       <Culture>0x0404</Culture>
     </ResourceCompile>
     <PreLinkEvent>
-      <Command>"$(OutDir)..\BuildMenu.exe" $(OutDir)..\PCMan\Config</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
     <Link>
       <AdditionalDependencies>wsock32.lib;winmm.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -153,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\BuildMenu\BuildMenu.cpp" />
     <ClCompile Include="..\ChiConv\ChiConv.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -482,6 +485,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\BuildMenu\BuildMenu.h" />
     <ClInclude Include="..\ChiConv\ChiConv.h" />
     <ClInclude Include="..\DlgLayout\DlgLayout.h" />
     <ClInclude Include="..\Resource\resource.h" />
@@ -561,12 +565,6 @@
     <None Include="res\copy_cur.cur" />
     <None Include="res\drag_cur.cur" />
     <None Include="res\hand.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="BuildMenuLite.vcxproj">
-      <Project>{0c6d5061-75a3-4206-b47d-479b41c62d16}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

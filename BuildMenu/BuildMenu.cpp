@@ -1,8 +1,8 @@
 // BuildMenu.cpp : Defines the class behaviors for the application.
 //
 
-#include "stdafx.h"
 #include "BuildMenu.h"
+#include "..\Lite\StdAfx.h"
 #include "..\Lite\AppConfig.h"
 #include "..\Resource\resource.h"
 
@@ -11,30 +11,6 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-/////////////////////////////////////////////////////////////////////////////
-// CBuildMenuApp
-
-BEGIN_MESSAGE_MAP(CBuildMenuApp, CWinApp)
-	//{{AFX_MSG_MAP(CBuildMenuApp)
-	//}}AFX_MSG
-	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
-END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CBuildMenuApp construction
-
-CBuildMenuApp::CBuildMenuApp()
-{
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// The one and only CBuildMenuApp object
-
-CBuildMenuApp theApp;
-
-/////////////////////////////////////////////////////////////////////////////
-// CBuildMenuApp initialization
 
 /* Menu 和 Command Item的結構
 
@@ -102,16 +78,13 @@ void UIWriteMenu(CFile& ui, HMENU hmenu, char* text, WORD state)
 	menu.Detach();
 }
 
-BOOL CBuildMenuApp::InitInstance()
+BOOL CreateUIFile(const CString& path)
 {
 //		用來產生UI檔的程式碼
 	CFile ui;
-	CString OutPath(m_lpCmdLine);
-	OutPath += '\\';
-	OutPath += UI_FILENAME;
 
 //	MessageBox( NULL, OutPath, NULL, MB_OK );
-	ui.Open(OutPath, CFile::modeWrite | CFile::modeCreate);
+	ui.Open(path, CFile::modeWrite | CFile::modeCreate);
 
 	HACCEL hacc = LoadAccelerators(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
 	WORD c = CopyAcceleratorTable(hacc, NULL, 0);
@@ -127,5 +100,5 @@ BOOL CBuildMenuApp::InitInstance()
 	DestroyMenu(tmp);
 	ui.Close();
 
-	return FALSE;
+	return TRUE;
 }
