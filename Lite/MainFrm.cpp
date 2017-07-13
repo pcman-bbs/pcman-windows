@@ -2545,22 +2545,15 @@ void CMainFrame::OnBBSMouseCTL()
 
 BOOL CMainFrame::LoadUI()
 {
-	CFile ui;
-	if (!ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead)
-		&& !ui.Open(DefaultConfigPath + UI_FILENAME, CFile::modeRead))
-	{
-		// Creates a UI file at user config directory.
-		if (!CreateUIFile(ConfigPath + UI_FILENAME))
-			return FALSE;
-		if (!ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead))
-			return FALSE;
-	}
+	std::unique_ptr<CBuffer> ui = GetUIBuffer();
+	if (!ui)
+		return FALSE;
 
 	main_menu = CreateMenu();
-	DWORD l = ui.GetLength();
+	DWORD l = ui->GetLength();
 	WORD count;
 //取得ACC table長度
-	ui.Read(&count, sizeof(WORD));
+	ui->Read(&count, sizeof(WORD));
 //開始建立Accelerator
 	if (accels)
 		delete []accels;
@@ -2568,7 +2561,7 @@ BOOL CMainFrame::LoadUI()
 
 	accel_count = count;
 	accels = new ACCEL[count];	//配置記憶體給acc table
-	ui.Read(accels, count*sizeof(ACCEL));	//換算成byte
+	ui->Read(accels, count*sizeof(ACCEL));	//換算成byte
 
 	m_hAccelTable = CreateAcceleratorTable(accels, count);
 //問題出在這裡,傳入CreateAcceleratorTable的應該是ACCEL的數量,而不是大小(位元組數)!!!!!!
@@ -2577,8 +2570,7 @@ BOOL CMainFrame::LoadUI()
 
 	l -= count + 2;	//剩餘UI長度
 	char* ui_buf = new char[l+32];
-	ui.Read(ui_buf, l);
-	ui.Close();
+	ui->Read(ui_buf, l);
 
 	UIAddMenu(ui_buf, main_menu);
 	delete []ui_buf;

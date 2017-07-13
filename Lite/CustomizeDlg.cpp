@@ -5,6 +5,7 @@
 #include "pcman.h"
 #include "CustomizeDlg.h"
 #include "MainFrm.h"
+#include "../BuildMenu/BuildMenu.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -121,13 +122,12 @@ BOOL CCustomizeDlg::OnInitDialog()
 	::SetWindowLong(hkedit2.m_hWnd, GWL_USERDATA, (LONG)this);
 	old_hkedit2_proc = (WNDPROC)::SetWindowLong(hkedit2.m_hWnd, GWL_WNDPROC, LONG(HotkeyEdit2Proc));
 
-	CFile ui;
-	if (ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead))
+	std::unique_ptr<CBuffer> ui = GetUIBuffer();
+	if (ui)
 	{
-		DWORD l = ui.GetLength();
+		DWORD l = ui->GetLength();
 		char* ui_buf = new char[l];
-		ui.Read(ui_buf, l);
-		ui.Close();
+		ui->Read(ui_buf, l);
 //		Åª¨úAccelerator
 		accel_count = *(WORD*)ui_buf;
 		accels = (ACCEL*)(ui_buf + sizeof(WORD));

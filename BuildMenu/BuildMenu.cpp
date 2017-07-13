@@ -32,7 +32,7 @@ struct CMDITEM
 */
 
 //		用來產生UI檔的程式碼
-void UIWriteMenu(CFile& ui, HMENU hmenu, char* text, WORD state)
+void UIWriteMenu(CBuffer& ui, HMENU hmenu, char* text, WORD state)
 {
 	CMenu menu;		menu.Attach(hmenu);
 	SHORT c = menu.GetMenuItemCount();
@@ -78,27 +78,46 @@ void UIWriteMenu(CFile& ui, HMENU hmenu, char* text, WORD state)
 	menu.Detach();
 }
 
-BOOL CreateUIFile(const CString& path)
+std::unique_ptr<CBuffer> BuildUIBuffer()
 {
 //		用來產生UI檔的程式碼
-	CFile ui;
+	std::unique_ptr<CBuffer> ui(new CBuffer());
 
 //	MessageBox( NULL, OutPath, NULL, MB_OK );
-	ui.Open(path, CFile::modeWrite | CFile::modeCreate);
+	//ui.Open(path, CFile::modeWrite | CFile::modeCreate);
 
 	HACCEL hacc = LoadAccelerators(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
 	WORD c = CopyAcceleratorTable(hacc, NULL, 0);
-	ui.Write(&c, 2);
+	ui->Write(&c, 2);
 	ACCEL *accels = new ACCEL[c];
 	CopyAcceleratorTable(hacc, accels, c);
-	ui.Write(accels, sizeof(ACCEL)*c);
+	ui->Write(accels, sizeof(ACCEL)*c);
 	delete []accels;
 	DestroyAcceleratorTable(hacc);
 
 	HMENU tmp = LoadMenu(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
-	UIWriteMenu(ui, tmp, "", 0);
+	UIWriteMenu(*ui, tmp, "", 0);
 	DestroyMenu(tmp);
-	ui.Close();
 
-	return TRUE;
+	return ui;
+}
+
+BOOL OpenUIFile(CFile& ui)
+{
+	return ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead)
+		|| ui.Open(DefaultConfigPath + UI_FILENAME, CFile::modeRead);
+}
+
+std::unique_ptr<CBuffer> GetUIBuffer()
+{
+	CFile ui;
+	if (OpenUIFile(ui))
+	{
+		std::unique_ptr<CBuffer> buf(new CBuffer());
+		buf->ReadFrom(ui);
+		ui.Close();
+		return buf;
+	}
+
+	return BuildUIBuffer();
 }
