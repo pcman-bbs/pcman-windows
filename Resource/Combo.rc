@@ -94,12 +94,7 @@ BEGIN
     END
 END
 
-#if defined(APSTUDIO_INVOKED) || defined(BUILD_UI)
-#if defined(APSTUDIO_INVOKED)
-IDR_BUILD_UI$(BUILD_UI) MENU PRELOAD DISCARDABLE 
-#else
-IDR_BUILD_UI MENU PRELOAD DISCARDABLE 
-#endif
+IDR_BUILD_UI MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "連線 (&C)"
     BEGIN
@@ -330,7 +325,6 @@ BEGIN
         MENUITEM "關於 PCMan Combo (&A)...",    ID_ABOUT
     END
 END
-#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -450,12 +444,7 @@ END
 // Accelerator
 //
 
-#if defined(APSTUDIO_INVOKED) || defined(BUILD_UI)
-#if defined(APSTUDIO_INVOKED)
-IDR_BUILD_UI$(BUILD_UI) ACCELERATORS DISCARDABLE 
-#else
-IDR_BUILD_UI ACCELERATORS DISCARDABLE 
-#endif
+IDR_BUILD_UI ACCELERATORS DISCARDABLE
 BEGIN
     "0",            ID_SWITCHCON10,         VIRTKEY, CONTROL, NOINVERT
     "0",            ID_SWITCHCON10,         VIRTKEY, ALT, NOINVERT
@@ -515,7 +504,6 @@ BEGIN
     "X",            ID_DOWN,                VIRTKEY, ALT, NOINVERT
     "Z",            ID_UP,                  VIRTKEY, ALT, NOINVERT
 END
-#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
