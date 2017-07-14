@@ -354,8 +354,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SIZE sizebtn;
 	SIZE sizeimg;
 	BITMAP bmp;
-	toolbar.CreateEx(this,  TBSTYLE_FLAT, CCS_ADJUSTABLE | CBRS_ALIGN_TOP | CBRS_TOOLTIPS |
-					 WS_CHILD | WS_VISIBLE, tmprc, IDC_TOOLBAR);
+	toolbar.CreateEx(this, TBSTYLE_FLAT| TBSTYLE_TRANSPARENT,
+		CCS_ADJUSTABLE | CBRS_ALIGN_TOP | CBRS_TOOLTIPS | WS_CHILD | WS_VISIBLE,
+		tmprc, IDC_TOOLBAR);
 	
 	CBitmap toolbar_bkgnd;
 
