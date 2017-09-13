@@ -326,8 +326,8 @@ BOOL CAboutDlg::OnInitDialog()
 
 	char buf1[0x100];
 
-	wsprintf(buf1, "%s - %d.%d.%d (Novus), Build %d, %s",
-			 Version_InternalNameA, Version_Major, Version_Minor, Version_PatchLevel, Version_BuildNumber, Version_RevDateA);
+	wsprintf(buf1, "%s - %d.%d.%d (Novus)",
+			 Version_InternalNameA, Version_Major, Version_Minor, Version_PatchLevel);
 
 	GetDlgItem(IDC_VERSION)->SetWindowText(buf1);
 	return TRUE;
