@@ -83,7 +83,10 @@ FunctionEnd
 
 !macro ExtractExecDelete Path
   File "${Path}"
+  ClearErrors
   ExecWait "$INSTDIR\${Path}"
+  IfErrors 0 +2
+  Abort
   Delete "$INSTDIR\${Path}"
 !macroend
 
