@@ -9,10 +9,11 @@ build:
   parallel: true
   verbosity: minimal
 after_build:
+- ps: .\Scripts\DownloadNonFree.ps1
 - ps: .\Scripts\AfterBuild.ps1
 artifacts:
-- path: Lite\Release\PCMan.7z
-- path: Combo\Release\PCManCB.7z
+- path: Lite\Release\PCMan.zip
+- path: Combo\Release\PCManCB.zip
 - path: Release\PCMan.exe
 - path: Release\PCManCB.exe
 deploy:
