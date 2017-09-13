@@ -13,10 +13,8 @@ if "%1" == "1" (
 
 if "%ShowDbgMsg%" == "1" (
 	call %Version_Create_PATH%  %Version_Set_PATH% %Version_H_PATH%
-	pause
 )else (
 	call %Version_Create_PATH%  %Version_Set_PATH% %Version_H_PATH% > nul
-	pause > nul
 )
 	
 
