@@ -309,20 +309,33 @@ int CApp::ExitInstance()
 	return CWinApp::ExitInstance();
 }
 
+bool ReadFileAppend(const CString& path, std::string* buf)
+{
+	CFile f;
+	if (!f.Open(path, CFile::modeRead))
+		return false;
+	size_t orig_buf_size = buf->size();
+	size_t size = f.GetLength();
+	buf->resize(orig_buf_size + size);
+	if (f.Read(&(*buf)[orig_buf_size], size) != size)
+	{
+		buf->resize(orig_buf_size);
+		return false;
+	}
+	f.Close();
+	return true;
+}
+
 BOOL CAboutDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	CFile story;
-	if (story.Open((AppPath + "story.txt"), CFile::modeRead))
-	{
-		DWORD size = story.GetLength();
-		char* buf = new char[size+1];
-		story.Read(buf, size);
-		buf[size] = '\0';
-		story.Close();
-		GetDlgItem(IDC_EDIT)->SetWindowText(buf);
-		delete []buf;
-	}
+
+	std::string buffer;
+	ReadFileAppend(AppPath + "story.txt", &buffer);
+	buffer += _T("\r\n");
+	ReadFileAppend(AppPath + "OpenSourceLicenses.txt", &buffer);
+	buffer += _T("\r\n");
+	GetDlgItem(IDC_EDIT)->SetWindowText(buffer.c_str());
 
 	char buf1[0x100];
 
