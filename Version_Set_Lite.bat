@@ -5,6 +5,7 @@ SET PatchLevel=0
 SET BuildNumber=0
 SET BuildNumber_Date=
 
+SET VersionAppend=""
 
 SET CompanyName="PCMan\0"
 SET ProductName="PCMan\0"

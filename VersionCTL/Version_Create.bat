@@ -52,6 +52,7 @@ echo #define Version_Major %MajorVersion% >> %VersionFile_tmp%
 echo #define Version_Minor %MinorVersion% >> %VersionFile_tmp%
 echo #define Version_PatchLevel %PatchLevel% >> %VersionFile_tmp%
 echo #define Version_BuildNumber   %BuildNumber% >> %VersionFile_tmp%
+echo #define Version_Append   %VersionAppend% >> %VersionFile_tmp%
 
 echo // >> %VersionFile_tmp%
 echo #define Version_RevDateA   "%BuildNumber_Date%" >> %VersionFile_tmp%
@@ -93,6 +94,7 @@ if exist %VersionFile_tmp2% (
 SET MajorVersion=
 SET MinorVersion=
 SET PatchLevel=
+SET VersionAppend=
 SET CompanyName=
 SET ProductName=
 SET InternalName=
