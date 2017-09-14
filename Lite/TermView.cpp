@@ -116,6 +116,7 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_COMMAND(ID_ANSI_INS, OnAnsiIns)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_IME_CHAR, OnImeChar)
+	ON_MESSAGE(WM_IME_STARTCOMPOSITION, OnImeStartComposition)
 	ON_MESSAGE(WM_IME_COMPOSITION, OnImeComposition)
 	ON_MESSAGE(WM_INPUTLANGCHANGE, OnInputLangChange)
 	ON_MESSAGE(WM_DNSLOOKUP_END, OnDNSLookupEnd)
@@ -141,6 +142,7 @@ CAddress AnsiAddressFromPath(const CString& path)
 
 
 CPtrArray CTermView::all_telnet_conns;
+const int CTermView::kCaretHeight = 2;
 
 CTermView::CTermView()
 {
@@ -1157,12 +1159,7 @@ void CTermView::OnSetFocus(CWnd* pOldWnd)
 		MouseCTL_OnSetFocus(m_hWnd);
 
 	CWnd::OnSetFocus(pOldWnd);
-	CreateCaret();
-	ShowCaret();
-	if (telnet)
-		telnet->UpdateCursorPos();
-	else
-		SetCaretPos(CPoint(left_margin, lineh + top_margin - 2));
+	OnLayoutChanged();
 }
 
 void CTermView::OnKillFocus(CWnd* pNewWnd)
@@ -1213,6 +1210,23 @@ LRESULT CTermView::OnInputLangChange(WPARAM wparam, LPARAM lparam)
 
 	ime_prop = ImmGetProperty((HKL)lparam, IGP_PROPERTY);
 	return 0;
+}
+
+void CTermView::UpdateImeCompositionFont()
+{
+	HIMC hImc = ImmGetContext(m_hWnd);
+	if (hImc)
+	{
+		ImmSetCompositionFont(hImc, &AppConfig.font_info);
+		ImmReleaseContext(m_hWnd, hImc);
+	}
+}
+
+LRESULT CTermView::OnImeStartComposition(WPARAM wparam, LPARAM lparam)
+{
+	UpdateImeCompositionFont();
+	// Need this or composition window won't show up, or it's out of bounds.
+	return DefWindowProc(WM_IME_STARTCOMPOSITION, wparam, lparam);
 }
 
 LRESULT CTermView::OnImeComposition(WPARAM wparam, LPARAM lparam)
@@ -2968,13 +2982,18 @@ void CTermView::AdjustFont(int cx, int cy)
 	}
 	left_margin = (cx - chw * cols_per_page) / 2;
 	top_margin = (cy - lineh * lines_per_page) / 2;
+	OnLayoutChanged();
+}
 
+void CTermView::OnLayoutChanged()
+{
+	UpdateImeCompositionFont();
 	CreateCaret();
 	ShowCaret();
 	if (telnet)
 		telnet->UpdateCursorPos();
 	else
-		SetCaretPos(CPoint(left_margin, top_margin + lineh - 2));
+		SetCursorPos(0, 0);
 }
 
 void CTermView::ConnectStr(CString name, CString dir)
@@ -3344,4 +3363,23 @@ BOOL CTermView::CanUseMouseCTL()
 		xRet = TRUE;
 
 	return xRet;
+}
+
+void CTermView::SetCursorPos(int text_x, int text_y)
+{
+	CPoint pos;
+	pos.x = text_x * chw + left_margin;
+	pos.y = (text_y + 1) * lineh + top_margin - kCaretHeight;
+	SetCaretPos(pos);
+
+	HIMC hImc = ImmGetContext(m_hWnd);
+	if (hImc)
+	{
+		COMPOSITIONFORM comp;
+		comp.dwStyle = CFS_POINT;
+		comp.ptCurrentPos.x = pos.x;
+		comp.ptCurrentPos.y = text_y * lineh + top_margin;
+		ImmSetCompositionWindow(hImc, &comp);
+		ImmReleaseContext(m_hWnd, hImc);
+	}
 }

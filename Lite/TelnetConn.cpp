@@ -630,21 +630,17 @@ void CTelnetConn::UpdateCursorPos()
 {
 	if (this != ((CTermView*)view)->telnet)
 		return;
-	CPoint pos;
-	pos.x = cursor_pos.x * view->chw + view->left_margin;
 	int y;
 	if (is_ansi_editor)
 	{
-		y = cursor_pos.y - scroll_pos + 1;
-		pos.y = y * view->lineh + view->top_margin - 2;
+		y = cursor_pos.y - scroll_pos;
 	}
 	else
 	{
-		y = cursor_pos.y - first_line + 1;
-		pos.y = y * view->lineh + view->top_margin - 2;
+		y = cursor_pos.y - first_line;
 	}
-	view->SetCaretPos(pos);
-	if (y < 1 || y > site_settings.lines_per_page)
+	view->SetCursorPos(cursor_pos.x, y);
+	if (y < 0 || y >= site_settings.lines_per_page)
 		view->HideCaret();
 	else
 	{

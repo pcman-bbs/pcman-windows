@@ -109,6 +109,7 @@ public:
 	virtual ~CTermView();
 
 	LRESULT OnImeChar(WPARAM wparam, LPARAM lparam);
+	LRESULT OnImeStartComposition(WPARAM wparam, LPARAM lparam);
 	LRESULT OnImeComposition(WPARAM wparam, LPARAM lparam);
 	LRESULT _OnImeCompositionW(WPARAM wparam, LPARAM lparam);
 	LRESULT _OnImeCompositionA(WPARAM wparam, LPARAM lparam);
@@ -136,12 +137,6 @@ public:
 		}
 	}
 
-	inline void CreateCaret()
-	{
-		caret_vis = 0;
-		::CreateCaret(m_hWnd, NULL, chw, 2);
-	}
-
 	char* HyperLinkHitTest(int x, int y, int& len);
 	inline void PtToLineCol(POINT pt, int& x, int& y, bool adjust_x = true);
 
@@ -152,6 +147,9 @@ public:
 	static CPtrArray all_telnet_conns;
 	void ConnectStr(CString name, CString dir);
 	void AdjustFont(int cx, int cy);
+	void OnLayoutChanged();
+	void UpdateImeCompositionFont();
+	void SetCursorPos(int text_x, int text_y);
 	CString GetSelText();
 	void FindStart();
 
@@ -246,6 +244,15 @@ protected:
 
 	inline void DrawLineBlinkOld(CDC &dc, LPSTR line, int y);
 	inline void DrawLineOld(CDC &dc, LPSTR line, BYTE* pline_selstart, BYTE* pline_selend, int y);
+
+private:
+	static const int kCaretHeight;
+
+	inline void CreateCaret()
+	{
+		caret_vis = 0;
+		::CreateCaret(m_hWnd, NULL, chw, kCaretHeight);
+	}
 };
 
 

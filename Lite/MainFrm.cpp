@@ -3264,7 +3264,7 @@ void CMainFrame::SwitchToConn(int index)
 #endif /////////////////////////////////
 		view.telnet = NULL;
 		view.SetFocus();
-		view.SetCaretPos(CPoint(view.left_margin, view.top_margin + view.lineh - 2));
+		view.SetCursorPos(0, 0);
 		CRect &view_rect = view.view_rect;
 		view.GetClientRect(view_rect);
 		view.AdjustFont(view_rect.right, view_rect.bottom);
@@ -3987,12 +3987,7 @@ void CMainFrame::OnBBSFont()
 			view.lineh = sz.cy;//¦r°ª
 			view.left_margin = (rc.right - view.chw * cols_per_page) / 2;
 			view.top_margin = (rc.bottom - view.lineh * lines_per_page) / 2;
-			view.CreateCaret();
-			view.ShowCaret();
-			if (telnet)
-				telnet->UpdateCursorPos();
-			else
-				SetCaretPos(CPoint(view.left_margin, view.top_margin + view.lineh - 2));
+			view.OnLayoutChanged();
 		}
 		view.Invalidate(FALSE);
 	}
