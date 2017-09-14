@@ -3,6 +3,7 @@ image: Visual Studio 2017
 configuration: Release
 install:
 - ps: .\Scripts\BeforeBuild.ps1
+clone_folder: C:\projects\pcman-windows
 cache: C:\projects\pcman-windows\cache\vcpkg-installed
 build:
   project: PCMan.sln
