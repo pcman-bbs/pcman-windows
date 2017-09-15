@@ -1,11 +1,11 @@
 SET MajorVersion=9
-SET MinorVersion=2
+SET MinorVersion=5
 SET PatchLevel=0
 
 SET BuildNumber=0
 SET BuildNumber_Date=
 
-SET VersionAppend=""
+SET VersionAppend=" Beta"
 
 SET CompanyName="PCMan Project\0"
 SET ProductName="PCMan Combo\0"
