@@ -41,3 +41,16 @@ CString CAddress::Description() const
 		protocol_, server_, port_, path_, url_);
 	return s;
 }
+
+unsigned short CAddress::DefaultPort() const
+{
+	const CString& protocol = Protocol();
+	if (protocol == "telnet" || protocol == "bbs")
+		return 23;
+	else if (protocol == "http" || protocol == "ws")
+		return 80;
+	else if (protocol == "https" || protocol == "wss")
+		return 443;
+	else
+		return 0;
+}

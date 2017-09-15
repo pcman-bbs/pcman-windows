@@ -271,16 +271,11 @@ CString NameFromAddress(const CAddress& address)
 	const CString& protocol = address.Protocol();
 
 	unsigned short default_port;
-	if (protocol == "telnet" || protocol == "bbs")
-		default_port = 23;
-	else if (protocol == "ws")
-		default_port = 80;
-	else if (protocol == "wss")
-		default_port = 443;
-	else
+	if (protocol != "telnet" && protocol != "bbs" &&
+		protocol != "ws" && protocol != "wss")
 		return address.URL();  // Non-BBS. Show full URL.
 
-	if (address.Port(default_port) != default_port)
+	if (address.Port() != address.DefaultPort())
 	{
 		CString s;
 		s.Format(_T("%s:%d"), address.Server(), address.Port());
@@ -3872,7 +3867,7 @@ void CMainFrame::OnNewConn()
 		return;
 	}
 
-	CAddress address = ParseAddress(dlg.address);
+	CAddress address = ParseAddress(dlg.GetFormattedAddress());
 	if (!address.IsValid())
 		return;
 

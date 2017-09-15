@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "pcman.h"
+#include "Address.h"
 #include "ConnectPage.h"
 
 #ifdef _DEBUG
@@ -26,14 +27,44 @@ CConnectPage::~CConnectPage()
 {
 }
 
+void CConnectPage::InitWithAddress(const CString& addr)
+{
+	address = addr;
+	port = 0;
+
+	CAddress a(address);
+	if (!a.IsValid())
+	{
+		port = 23;
+		int pos = address.ReverseFind(':');
+		if (pos != -1)
+		{
+			port = (unsigned short)atoi(address.Mid(pos + 1));
+			address = address.Left(pos);
+		}
+	}
+}
+
+CString CConnectPage::GetFormattedAddress() const
+{
+	CAddress addr(address);
+	if (addr.IsValid())
+		return addr.URL();
+	if (port == 23 || port <= 0)
+		return address;
+	CString buf;
+	buf.Format("%s:%d", LPCTSTR(address), port);
+	return buf;
+}
+
 void CConnectPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConnectPage)
 	DDX_CBString(pDX, IDC_ADDRESS, address);
 	DDX_Text(pDX, IDC_NAME, name);
-	DDV_MinMaxInt(pDX, port, 1, 65535);
 	DDX_Text(pDX, IDC_PORT, port);
+	DDV_MinMaxInt(pDX, port, 0, 65535);
 	//}}AFX_DATA_MAP
 	if (name.IsEmpty())
 		name = address;
@@ -44,6 +75,8 @@ void CConnectPage::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CConnectPage, CPropertyPage)
 	//{{AFX_MSG_MAP(CConnectPage)
+	ON_CBN_EDITCHANGE(IDC_ADDRESS, &CConnectPage::OnAddressChanged)
+	ON_CBN_SELCHANGE(IDC_ADDRESS, &CConnectPage::OnAddressChanged)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -67,5 +100,24 @@ BOOL CConnectPage::OnInitDialog()
 		AppConfig.history.GetNext(pos);
 	}
 
+	OnAddressChanged();
+
 	return TRUE;
+}
+
+void CConnectPage::OnAddressChanged()
+{
+	CEdit* port_field = (CEdit*) GetDlgItem(IDC_PORT);
+
+	CString addr_text;
+	GetDlgItemText(IDC_ADDRESS, addr_text);
+
+	CAddress addr(addr_text);
+	port_field->EnableWindow(!addr.IsValid());
+	if (addr.IsValid())
+	{
+		CString port_text;
+		port_text.Format("%d", addr.Port());
+		port_field->SetWindowText(port_text);
+	}
 }

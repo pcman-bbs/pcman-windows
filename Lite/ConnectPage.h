@@ -21,6 +21,9 @@ public:
 	CConnectPage();
 	~CConnectPage();
 
+	void InitWithAddress(const CString& addr);
+	CString GetFormattedAddress() const;
+
 // Dialog Data
 	//{{AFX_DATA(CConnectPage)
 	enum { IDD = IDD_CONNECT };
@@ -43,6 +46,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CConnectPage)
 	afx_msg BOOL OnInitDialog();
+	afx_msg void OnAddressChanged();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

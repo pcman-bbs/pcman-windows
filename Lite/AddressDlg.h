@@ -22,6 +22,8 @@ public:
 	BOOL OnInitDialog();
 	CAddressDlg(CWnd* pParent = NULL);   // standard constructor
 
+	CString GetFormattedAddress() const;
+
 // Dialog Data
 	//{{AFX_DATA(CAddressDlg)
 	enum { IDD = IDD_QUICKCONNECT };
@@ -42,7 +44,7 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CAddressDlg)
-	// NOTE: the ClassWizard will add member functions here
+	afx_msg void OnAddressChanged();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

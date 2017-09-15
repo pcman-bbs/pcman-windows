@@ -1384,7 +1384,7 @@ LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam)
 	sockaddr.sin_family = AF_INET;
 	// XXX: This path only serves telnet, but we might server others as well later.
 	// Don't hard code default port 23.
-	sockaddr.sin_port = htons((u_short)new_telnet->address.Port(23));
+	sockaddr.sin_port = htons((u_short)new_telnet->address.Port());
 //	sockaddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
 
 	if (found)
@@ -2063,7 +2063,7 @@ void CTermView::ConnectSocket(CTelnetConn *new_telnet)
 	if (protocol == "telnet" ||
 		protocol == "bbs")
 	{
-		ConnectTcp(new_telnet, address.Server(), address.Port(23));
+		ConnectTcp(new_telnet, address.Server(), address.Port());
 	}
 	else if (protocol == "ws" ||
 			 protocol == "wss")

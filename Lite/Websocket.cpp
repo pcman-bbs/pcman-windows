@@ -223,12 +223,11 @@ bool CWebsocket::Connect()
 	cli_info.address = address_.Server();
 	cli_info.ssl_connection = (address_.Protocol() == "wss");
 
-	unsigned short default_port = cli_info.ssl_connection ? 443 : 80;
-	cli_info.port = address_.Port(default_port);
+	cli_info.port = address_.Port();
 	cli_info.path = address_.Path();
 
-	if (cli_info.port != default_port)
-		host_header_.Format(_T(":%d"), address_.Port());
+	if (cli_info.port != address_.DefaultPort())
+		host_header_.Format(_T(":%d"), cli_info.port);
 	host_header_ = address_.Server() + host_header_;
 	cli_info.host = host_header_;
 	cli_info.origin = "app://pcman";

@@ -17,10 +17,11 @@ public:
 	const CString& URL() const { return url_; }
 	const CString& Protocol() const { assert(valid_); return protocol_; }
 	const CString& Server() const { assert(valid_); return server_; }
-	unsigned short Port(unsigned short default_port = 0) const {
+	unsigned short Port() const {
 		assert(valid_);
-		return port_ ? port_ : default_port;
+		return port_ ? port_ : DefaultPort();
 	}
+	unsigned short DefaultPort() const;
 	const CString& Path() const { assert(valid_); return path_; }
 
 	CString Description() const;

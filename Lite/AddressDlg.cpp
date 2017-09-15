@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "Address.h"
 #include "AddressDlg.h"
 #include "AppConfig.h"
 #include "MainFrm.h"
@@ -24,9 +25,23 @@ CAddressDlg::CAddressDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 }
 
+CString CAddressDlg::GetFormattedAddress() const
+{
+	// XXX: Duplicate code.
+	CAddress addr(address);
+	if (addr.IsValid())
+		return addr.URL();
+	if (port == 23 || port <= 0)
+		return address;
+	CString buf;
+	buf.Format("%s:%d", LPCTSTR(address), port);
+	return buf;
+}
+
 BEGIN_MESSAGE_MAP(CAddressDlg, CDialog)
 	//{{AFX_MSG_MAP(CAddressDlg)
-	// NOTE: the ClassWizard will add message map macros here
+	ON_CBN_EDITCHANGE(IDC_ADDRESS, &CAddressDlg::OnAddressChanged)
+	ON_CBN_SELCHANGE(IDC_ADDRESS, &CAddressDlg::OnAddressChanged)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -74,8 +89,26 @@ void CAddressDlg::DoDataExchange(CDataExchange* pDX)
 {
 	//{{AFX_DATA_MAP(CAddressDlg)
 	DDX_Text(pDX, IDC_PORT, port);
-	DDV_MinMaxInt(pDX, port, 1, 65535);
+	DDV_MinMaxInt(pDX, port, 0, 65535);
 	DDX_Text(pDX, IDC_NAME, name);
 	//}}AFX_DATA_MAP
 	CDialog::DoDataExchange(pDX);
+}
+
+void CAddressDlg::OnAddressChanged()
+{
+	// XXX: Duplicate code.
+	CEdit* port_field = (CEdit*)GetDlgItem(IDC_PORT);
+
+	CString addr_text;
+	GetDlgItemText(IDC_ADDRESS, addr_text);
+
+	CAddress addr(addr_text);
+	port_field->EnableWindow(!addr.IsValid());
+	if (addr.IsValid())
+	{
+		CString port_text;
+		port_text.Format("%d", addr.Port());
+		port_field->SetWindowText(port_text);
+	}
 }
