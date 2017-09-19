@@ -2,6 +2,7 @@
 #include "ConnIO.h"
 
 #include <atomic>
+#include <deque>
 #include <string>
 #include <mutex>
 #include <thread>
@@ -158,20 +159,26 @@ public:
 		std::shared_ptr<CWebsocket> websocket_;
 	};
 
+	using ustring = std::basic_string<unsigned char>;
+
 private:
+	int OnWritable();
+	int OnWritableLocked();
+
 	CAddress address_;
 	// Host header to send. It will contain port number if it's not the default.
 	CString host_header_;
 	std::shared_ptr<CConnEventDelegate> delegate_;
-	std::atomic<bool> is_secure_;
+	std::atomic<bool> is_secure_ = false;
 	std::string cipher_;
 
 	struct lws_client_connect_info cli_info;
 
 	std::mutex mu_;
-	struct lws* lws_;
+	struct lws* lws_ = nullptr;
+	std::deque<ustring> buffers_;
 
-	std::atomic<bool> shutdown_;
+	std::atomic<bool> shutdown_ = false;
 };
 
 std::shared_ptr<CConnIO> CreateWebsocket(
@@ -213,7 +220,6 @@ CWebsocket::CWebsocket(
 	std::shared_ptr<CConnEventDelegate> delegate)
 	: address_(address)
 	, delegate_(delegate)
-	, is_secure_(false)
 {
 }
 
@@ -284,7 +290,7 @@ int CWebsocket::OnCallback(
 			lws_close_reason(lws_, LWS_CLOSE_STATUS_NORMAL, (unsigned char*)"bye", 3);
 			return -1;
 		}
-		break;
+		return OnWritable();
 	}
 	return 0;
 }
@@ -304,12 +310,41 @@ int CWebsocket::Send(const void* data, size_t length)
 		return -1;
 
 	constexpr size_t kMaxSend = 4096;
-	unsigned char buf[LWS_PRE + kMaxSend];
-	if (length > kMaxSend)
+	for (size_t sent = 0; sent < length; sent += kMaxSend)
+	{
+		const char* p = (const char*) data;
+		size_t to_queue = min(length - sent, kMaxSend);
+		ustring buf;
+		buf.resize(to_queue + LWS_PRE);
+		memcpy(&buf.front() + LWS_PRE, p + sent, to_queue);
+		buffers_.push_back(std::move(buf));
+	}
+	if (OnWritableLocked() < 0)
 		return -1;
-	memcpy(buf + LWS_PRE, data, length);
-	lws_write(lws_, buf + LWS_PRE, length, LWS_WRITE_BINARY);
 	return length;
+}
+
+int CWebsocket::OnWritable()
+{
+	std::lock_guard<std::mutex> lk(mu_);
+	return OnWritableLocked();
+}
+
+int CWebsocket::OnWritableLocked()
+{
+	while (!lws_send_pipe_choked(lws_) && !buffers_.empty())
+	{
+		ustring buf = std::move(buffers_.front());
+		buffers_.pop_front();
+
+		// We prepended LWS_PRE in buf.
+		size_t s = buf.size() - LWS_PRE;
+		if (lws_write(lws_, &buf.front() + LWS_PRE, s, LWS_WRITE_BINARY) < 0)
+			return -1;
+	}
+	if (!buffers_.empty())
+		lws_callback_on_writable(lws_);
+	return 0;
 }
 
 void CWebsocket::Shutdown()
