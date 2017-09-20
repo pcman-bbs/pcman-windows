@@ -137,8 +137,8 @@ public:
 		}
 	}
 
-	char* HyperLinkHitTest(int x, int y, int& len);
-	inline void PtToLineCol(POINT pt, int& x, int& y, bool adjust_x = true);
+	char* HyperLinkHitTest(CPoint client_point, int& len);
+	void PtToLineCol(POINT pt, int& x, int& y, bool adjust_x = true);
 
 // Generated message map functions
 public:
@@ -253,6 +253,8 @@ private:
 		caret_vis = 0;
 		::CreateCaret(m_hWnd, NULL, chw, kCaretHeight);
 	}
+
+	CRect TextRect() const;
 };
 
 

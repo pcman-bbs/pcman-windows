@@ -798,10 +798,8 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point_In)
 	else
 	{
 //	----------¦pªG¤£¬O¦b¿ï¨ú¤å¦r¡A´N³B²z¶W³sµ²--------------
-		int x, y;
-		PtToLineCol(point, x, y, false);	//´«ºâ¦¨²×ºÝ¾÷¿Ã¹õ®y¼Ð
 		int l;	char* url;
-		if ((url = HyperLinkHitTest(x, y, l)))	//¦pªG·Æ¹«ÂI¿ï¨ì¶W³sµ²
+		if ((url = HyperLinkHitTest(point, l)))	//¦pªG·Æ¹«ÂI¿ï¨ì¶W³sµ²
 		{
 			char tmp;	tmp = url[l];	url[l] = 0;
 			//	©I¥sµ{¦¡¶}±Ò¶W³sµ²
@@ -949,7 +947,7 @@ void CTermView::OnMouseMove(UINT nFlags, CPoint point_In)
 	else
 	{
 		int len;
-		if (HyperLinkHitTest(lx, ly, len))
+		if (HyperLinkHitTest(point_In, len))
 		{
 			if (MouseCTL_GetCurrentMouseCursor() == NULL)
 				SetCursor(hand_cursor);
@@ -1017,7 +1015,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		ScreenToClient(&pt);
 		PtToLineCol(pt, x, y, false);
 
-		if ((link = HyperLinkHitTest(x, y, len)))	//¦pªG°»´ú¨ì¬O¶W³sµ²
+		if ((link = HyperLinkHitTest(pt, len)))	//¦pªG°»´ú¨ì¬O¶W³sµ²
 		{
 			InsertMenu(parent->edit_menu, 0, MF_SEPARATOR | MF_BYPOSITION, 0, 0);
 			InsertMenu(parent->edit_menu, 0, MF_STRING | MF_BYPOSITION, ID_EDIT_COPYURL, LoadString(IDS_COPY_URL));
@@ -2717,7 +2715,7 @@ void CTermView::FindStart()
 		pfinddlg->SetForegroundWindow();
 }
 
-inline void CTermView::PtToLineCol(POINT pt, int &x, int &y, bool adjust_x)
+void CTermView::PtToLineCol(POINT pt, int &x, int &y, bool adjust_x)
 {
 	pt.x -= left_margin;	pt.y -= top_margin;
 	if (pt.x < 0)	pt.x = 0;
@@ -2754,15 +2752,30 @@ inline void CTermView::PtToLineCol(POINT pt, int &x, int &y, bool adjust_x)
 		x = 0;
 }
 
+CRect CTermView::TextRect() const
+{
+	return CRect(
+		left_margin,
+		top_margin,
+		left_margin + chw * telnet->site_settings.cols_per_page,
+		top_margin + lineh * telnet->site_settings.lines_per_page);
+}
 
-inline char* CTermView::HyperLinkHitTest(int x, int y, int& len)	//¥Î¨Ó´ú¸Õµe­±¤W¬YÂI¬O§_¬°¶W³sµ²
+
+char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤W¬YÂI¬O§_¬°¶W³sµ²
 //x,y¬°²×ºÝ¾÷¦æ¦C®y¼Ð¡A¦Ó¤£¬O·Æ¹«®y¼Ð
 {
+	CRect text_rect = TextRect();
+	if (!PtInRect(&text_rect, client_point))
+		return nullptr;
+
+	int x, y;
+	PtToLineCol(client_point, x, y, false);
 	y += telnet->scroll_pos;
 	const char* plink = telnet->screen[y];
 
 	if (!telnet->GetHyperLink(plink))
-		return NULL;
+		return nullptr;
 
 	const char* eol = plink + telnet->site_settings.cols_per_page;
 	while (plink = AppConfig.hyper_links.FindHyperLink(plink, len))
@@ -2772,7 +2785,7 @@ inline char* CTermView::HyperLinkHitTest(int x, int y, int& len)	//¥Î¨Ó´ú¸Õµe­±¤
 			return (char*)plink;
 		plink += len;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CTermView::OnCurConSettings()
