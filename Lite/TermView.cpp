@@ -3247,6 +3247,9 @@ BOOL CTermView::ExtTextOut(CDC& dc, int x, int y, UINT nOptions, LPCRECT lpRect,
 	UINT cp_id = this->GetCodePage();
 	if (cp_id != 950)
 	{
+		// FIXME: nCount is the number of half-width character on the screen,
+		// not size of bytes for the string to draw.
+
 		// in全為dbcs, in[n]=out[n/2+1]; in全為acsii, in[n]=out[n+1]
 		memset(wbuf, 0, (nCount + 1)*sizeof(wchar_t)); // <-- in bytes
 		::MultiByteToWideChar(cp_id, 0, lpszString, nCount, wbuf, nCount + 1);

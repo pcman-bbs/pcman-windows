@@ -507,6 +507,7 @@ void CTelnetConn::OnText()
 					LineFeed();
 				}
 
+				// FIXME: The cursor_pos.x will be incorrent when buffer is UTF8.
 				if (cursor_pos.x < site_settings.cols_per_page)
 				{
 					LPSTR curstr = screen[cursor_pos.y];

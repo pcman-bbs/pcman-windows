@@ -263,7 +263,7 @@ inline void CTelnetConn::Home()
 	UpdateCursorPos();
 }
 
-
+// FIXME: There isn't enough space to fit UTF8 chinese string.
 inline LPBYTE CTelnetConn::GetLineAttr(const char *line)
 {
 	return LPBYTE(line + site_settings.cols_per_page + 5);
