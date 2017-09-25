@@ -82,7 +82,7 @@ inline void CSiteSettings::Default()
 	line_count = 72;
 	idle_interval = 180;
 	connect_interval = 15;
-	reconnect_interval = 0;
+	reconnect_interval = 5;
 
 	prevent_idle = 1;
 	auto_reconnect = 1;
