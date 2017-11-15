@@ -2,9 +2,15 @@ version: '{build}'
 image: Visual Studio 2017
 configuration: Release
 install:
+# update vcpkg
+- cd "C:\Tools\vcpkg"
+- git pull
+- .\bootstrap-vcpkg.bat
+- cd "%APPVEYOR_BUILD_FOLDER%"
+
 - ps: .\Scripts\BeforeBuild.ps1
 clone_folder: C:\projects\pcman-windows
-cache: C:\projects\pcman-windows\cache\vcpkg-installed
+cache: c:\tools\vcpkg\installed\
 build:
   project: PCMan.sln
   parallel: true
