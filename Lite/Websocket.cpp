@@ -227,7 +227,9 @@ bool CWebsocket::Connect()
 {
 	memset(&cli_info, 0, sizeof(cli_info));
 	cli_info.address = address_.Server();
-	cli_info.ssl_connection = (address_.Protocol() == "wss");
+	cli_info.ssl_connection = address_.Protocol() == "wss" ?
+		LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK :
+		0;
 
 	cli_info.port = address_.Port();
 	cli_info.path = address_.Path();
