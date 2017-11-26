@@ -16,6 +16,7 @@
 #include "CustomToolBar.h"
 #include "AutoComplete.h"	// Added by ClassView
 #include "Address.h"
+#include "Scaler.h"
 
 #include "AutoUpdate.h"
 #include "InstantTranDlg.h"
@@ -347,6 +348,7 @@ protected:
 
 private:
 	bool setCharset;
+	CScaler scaler;
 };
 
 /////////////////////////////////////////////////////////////////////////////

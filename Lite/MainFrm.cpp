@@ -328,12 +328,18 @@ CMainFrame::~CMainFrame()
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+//	DPI
+	scaler.Update(this);
+	HDC hdc = GetDC()->m_hDC;
+	UINT dpiy = GetDeviceCaps(hdc, LOGPIXELSY);
+
 //	用來建造control的temp Rect
 	CRect tmprc(0, 0, 0, 0);
 
 //	Load PCMan Icon
 	icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	SetIcon(icon, TRUE);	SetIcon(icon, FALSE);
+	SetIcon(icon, TRUE);
+	SetIcon(icon, FALSE);
 
 	CBitmap imglist_bmp;
 //	Load Image List for Site List and Tab...
@@ -341,13 +347,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	img_icons.Create(16, 16, ILC_COLOR32 | ILC_MASK, 9, 0);
 	ImageList_AddMasked(img_icons.m_hImageList, (HBITMAP)imglist_bmp.m_hObject, RGB(255, 0, 255));
 
+
 //	Create font for UI
-	LOGFONT lf;	::GetObject(GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
-	lf.lfHeight = -12;	bar_font.CreateFontIndirect(&lf);
+	LOGFONT lf;
+	::GetObject(GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
+	lf.lfHeight = -scaler.CalcY(12);
+	bar_font.CreateFontIndirect(&lf);
 
 //	Create Main Toolbar
-	SIZE sizebtn;
-	SIZE sizeimg;
 	BITMAP bmp;
 	toolbar.CreateEx(this, TBSTYLE_FLAT| TBSTYLE_TRANSPARENT,
 		CCS_ADJUSTABLE | CBRS_ALIGN_TOP | CBRS_TOOLTIPS | WS_CHILD | WS_VISIBLE,
@@ -375,10 +382,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//bmp.bmWidth/=17;
 #endif
 	bmp.bmWidth = bmp.bmHeight;
+
+	SIZE sizebtn;
+	SIZE sizeimg;
 	sizeimg.cx = bmp.bmWidth;
 	sizeimg.cy = bmp.bmHeight;
-	sizebtn.cx = bmp.bmWidth + 7;
-	sizebtn.cy = bmp.bmHeight + 6;
+	sizebtn.cx = bmp.bmWidth + scaler.CalcX(7);
+	sizebtn.cy = bmp.bmHeight + scaler.CalcY(6);
 	toolbar.SetSizes(sizebtn, sizeimg);
 	//toolbar.SetBitmap((HBITMAP)toolbar_bkgnd.m_hObject);
 	toolbar.LoadToolBar(&AppConfig.main_toolbar_inf);
@@ -410,8 +420,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 //	Create Address Bar
 //----------位址列-------------
-	address_bar.Create(CBS_AUTOHSCROLL | CBS_DROPDOWN, CRect(0, 0, 0, 320), this, IDC_ADS_COMBO);
-	address_bar.MoveWindow(0, 0, 200, 24);
+	address_bar.Create(CBS_AUTOHSCROLL | CBS_DROPDOWN, scaler.Calc(CRect(0, 0, 0, 320)), this, IDC_ADS_COMBO);
+	address_bar.MoveWindow(scaler.Calc(CRect(0, 0, 200, 24)));
 	address_bar.SetFont(&bar_font);
 	HWND hedit =::GetTopWindow(address_bar.m_hWnd);
 	old_address_bar_proc = (WNDPROC)::GetWindowLong(hedit, GWL_WNDPROC);
@@ -992,17 +1002,18 @@ void CMainFrame::OnKKmanStyleTab()
 	CRect view_rect;
 	view.GetWindowRect(view_rect);
 	ScreenToClient(view_rect);
+	int tab_bar_height = scaler.CalcY(TABH);
 	if (AppConfig.kktab)
 	{
-		view_rect.top -= TABH;
+		view_rect.top -= tab_bar_height;
 		view.SetWindowPos(&wndTop, 0, view_rect.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-		tab.SetWindowPos(&wndTop, 0, view_rect.bottom - TABH, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+		tab.SetWindowPos(&wndTop, 0, view_rect.bottom - tab_bar_height, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	}
 	else
 	{
-		view.SetWindowPos(&wndTop, 0, view_rect.top + TABH, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+		view.SetWindowPos(&wndTop, 0, view_rect.top + tab_bar_height, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 		tab.SetWindowPos(&wndTop, 0, view_rect.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-		view_rect.top += TABH;
+		view_rect.top += tab_bar_height;
 	}
 }
 
@@ -1705,11 +1716,12 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	top = barh;
 	height -= barh;
 
+	UINT status_bar_height = scaler.CalcY(SBH);
 	if (showsb)
 	{
 		status_bar.ShowWindow(SW_SHOW);
-		status_bar.MoveWindow(0, rc.bottom - SBH, rc.right, SBH);
-		height -= SBH;
+		status_bar.MoveWindow(0, rc.bottom - status_bar_height, rc.right, status_bar_height);
+		height -= status_bar_height;
 	}
 	else
 		status_bar.ShowWindow(SW_HIDE);
@@ -1719,22 +1731,23 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	progress_bar.MoveWindow(rc.right - pbw, 0, pbw, SBH);
 #endif
 
+	UINT tab_bar_height = scaler.CalcY(TABH);
 	if (AppConfig.kktab)	//如果使用和KKman相同的連線標籤
 	{
-		int _top = rc.bottom - TABH - (showsb ? SBH : 0);
-		tab.MoveWindow(0, _top, rc.right, TABH);
+		int _top = rc.bottom - tab_bar_height - (showsb ? status_bar_height : 0);
+		tab.MoveWindow(0, _top, rc.right, tab_bar_height);
 	}
 	else
 	{
-		tab.MoveWindow(0, top, rc.right, TABH);
+		tab.MoveWindow(0, top, rc.right, tab_bar_height);
 		if (showtab)
-			top += TABH;
+			top += tab_bar_height;
 	}
 
 	if (showtab)
 	{
 		tab.ShowWindow(SW_SHOW);
-		height -= TABH;
+		height -= tab_bar_height;
 	}
 	else
 		tab.ShowWindow(SW_HIDE);

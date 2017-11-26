@@ -385,6 +385,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
     </ClCompile>
+    <ClCompile Include="..\Lite\Scaler.cpp" />
     <ClCompile Include="..\Lite\SearchPlugin.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -574,6 +575,7 @@
     <ClInclude Include="..\Lite\ReBarState.h" />
     <ClInclude Include="..\Lite\RFC854.H" />
     <ClInclude Include="..\Lite\Rijndael.h" />
+    <ClInclude Include="..\Lite\Scaler.h" />
     <ClInclude Include="..\Lite\SearchPlugin.h" />
     <ClInclude Include="..\Lite\SetBkDlg.h" />
     <ClInclude Include="..\Lite\sitelistctrl.h" />

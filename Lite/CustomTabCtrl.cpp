@@ -169,14 +169,16 @@ int CCustomTabCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CTabCtrl::OnCreate(lpCreateStruct) == -1)
 		return -1;
+	scaler.Update(this);
 	return 0;
 }
 
 void CCustomTabCtrl::OnSize(UINT nType, int cx, int cy)
 {
 	CTabCtrl::OnSize(nType, cx, cy);
-//	SetMinTabWidth(64);
-//	SetItemSize(CSize(cx/10,cy-6));
+	// This is to set the height of the tab bar.
+	// Combo uses fixed size tab, so we specify width here.
+	SetItemSize(CSize(scaler.CalcX(128), cy));
 }
 
 //DEL void CCustomTabCtrl::ReCalcSize(int dc)
@@ -335,53 +337,26 @@ void CCustomTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpds)
 			dc.SetTextColor(GetSysColor(COLOR_3DHILIGHT));
 			dc.SetBkColor(GetSysColor(COLOR_BTNFACE));
 			FillRect(dc.m_hDC, &lpds->rcItem, (HBRUSH)cbsh->m_hObject);
-			OffsetRect(&lpds->rcItem, 2, 2);
+			lpds->rcItem.top += scaler.CalcY(2);
+			lpds->rcItem.left += scaler.CalcX(2);
 		}
 		else
 			dc.FillSolidRect(&lpds->rcItem, bkcolor);
-
-		InflateRect(&lpds->rcItem, -2, -2);
-		icoy = lpds->rcItem.top - 2;
-		icox = lpds->rcItem.left + 4;
 	}
 	else	//Tab 形式
 	{
-		if (_afxComCtlVersion >= MAKELONG(0, 6))	//Win XP IE 6.0
-		{
-			icox = lpds->rcItem.left, icoy = lpds->rcItem.top + 2;
-			InflateRect(&lpds->rcItem, -1, -2);
-			lpds->rcItem.top++;
-			if (lpds->itemState & ODS_SELECTED)
-			{
-				icox += 4;
-				lpds->rcItem.left += 2;
-				lpds->rcItem.top++;
-			}
-			dc.FillSolidRect(&lpds->rcItem, bkcolor);
-		}
-		else	//以下除了xp+ CMCTL32 6.0以外全部適用
-		{
-			dc.FillSolidRect(&lpds->rcItem, bkcolor);
-			InflateRect(&lpds->rcItem, -2, -2);
-			if (style & TCS_BOTTOM)
-				icoy = lpds->rcItem.top - 2;
-			else
-			{
-				icoy = lpds->rcItem.top;
-				lpds->rcItem.top += 2;
-			}
-
-			icox = lpds->rcItem.left;
-			if (lpds->itemState & ODS_SELECTED)
-				icox += 4;
-		}
+		scaler.InflateRect(&lpds->rcItem, -2, -1);
 	}
 	//畫出 icon
+	static const int icon_size = 16;
+	icox = lpds->rcItem.left + scaler.CalcX(2);
+	icoy = lpds->rcItem.top + (lpds->rcItem.bottom - lpds->rcItem.top - icon_size) / 2;
 	GetImageList()->Draw(&dc, item.iImage, CPoint(icox, icoy), ILD_TRANSPARENT);
 
 	//輸出文字
 	dc.SetTextColor(textcolor);
-	lpds->rcItem.left = icox + 16 + 4;
+	lpds->rcItem.left = icox + icon_size + scaler.CalcX(2);
+	lpds->rcItem.top += (lpds->rcItem.bottom - lpds->rcItem.top - scaler.CalcY(12)) / 2;
 //#if defined(_COMBO_)
 //	lpds->rcItem.right-=3;
 //#endif
