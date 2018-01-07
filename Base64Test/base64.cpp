@@ -4,7 +4,7 @@
 
 int main()
 {
-	char* in = "This is a simple base64 encoding test!\n³o¬O­ÓÂ²³æªº Base64 ½s½X´ú¸Õ!";
+	char* in = "This is a simple base64 encoding test!\né€™æ˜¯å€‹ç°¡å–®çš„ Base64 ç·¨ç¢¼æ¸¬è©¦!";
 	int inlen = strlen(in);
 	int outlen = Base64Encode((BYTE*)in, inlen, NULL, 0);
 	char* out = new char[outlen + 1];

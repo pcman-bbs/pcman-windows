@@ -1,6 +1,10 @@
 version: '{build}'
 image: Visual Studio 2017
 configuration: Release
+init:
+- ps: Set-WinSystemLocale zh-TW
+- ps: Start-Sleep -s 5
+- ps: Restart-Computer
 install:
 # update vcpkg
 - cd "C:\Tools\vcpkg"

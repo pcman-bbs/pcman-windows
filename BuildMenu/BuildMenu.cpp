@@ -12,9 +12,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/* Menu ©M Command Itemªºµ²ºc
+/* Menu å’Œ Command Itemçš„çµæ§‹
 
-ÀÉ®×¤º³¡Àx¦s¤è¦¡:
+æª”æ¡ˆå…§éƒ¨å„²å­˜æ–¹å¼:
 WORD MAIN_ITEM_COUNT
 CMDITEM ITEMS[TOTAL_COUNT]
 DWORD ACCELCOUNT
@@ -22,16 +22,16 @@ ACCEL ACC_ITEMS[ACCELCOUNT]
 
 struct CMDITEM
 {
-	BYTE TYPE,	CT_MENU,CT_HAS_SUB,CT_CMD,¦pªGTYPE=0«h¬°Separator¡A«á­±´X¶µ³£¨S¦³
-	WORD ID_OR_SUBCOUNT		¦pªG¦³CT_HAS_SUB,¬°SUBCOUNT,¦pªG¨S¦³«h¬°ID
-	WORD state	¥u¦³Menu¤~¦³¦¹¶µ¥Ø
-	WORD LEN	TEXTªºªø«×,§t0
-	CHAR TEXT[]		ªø«×¤£©w,0µ²§À
+	BYTE TYPE,	CT_MENU,CT_HAS_SUB,CT_CMD,å¦‚æœTYPE=0å‰‡ç‚ºSeparatorï¼Œå¾Œé¢å¹¾é …éƒ½æ²’æœ‰
+	WORD ID_OR_SUBCOUNT		å¦‚æœæœ‰CT_HAS_SUB,ç‚ºSUBCOUNT,å¦‚æœæ²’æœ‰å‰‡ç‚ºID
+	WORD state	åªæœ‰Menuæ‰æœ‰æ­¤é …ç›®
+	WORD LEN	TEXTçš„é•·åº¦,å«0
+	CHAR TEXT[]		é•·åº¦ä¸å®š,0çµå°¾
 }
 
 */
 
-//		¥Î¨Ó²£¥ÍUIÀÉªºµ{¦¡½X
+//		ç”¨ä¾†ç”¢ç”ŸUIæª”çš„ç¨‹å¼ç¢¼
 void UIWriteMenu(CBuffer& ui, HMENU hmenu, char* text, WORD state)
 {
 	CMenu menu;		menu.Attach(hmenu);
@@ -80,7 +80,7 @@ void UIWriteMenu(CBuffer& ui, HMENU hmenu, char* text, WORD state)
 
 std::unique_ptr<CBuffer> BuildUIBuffer()
 {
-//		¥Î¨Ó²£¥ÍUIÀÉªºµ{¦¡½X
+//		ç”¨ä¾†ç”¢ç”ŸUIæª”çš„ç¨‹å¼ç¢¼
 	std::unique_ptr<CBuffer> ui(new CBuffer());
 
 //	MessageBox( NULL, OutPath, NULL, MB_OK );

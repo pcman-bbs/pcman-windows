@@ -64,10 +64,10 @@ void CSiteSettings::WriteFile(CFile& file)
 		fprintf(file, "auto_dbcs_backspace=%d\r\n", auto_dbcs_backspace);
 		fprintf(file, "localecho=%d\r\n", localecho);
 
-		fprintf(file, "text_output_conv=%d\r\n", text_output_conv);	// Åã¥Ü¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
-		fprintf(file, "text_input_conv=%d\r\n", text_input_conv);		// ¿é¤J¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
+		fprintf(file, "text_output_conv=%d\r\n", text_output_conv);	// é¡¯ç¤ºæ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
+		fprintf(file, "text_input_conv=%d\r\n", text_input_conv);		// è¼¸å…¥æ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
 
-		if (0 == strcmp(KeyMapName, "¹w³]"))
+		if (0 == strcmp(KeyMapName, "é è¨­"))
 			strcpy(KeyMapName, "Default");
 
 		fprintf(file, "key_map_name=%s\r\n", KeyMapName);
@@ -89,14 +89,14 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 	CFile file;
 	if (file.Open(fpath, CFile::modeRead))
 	{
-		//ÀË¬d¬O§_¨Ï¥Î¹w³]­È
+		//æª¢æŸ¥æ˜¯å¦ä½¿ç”¨é è¨­å€¼
 		file.Read(&str_trigger, sizeof(str_trigger));
-		if (str_trigger)	//¦pªG¨Ï¥Î¹w³]­È
+		if (str_trigger)	//å¦‚æœä½¿ç”¨é è¨­å€¼
 		{
 			*this = AppConfig.site_settings;
 			use_global = true;
 		}
-		else	//¸ü¤J­Ó§O³]©w
+		else	//è¼‰å…¥å€‹åˆ¥è¨­å®š
 			ReadFile(file);
 		if (!triggers.LoadFromFile(file))
 		{
@@ -112,7 +112,7 @@ BOOL CSiteSettings::Load(LPCTSTR fpath)
 
 void CSiteSettings::Save(LPCTSTR fpath)
 {
-	// ¤£»İ­n¨Ï¥Î¶i¶¥³]©wÀÉ
+	// ä¸éœ€è¦ä½¿ç”¨é€²éšè¨­å®šæª”
 	if (use_global && triggers.count == 0)
 		return;
 

@@ -18,10 +18,10 @@ if %VersionFile_tmp% == "" (
 	goto exit
 )
 
-REM ³]©w©Ò¦³¥Ñ¨Ï¥ÎªÌ³]©wªºª©¥»°Ñ¼Æ
+REM è¨­å®šæ‰€æœ‰ç”±ä½¿ç”¨è€…è¨­å®šçš„ç‰ˆæœ¬åƒæ•¸
 call %VersionFile_In%
 
-REM ²£¥Í version.hªº¼È¦sÀÉ
+REM ç”¢ç”Ÿ version.hçš„æš«å­˜æª”
 
 REM echo #pragma once > %VersionFile_tmp%
 
@@ -29,7 +29,7 @@ echo //Generated from Version_Create.bat %VersionFile_In% >> %VersionFile_tmp%
 
 
 REM echo #pragma once > %Update_File_Path%
-REM ¬ö¿ýª©¥»¸¹½X¨ìupdate.txt
+REM ç´€éŒ„ç‰ˆæœ¬è™Ÿç¢¼åˆ°update.txt
 if exist %Update_File_Path% (
 	del /f /q %Update_File_Path%
 )
@@ -74,7 +74,7 @@ echo #define Version_FileDescriptionW   L%FileDescription% >> %VersionFile_tmp%
 echo #define Version_CommentsA   %Comments% >> %VersionFile_tmp%
 echo #define Version_CommentsW   L%Comments% >> %VersionFile_tmp%
 
-REM ¤ñ¹ï·sÂÂversion.h ¡A­Y¬O¤£¤@¼Ë¡A¤~copy¹L¥h
+REM æ¯”å°æ–°èˆŠversion.h ï¼Œè‹¥æ˜¯ä¸ä¸€æ¨£ï¼Œæ‰copyéŽåŽ»
 fc %VersionFile_tmp% %VersionFile_Out% 2>&1
 if not "%ERRORLEVEL%"=="0" (
 	copy /y %VersionFile_tmp% %VersionFile_Out%

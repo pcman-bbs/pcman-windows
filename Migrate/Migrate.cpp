@@ -45,11 +45,11 @@ BOOL IsCombo = FALSE;
 #pragma pack(1)	// byte align: 1
 struct UIMenuItem
 {
-	BYTE type;	// CT_MENU,CT_HAS_SUB,CT_CMD,¦pªGTYPE=0«h¬°Separator¡A«á­±´X¶µ³£¨S¦³
-	WORD id_or_subcount;	//	¦pªG¦³CT_HAS_SUB,¬°SUBCOUNT,¦pªG¨S¦³«h¬°ID
-	WORD state;	//	¥u¦³Menu¤~¦³¦¹¶µ¥Ø
-	WORD len;	// text ªºªø«×,§t '\0'
-	CHAR text[1];	//	ªø«×¤£©w,0µ²§À
+	BYTE type;	// CT_MENU,CT_HAS_SUB,CT_CMD,å¦‚æœTYPE=0å‰‡ç‚ºSeparatorï¼Œå¾Œé¢å¹¾é …éƒ½æ²’æœ‰
+	WORD id_or_subcount;	//	å¦‚æœæœ‰CT_HAS_SUB,ç‚ºSUBCOUNT,å¦‚æœæ²’æœ‰å‰‡ç‚ºID
+	WORD state;	//	åªæœ‰Menuæ‰æœ‰æ­¤é …ç›®
+	WORD len;	// text çš„é•·åº¦,å« '\0'
+	CHAR text[1];	//	é•·åº¦ä¸å®š,0çµå°¾
 };
 #pragma pack()	// restore default byte align
 
@@ -69,7 +69,7 @@ BYTE* WriteUI(CFile& f, BYTE* buf, CArray<ACCEL, ACCEL&>& accels)
 		{
 			f.Write(item, sizeof(UIMenuItem) - 1);
 			f.Write(item->text, item->len);
-			WORD count = item->id_or_subcount;	//¨ú±osub item count
+			WORD count = item->id_or_subcount;	//å–å¾—sub item count
 			while (count > 0)
 			{
 				buf = WriteUI(f, buf, accels);
@@ -116,20 +116,20 @@ BOOL CApp::InitInstance()
 	if (src_dir.IsEmpty())
 	{
 find_2004:
-		CBrowseDirDlg dlg(NULL, "½Ğ¿ï¨ú PCMan 2004 ¦w¸Ëªº¸ê®Æ§¨");
+		CBrowseDirDlg dlg(NULL, "è«‹é¸å– PCMan 2004 å®‰è£çš„è³‡æ–™å¤¾");
 		if (dlg.DoModal() != IDOK)
 			return 1;
 		src_dir = dlg.GetPath();
 	}
 	if (! IsFileExist(src_dir + "\\Config\\Config"))
 	{
-		MessageBox(NULL, "§ä¤£¨ì PCMan 2004 ³]©wÀÉ", NULL, MB_OK | MB_ICONSTOP);
+		MessageBox(NULL, "æ‰¾ä¸åˆ° PCMan 2004 è¨­å®šæª”", NULL, MB_OK | MB_ICONSTOP);
 		goto find_2004;
 	}
 
 	if (dest_dir.IsEmpty())
 	{
-		CBrowseDirDlg dlg(NULL, "½Ğ¿ï¨úPCMan¦w¸Ëªº¸ê®Æ§¨");
+		CBrowseDirDlg dlg(NULL, "è«‹é¸å–PCManå®‰è£çš„è³‡æ–™å¤¾");
 		if (dlg.DoModal() != IDOK)
 			return 1;
 		dest_dir = dlg.GetPath();
@@ -152,7 +152,7 @@ find_2004:
 
 	ConfigPath = dest_dir + "\\Config\\";
 
-	// ÃÑ§O¬O Combo or Lite ª©¥»
+	// è­˜åˆ¥æ˜¯ Combo or Lite ç‰ˆæœ¬
 	if (IsFileExist(OldConfigPath + "Webbar.bmp") ||
 		IsFileExist(OldConfigPath + WWW_ADFILTER_FILENAME) ||
 		IsFileExist(OldConfigPath + WWW_FAVORITE_FILENAME))
@@ -160,7 +160,7 @@ find_2004:
 
 	BOOL IsDestCombo = IsFileExist(OldConfigPath + "Webbar.bmp");
 
-	// §PÂ_¬O§_¤ä´©¦h¨Ï¥ÎªÌ
+	// åˆ¤æ–·æ˜¯å¦æ”¯æ´å¤šä½¿ç”¨è€…
 	if (IsWinNT() && !IsFileExist(dest_dir + "\\Portable"))
 	{
 		BOOL ret = SHGetSpecialFolderPath(NULL, ConfigPath.GetBuffer(_MAX_PATH),
@@ -328,25 +328,25 @@ find_2004:
 				int j;
 				for (j = 0; j < accels.GetSize(); ++j)
 				{
-					// ¦bÂÂª© UI ¸Ì­±¦³³]©w¦¹©R¥Oªº¼öÁä
+					// åœ¨èˆŠç‰ˆ UI è£¡é¢æœ‰è¨­å®šæ­¤å‘½ä»¤çš„ç†±éµ
 					if (accels[j].cmd == acc[i].cmd)
 						break;
 				}
 				if (j >= accels.GetSize())
 				{
-					// ÂÂª© UI ¤º¨S¦³¦¹©R¥O¡Aªí¥Ü¬° 2007 ·s¼Wªº¹w³]¼öÁä
+					// èˆŠç‰ˆ UI å…§æ²’æœ‰æ­¤å‘½ä»¤ï¼Œè¡¨ç¤ºç‚º 2007 æ–°å¢çš„é è¨­ç†±éµ
 					ACCEL new_acc = acc[i];
 					for (j = 0; j < accels.GetSize(); ++j)
 					{
-						// ¦bÂÂª© UI ¸Ì­±¦¹¼öÁä¤w³Q¨Ï¥Î
+						// åœ¨èˆŠç‰ˆ UI è£¡é¢æ­¤ç†±éµå·²è¢«ä½¿ç”¨
 						if (accels[j].fVirt == acc[i].fVirt
 							&& accels[j].key == acc[i].key)
 							break;
 					}
 
-					// ÂÂª© UI ¤¤¨Ã¥¼¨Ï¥Î¦¹¼öÁä
+					// èˆŠç‰ˆ UI ä¸­ä¸¦æœªä½¿ç”¨æ­¤ç†±éµ
 					if (i >= accels.GetSize())
-						accels.Add(new_acc);	// ¥[¤J¦¹¼öÁä
+						accels.Add(new_acc);	// åŠ å…¥æ­¤ç†±éµ
 				}
 			}
 			if (f.Open(ConfigPath + "UI", CFile::modeWrite | CFile::modeCreate))
@@ -399,7 +399,7 @@ find_2004:
 		f.Close();
 	}
 
-	MessageBox(NULL, "¶×¤J§¹¦¨!", "§¹¦¨", MB_OK | MB_ICONINFORMATION);
+	MessageBox(NULL, "åŒ¯å…¥å®Œæˆ!", "å®Œæˆ", MB_OK | MB_ICONINFORMATION);
 	return CWinApp::InitInstance();
 }
 
