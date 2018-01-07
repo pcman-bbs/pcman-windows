@@ -1,17 +1,17 @@
-³o¥÷¤å¥ó»¡©ú¶}µo©MÄÀ¥Xªº»İ¨D
+é€™ä»½æ–‡ä»¶èªªæ˜é–‹ç™¼å’Œé‡‹å‡ºçš„éœ€æ±‚
 
-- [¶}µo] Visual Studio 2017 (Community §Y¥i)
+- [é–‹ç™¼] Visual Studio 2017 (Community å³å¯)
 
-½Ğ¦Ü©x¤èºô¯¸¤U¸ü: https://www.visualstudio.com/
+è«‹è‡³å®˜æ–¹ç¶²ç«™ä¸‹è¼‰: https://www.visualstudio.com/
 
-- [¶}µo] libwebsockets (v2.2.1 ¥H¤W)
+- [é–‹ç™¼] libwebsockets (v2.2.1 ä»¥ä¸Š)
 
-³o¨â­Ó±ÀÂË¨Ï¥Î vcpkg ¦w¸Ë, ¦w¸Ë»¡©ú½Ğ¦Ü¥H¤Uºô¯¸:
+é€™å…©å€‹æ¨è–¦ä½¿ç”¨ vcpkg å®‰è£, å®‰è£èªªæ˜è«‹è‡³ä»¥ä¸‹ç¶²ç«™:
 https://github.com/Microsoft/vcpkg
 
-¦b¼g¦¹¤å¥ó®É vcpkg ¤º¥u¦³ libwebsockets v2.0.0 ªºª©¥»,
-½Ğ¦Û¦æ±N ports/libwebsockets/port.cmake ­×§ï´«¦¨ v2.2.1 ª©¥»¦A¶i¦æ¦w¸Ë.
-¥H¤U¬°­×§ïªº½d¨Ò(¶È¦C¦³­×§ï³B):
+åœ¨å¯«æ­¤æ–‡ä»¶æ™‚ vcpkg å…§åªæœ‰ libwebsockets v2.0.0 çš„ç‰ˆæœ¬,
+è«‹è‡ªè¡Œå°‡ ports/libwebsockets/port.cmake ä¿®æ”¹æ›æˆ v2.2.1 ç‰ˆæœ¬å†é€²è¡Œå®‰è£.
+ä»¥ä¸‹ç‚ºä¿®æ”¹çš„ç¯„ä¾‹(åƒ…åˆ—æœ‰ä¿®æ”¹è™•):
 
 set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/libwebsockets-2.2.1)
 vcpkg_download_distfile(ARCHIVE
@@ -20,7 +20,7 @@ vcpkg_download_distfile(ARCHIVE
     SHA512 56b02b932ee284b556fe7346d541ea7f8d9e9cf2d8eaff4829e7e1f3ba23cca8f2abea89b2f7866d82f5670996487df1acd311487b4eaf80ec741d5bc14c29f9
 )
 
-¨Ã§R°£³o¦ê:
+ä¸¦åˆªé™¤é€™ä¸²:
 
 vcpkg_apply_patches(
         SOURCE_PATH ${SOURCE_PATH}
@@ -28,15 +28,14 @@ vcpkg_apply_patches(
 		${CMAKE_CURRENT_LIST_DIR}/0001-Fix-UWP.patch
 )
 
-- [¶}µo/ÄÀ¥X] cacert.pem
+- [é–‹ç™¼/é‡‹å‡º] cacert.pem
 
-¦¹¬° CA ¾ÌÃÒ¦Cªí, ¥i¦Ü¦¹ºô¯¸¤U¸ü©Î¥Ñ¸Ì­±¦Cªº¤è¦¡²£¥Í:
+æ­¤ç‚º CA æ†‘è­‰åˆ—è¡¨, å¯è‡³æ­¤ç¶²ç«™ä¸‹è¼‰æˆ–ç”±è£¡é¢åˆ—çš„æ–¹å¼ç”¢ç”Ÿ:
 https://curl.haxx.se/docs/caextract.html
 
-¦¹ÀÉ®×¶·¦Û¦æ½Æ»s¨ì©ñ PCMan.exe ªº¸ê®Æ§¨¤¤¤~·|¦Û°Ê¸ü¤J.
+æ­¤æª”æ¡ˆé ˆè‡ªè¡Œè¤‡è£½åˆ°æ”¾ PCMan.exe çš„è³‡æ–™å¤¾ä¸­æ‰æœƒè‡ªå‹•è¼‰å…¥.
 
-- [ÄÀ¥X] Microsoft Visual C++ Redistributable for Visual Studio 2017 (©Î¬Û¹ïÀ³ªºª©¥»)
+- [é‡‹å‡º] Microsoft Visual C++ Redistributable for Visual Studio 2017 (æˆ–ç›¸å°æ‡‰çš„ç‰ˆæœ¬)
 
-¥i¦Ü https://www.visualstudio.com/downloads/ ªº
-Other Tools and Frameworks °Ï°ì¤U¸ü.
-
+å¯è‡³ https://www.visualstudio.com/downloads/ çš„
+Other Tools and Frameworks å€åŸŸä¸‹è¼‰.

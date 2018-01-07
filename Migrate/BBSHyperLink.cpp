@@ -101,11 +101,9 @@ void CBBSHyperLink::Default()
 	d.color = 0x00ff00;
 	links.Add(d);
 
-//	E-mail¬°¤º«Ø«¬ºA¡A­n¶i¶¥³B²z
+//	E-mailç‚ºå…§å»ºå‹æ…‹ï¼Œè¦é€²éšè™•ç†
 	d.scheme = "@";
 	d.color = 0xff0080;
 	email = links.Add(d);
 
 }
-
-

@@ -46,7 +46,7 @@ void CUcs2Conv::Big52Ucs2(const char* text_in, wchar_t* text_out)
 			text_in++;
 		}
 
-		//ÅÞ¿è¤W¥i¯à¦³ÂI°ÝÃD¡A³o¸Ì§â Big5 ½d³ò¤§¥~ªº½s½X¤@«ßµø¬° ascii½X
+		//é‚è¼¯ä¸Šå¯èƒ½æœ‰é»žå•é¡Œï¼Œé€™è£¡æŠŠ Big5 ç¯„åœä¹‹å¤–çš„ç·¨ç¢¼ä¸€å¾‹è¦–ç‚º asciiç¢¼
 		else
 		{
 			*text_out = *text_in;
@@ -98,12 +98,12 @@ size_t CUcs2Conv::Big52Ucs2(const char* text_in, wchar_t* text_out, int len)
 
 		else
 		{
-			//¦b¤j³¡¤À±¡ªp¤¤¡A³oÃä¬O³Q¤Á±¼§C¦ì¤¸²Õªº DBCS Big5 ¤¤¤å¦r
+			//åœ¨å¤§éƒ¨åˆ†æƒ…æ³ä¸­ï¼Œé€™é‚Šæ˜¯è¢«åˆ‡æŽ‰ä½Žä½å…ƒçµ„çš„ DBCS Big5 ä¸­æ–‡å­—
 			if (ch1 >= 0x81)
 			{
 				*text_out = 0x3f;
 			}
-			//³oÃä¬O¥¿±`ªº ascii
+			//é€™é‚Šæ˜¯æ­£å¸¸çš„ ascii
 			else
 			{
 				*text_out = *text_in;
@@ -138,4 +138,3 @@ BOOL CUcs2Conv::InitUcs22Big5Tab()
 	else
 		return FALSE;
 }
-

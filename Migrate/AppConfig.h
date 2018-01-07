@@ -57,7 +57,7 @@ public:
 };
 
 
-class CCustomToolBarInfo	//¥Ø«e¤ä´©³Ì¦h255­Ó«ö¶s
+class CCustomToolBarInfo	//ç›®å‰æ”¯æ´æœ€å¤š255å€‹æŒ‰éˆ•
 {
 public:
 	int count;
@@ -173,7 +173,7 @@ public:
 	CSiteSettings site_settings;
 
 //	BBS Setttings
-	CString bkpath;	//­I´º¹Ï¸ô®|
+	CString bkpath;	//èƒŒæ™¯åœ–è·¯å¾‘
 	CString passwd;
 	CString wavepath;
 	CString last_bbslist_item;
@@ -289,7 +289,7 @@ inline void CAppConfig::Default()
 	font_info.lfQuality = DRAFT_QUALITY;
 	font_info.lfPitchAndFamily = 49;
 //	font_info.lfPitchAndFamily=FIXED_PITCH|FF_DONTCARE;
-	strcpy(font_info.lfFaceName, "²Ó©úÅé" /*LoadString(IDS_DEFAULT_FONT_FACE)*/);
+	strcpy(font_info.lfFaceName, "ç´°æ˜é«”" /*LoadString(IDS_DEFAULT_FONT_FACE)*/);
 
 	bktype = 0;
 	bkratio = 4;		//	ratio/10*100%
