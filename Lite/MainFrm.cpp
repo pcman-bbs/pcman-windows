@@ -79,7 +79,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_INITMENUPOPUP()
 	ON_WM_CLOSE()
 	ON_WM_ACTIVATE()
-    ON_WM_QUERYENDSESSION()
+	ON_WM_QUERYENDSESSION()
 	ON_COMMAND(ID_TAB, OnShowTabBar)
 	ON_COMMAND(ID_TOOLBAR, OnShowToolbar)
 	ON_COMMAND(ID_CLOSEBTN, OnCloseBtn)
@@ -832,7 +832,7 @@ void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 
 BOOL CMainFrame::OnQueryEndSession()
 {
-    return 1;
+	return 1;
 }
 
 void CMainFrame::OnShowTabBar()
