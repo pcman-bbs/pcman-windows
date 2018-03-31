@@ -11,6 +11,8 @@ install:
 - git pull
 - .\bootstrap-vcpkg.bat
 - cd "%APPVEYOR_BUILD_FOLDER%"
+- vcpkg remove --outdated --recurse
+- vcpkg install libwebsockets
 
 - ps: .\Scripts\BeforeBuild.ps1
 clone_folder: C:\projects\pcman-windows
