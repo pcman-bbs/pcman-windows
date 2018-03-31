@@ -1,6 +1,3 @@
-Copy-Item hack\portfile.cmake C:\Tools\vcpkg\ports\libwebsockets\portfile.cmake -Force
-vcpkg install libwebsockets
-
 $ProgressPreference = 'SilentlyContinue'  # For Invoke-WebRequest
 [Net.ServicePointManager]::SecurityProtocol = 'Tls, Tls11, Tls12'  # For Invoke-WebRequest
 Invoke-WebRequest -Uri 'https://curl.haxx.se/ca/cacert.pem' -Out 'cacert.pem'
