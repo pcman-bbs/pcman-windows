@@ -1,34 +1,38 @@
 version: '{build}'
 image: Visual Studio 2017
-configuration: Release
+
 init:
 - ps: Set-WinSystemLocale zh-TW
-- ps: Start-Sleep -s 5
+- ps: Start-Sleep -s 10
 - ps: Restart-Computer
+- ps: Start-Sleep -s 5
+
 install:
 # update vcpkg
 - cd "C:\Tools\vcpkg"
 - git pull
 - .\bootstrap-vcpkg.bat
-- cd "%APPVEYOR_BUILD_FOLDER%"
 - vcpkg remove --outdated --recurse
 - vcpkg install libwebsockets
-
+- cd "%APPVEYOR_BUILD_FOLDER%"
 - ps: .\Scripts\BeforeBuild.ps1
-clone_folder: C:\projects\pcman-windows
-cache: c:\tools\vcpkg\installed\
-build:
-  project: PCMan.sln
-  parallel: true
-  verbosity: minimal
+
+build_script:
+- call msbuild /m /p:Configuration=Release %APPVEYOR_BUILD_FOLDER%\PCMan.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
 after_build:
 - ps: .\Scripts\DownloadNonFree.ps1
 - ps: .\Scripts\AfterBuild.ps1
+
 artifacts:
 - path: Lite\Release\PCMan.zip
 - path: Combo\Release\PCManCB.zip
 - path: Release\PCMan.exe
 - path: Release\PCManCB.exe
+
+cache:
+- c:\tools\vcpkg\installed\
+
 deploy:
   provider: GitHub
   auth_token: $(github_auth_token)

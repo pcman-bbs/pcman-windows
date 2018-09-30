@@ -74,7 +74,8 @@ BOOL CClipboard::SetText(HWND owner, LPCTSTR str, int len)
 		{
 			LPSTR buf = (LPSTR)GlobalLock(hmem);
 			PLCID lcid = (PLCID)GlobalLock(hlocmem);
-			memcpy(buf, str, len + 1);
+			memcpy(buf, str, len);
+			buf[len] = '\0';
 			// FIXME: Big5 should not be hard-coded since we have GB2312 version.
 			*lcid = MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_CHINESE_BIG5);
 			GlobalUnlock(hmem);

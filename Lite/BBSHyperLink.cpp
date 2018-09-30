@@ -147,7 +147,7 @@ const char* CBBSHyperLink::FindHyperLink(const char *src, int &len) const
 						break;
 					}
 				}
-				len = int(pend) - int(plink);
+				len = int(pend - plink);
 				return plink;
 			}
 		}
