@@ -94,7 +94,7 @@ void CDlgLayout::OnSize(int cx, int cy)
 		{
 			if (ptab->layout & DLA_LEFT)	//left anchor
 			{
-				l = l;
+				//l = l;
 				r = l + w;
 			}
 			else	// no horizontal anchors
@@ -113,7 +113,7 @@ void CDlgLayout::OnSize(int cx, int cy)
 		{
 			if (ptab->layout & DLA_TOP)	//top anchor
 			{
-				t = t;
+				//t = t;
 				b = t + h;
 			}
 			else	// no vertical anchors

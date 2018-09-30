@@ -108,7 +108,7 @@ static void SetTriggerItem(CTriggerItem& item, char* line, CAES& crypto)
 			char* dec_buf = new char[enc_len + 2];
 			memset(dec_buf, 0, enc_len + 2);
 			crypto.Decrypt(enc_buf, dec_buf, enc_len);
-			delete enc_buf;
+			delete[] enc_buf;
 			int dec_len = strlen(dec_buf);
 			char* ppasswd = dec_buf + dec_len + 1;
 			if (memcmp(LPCTSTR(AppConfig.passwd), ppasswd, AppConfig.passwd.GetLength()))
@@ -203,16 +203,16 @@ void CTriggerList::Save(CString& section)
 			char* enc_buf = new char[ dec_len ];
 			memset(enc_buf, 0, dec_len);
 			crypto.Encrypt(dec_buf, enc_buf, dec_len);
-			delete []dec_buf;
+			delete[] dec_buf;
 
 			int base64_len = Base64Encode((BYTE*)enc_buf, dec_len, NULL, 0);
 			char* base64 = new char[ base64_len + 1 ];
 			base64_len = Base64Encode((BYTE*)enc_buf, dec_len, (BYTE*)base64, base64_len);
 			base64[ base64_len ] = '\0';
-			delete []enc_buf;
+			delete[] enc_buf;
 
 			section += base64;
-			delete base64;
+			delete[] base64;
 		}
 		else
 		{

@@ -128,8 +128,9 @@ CAutoUpdater::ErrorType CAutoUpdater::CheckForUpdate()
 	download_update_dlg->DoModal();
 	
 	//download_update_dlg->OnCancel();
-	LPDWORD lpExitCode = new unsigned long;
-	*lpExitCode = STILL_ACTIVE;
+	//LPDWORD lpExitCode = new unsigned long;
+	//*lpExitCode = STILL_ACTIVE;
+	//DWORD ExitCode = STILL_ACTIVE;
 	//while(*lpExitCode==STILL_ACTIVE)
 	//{
 	//	GetExitCodeThread(controlThread->m_hThread,lpExitCode);
@@ -301,7 +302,7 @@ CString CAutoUpdater::GetFileVersion(LPCTSTR file)
 			version.Format(_T("%d.%d"), ver[0], ver[1]);
 		}
 
-		delete pData;
+		delete[] pData;
 		return version;
 	}
 	catch(...) {
