@@ -1429,7 +1429,7 @@ void CTermView::OnEditPastefile()
 			data[len] = 0;
 			file.Abort();
 			telnet->SendString(data);
-			delete data;
+			delete[] data;
 		}
 	}
 }
