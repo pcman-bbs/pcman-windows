@@ -3052,10 +3052,6 @@ void CMainFrame::OnToolSymbols()
 		ShellExecute(m_hWnd, "open", AppPath + "Symbols.exe", NULL, NULL, SW_SHOW);
 }
 
-
-extern int _afxComCtlVersion;
-DWORD AFXAPI _AfxGetComCtlVersion();
-
 void CMainFrame::OnViewConfig()
 {
 	BYTE autofont = AppConfig.auto_font;
@@ -3113,20 +3109,7 @@ void CMainFrame::OnViewConfig()
 
 	if (AppConfig.tab_button != tab_button)
 	{
-		if (_afxComCtlVersion >= MAKELONG(0, 6))	//Win XP IE 6.0
-		{
-			MessageBox(LoadString(IDS_TAB_STYLE_ERR_MSG), LoadString(IDS_ATTENTION), MB_OK | MB_ICONINFORMATION);
-		}
-		else
-		{
-			if (AppConfig.tab_button)
-			{
-				tab.ModifyStyle(TCS_BOTTOM, (TCS_FLATBUTTONS | TCS_BUTTONS | TCS_HOTTRACK));
-				tab.ModifyStyleEx(0, TCS_EX_FLATSEPARATORS);
-			}
-			else
-				tab.ModifyStyle(TCS_FLATBUTTONS | TCS_BUTTONS, AppConfig.kktab ? TCS_BOTTOM : 0);
-		}
+		MessageBox(LoadString(IDS_TAB_STYLE_ERR_MSG), LoadString(IDS_ATTENTION), MB_OK | MB_ICONINFORMATION);
 	}
 
 	while (AppConfig.max_history < AppConfig.history.GetCount())

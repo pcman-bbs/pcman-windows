@@ -274,18 +274,6 @@ void CCustomTabCtrl::UpdateNumberFrom(int idx)
 	}
 }
 
-/*
-發現OwnerDraw的Tab在Win XP下會出問題，要透過MFC檢查CommCtrlVersion
-這是MFC內部的函數，有可能會改變...放在...\MICROSOFT VISUAL STUDIO\VC98\MFC\SRC\AFXIMPL.H
-extern int _afxComCtlVersion;
-DWORD AFXAPI _AfxGetComCtlVersion();
-_AfxGetComCtlVersion();執行完之後檢查_afxComCtlVersion，檢查是否 > MAKELONG(minor,major)即可...
-實際上它內部的運作方式是，Load COMCTL32.DLL 然後GetProcAddress找GetVersion，這比較新版的Dll才有(4.71之後)
-如果有這個proc，就可以呼叫取得版本_afxComCtlVersion==-1表示還沒呼叫過
-*/
-extern int _afxComCtlVersion;
-DWORD AFXAPI _AfxGetComCtlVersion();
-
 void CCustomTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpds)
 {
 	CDC dc;
