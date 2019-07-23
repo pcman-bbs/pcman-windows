@@ -1,39 +1,15 @@
-這份文件說明開發和釋出的需求
+﻿這份文件說明開發和釋出的需求
 
 - [開發] Visual Studio 2017 (Community 即可)
 
 請至官方網站下載: https://www.visualstudio.com/
 
-- [開發] libwebsockets (v2.2.1 以上)
+- [開發] cpprestsdk
 
 這兩個推薦使用 vcpkg 安裝, 安裝說明請至以下網站:
 https://github.com/Microsoft/vcpkg
 
-在寫此文件時 vcpkg 內只有 libwebsockets v2.0.0 的版本,
-請自行將 ports/libwebsockets/port.cmake 修改換成 v2.2.1 版本再進行安裝.
-以下為修改的範例(僅列有修改處):
-
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/libwebsockets-2.2.1)
-vcpkg_download_distfile(ARCHIVE
-    URLS "https://github.com/warmcat/libwebsockets/archive/v2.2.1.zip"
-    FILENAME "libwebsockets-v2.2.1.zip"
-    SHA512 56b02b932ee284b556fe7346d541ea7f8d9e9cf2d8eaff4829e7e1f3ba23cca8f2abea89b2f7866d82f5670996487df1acd311487b4eaf80ec741d5bc14c29f9
-)
-
-並刪除這串:
-
-vcpkg_apply_patches(
-        SOURCE_PATH ${SOURCE_PATH}
-	PATCHES
-		${CMAKE_CURRENT_LIST_DIR}/0001-Fix-UWP.patch
-)
-
-- [開發/釋出] cacert.pem
-
-此為 CA 憑證列表, 可至此網站下載或由裡面列的方式產生:
-https://curl.haxx.se/docs/caextract.html
-
-此檔案須自行複製到放 PCMan.exe 的資料夾中才會自動載入.
+安裝指令: vcpkg install cpprestsdk
 
 - [釋出] Microsoft Visual C++ Redistributable for Visual Studio 2017 (或相對應的版本)
 
