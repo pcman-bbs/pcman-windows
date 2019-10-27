@@ -39,6 +39,13 @@ BEGIN_MESSAGE_MAP(CHotkeyEdit, CEdit)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+void CHotkeyEdit::Reset()
+{
+	fVirt = 0;
+	key = 0;
+	SetWindowText(nullptr);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CHotkeyEdit message handlers
 

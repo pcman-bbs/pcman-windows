@@ -100,19 +100,19 @@ BEGIN
     BEGIN
         POPUP "新增連線分頁 (&N)"
         BEGIN
-            MENUITEM "開新空白網頁 (&B)\tAlt+N",    ID_NEW_WWW
+            MENUITEM "開新空白網頁 (&B)",    ID_NEW_WWW
             MENUITEM "目前網頁 (&C)",               ID_NEW_CURPAGE
             MENUITEM "用 IE 開啟目前網頁 (&I)",     ID_NEW_IE_CURPAGE
             MENUITEM "IE首頁 (&H)",                 ID_NEW_HOME
             MENUITEM SEPARATOR
-            MENUITEM "BBS快速連線\tAlt+Q",          ID_CONNECT_NEW
+            MENUITEM "BBS快速連線",          ID_CONNECT_NEW
         END
-        MENUITEM "開啟站台列表 (&S)\tAlt+S",    ID_SITE_LIST
+        MENUITEM "開啟站台列表 (&S)",    ID_SITE_LIST
         MENUITEM SEPARATOR
         MENUITEM "中斷這個連線 (&D)",           ID_DISCONNECT
-        MENUITEM "關閉這個分頁 (&C)\tCtrl+Del", 32774
-        MENUITEM "重新連線 (&R)\tAlt+R",        ID_RECONNECT
-        MENUITEM "上次的連線 (&P)\tAlt+F",      8023
+        MENUITEM "關閉這個分頁 (&C)", 32774
+        MENUITEM "重新連線 (&R)",        ID_RECONNECT
+        MENUITEM "上次的連線 (&P)",      8023
         MENUITEM SEPARATOR
         MENUITEM "開啟網頁 (&O)",               ID_WEBPAGE_OPEN
         MENUITEM "另存網頁 (&A)",               ID_WEBPAGE_SAVEAS
@@ -123,7 +123,7 @@ BEGIN
     END
     POPUP "編輯 (&E)"
     BEGIN
-        MENUITEM "複製 (只有純文字) (&C)\tAlt+O", ID_COPY
+        MENUITEM "複製 (只有純文字) (&C)", ID_COPY
         MENUITEM "複製 (包含ANSI彩色) (&Y)",    ID_ANSICOPY
         POPUP "下載正在閱讀的文章 (&R)"
         BEGIN
@@ -132,7 +132,7 @@ BEGIN
                                                     ID_COPYARTICLE_WITH_ANSI
             MENUITEM "在 ANSI 編輯器中檢視 (&N)",   ID_DOWNLOAD_ARTICLE
         END
-        MENUITEM "貼上 (&P)\tAlt+P",            ID_PASTE
+        MENUITEM "貼上 (&P)",            ID_PASTE
         MENUITEM SEPARATOR
         POPUP "選取文字當成超連結開啟 (&O)"
         BEGIN
@@ -142,7 +142,7 @@ BEGIN
             MENUITEM "當成 telnet://",              ID_EDIT_OPENURL_TELNET
             MENUITEM "當成 ftp://",                 ID_EDIT_OPENURL_FTP
         END
-        MENUITEM "尋找這個畫面的資料 (&F)\tAlt+I", ID_EDIT_FIND
+        MENUITEM "尋找這個畫面的資料 (&F)", ID_EDIT_FIND
         POPUP "語言及字元編碼"
         BEGIN
             MENUITEM "Default",                     ID_SET_CHARSET_DEFAULT
@@ -156,62 +156,11 @@ BEGIN
         MENUITEM "複製並貼上 (&S)",             ID_COPYPASTE
         MENUITEM "從檔案貼上 (&I)",             ID_PASTEFILE
         MENUITEM "貼上短網址 (&T)",             ID_PASTETINYURL
-        MENUITEM "全選這個畫面 (&A)\tAlt+L",    ID_SELECTALL
+        MENUITEM "全選這個畫面 (&A)",    ID_SELECTALL
         MENUITEM "全選整個緩衝區 (&L)",         ID_SELALL_BUF
         MENUITEM SEPARATOR
-        MENUITEM "快速輸入常用文字 (&Q)\tCtrl+Enter", ID_FREQ_STR
+        MENUITEM "快速輸入常用文字 (&Q)", ID_FREQ_STR
         MENUITEM "播放動畫 (&M)",               ID_PLAY_ANSIMOVIE
-        MENUITEM "複製連結位址",                ID_EDIT_COPYURL
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "向右移動忽略全形自動偵測",    ID_RIGHTNODBCS
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "向左移動忽略全形自動偵測",    ID_LEFTNODBCS
-        , CHECKED, INACTIVE
-        MENUITEM "Backspace 忽略全形自動偵測\tAlt+Backspace", ID_BACKNODBCS
-        , CHECKED, INACTIVE
-        MENUITEM "輸入焦點移到位址列\tAlt+D",   ID_ADSFOCUS
-        , CHECKED, INACTIVE
-        MENUITEM "輸入焦點移到搜尋列\tAlt+K",   ID_SEARCHBAR_FOCUS
-        , CHECKED, INACTIVE
-        MENUITEM "快速輸入WWW網址\tAlt+W",      ID_ADSHTTP
-        , CHECKED, INACTIVE
-        MENUITEM "快速輸入Telnet網址\tAlt+T",   ID_ADSTELNET
-        , CHECKED, INACTIVE
-    END
-    POPUP "BBS畫面切換", CHECKED, INACTIVE, MENUBARBREAK
-    BEGIN
-        MENUITEM "兩連線分頁間來回切換\tCtrl+Tab", ID_SWITCH_BACK
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到上一個分頁\tCtrl+Left", ID_UP
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到下一個分頁\tCtrl+Right", ID_DOWN
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "捲軸往上捲一頁\tCtrl+PageUp", ID_PGU
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "捲軸往下捲一頁\tCtrl+PageDown", ID_PGD
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第1個分頁\tCtrl+1",     8001
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第2個分頁\tCtrl+2",     8002
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第3個分頁\tCtrl+3",     8003
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第4個分頁\tCtrl+4",     8004
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第5個分頁\tCtrl+5",     8005
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第6個分頁\tCtrl+6",     8006
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第7個分頁\tCtrl+7",     8007
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第8個分頁\tCtrl+8",     8008
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第9個分頁\tCtrl+9",     8009
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到第10個分頁\tCtrl+0",    8010
-        , CHECKED, INACTIVE, MENUBARBREAK
-        MENUITEM "切換到最後一個分頁\tCtrl+End", ID_LASTCON
-        , CHECKED, INACTIVE, MENUBARBREAK
     END
     POPUP "選項 (&V)"
     BEGIN
@@ -277,7 +226,7 @@ BEGIN
         MENUITEM "將目前網頁加入擋廣告設定 (&A)", ID_WEBPAGE_ADDAD, GRAYED
         MENUITEM "結束時紀錄上次的連線 (&E)",   ID_EXITLOG
         MENUITEM SEPARATOR
-        MENUITEM "切換全螢幕瀏覽 (&L)\tAlt+Enter", ID_VIEW_FULLSCR
+        MENUITEM "切換全螢幕瀏覽 (&L)", ID_VIEW_FULLSCR
         MENUITEM "啟用滑鼠瀏覽",                ID_MOUSE_CTL
     END
     POPUP "BBS最愛 (&B)"
@@ -309,7 +258,7 @@ BEGIN
     POPUP "工具 (&T)"
     BEGIN
         MENUITEM "標點符號輸入 (&S)",           ID_TOOL_SYMBOLS
-        MENUITEM "PCMan上鎖 (離開座位時使用) (&L)\tCtrl+Alt+L", ID_TOOL_LOCK
+        MENUITEM "PCMan上鎖 (離開座位時使用) (&L)", ID_TOOL_LOCK
         MENUITEM SEPARATOR
         MENUITEM "取得本機 IP 位址 (&A)",       ID_GET_LOCALIP
         MENUITEM "匯入 IE 我的最愛 (&F)",       ID_TOOL_IMPORT_IEFAV
@@ -319,10 +268,69 @@ BEGIN
     END
     POPUP "說明 (&H)"
     BEGIN
-        MENUITEM "軟體使用說明 (&H)\tAlt+F1",   IDM_HELP
+        MENUITEM "軟體使用說明 (&H)",   IDM_HELP
         MENUITEM "檢查更新 (&U)",               ID_CHECK_UPDATE
         MENUITEM SEPARATOR
         MENUITEM "關於 PCMan Combo (&A)...",    ID_ABOUT
+    END
+END
+
+
+IDR_MENU_HIDDEN MENU PRELOAD DISCARDABLE
+BEGIN
+    POPUP "其他"
+    BEGIN
+        MENUITEM "複製連結位址",                ID_EDIT_COPYURL
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "向右移動忽略全形自動偵測",    ID_RIGHTNODBCS
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "向左移動忽略全形自動偵測",    ID_LEFTNODBCS
+        , CHECKED, INACTIVE
+        MENUITEM "Backspace 忽略全形自動偵測", ID_BACKNODBCS
+        , CHECKED, INACTIVE
+        MENUITEM "輸入焦點移到位址列",   ID_ADSFOCUS
+        , CHECKED, INACTIVE
+        MENUITEM "輸入焦點移到搜尋列",   ID_SEARCHBAR_FOCUS
+        , CHECKED, INACTIVE
+        MENUITEM "快速輸入WWW網址",      ID_ADSHTTP
+        , CHECKED, INACTIVE
+        MENUITEM "快速輸入Telnet網址",   ID_ADSTELNET
+        , CHECKED, INACTIVE
+	END
+    POPUP "BBS畫面切換", CHECKED, INACTIVE, MENUBARBREAK
+    BEGIN
+        MENUITEM "兩連線分頁間來回切換", ID_SWITCH_BACK
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到上一個分頁", ID_UP
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到下一個分頁", ID_DOWN
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "捲軸往上捲一頁", ID_PGU
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "捲軸往下捲一頁", ID_PGD
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第1個分頁",     8001
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第2個分頁",     8002
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第3個分頁",     8003
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第4個分頁",     8004
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第5個分頁",     8005
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第6個分頁",     8006
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第7個分頁",     8007
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第8個分頁",     8008
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第9個分頁",     8009
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到第10個分頁",    8010
+        , CHECKED, INACTIVE, MENUBARBREAK
+        MENUITEM "切換到最後一個分頁", ID_LASTCON
+        , CHECKED, INACTIVE, MENUBARBREAK
     END
 END
 

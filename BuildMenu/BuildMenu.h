@@ -4,52 +4,49 @@
 #if !defined(AFX_BUILDMENU_H__9A10E364_EDCD_40CB_B3F1_4708EF5E5F33__INCLUDED_)
 #define AFX_BUILDMENU_H__9A10E364_EDCD_40CB_B3F1_4708EF5E5F33__INCLUDED_
 
+#include <map>
 #include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "..\Lite\StdAfx.h"
 
-class CBuffer {
+class AcceleratorTable {
 public:
-	void Write(const void *buf, size_t len)
-	{
-		size_t currlen = buf_.size();
-		buf_.resize(currlen + len);
-		memcpy(&buf_.at(currlen), buf, len);
-	}
+	void Set(const ACCEL &accel);
+	void DeleteByCmd(WORD cmd);
+	void DeleteByKey(BYTE fVirt, WORD key);
+	std::optional<ACCEL> GetByCmd(WORD cmd) const;
+	std::optional<ACCEL> GetByKey(BYTE fVirt, WORD key) const;
 
-	size_t Read(void *buf, size_t len)
-	{
-		size_t n = min(len, buf_.size() - offset);
-		if (n)
-		{
-			memcpy(buf, &buf_.at(offset), len);
-			offset += n;
-		}
-		return n;
-	}
+	HACCEL CreateHandle() const;
 
-	template <class F>
-	size_t ReadFrom(F& f)
-	{
-		const size_t kBatchSize = 8192;
-		size_t i = buf_.size(), n = 0;
-		do {
-			buf_.resize(i + kBatchSize);
-			i += (n = f.Read(&buf_.at(i), kBatchSize));
-		} while (n == kBatchSize);
-		buf_.resize(i);
-		return i;
-	}
-
-	size_t GetLength() const { return buf_.size(); }
-
+	static AcceleratorTable Default();
+	static AcceleratorTable Load();
+	static AcceleratorTable From(HACCEL haccel);
+	
 private:
-	std::vector<BYTE> buf_;
-	size_t offset = 0;
+	using Key = std::pair<BYTE, WORD>;
+
+	std::map<WORD, ACCEL> cmd_to_accel_;
+	std::map<Key, WORD> key_to_cmd_;
 };
 
-std::unique_ptr<CBuffer> GetUIBuffer();
+class MenuVisitor {
+public:
+	virtual ~MenuVisitor() {}
+
+	// Visit menu item at index. menu is the parent menu which item resides.
+	virtual void VisitMenuItem(CMenu *menu, UINT index) {}
+
+	// Called after leaving menu item at index.
+	virtual void LeaveMenuItem(CMenu *menu, UINT index) {}
+};
+
+void TraverseMenuPreorder(HMENU handle, MenuVisitor *visitor);
+
+HMENU LoadResourceMenu(UINT resource_id, const AcceleratorTable &accel_table);
 
 /////////////////////////////////////////////////////////////////////////////
 

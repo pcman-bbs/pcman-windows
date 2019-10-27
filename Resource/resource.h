@@ -348,6 +348,7 @@
 #define IDC_VERSION                     1138
 #define IDC_MAX_TRANLENSPIN             1141
 #define IDR_BUILD_UI                    1234
+#define IDR_MENU_HIDDEN                 1235
 #define IDR_MAINMENU                    1236
 #define ID_LAST_WEB_FAVORITE            6000
 #define ID_FIRST_HOTSTR                 6001

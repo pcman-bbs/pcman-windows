@@ -134,8 +134,6 @@ public:
 	static const char* window_title;
 	CAutoComplete auto_complete;
 
-	ACCEL* accels;
-	int accel_count;
 	CToolBar close_btn;
 
 	CStringArray hotstr;

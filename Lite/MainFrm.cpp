@@ -296,8 +296,6 @@ CMainFrame::CMainFrame()
 #if defined(_COMBO_)
 	CWebBrowser::parent = this;
 #endif
-	accels = NULL;
-
 	main_menu = NULL;
 	edit_menu = NULL;
 	auto_dbcs_menu = NULL;
@@ -323,8 +321,6 @@ CMainFrame::CMainFrame()
 CMainFrame::~CMainFrame()
 {
 	DestroyAcceleratorTable(m_hAccelTable);
-	if (accels)
-		delete []accels;
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -1065,68 +1061,6 @@ void CMainFrame::OnSearchBarFocus()
 	search_bar.SetEditFocus();
 }
 #endif
-
-/* Menu 和 Command Item的結構
-檔案內部儲存方式:
-WORD MAIN_ITEM_COUNT
-CMDITEM ITEMS[TOTAL_COUNT]
-DWORD ACCELCOUNT
-ACCEL ACC_ITEMS[ACCELCOUNT]
-
-struct CMDITEM
-{
-	BYTE TYPE,	CT_MENU,CT_HAS_SUB,CT_CMD,如果TYPE=0則為Separator，後面幾項都沒有
-	WORD ID_OR_SUBCOUNT		如果有CT_HAS_SUB,為SUBCOUNT,如果沒有則為ID
-	WORD state
-	WORD LEN	TEXT的長度,含0
-	CHAR TEXT[]		長度不定,0結尾
-}
-*/
-
-char* UIAddMenu(char* buf, HMENU menu)
-{
-	BYTE type = *buf;
-	//	*buf=TYPE;
-	buf++;
-	WORD count = *(WORD*)buf;	//取得sub item count
-	buf += 6 + *(WORD*)(buf + 4);	//到第一個sub item
-
-	while (count)
-	{
-		LPSTR text;
-		WORD len;
-		if (!*buf)	//Separator
-		{
-			AppendMenu(menu, MF_SEPARATOR, 0, NULL);
-			buf++;
-		}
-		else
-		{
-			text = buf + 7;
-			len = *(WORD*)(buf + 5);
-			if (*buf & CT_HAS_SUB)
-			{
-				if (*buf & CT_MENU)	//如果是一般選單項目才加入選單
-				{
-					HMENU sub = CreatePopupMenu();
-					AppendMenu(menu, MF_STRING | MF_POPUP | LOBYTE(*(WORD*)(buf + 3)), (UINT)sub, text);
-					buf = UIAddMenu(buf, sub);
-				}
-				else	//不是一般選單項目
-					buf = UIAddMenu(buf, NULL);
-			}
-			else
-			{
-				//buf=ID
-				if (*buf & CT_MENU)	//如果是一般選單項目才加入選單,不是選單，就直接略過
-					AppendMenu(menu, MF_STRING | *(WORD*)(buf + 3), *(WORD*)(buf + 1), text);
-				buf += 7 + len;	//Next item
-			}
-		}
-		count--;
-	}
-	return buf;
-}
 
 void CMainFrame::OnShowAnsiBar()
 {
@@ -2560,36 +2494,11 @@ void CMainFrame::OnBBSMouseCTL()
 
 BOOL CMainFrame::LoadUI()
 {
-	std::unique_ptr<CBuffer> ui = GetUIBuffer();
-	if (!ui)
-		return FALSE;
+	AcceleratorTable accel_table = AcceleratorTable::Load();
+	main_menu = LoadResourceMenu(IDR_BUILD_UI, accel_table);
 
-	main_menu = CreateMenu();
-	DWORD l = ui->GetLength();
-	WORD count;
-//取得ACC table長度
-	ui->Read(&count, sizeof(WORD));
-//開始建立Accelerator
-	if (accels)
-		delete []accels;
 	DestroyAcceleratorTable(m_hAccelTable);
-
-	accel_count = count;
-	accels = new ACCEL[count];	//配置記憶體給acc table
-	ui->Read(accels, count*sizeof(ACCEL));	//換算成byte
-
-	m_hAccelTable = CreateAcceleratorTable(accels, count);
-//問題出在這裡,傳入CreateAcceleratorTable的應該是ACCEL的數量,而不是大小(位元組數)!!!!!!
-
-//		Accelerator建立結束,開始讀取 UI
-
-	l -= count + 2;	//剩餘UI長度
-	char* ui_buf = new char[l+32];
-	ui->Read(ui_buf, l);
-
-	UIAddMenu(ui_buf, main_menu);
-	delete []ui_buf;
-//		選單建立結束
+	m_hAccelTable = accel_table.CreateHandle();
 
 	::SetMenu(m_hWnd, main_menu);
 

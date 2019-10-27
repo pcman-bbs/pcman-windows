@@ -1,6 +1,8 @@
 // BuildMenu.cpp : Defines the class behaviors for the application.
 //
 
+#include <optional>
+
 #include "BuildMenu.h"
 #include "..\Lite\StdAfx.h"
 #include "..\Lite\AppConfig.h"
@@ -12,112 +14,147 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/* Menu 和 Command Item的結構
+namespace {
 
-檔案內部儲存方式:
-WORD MAIN_ITEM_COUNT
-CMDITEM ITEMS[TOTAL_COUNT]
-DWORD ACCELCOUNT
-ACCEL ACC_ITEMS[ACCELCOUNT]
-
-struct CMDITEM
+// Appends hot key to right side of menu.
+class MenuHotkeyUpdater : public MenuVisitor
 {
-	BYTE TYPE,	CT_MENU,CT_HAS_SUB,CT_CMD,如果TYPE=0則為Separator，後面幾項都沒有
-	WORD ID_OR_SUBCOUNT		如果有CT_HAS_SUB,為SUBCOUNT,如果沒有則為ID
-	WORD state	只有Menu才有此項目
-	WORD LEN	TEXT的長度,含0
-	CHAR TEXT[]		長度不定,0結尾
-}
+public:
+	MenuHotkeyUpdater(const AcceleratorTable *accel_table)
+		: accel_table_(accel_table) {}
 
-*/
-
-//		用來產生UI檔的程式碼
-void UIWriteMenu(CBuffer& ui, HMENU hmenu, char* text, WORD state)
-{
-	CMenu menu;		menu.Attach(hmenu);
-	SHORT c = menu.GetMenuItemCount();
-	WORD l = strlen(text) + 1;
-	BYTE type = (state & (MF_DISABLED | MF_CHECKED | MF_MENUBARBREAK) ? CT_CMD : CT_MENU) | CT_HAS_SUB;
-	ui.Write(&type, 1);
-	ui.Write(&c, 2);
-	if (!(type & CT_MENU))
-		state = 0;
-	ui.Write(&state, sizeof(WORD));
-	ui.Write(&l, 2);
-	ui.Write(text, l);
-
-	CString str;
-	c--;
-	for (int i = 0;i <= c;i++)
-	{
-		menu.GetMenuString(i, str, MF_BYPOSITION);
-		HMENU sub = GetSubMenu(hmenu, i);
-		state = LOWORD(menu.GetMenuState(i, MF_BYPOSITION));
-		if (sub)
-			UIWriteMenu(ui, sub, LPSTR(LPCTSTR(str)), state);
-		else
-		{
-			if (state & MF_SEPARATOR)
-			{
-				BYTE type = 0;
-				ui.Write(&type, 1);
-				continue;
-			}
-			SHORT id = menu.GetMenuItemID(i);
-			BYTE type = (state & (MF_DISABLED | MF_CHECKED | MF_MENUBARBREAK) ? CT_CMD : CT_MENU);
-			ui.Write(&type, 1);
-			ui.Write(&id, sizeof(WORD));
-			if (!(type&CT_MENU))
-				state = 0;
-			ui.Write(&state, sizeof(WORD));
-			l = str.GetLength() + 1;
-			ui.Write(&l, 2);
-			ui.Write(LPCTSTR(str), l);
+	void VisitMenuItem(CMenu *menu, UINT index) override {
+		UINT cmd = menu->GetMenuItemID(index);
+		std::optional<ACCEL> accel = accel_table_->GetByCmd(cmd);
+		if (accel) {
+			CString text;
+			menu->GetMenuString(index, text, MF_BYPOSITION);
+			text.Append(_T("\t"));
+			text.Append(HotkeyToStr(accel->fVirt, accel->key));
+			menu->ModifyMenu(index, MF_BYPOSITION, cmd, text);
 		}
 	}
+
+private:
+	const AcceleratorTable *accel_table_;  // Not owned.
+};
+
+}  // namespace
+
+void TraverseMenuPreorder(CMenu *menu, MenuVisitor *visitor)
+{
+	UINT count = menu->GetMenuItemCount();
+	for (UINT i = 0; i < count; ++i) {
+		visitor->VisitMenuItem(menu, i);
+
+		CMenu *submenu = menu->GetSubMenu(i);
+		if (submenu != nullptr) {
+			TraverseMenuPreorder(submenu, visitor);
+		}
+
+		visitor->LeaveMenuItem(menu, i);
+	}
+}
+
+void TraverseMenuPreorder(HMENU hMenu, MenuVisitor *visitor)
+{
+	CMenu menu;
+	menu.Attach(hMenu);
+	TraverseMenuPreorder(&menu, visitor);
 	menu.Detach();
 }
 
-std::unique_ptr<CBuffer> BuildUIBuffer()
+void AcceleratorTable::Set(const ACCEL &accel)
 {
-//		用來產生UI檔的程式碼
-	std::unique_ptr<CBuffer> ui(new CBuffer());
-
-//	MessageBox( NULL, OutPath, NULL, MB_OK );
-	//ui.Open(path, CFile::modeWrite | CFile::modeCreate);
-
-	HACCEL hacc = LoadAccelerators(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
-	WORD c = CopyAcceleratorTable(hacc, NULL, 0);
-	ui->Write(&c, 2);
-	ACCEL *accels = new ACCEL[c];
-	CopyAcceleratorTable(hacc, accels, c);
-	ui->Write(accels, sizeof(ACCEL)*c);
-	delete []accels;
-	DestroyAcceleratorTable(hacc);
-
-	HMENU tmp = LoadMenu(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
-	UIWriteMenu(*ui, tmp, "", 0);
-	DestroyMenu(tmp);
-
-	return ui;
+	DeleteByCmd(accel.cmd);
+	DeleteByKey(accel.fVirt, accel.key);
+	cmd_to_accel_.emplace(accel.cmd, accel);
+	key_to_cmd_.emplace(Key{ accel.fVirt, accel.key }, accel.cmd);
 }
 
-BOOL OpenUIFile(CFile& ui)
+void AcceleratorTable::DeleteByCmd(WORD cmd)
 {
-	return ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead)
-		|| ui.Open(DefaultConfigPath + UI_FILENAME, CFile::modeRead);
-}
-
-std::unique_ptr<CBuffer> GetUIBuffer()
-{
-	CFile ui;
-	if (OpenUIFile(ui))
-	{
-		std::unique_ptr<CBuffer> buf(new CBuffer());
-		buf->ReadFrom(ui);
-		ui.Close();
-		return buf;
+	auto it = cmd_to_accel_.find(cmd);
+	if (it == cmd_to_accel_.end()) {
+		return;
 	}
+	key_to_cmd_.erase(Key{it->second.fVirt, it->second.key});
+	cmd_to_accel_.erase(it);
+}
 
-	return BuildUIBuffer();
+void AcceleratorTable::DeleteByKey(BYTE fVirt, WORD key)
+{
+	auto it = key_to_cmd_.find(Key{ fVirt, key });
+	if (it == key_to_cmd_.end()) {
+		return;
+	}
+	cmd_to_accel_.erase(it->second);
+	key_to_cmd_.erase(it);
+}
+
+std::optional<ACCEL> AcceleratorTable::GetByCmd(WORD cmd) const
+{
+	auto it = cmd_to_accel_.find(cmd);
+	if (it == cmd_to_accel_.end()) {
+		return std::nullopt;
+	}
+	return it->second;
+}
+
+std::optional<ACCEL> AcceleratorTable::GetByKey(BYTE fVirt, WORD key) const
+{
+	auto it = key_to_cmd_.find(Key{fVirt, key});
+	if (it == key_to_cmd_.end()) {
+		return std::nullopt;
+	}
+	return cmd_to_accel_.at(it->second);
+}
+
+HACCEL AcceleratorTable::CreateHandle() const
+{
+	std::vector<ACCEL> accels;
+	std::transform(
+		cmd_to_accel_.begin(),
+		cmd_to_accel_.end(),
+		std::back_inserter(accels),
+		[](auto& p) { return p.second; });
+	return CreateAcceleratorTable(&accels[0], accels.size());
+}
+
+// static
+AcceleratorTable AcceleratorTable::Default()
+{
+	HACCEL hacc = LoadAccelerators(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
+	AcceleratorTable table = From(hacc);
+	DestroyAcceleratorTable(hacc);
+	return table;
+}
+
+// static
+AcceleratorTable AcceleratorTable::Load()
+{
+	return Default();
+}
+
+// static
+AcceleratorTable AcceleratorTable::From(HACCEL haccel)
+{
+	std::vector<ACCEL> accels;
+	accels.resize(CopyAcceleratorTable(haccel, NULL, 0));
+	CopyAcceleratorTable(haccel, &accels[0], accels.size());
+
+	AcceleratorTable table;
+	for (const ACCEL &accel : accels) {
+		table.Set(accel);
+	}
+	return table;
+}
+
+HMENU LoadResourceMenu(UINT resource_id, const AcceleratorTable &accel_table)
+{
+	CMenu menu;
+	menu.LoadMenu(resource_id);
+	MenuHotkeyUpdater updater(&accel_table);
+	TraverseMenuPreorder(&menu, &updater);
+	return menu.Detach();
 }
