@@ -21,6 +21,7 @@ public:
 	std::optional<ACCEL> GetByKey(BYTE fVirt, WORD key) const;
 
 	HACCEL CreateHandle() const;
+	bool Save();
 
 	static AcceleratorTable Default();
 	static AcceleratorTable Load();

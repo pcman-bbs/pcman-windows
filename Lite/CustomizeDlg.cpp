@@ -283,7 +283,7 @@ void CCustomizeDlg::UpdateTreeItemDisplay(CCustomizeDlg::HotkeyData *data)
 
 void CCustomizeDlg::UIWriteAccels()
 {
-	// TODO: accel_table_.Save();
+	accel_table_.Save();
 }
 
 void CCustomizeDlg::OnCancel()

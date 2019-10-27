@@ -3,6 +3,8 @@
 
 #include <optional>
 
+#include <cpprest/json.h>
+
 #include "BuildMenu.h"
 #include "..\Lite\StdAfx.h"
 #include "..\Lite\AppConfig.h"
@@ -15,6 +17,15 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 namespace {
+
+constexpr const TCHAR *kHotkeyFileName = TEXT("hotkeys.json");
+
+constexpr const wchar_t *kHotkeys = L"hotkeys";
+constexpr const wchar_t *kCmd = L"cmd";
+constexpr const wchar_t *kFVirt = L"fVirt";
+constexpr const wchar_t *kKey = L"key";
+
+constexpr const size_t kReadSize = 4096;
 
 // Appends hot key to right side of menu.
 class MenuHotkeyUpdater : public MenuVisitor
@@ -121,6 +132,71 @@ HACCEL AcceleratorTable::CreateHandle() const
 	return CreateAcceleratorTable(&accels[0], accels.size());
 }
 
+bool AcceleratorTable::Save()
+{
+	using web::json::value;
+
+	value hotkeys = value::array();
+	for (const auto &[cmd, accel] : cmd_to_accel_) {
+		value jaccel = value::object();
+		jaccel[kCmd] = value::number(cmd);
+		jaccel[kFVirt] = value::number(accel.fVirt);
+		jaccel[kKey] = value::number(accel.key);
+		hotkeys[hotkeys.size()] = jaccel;
+	}
+
+	std::ostringstream ss;
+	value obj = web::json::value::object();
+	obj[kHotkeys] = hotkeys;
+	obj.serialize(ss);
+
+	std::string data = ss.str();
+
+	CFile output;
+	if (!output.Open(ConfigPath + kHotkeyFileName, CFile::modeCreate | CFile::modeWrite))
+		return false;
+	output.Write(&data[0], data.size());
+	output.Close();
+	return true;
+}
+
+// static
+AcceleratorTable AcceleratorTable::Load()
+{
+	using web::json::value;
+	using web::json::array;
+	using web::json::object;
+
+	std::stringstream ss;
+	{
+		CFile input;
+		if (!input.Open(ConfigPath + kHotkeyFileName, CFile::modeRead))
+			return Default();
+		std::string buf;
+		buf.resize(kReadSize);
+		int n;
+		while ((n = input.Read(&buf[0], buf.size())) > 0) {
+			ss.write(&buf[0], n);
+		}
+		input.Close();
+	}
+
+	try {
+		AcceleratorTable table;
+		array hotkeys = value::parse(ss).as_object()[kHotkeys].as_array();
+		for (auto &jaccels : hotkeys) {
+			ACCEL accel;
+			accel.cmd = jaccels[kCmd].as_number().to_int32();
+			accel.fVirt = jaccels[kFVirt].as_number().to_int32();
+			accel.key = jaccels[kKey].as_number().to_int32();
+			table.Set(accel);
+		}
+		return table;
+	} catch (web::json::json_exception &) {
+		return Default();
+	}
+}
+
 // static
 AcceleratorTable AcceleratorTable::Default()
 {
@@ -128,12 +204,6 @@ AcceleratorTable AcceleratorTable::Default()
 	AcceleratorTable table = From(hacc);
 	DestroyAcceleratorTable(hacc);
 	return table;
-}
-
-// static
-AcceleratorTable AcceleratorTable::Load()
-{
-	return Default();
 }
 
 // static
