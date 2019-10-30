@@ -114,9 +114,6 @@ public:
 //  Charset Setting
 	BYTE saved_charset;
 
-//  AutoUpdate Setting
-	BYTE autoupdate_disable;
-
 //  Instant Translation
 	int max_translation_length;
 

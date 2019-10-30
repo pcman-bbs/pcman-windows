@@ -60,14 +60,6 @@ extern CFont fnt;
 CUcs2Conv g_ucs2conv;
 
 /////////////////////////////////////////////////////////////////////////////
-UINT BackgroundAutoUpdate(LPVOID pParam)
-{
-	CAutoUpdater updater;
-	updater.CheckForUpdate();
-	return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // CMainFrame
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
@@ -194,9 +186,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
 	ON_WM_ACTIVATEAPP()
 	ON_WM_VSCROLL()
-	ON_REGISTERED_MESSAGE(WM_COMMIT_UPDATE, OnCommitUpdate)
-	ON_REGISTERED_MESSAGE(WM_DOWNLOAD_UPDATE_COMPLETE, OnDownLoadUpdateComplete)
-	ON_COMMAND(ID_CHECK_UPDATE, OnCheckUpdate)
 	ON_COMMAND(ID_NCIKU, OnNciku)
 	ON_COMMAND(ID_WIKIPEDIA, OnWikipedia)
 	//}}AFX_MSG_MAP
@@ -601,18 +590,10 @@ void CMainFrame::OnClose()
 		if (MessageBox(LoadString(IDS_EXIT_CONFIRM), LoadString(IDS_CONFIRM), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
 			return;
     
-	OnCommitUpdate(NULL, NULL);
+	OnCommitUpdate();
 }
 
-
-LRESULT CMainFrame::OnDownLoadUpdateComplete(WPARAM wparam, LPARAM lparam)
-{
-	CDownloadUpdateDlg *dlg = (CDownloadUpdateDlg *) wparam;
-	dlg->OnCancel();
-	return 0;
-}
-
-LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
+void CMainFrame::OnCommitUpdate()
 {
 	WSACancelBlockingCall();
 
@@ -681,7 +662,6 @@ LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
 	}
 
 	CFrameWnd::OnClose();
-	return 0;
 }
 
 void CMainFrame::UpdateStatus()
@@ -1965,12 +1945,6 @@ void CMainFrame::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpms)
 	CFrameWnd::OnMeasureItem(nIDCtl, lpms);
 	if (lpms->CtlType == ODT_MENU)
 		AppConfig.favorites.MeasureItem(lpms);
-}
-
-void CMainFrame::OnAutoUpdate()
-{
-	if(!AppConfig.autoupdate_disable)
-		CWinThread * controlThread = AfxBeginThread(BackgroundAutoUpdate,NULL,THREAD_PRIORITY_NORMAL);
 }
 
 void CMainFrame::OnToolLock()
@@ -3942,10 +3916,4 @@ void CMainFrame::OnInitMenuPopup(CMenu* pMenu,UINT nIndex,BOOL bSysMenu)
 		pMenu->InsertMenu(1, MF_BYPOSITION, CSearchPluginCollection::ID_TRANSLATION, result);
 	}
 	CFrameWnd::OnInitMenuPopup(pMenu, nIndex, bSysMenu);
-}
-
-void CMainFrame::OnCheckUpdate()
-{
-	CWinThread * controlThread = AfxBeginThread(BackgroundAutoUpdate,NULL,THREAD_PRIORITY_NORMAL);
-	//TODO: 沒有更新的話不會有任何訊息
 }

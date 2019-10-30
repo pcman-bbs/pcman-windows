@@ -18,7 +18,6 @@
 #include "Address.h"
 #include "Scaler.h"
 
-#include "AutoUpdate.h"
 #include "InstantTranDlg.h"
 
 #if defined _COMBO_
@@ -170,6 +169,7 @@ public:
 	void OnUpdateIsConnnected(CCmdUI *pCmdUI);
 	void OnUpdateIsBBS(CCmdUI* pCmdUI);
 	void OnUpdateSetCharset(CCmdUI* pCmdUI);
+	void OnCommitUpdate();
 	void RestoreWindow();
 	LRESULT OnNotifyIcon(WPARAM wp, LPARAM lp);
 	LRESULT OnHotKey(WPARAM wp, LPARAM lp);
@@ -267,11 +267,7 @@ public:
 	afx_msg void OnWebSearch();
 	afx_msg void OnUpdateBBSMouseCTL(CCmdUI* pCmdUI);
 	afx_msg void OnBBSMouseCTL();
-	afx_msg void OnAutoUpdate();
-	afx_msg LRESULT OnCommitUpdate(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnDownLoadUpdateComplete(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu,UINT nIndex,BOOL bSysMenu);
-	afx_msg void OnCheckUpdate();
 	afx_msg void OnNciku();
 	afx_msg void OnWikipedia();
 	//}}AFX_MSG

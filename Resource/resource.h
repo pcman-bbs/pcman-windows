@@ -137,9 +137,7 @@
 #define IDI_PCMAN_96                    179
 #define IDD_DOWNLOADING                 182
 #define IDD_DIALOG1                     186
-#define IDD_DOWNLOADING_UPDATE          186
 #define IDD_INSTANT_TRAN                187
-#define IDD_AUTOUPDATE                  188
 #define IDI_ANSFILE                     200
 #define IDD_AUTO_REPLY                  200
 #define IDC_ANSIBAR_FG                  328
@@ -225,7 +223,6 @@
 #define IDC_DBLCLK_CLOSE                1057
 #define IDC_AUTOJUMP                    1058
 #define IDC_LINKAUTOSWITCH              1058
-#define IDC_ENABLE_AUTOUPDATE           1058
 #define IDC_AUTOJUMP2                   1059
 #define IDC_PASTE_AUTOWRAP_COL          1060
 #define IDC_AUTOJUMP3                   1060
@@ -620,13 +617,10 @@
 #define IDS_PROMPT_IMPORT               33031
 #define ID_MOUSE_CTL                    33032
 #define IDS_PCMAN_CLOSE                 33032
-#define ID_AUTO_UPDATE                  33033
-#define IDS_INSTALL_UPDATE              33033
 #define IDS_MOUSE_GESTURE               33034
 #define IDS_UNKNOWN_GESTURE             33035
 #define ID_INSTANT_TRAN                 33036
 #define IDS_TRANSLATION                 33036
-#define ID_CHECK_UPDATE                 33037
 #define ID_NCIKU                        33039
 #define ID_WIKIPEDIA                    33040
 #define ID_SEARCHBAR_CLEANUP            33040

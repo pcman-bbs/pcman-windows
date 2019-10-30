@@ -219,8 +219,6 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
     </ClCompile>
-    <ClCompile Include="AutoUpdate.cpp" />
-    <ClCompile Include="AutoUpdateDlg.cpp" />
     <ClCompile Include="BBSHyperLink.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -506,8 +504,6 @@
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="AutoComplete.h" />
     <ClInclude Include="AutoReplyPage.h" />
-    <ClInclude Include="AutoUpdate.h" />
-    <ClInclude Include="autoupdatedlg.h" />
     <ClInclude Include="BBSHyperLink.h" />
     <ClInclude Include="BrowseDirDlg.h" />
     <ClInclude Include="Clipboard.h" />

@@ -195,7 +195,6 @@ BEGIN
     POPUP "說明 (&H)"
     BEGIN
         MENUITEM "軟體使用說明 (&H)",           IDM_HELP
-        MENUITEM "檢查更新 (&U)",               ID_CHECK_UPDATE
         MENUITEM SEPARATOR
         MENUITEM "關於 PCMan (&A)...",          ID_ABOUT
     END

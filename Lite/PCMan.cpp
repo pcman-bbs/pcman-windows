@@ -194,7 +194,6 @@ BOOL CApp::InitInstance()
 
 //如果只允許執行一個 PCMan，則把User data設為1
 	SetWindowLong(m_pMainWnd->m_hWnd, GWL_USERDATA, !AppConfig.multiple_instance);
-	pFrame->OnAutoUpdate();
 	return TRUE;
 }
 

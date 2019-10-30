@@ -192,12 +192,6 @@
     <ClCompile Include="..\Lite\WinUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lite\AutoUpdate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Lite\AutoUpdateDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Lite\InstantTranDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -419,12 +413,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Lite\WinUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Lite\AutoUpdate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Lite\autoupdatedlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Lite\InstantTranDlg.h">

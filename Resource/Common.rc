@@ -192,8 +192,6 @@ BEGIN
                     NOT WS_VISIBLE | WS_TABSTOP,141,172,40,10
     CONTROL         "Web 工具列",IDC_FULL_SHOWWB,"Button",BS_AUTOCHECKBOX | 
                     NOT WS_VISIBLE | WS_TABSTOP,195,172,57,10
-    CONTROL         "啟動自動更新",IDC_ENABLE_AUTOUPDATE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,167,87,64,10
 END
 
 IDD_HYPERLINK DIALOG DISCARDABLE  0, 0, 276, 209
@@ -557,14 +555,6 @@ BEGIN
     LTEXT           "正在下載...",IDC_STATIC,7,7,128,8
 END
 
-IDD_DOWNLOADING_UPDATE DIALOG DISCARDABLE  0, 0, 81, 23
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
-CAPTION "下載中"
-FONT 10, "System"
-BEGIN
-    LTEXT           "正在下載...",IDC_STATIC,7,7,96,9
-END
-
 IDD_INSTANT_TRAN DIALOG DISCARDABLE  0, 0, 112, 66
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "即時翻譯設定"
@@ -579,21 +569,6 @@ BEGIN
                     UDS_ARROWKEYS,94,7,11,14
     LTEXT           "若要關閉即時翻譯功能，\n請將長度限制設為 0。",
                     IDC_STATIC,7,25,98,16
-END
-
-IDD_AUTOUPDATE DIALOG DISCARDABLE  0, 0, 132, 81
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "發現新版"
-FONT 10, "System"
-BEGIN
-    DEFPUSHBUTTON   "是",IDOK,27,60,30,14
-    PUSHBUTTON      "否",IDCANCEL,76,60,29,14
-    LTEXT           "發現新版 PCMan！ \n請問要下載並且安裝更新嗎？",
-                    IDC_STATIC,16,9,109,18
-    CONTROL         "我不想使用自動更新",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,23,32,85,10
-    PUSHBUTTON      "至下載網頁(可攜版)",IDC_OPEN_DLPAGE,19,45,92,10,
-                    BS_CENTER
 END
 
 
@@ -698,28 +673,12 @@ BEGIN
         BOTTOMMARGIN, 222
     END
 
-    IDD_DOWNLOADING_UPDATE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 74
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 16
-    END
-
     IDD_INSTANT_TRAN, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 105
         TOPMARGIN, 7
         BOTTOMMARGIN, 59
-    END
-
-    IDD_AUTOUPDATE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 125
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 74
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -898,7 +857,6 @@ BEGIN
     IDS_WEB_SEARCH          "搜尋網頁"
     IDS_PROMPT_IMPORT       "PCMan 偵測到目錄中有舊版 PCMan 2004 設定檔，格式和新版使用的並不相容。\n\n建議您上官方網站 http://pcman.openfoundry.org/faq.html 參考如何匯入舊版設定檔的說明。"
     IDS_PCMAN_CLOSE         "PCMan 即將關閉"
-    IDS_INSTALL_UPDATE      "PCMan 現在會關閉以安裝更新"
     IDS_MOUSE_GESTURE       "滑鼠手勢"
     IDS_UNKNOWN_GESTURE     "未知的手勢"
     IDS_TRANSLATION         "即時翻譯"

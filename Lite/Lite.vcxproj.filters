@@ -168,9 +168,6 @@
     <ClCompile Include="WinUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AutoUpdate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MouseCTL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -181,9 +178,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InstantTranDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AutoUpdateDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Websocket.cpp">
@@ -373,9 +367,6 @@
     <ClInclude Include="WinUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AutoUpdate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MouseCTL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -386,9 +377,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InstantTranDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="autoupdatedlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Websocket.h">
