@@ -260,7 +260,6 @@ BEGIN
         MENUITEM "標點符號輸入 (&S)",           ID_TOOL_SYMBOLS
         MENUITEM "PCMan上鎖 (離開座位時使用) (&L)", ID_TOOL_LOCK
         MENUITEM SEPARATOR
-        MENUITEM "取得本機 IP 位址 (&A)",       ID_GET_LOCALIP
         MENUITEM "匯入 IE 我的最愛 (&F)",       ID_TOOL_IMPORT_IEFAV
         MENUITEM "匯出 Web 最愛到 IE  (&X)",    ID_TOOL_EXPORT_IEFAV
         MENUITEM "將PCMan設為預設程式 &D)",     ID_SETDEFAULT

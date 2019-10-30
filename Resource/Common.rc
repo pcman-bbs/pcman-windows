@@ -794,7 +794,6 @@ STRINGTABLE DISCARDABLE
 BEGIN
     IDS_SET_TO_DEFAULT_ANS  "是否預設使用 PCMan 來開啟 ANSI 彩色檔 (*.ans)?"
     IDS_WEBPAGE_FILTER      "網頁 (*.html)|*.htm;*.html|所有檔案 (*.*)|*.*||"
-    IDS_LOCAL_IP            "本機 IP 位址"
     IDS_CHOOSE_BACKUP_DIR   "請選擇要把 PCMan 設定值備份到哪裡?"
     IDS_CHOOSE_2003_DIR     "請選擇 PCMan 2003 設定值所在資料夾"
     IDS_IMPORT_IE_FAV       "匯入 IE 我的最愛"

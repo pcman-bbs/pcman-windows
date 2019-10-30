@@ -110,7 +110,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_BN_CLICKED(IDC_ANSIBAR_SENDDROP, OnAnsiBarSendDropDown)	//used by ansi bar
 	ON_UPDATE_COMMAND_UI(IDC_ANSIBAR_BLINK, OnUpdateAnsiBarBlink)	//used by ansi bar
 	ON_COMMAND(ID_CUSTOMIZE_MAINTB, OnCustomizeMainToolbar)
-	ON_COMMAND(ID_GET_LOCALIP, OnGetLocalIP)
 	ON_WM_MENUCHAR()
 	ON_UPDATE_COMMAND_UI(ID_EDIT_OPENURL, OnUpdateEditOpenURL)
 	ON_COMMAND(ID_BACKUP_CONFIG, OnBackupConfig)
@@ -1830,27 +1829,6 @@ void CMainFrame::OnCustomizeWebBar()
 }
 
 #endif
-
-void CMainFrame::OnGetLocalIP()
-{
-	char hostname[128];
-	gethostname(hostname, 128);
-	hostent* host = gethostbyname(hostname);
-
-	if (!host)
-		return;
-
-	char** paddr = host->h_addr_list;
-
-	if (!*paddr)
-		return;
-
-	while (*(paddr + 1))
-		paddr++;
-
-	char *ip = inet_ntoa(*(in_addr*) * paddr);
-	MessageBox(ip, LoadString(IDS_LOCAL_IP), MB_OK | MB_ICONINFORMATION);
-}
 
 LRESULT CMainFrame::OnMenuChar(UINT nChar, UINT nFlags, CMenu* pMenu)
 {

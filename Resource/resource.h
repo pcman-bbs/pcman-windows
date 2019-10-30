@@ -466,7 +466,6 @@
 #define ID_CURCON_SETTINGS              32874
 #define ID_EDIT_COPYURL                 32876
 #define ID_UPDATE_BBSLIST               32884
-#define ID_GET_LOCALIP                  32885
 #define ID_CUSTOMIZE_MAINTB             32886
 #define ID_BACKUP_CONFIG                32887
 #define ID_EDIT_OPENURL                 32888
@@ -559,7 +558,6 @@
 #define IDS_SET_DEFAULT_BROWSER         32975
 #define IDS_SET_TO_DEFAULT_ANS          32976
 #define IDS_WEBPAGE_FILTER              32977
-#define IDS_LOCAL_IP                    32978
 #define IDS_CHOOSE_BACKUP_DIR           32979
 #define IDS_CHOOSE_2003_DIR             32980
 #define IDS_IMPORT_IE_FAV               32981

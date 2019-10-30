@@ -218,7 +218,6 @@ public:
 	afx_msg void OnAnsiBarSendDropDown();
 	afx_msg void OnUpdateAnsiBarBlink(CCmdUI* pCmdUI);
 	afx_msg void OnCustomizeMainToolbar();
-	afx_msg void OnGetLocalIP();
 	afx_msg LRESULT OnMenuChar(UINT nChar, UINT nFlags, CMenu* pMenu);
 	afx_msg void OnUpdateEditOpenURL(CCmdUI* pCmdUI);
 	afx_msg void OnBackupConfig();
