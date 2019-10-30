@@ -536,8 +536,7 @@ EXSTYLE WS_EX_CONTROLPARENT
 CAPTION "關於 PCMan"
 FONT 9, "新細明體", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "建議或錯誤回報",IDC_MAIL,7,208,61,14
-    PUSHBUTTON      "參觀原作者網頁",IDC_WEB,82,208,61,14
+    PUSHBUTTON      "參觀開發專案網頁",IDC_WEB,7,208,70,14
     PUSHBUTTON      "軟體說明",IDB_HELP,240,208,37,14
     LTEXT           "授權方式： GNU General Public License 第二版\nCopyright (C) 2001-2009 原作者：陽明大學醫學系 洪任諭\nCopyright (C) 2007-2009 PCMan 開發團隊",
                     IDC_STATIC,41,19,220,27
@@ -546,7 +545,6 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,10,9,20,20
     CTEXT           "PCMan - 開放原始碼的全方位 BBS 瀏覽軟體",
                     IDC_STATIC,39,7,207,8
-    PUSHBUTTON      "參觀開發專案網頁",IDC_WEB2,157,208,69,14
     LTEXT           "",IDC_VERSION,42,45,220,8
 END
 

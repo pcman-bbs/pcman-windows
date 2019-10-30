@@ -221,19 +221,17 @@ protected:
 
 // Implementation
 protected:
-	static char web[];
 	//{{AFX_MSG(CAboutDlg)
-	afx_msg void OnReport();
 	afx_msg void OnWeb();
-	afx_msg void OnWeb2();
 	afx_msg void OnHelp();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-};
 
-char CAboutDlg::web[] = "http://pcman.ptt.cc/pcman_help.html";
+private:
+	void OpenUrl(const TCHAR *url);
+};
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 {
@@ -243,9 +241,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-	ON_BN_CLICKED(IDC_MAIL, OnReport)
 	ON_BN_CLICKED(IDC_WEB, OnWeb)
-	ON_BN_CLICKED(IDC_WEB2, OnWeb2)
 	ON_BN_CLICKED(IDB_HELP, OnHelp)
 	ON_WM_CTLCOLOR()
 	//}}AFX_MSG_MAP
@@ -262,44 +258,22 @@ void CApp::OnAppAbout()
 // CApp message handlers
 
 
-void CAboutDlg::OnReport()
-{
-	CAddress tracker("http://rt.openfoundry.org/Foundry/Project/Tracker/?Queue=744");
-#ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tracker, TRUE);
-#else
-	ShellExecute(m_hWnd, "open", tracker.URL(), NULL, NULL, SW_SHOW);
-#endif
-}
-
 void CAboutDlg::OnWeb()
 {
-	web[20] = 0;
-#ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(CAddress(web), TRUE);
-#else
-	ShellExecute(m_hWnd, "open", web, NULL, NULL, SW_SHOW);
-#endif
-	web[20] = 'p';
-}
-
-void CAboutDlg::OnWeb2()
-{
-	CAddress url("http://pcman.openfoundry.org/");
-#ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(url, TRUE);
-#else
-	ShellExecute(m_hWnd, "open", url.URL(), NULL, NULL, SW_SHOW);
-#endif
+	OpenUrl(TEXT("http://pcman.ptt.cc/"));
 }
 
 void CAboutDlg::OnHelp()
 {
+	OpenUrl(TEXT("http://pcman.ptt.cc/pcman_help.html"));
+}
+
+void CAboutDlg::OpenUrl(const TCHAR *url)
+{
 #ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(CAddress(web), TRUE);
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(CAddress(url), TRUE);
 #else
-	if ((long)ShellExecute(m_hWnd, "open", AppPath + "pcman.html", NULL, NULL, SW_SHOWMAXIMIZED) <= 32)
-		ShellExecute(m_hWnd, "open", web, NULL, NULL, SW_SHOWMAXIMIZED);
+	ShellExecute(m_hWnd, "open", url, NULL, NULL, SW_SHOW);
 #endif
 }
 
@@ -351,8 +325,6 @@ HBRUSH CAboutDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	if (nCtlColor == CTLCOLOR_STATIC && IDC_EDIT == pWnd->GetDlgCtrlID())
 	{
 		pDC->SetBkColor(GetSysColor(COLOR_WINDOW));
-//        pDC->SetBkColor( 0 );
-//        pDC->SetTextColor( RGB(255, 255, 255) );
 		return HBRUSH(COLOR_WINDOW + 1);
 	}
 	return CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
