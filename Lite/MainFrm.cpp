@@ -250,8 +250,10 @@ CAddress ParseAddress(const CString& url)
 	CAddress address;
 	if (url.Find(_T("://")) >= 0)
 		address.Parse(url);
-	else
+	else if (url.Find(_T(":\\")) < 0 && url.Find(_T("\\")) < 0 && url.Find(_T("/")) < 0)
 		address.Parse(_T("telnet://") + url);
+	else
+		address.Parse(_T("file://") + url);
 	return address;
 }
 
@@ -884,26 +886,6 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 		{
 			view.OpenAnsFile(addr.Path());
 			return;
-		}
-	}
-	else if (IsFileExist(cmdline))
-	{
-		// Plain path.
-		int l = strlen(cmdline);
-		if (l > 4)
-		{
-			if (0 == strnicmp(cmdline + (l - 4), ".ans", 4))
-			{
-				if (view.OpenAnsFile(cmdline))
-					return;
-			}
-			else
-			{
-#if defined(_COMBO_)
-				view.ConnectWeb(addr, TRUE);
-#endif
-				return;
-			}
 		}
 	}
 #if defined(_COMBO_)
