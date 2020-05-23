@@ -12,4 +12,4 @@ PCMan
 
 Getting started
 ---
-   * [PCMan程式專案建置和執行：逐步解說](Building_PCMan)
+   * [PCMan程式專案建置和執行：逐步解說](./wiki/Building_PCMan)
