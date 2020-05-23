@@ -1,17 +1,16 @@
 ﻿這份文件說明開發和釋出的需求
 
-- [開發] Visual Studio 2017 (Community 即可)
+- [開發] Visual Studio 2017/2019 (Community 即可)
 
 請至官方網站下載: https://www.visualstudio.com/
 
-- [開發] cpprestsdk
+- [開發] cpprestsdk (須包含 websockets 這個 feature)
 
-這兩個推薦使用 vcpkg 安裝, 安裝說明請至以下網站:
+推薦使用 vcpkg 安裝, 安裝說明請至以下網站:
 https://github.com/Microsoft/vcpkg
 
-安裝指令: vcpkg install cpprestsdk
+安裝指令: vcpkg install cpprestsdk[default-features,websockets]
 
-- [釋出] Microsoft Visual C++ Redistributable for Visual Studio 2017 (或相對應的版本)
+- [釋出] Microsoft Visual C++ Redistributable for Visual Studio 2017/2019 (或相對應的版本)
 
-可至 https://www.visualstudio.com/downloads/ 的
-Other Tools and Frameworks 區域下載.
+可至 https://www.visualstudio.com/downloads/ 的 Other Tools and Frameworks 區域下載.
