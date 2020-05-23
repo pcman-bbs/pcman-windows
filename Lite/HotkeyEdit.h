@@ -39,6 +39,7 @@ public:
 
 // Operations
 public:
+	void Reset();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

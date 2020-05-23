@@ -114,9 +114,6 @@ public:
 //  Charset Setting
 	BYTE saved_charset;
 
-//  AutoUpdate Setting
-	BYTE autoupdate_disable;
-
 //  Instant Translation
 	int max_translation_length;
 
@@ -292,7 +289,7 @@ inline void CAppConfig::Default()
 	font_info.lfQuality = DRAFT_QUALITY;
 	font_info.lfPitchAndFamily = 49;
 //	font_info.lfPitchAndFamily=FIXED_PITCH|FF_DONTCARE;
-	strcpy(font_info.lfFaceName, LoadString(IDS_DEFAULT_FONT_FACE));
+	strcpy_s(font_info.lfFaceName, LoadString(IDS_DEFAULT_FONT_FACE));
 	dblclk_select = 1;
 
 	bktype = 0;

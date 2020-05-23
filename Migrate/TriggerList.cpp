@@ -64,7 +64,7 @@ void CTriggerList::RemoveAll()
 
 BOOL CTriggerList::LoadFromFile(CFile &file)
 {
-	//Åª¨ú¦r¦êÄ²µo...
+	//è®€å–å­—ä¸²è§¸ç™¼...
 	CString tmp;
 	RemoveAll();
 	int c = 0;
@@ -74,12 +74,12 @@ BOOL CTriggerList::LoadFromFile(CFile &file)
 	{
 		CTriggerItem* ntitem = Add();
 		ntitem->msg = LoadString(file);
-		//Åª¨ú¥i¯à¥[±Kªº¦r¦ê
+		//è®€å–å¯èƒ½åŠ å¯†çš„å­—ä¸²
 		DWORD l;
 		file.Read(&l, sizeof(DWORD));	//	l=strlen(respond);
 		char* tmpbuf = new char[l+1];
 		file.Read(tmpbuf, l);
-		if (*tmpbuf == '*')	//¦pªG¦³¥[±K
+		if (*tmpbuf == '*')	//å¦‚æœæœ‰åŠ å¯†
 		{
 			l--;
 			int len = Base64Encode((BYTE*)tmpbuf + 1, l, NULL, 0);

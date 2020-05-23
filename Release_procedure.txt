@@ -1,85 +1,85 @@
 
-Releaseªº¨BÆJ:
+Releaseçš„æ­¥é©Ÿ:
 
 0.
-®ÄªG:
-¦bGUIªºAbout­¶­±©MÀÉ®×ªºª©¥»­¶¡A·|¦Û°Ê¦P¨B²£¥Íª©¥»¸ê°T
-¤§«á§Ú­Ì¥Ñ°õ¦æÀÉªºabout­¶¤¤ªºbuild¡A´N¥i¥Hª¾¹D¦bª©¥»®wªºª©¸¹
-¦Ó¥B¥i¥H¨Ï¥Îversion.hÀÉ¤ºªº¦U¶µ°T®§
-¨ä¤¤Version_BuildNumber©MVersion_RevDate¬Oª©¥»®wªº¸ê°T
+æ•ˆæœ:
+åœ¨GUIçš„Abouté é¢å’Œæª”æ¡ˆçš„ç‰ˆæœ¬é ï¼Œæœƒè‡ªå‹•åŒæ­¥ç”¢ç”Ÿç‰ˆæœ¬è³‡è¨Š
+ä¹‹å¾Œæˆ‘å€‘ç”±åŸ·è¡Œæª”çš„abouté ä¸­çš„buildï¼Œå°±å¯ä»¥çŸ¥é“åœ¨ç‰ˆæœ¬åº«çš„ç‰ˆè™Ÿ
+è€Œä¸”å¯ä»¥ä½¿ç”¨version.hæª”å…§çš„å„é …è¨Šæ¯
+å…¶ä¸­Version_BuildNumberå’ŒVersion_RevDateæ˜¯ç‰ˆæœ¬åº«çš„è³‡è¨Š
 
 
 1.
-¹q¸£»İ¦w¸ËTortoiseSVN
-­YTortoiseSVN¤£¬O¦w¸Ë¦b C:\Program Files\TortoiseSVN\bin\SubWCRev.exe
-«h»İ­n¨ìVersion_PreBuildEvent_Combo.bat©MVersion_PreBuildEvent_Lite.batÀÉ®×¤º
-­×§ïAPP_SubWCRevªº¸ô®|¦p
+é›»è…¦éœ€å®‰è£TortoiseSVN
+è‹¥TortoiseSVNä¸æ˜¯å®‰è£åœ¨ C:\Program Files\TortoiseSVN\bin\SubWCRev.exe
+å‰‡éœ€è¦åˆ°Version_PreBuildEvent_Combo.batå’ŒVersion_PreBuildEvent_Lite.batæª”æ¡ˆå…§
+ä¿®æ”¹APP_SubWCRevçš„è·¯å¾‘å¦‚
 SET APP_SubWCRev=Z:\TortoiseSVN\bin\SubWCRev.exe
 
 
 
 2.
 Checkout http://svn.openfoundry.org/pcman/trunk
-ª`·N¡A¬O¨Ï¥ÎCheckout¤£¬O¨Ï¥ÎExport¡A¨Ï¥ÎCheckout¤~·|±o¨ìSubversionª©¥»®wªº¸ê°T¡C
-·í§Ú­Ì­nrelease³oª©®É¡A¥ı­n±N³oª©ªº­×§ïcommit¨ìª©¥»®w¡AµM«á¤~¶}©l«Ø³y°õ¦æÀÉ¡A
-³o¼Ë¤~¯à±o¨ì³Ì·sªºª©¸¹¡C
+æ³¨æ„ï¼Œæ˜¯ä½¿ç”¨Checkoutä¸æ˜¯ä½¿ç”¨Exportï¼Œä½¿ç”¨Checkoutæ‰æœƒå¾—åˆ°Subversionç‰ˆæœ¬åº«çš„è³‡è¨Šã€‚
+ç•¶æˆ‘å€‘è¦releaseé€™ç‰ˆæ™‚ï¼Œå…ˆè¦å°‡é€™ç‰ˆçš„ä¿®æ”¹commitåˆ°ç‰ˆæœ¬åº«ï¼Œç„¶å¾Œæ‰é–‹å§‹å»ºé€ åŸ·è¡Œæª”ï¼Œ
+é€™æ¨£æ‰èƒ½å¾—åˆ°æœ€æ–°çš„ç‰ˆè™Ÿã€‚
 
 
   
 3.
-½s¿èª©¥»³]©w
-¶}±Ò½s¿èVersion_Set_Combo.bat ©M Version_Set_Lite.bat ¤ºªºª©¸¹(Lite¥i©MComboª©¤£¦P)
-SET MajorVersion=8      ==> ³]©w·s¸¹½X
-SET MinorVersion=1      ==> ³]©w·s¸¹½X
-SET PatchLevel=0        ==> ³]©w·s¸¹½X
-¨ä¥¦ªº³]©w¤£°Ê
+ç·¨è¼¯ç‰ˆæœ¬è¨­å®š
+é–‹å•Ÿç·¨è¼¯Version_Set_Combo.bat å’Œ Version_Set_Lite.bat å…§çš„ç‰ˆè™Ÿ(Liteå¯å’ŒComboç‰ˆä¸åŒ)
+SET MajorVersion=8      ==> è¨­å®šæ–°è™Ÿç¢¼
+SET MinorVersion=1      ==> è¨­å®šæ–°è™Ÿç¢¼
+SET PatchLevel=0        ==> è¨­å®šæ–°è™Ÿç¢¼
+å…¶å®ƒçš„è¨­å®šä¸å‹•
 
 
-ª`·N: ³o¤U­±ªº°Ñ¼Æ¥Îªk
-SET UseSvnBuildNumber=1 ==> ¶}±ÒSvnªº¦Û°Êª©¸¹¥\¯à¡A³o­Óproject¬O­n¶}±Òªº
-                            ­Y¥¼¦w¸ËTortoiseSVN©Î¬O¥¼¨Ï¥ÎCheckout¥X¨Óªºµ{¦¡½X
-                            ¡A«h¦¹°Ñ¼ÆµL¥Î¡A§ï¥Î¤U¤G­Ó°Ñ¼Æªº­È
-SET BuildNumber=0       ==> ·í¥¼¦w¸ËTortoiseSVN ¤S·Q½sÄ¶µ{¦¡®É©Ò¥Îªºª©¸¹
-SET BuildNumber_Date=2007/6/27 12:24 ==> ·í¥¼¦w¸ËTortoiseSVN ¤S·Q½sÄ¶µ{¦¡®É©Ò¥Îªº¤é´Á
+æ³¨æ„: é€™ä¸‹é¢çš„åƒæ•¸ç”¨æ³•
+SET UseSvnBuildNumber=1 ==> é–‹å•ŸSvnçš„è‡ªå‹•ç‰ˆè™ŸåŠŸèƒ½ï¼Œé€™å€‹projectæ˜¯è¦é–‹å•Ÿçš„
+                            è‹¥æœªå®‰è£TortoiseSVNæˆ–æ˜¯æœªä½¿ç”¨Checkoutå‡ºä¾†çš„ç¨‹å¼ç¢¼
+                            ï¼Œå‰‡æ­¤åƒæ•¸ç„¡ç”¨ï¼Œæ”¹ç”¨ä¸‹äºŒå€‹åƒæ•¸çš„å€¼
+SET BuildNumber=0       ==> ç•¶æœªå®‰è£TortoiseSVN åˆæƒ³ç·¨è­¯ç¨‹å¼æ™‚æ‰€ç”¨çš„ç‰ˆè™Ÿ
+SET BuildNumber_Date=2007/6/27 12:24 ==> ç•¶æœªå®‰è£TortoiseSVN åˆæƒ³ç·¨è­¯ç¨‹å¼æ™‚æ‰€ç”¨çš„æ—¥æœŸ
 
 
 4.
-§¹¦¨«e­±ªº³]©w«á¡A¶}©l«Ø³y°õ¦æÀÉ¡A¦pªG¬O­º¦¸±qsvn¤U¸ü¦^¨Ó¡Aª`·N³o»İ­nbuild¤G¦¸¡A
-²Ä¤@¦¸¥Îbuild(¼öÁäF7)¡Abuild§¹«á¡A°¨¤W¦A°õ¦æ²Ä¤G¦¸build
-²Ä¤G¦¸¥Îbuild(¼öÁäF7)¡A©Î¬O«öExcute Program(¼öÁäctrl-F5)¡A´N·|¦A«Ø¤@¦¸¡A
-¦ı¬O¡A³o¦¸buildªº³t«×«Ü§Ö¡C(¦Ó¥­±`debugµ{¦¡®É¡A¥u»İ­nbuild¤@¦¸´N¦æ¤F)
+å®Œæˆå‰é¢çš„è¨­å®šå¾Œï¼Œé–‹å§‹å»ºé€ åŸ·è¡Œæª”ï¼Œå¦‚æœæ˜¯é¦–æ¬¡å¾svnä¸‹è¼‰å›ä¾†ï¼Œæ³¨æ„é€™éœ€è¦buildäºŒæ¬¡ï¼Œ
+ç¬¬ä¸€æ¬¡ç”¨build(ç†±éµF7)ï¼Œbuildå®Œå¾Œï¼Œé¦¬ä¸Šå†åŸ·è¡Œç¬¬äºŒæ¬¡build
+ç¬¬äºŒæ¬¡ç”¨build(ç†±éµF7)ï¼Œæˆ–æ˜¯æŒ‰Excute Program(ç†±éµctrl-F5)ï¼Œå°±æœƒå†å»ºä¸€æ¬¡ï¼Œ
+ä½†æ˜¯ï¼Œé€™æ¬¡buildçš„é€Ÿåº¦å¾ˆå¿«ã€‚(è€Œå¹³å¸¸debugç¨‹å¼æ™‚ï¼Œåªéœ€è¦buildä¸€æ¬¡å°±è¡Œäº†)
 
-¦Ó¬°¤°»òbuild§¹²Ä¤@¦¸¡A¦A«ö¤@¦¸build¡AÁÙ·|¦AbuildÀÉ®×¡H
-¥¿±`¤£¬O¦]¬°ÀÉ®×¨S§ïÅÜ¡A©Ò¥H¤£·|build
-¬°¤°»ò­n³o¼Ë¡A­ì²z¦p¤U
+è€Œç‚ºä»€éº¼buildå®Œç¬¬ä¸€æ¬¡ï¼Œå†æŒ‰ä¸€æ¬¡buildï¼Œé‚„æœƒå†buildæª”æ¡ˆï¼Ÿ
+æ­£å¸¸ä¸æ˜¯å› ç‚ºæª”æ¡ˆæ²’æ”¹è®Šï¼Œæ‰€ä»¥ä¸æœƒbuild
+ç‚ºä»€éº¼è¦é€™æ¨£ï¼ŒåŸç†å¦‚ä¸‹
 
 
 
 5.
-¥Ñ©óvc6.0¨S¦³pre-buildªº«H¸¹¡A¾É­P§Ú­ÌµLªk¦bµ{¦¡­è¶}©lbuildªº®É«á´N²£¥Íversioh.h
-©Ò¥H¦bbuild­nreleaseªºµ{¦¡«e¡A
-­n¤â°Ê¥h°õ¦æVersion_PreBuildEvent_Lite.bat©MVersion_PreBuildEvent_Combo.bat
-¨Ó²£¥Í¦U§Oªºversioh.hÀÉ
-­Y¬Ovs2005«h¦³pre-buildªº«H¸¹¡A¥i¥H§¹¦¨¦Û°Ê¤Æ¡A
-¦ı¬O²{¦b¬O¥Îvc6.0¡A©Ò¥H´N¥ı¥Î¤â°Êªº¤èªk¥h°õ¦æ
+ç”±æ–¼vc6.0æ²’æœ‰pre-buildçš„ä¿¡è™Ÿï¼Œå°è‡´æˆ‘å€‘ç„¡æ³•åœ¨ç¨‹å¼å‰›é–‹å§‹buildçš„æ™‚å¾Œå°±ç”¢ç”Ÿversioh.h
+æ‰€ä»¥åœ¨buildè¦releaseçš„ç¨‹å¼å‰ï¼Œ
+è¦æ‰‹å‹•å»åŸ·è¡ŒVersion_PreBuildEvent_Lite.batå’ŒVersion_PreBuildEvent_Combo.bat
+ä¾†ç”¢ç”Ÿå„åˆ¥çš„versioh.hæª”
+è‹¥æ˜¯vs2005å‰‡æœ‰pre-buildçš„ä¿¡è™Ÿï¼Œå¯ä»¥å®Œæˆè‡ªå‹•åŒ–ï¼Œ
+ä½†æ˜¯ç¾åœ¨æ˜¯ç”¨vc6.0ï¼Œæ‰€ä»¥å°±å…ˆç”¨æ‰‹å‹•çš„æ–¹æ³•å»åŸ·è¡Œ
 
-ª`·N1:
-­Y°õ¦æVersion_PreBuildEvent_Lite.bat©MVersion_PreBuildEvent_Combo.bat
-¸õ¥X¡u¨t²Î§ä¤£¨ì«ü©wªº¸ô®|¡v¡A«h»İ­n¶}±Ò©R¥O¦C¼Ò¦¡¡A¸õ¨ì²{¦bªº¤u§@¥Ø¿ı
-¦A°õ¦æ¤W­±ªº¤G­ÓbatÀÉ
-
-
-ª`·N2:
-ÁöµMvc6.0¨S¦³pre-buildªº«H¸¹¡A¦ı¬O¬°¤F¤è«K¡AÁÙ¬O¥[¤F©R¥O¦bpre-link
-©Ò¥H¥i¥H¦Û°Ê²£¥Íversioh.hÀÉ¡A¦ı¬O­n¸Ì­±­×§ïªº¸ê®Æ¥¿½T¡A»İ­nbuild¤G¦¸¤~¦æ
-²Ä¤@¦¸build ²£¥Íversioh.hÀÉ¡A¦ı¬O¦]¬°¬O³Ì«á¤~²£¥Íªº¡A©Ò¥H¥¼¥Î¨ì
-²Ä¤G¦¸buildªº®É«á¡A§â¤W¦¸ªºversioh.hÀÉ¥]§t¶i¥h¡A©Ò¥H¥i¥H±o¨ì¥¿½Tªº¸ê°T
+æ³¨æ„1:
+è‹¥åŸ·è¡ŒVersion_PreBuildEvent_Lite.batå’ŒVersion_PreBuildEvent_Combo.bat
+è·³å‡ºã€Œç³»çµ±æ‰¾ä¸åˆ°æŒ‡å®šçš„è·¯å¾‘ã€ï¼Œå‰‡éœ€è¦é–‹å•Ÿå‘½ä»¤åˆ—æ¨¡å¼ï¼Œè·³åˆ°ç¾åœ¨çš„å·¥ä½œç›®éŒ„
+å†åŸ·è¡Œä¸Šé¢çš„äºŒå€‹batæª”
 
 
+æ³¨æ„2:
+é›–ç„¶vc6.0æ²’æœ‰pre-buildçš„ä¿¡è™Ÿï¼Œä½†æ˜¯ç‚ºäº†æ–¹ä¾¿ï¼Œé‚„æ˜¯åŠ äº†å‘½ä»¤åœ¨pre-link
+æ‰€ä»¥å¯ä»¥è‡ªå‹•ç”¢ç”Ÿversioh.hæª”ï¼Œä½†æ˜¯è¦è£¡é¢ä¿®æ”¹çš„è³‡æ–™æ­£ç¢ºï¼Œéœ€è¦buildäºŒæ¬¡æ‰è¡Œ
+ç¬¬ä¸€æ¬¡build ç”¢ç”Ÿversioh.hæª”ï¼Œä½†æ˜¯å› ç‚ºæ˜¯æœ€å¾Œæ‰ç”¢ç”Ÿçš„ï¼Œæ‰€ä»¥æœªç”¨åˆ°
+ç¬¬äºŒæ¬¡buildçš„æ™‚å¾Œï¼ŒæŠŠä¸Šæ¬¡çš„versioh.hæª”åŒ…å«é€²å»ï¼Œæ‰€ä»¥å¯ä»¥å¾—åˆ°æ­£ç¢ºçš„è³‡è¨Š
 
 
 
-¬ÛÃö¸ê°T¡A½Ğ°Ñ¦ÒversionCTL\Version_ReadMe.txt
 
 
-­º½s: Omar Lin  (ID: badpp) ¤U¤È 04:02 2007/6/28
+ç›¸é—œè³‡è¨Šï¼Œè«‹åƒè€ƒversionCTL\Version_ReadMe.txt
+
+
+é¦–ç·¨: Omar Lin  (ID: badpp) ä¸‹åˆ 04:02 2007/6/28

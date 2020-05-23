@@ -185,7 +185,7 @@ void CBBSHyperLink::OpenURL(LPCTSTR url)
 	{
 #ifdef _COMBO_
 		if (path == url)	//如果是預設程式開啟，而且不是E-mail
-			((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(url, AppConfig.link_autoswitch);
+			((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(CAddress(url), AppConfig.link_autoswitch);
 		else
 #endif
 			::ShellExecute(AfxGetMainWnd()->m_hWnd, "open", path, param, NULL,

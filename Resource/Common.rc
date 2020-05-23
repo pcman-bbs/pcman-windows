@@ -192,8 +192,6 @@ BEGIN
                     NOT WS_VISIBLE | WS_TABSTOP,141,172,40,10
     CONTROL         "Web 工具列",IDC_FULL_SHOWWB,"Button",BS_AUTOCHECKBOX | 
                     NOT WS_VISIBLE | WS_TABSTOP,195,172,57,10
-    CONTROL         "啟動自動更新",IDC_ENABLE_AUTOUPDATE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,167,87,64,10
 END
 
 IDD_HYPERLINK DIALOG DISCARDABLE  0, 0, 276, 209
@@ -516,8 +514,7 @@ BEGIN
                     TVS_SHOWSELALWAYS | TVS_FULLROWSELECT | NOT WS_VISIBLE | 
                     WS_BORDER | WS_TABSTOP,7,7,210,259
     EDITTEXT        IDC_HOTKEY,224,102,117,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT,224,120,18,14,ES_UPPERCASE | ES_AUTOHSCROLL
-    PUSHBUTTON      "套用這個熱鍵",IDC_APPLY,245,120,96,14
+    PUSHBUTTON      "套用這個熱鍵",IDC_APPLY,224,120,117,14
     LISTBOX         IDC_LIST,224,19,117,45,LBS_NOINTEGRALHEIGHT | 
                     LBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "刪除選取的熱鍵",IDC_DEL,269,65,72,14
@@ -537,8 +534,7 @@ EXSTYLE WS_EX_CONTROLPARENT
 CAPTION "關於 PCMan"
 FONT 9, "新細明體", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "建議或錯誤回報",IDC_MAIL,7,208,61,14
-    PUSHBUTTON      "參觀原作者網頁",IDC_WEB,82,208,61,14
+    PUSHBUTTON      "參觀開發專案網頁",IDC_WEB,7,208,70,14
     PUSHBUTTON      "軟體說明",IDB_HELP,240,208,37,14
     LTEXT           "授權方式： GNU General Public License 第二版\nCopyright (C) 2001-2009 原作者：陽明大學醫學系 洪任諭\nCopyright (C) 2007-2009 PCMan 開發團隊",
                     IDC_STATIC,41,19,220,27
@@ -547,7 +543,6 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,10,9,20,20
     CTEXT           "PCMan - 開放原始碼的全方位 BBS 瀏覽軟體",
                     IDC_STATIC,39,7,207,8
-    PUSHBUTTON      "參觀開發專案網頁",IDC_WEB2,157,208,69,14
     LTEXT           "",IDC_VERSION,42,45,220,8
 END
 
@@ -558,14 +553,6 @@ FONT 9, "新細明體"
 BEGIN
     DEFPUSHBUTTON   "取消 (&C)",IDCANCEL,46,23,50,14
     LTEXT           "正在下載...",IDC_STATIC,7,7,128,8
-END
-
-IDD_DOWNLOADING_UPDATE DIALOG DISCARDABLE  0, 0, 81, 23
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
-CAPTION "下載中"
-FONT 10, "System"
-BEGIN
-    LTEXT           "正在下載...",IDC_STATIC,7,7,96,9
 END
 
 IDD_INSTANT_TRAN DIALOG DISCARDABLE  0, 0, 112, 66
@@ -582,21 +569,6 @@ BEGIN
                     UDS_ARROWKEYS,94,7,11,14
     LTEXT           "若要關閉即時翻譯功能，\n請將長度限制設為 0。",
                     IDC_STATIC,7,25,98,16
-END
-
-IDD_AUTOUPDATE DIALOG DISCARDABLE  0, 0, 132, 81
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "發現新版"
-FONT 10, "System"
-BEGIN
-    DEFPUSHBUTTON   "是",IDOK,27,60,30,14
-    PUSHBUTTON      "否",IDCANCEL,76,60,29,14
-    LTEXT           "發現新版 PCMan！ \n請問要下載並且安裝更新嗎？",
-                    IDC_STATIC,16,9,109,18
-    CONTROL         "我不想使用自動更新",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,23,32,85,10
-    PUSHBUTTON      "至下載網頁(可攜版)",IDC_OPEN_DLPAGE,19,45,92,10,
-                    BS_CENTER
 END
 
 
@@ -701,28 +673,12 @@ BEGIN
         BOTTOMMARGIN, 222
     END
 
-    IDD_DOWNLOADING_UPDATE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 74
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 16
-    END
-
     IDD_INSTANT_TRAN, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 105
         TOPMARGIN, 7
         BOTTOMMARGIN, 59
-    END
-
-    IDD_AUTOUPDATE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 125
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 74
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -823,6 +779,7 @@ BEGIN
     IDS_ADS_BAR_TITLE       "位址："
     IDS_EXIT_CONFIRM        "還有連線分頁正在開啟中，您確定要結束本程式？"
     IDS_CON_STATUS          "\t連線時間：%d 小時 %d 分 %d 秒　　位址：%s"
+	IDS_CON_SECURE          " (安全)"
     IDS_ANSIED_STATUS       "ANSI 彩色編輯\t編輯模式：%s\t檔案：%s"
     IDS_INSERT              "插入"
     IDS_REPLACE             "取代"
@@ -837,7 +794,6 @@ STRINGTABLE DISCARDABLE
 BEGIN
     IDS_SET_TO_DEFAULT_ANS  "是否預設使用 PCMan 來開啟 ANSI 彩色檔 (*.ans)?"
     IDS_WEBPAGE_FILTER      "網頁 (*.html)|*.htm;*.html|所有檔案 (*.*)|*.*||"
-    IDS_LOCAL_IP            "本機 IP 位址"
     IDS_CHOOSE_BACKUP_DIR   "請選擇要把 PCMan 設定值備份到哪裡?"
     IDS_CHOOSE_2003_DIR     "請選擇 PCMan 2003 設定值所在資料夾"
     IDS_IMPORT_IE_FAV       "匯入 IE 我的最愛"
@@ -900,7 +856,6 @@ BEGIN
     IDS_WEB_SEARCH          "搜尋網頁"
     IDS_PROMPT_IMPORT       "PCMan 偵測到目錄中有舊版 PCMan 2004 設定檔，格式和新版使用的並不相容。\n\n建議您上官方網站 http://pcman.openfoundry.org/faq.html 參考如何匯入舊版設定檔的說明。"
     IDS_PCMAN_CLOSE         "PCMan 即將關閉"
-    IDS_INSTALL_UPDATE      "PCMan 現在會關閉以安裝更新"
     IDS_MOUSE_GESTURE       "滑鼠手勢"
     IDS_UNKNOWN_GESTURE     "未知的手勢"
     IDS_TRANSLATION         "即時翻譯"

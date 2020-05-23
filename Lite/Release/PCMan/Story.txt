@@ -1,4 +1,4 @@
-PCMan 9.1.5 (codename Novus)簡介：
+PCMan (Novus) 簡介：
 
 PCMan 2007版本在加入滑鼠流覽之後，之後長達一年的時間沒有人繼續
 參與開發於2008年11月起陸續有ceshine、BBCall加入專案，PCMan的社

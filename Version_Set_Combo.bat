@@ -1,17 +1,17 @@
+chcp 65001
 SET MajorVersion=9
-SET MinorVersion=2
+SET MinorVersion=5
 SET PatchLevel=0
 
 SET BuildNumber=0
-SET BuildNumber_Date=2007/6/27 12:24
+SET BuildNumber_Date=
 
-SET UseSvnBuildNumber=1
-
+SET VersionAppend=" Beta 2"
 
 SET CompanyName="PCMan Project\0"
 SET ProductName="PCMan Combo\0"
 SET InternalName="PCMan Combo\0"
 SET OriginalFilename="PCMan.exe\0"
 SET FileDescription="PCMan\0"
-SET LegalCopyright="Copyright (C) 2001 - 2009 ¥Ñ ¬x¥ô¿Ù¤Î Open PCMan Team ¦@¦P»s§@\0"
-SET Comments="¥»³nÅé¥Ñ¬x¥ô¿Ù¤Î Open PCMan Team ¦@¦P»s§@." " Revision Date: " Version_RevDateA
+SET LegalCopyright="Copyright (C) 2001 - 2009 ç”± æ´ªä»»è«­åŠ Open PCMan Team å…±åŒè£½ä½œ\0"
+SET Comments="æœ¬è»Ÿé«”ç”±æ´ªä»»è«­åŠ Open PCMan Team å…±åŒè£½ä½œ."

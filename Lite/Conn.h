@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Address.h"
+
 class CTermView;
 
 enum
@@ -38,7 +40,7 @@ BYTE is_lookup_host : 1;
 BYTE is_cancelled : 1;
 
 	CString name;	//顯示在tab的名稱
-	CString address;
+	CAddress address;
 
 	CConn();
 	virtual ~CConn() = 0;

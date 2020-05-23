@@ -22,7 +22,7 @@ public:
 	inline CReBarBandPos(){wID = -1;}
 	void Load(char* value)
 	{
-		sscanf(value, "%d,%d,%d", &wID, &fStyle, &cx);
+		sscanf_s(value, "%d,%d,%d", &wID, &fStyle, &cx);
 	}
 	void Save(CString& value)
 	{

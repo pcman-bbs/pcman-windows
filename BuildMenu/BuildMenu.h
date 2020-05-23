@@ -4,38 +4,50 @@
 #if !defined(AFX_BUILDMENU_H__9A10E364_EDCD_40CB_B3F1_4708EF5E5F33__INCLUDED_)
 #define AFX_BUILDMENU_H__9A10E364_EDCD_40CB_B3F1_4708EF5E5F33__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include <map>
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
-#ifndef __AFXWIN_H__
-#error include 'stdafx.h' before including this file for PCH
-#endif
+#include "..\Lite\StdAfx.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CBuildMenuApp:
-// See BuildMenu.cpp for the implementation of this class
-//
-
-class CBuildMenuApp : public CWinApp
-{
+class AcceleratorTable {
 public:
-	CBuildMenuApp();
+	void Set(const ACCEL &accel);
+	void DeleteByCmd(WORD cmd);
+	void DeleteByKey(BYTE fVirt, WORD key);
+	std::optional<ACCEL> GetByCmd(WORD cmd) const;
+	std::optional<ACCEL> GetByKey(BYTE fVirt, WORD key) const;
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CBuildMenuApp)
-public:
-	virtual BOOL InitInstance();
-	//}}AFX_VIRTUAL
+	HACCEL CreateHandle() const;
+	bool Save();
 
-// Implementation
+	static AcceleratorTable Default();
+	static AcceleratorTable Load();
+	static AcceleratorTable From(HACCEL haccel);
+	
+private:
+	using Key = std::pair<BYTE, WORD>;
 
-	//{{AFX_MSG(CBuildMenuApp)
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+	std::map<WORD, ACCEL> cmd_to_accel_;
+	std::map<Key, WORD> key_to_cmd_;
 };
 
+class MenuVisitor {
+public:
+	virtual ~MenuVisitor() {}
+
+	// Visit menu item at index. menu is the parent menu which item resides.
+	virtual void VisitMenuItem(CMenu *menu, UINT index) {}
+
+	// Called after leaving menu item at index.
+	virtual void LeaveMenuItem(CMenu *menu, UINT index) {}
+};
+
+void TraverseMenuPreorder(HMENU handle, MenuVisitor *visitor);
+
+HMENU LoadResourceMenu(UINT resource_id, const AcceleratorTable &accel_table);
 
 /////////////////////////////////////////////////////////////////////////////
 

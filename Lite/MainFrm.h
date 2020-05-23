@@ -15,8 +15,9 @@
 #include "CustomTabCtrl.h"
 #include "CustomToolBar.h"
 #include "AutoComplete.h"	// Added by ClassView
+#include "Address.h"
+#include "Scaler.h"
 
-#include "AutoUpdate.h"
 #include "InstantTranDlg.h"
 
 #if defined _COMBO_
@@ -36,6 +37,8 @@ const WPARAM AC_PCMANLOCKED	= 1;
 const char TINY_URL[] = "http://tinyurl.com/create.php?url=";
 const char TINYURL_TEMP_FILENAME[] = "Tinyurl";
 
+CAddress ParseAddress(const CString& url);
+CString NameFromAddress(const CAddress& address);
 
 #define ID_MOUSE_SEL_TIMER	100
 
@@ -130,8 +133,6 @@ public:
 	static const char* window_title;
 	CAutoComplete auto_complete;
 
-	ACCEL* accels;
-	int accel_count;
 	CToolBar close_btn;
 
 	CStringArray hotstr;
@@ -168,6 +169,7 @@ public:
 	void OnUpdateIsConnnected(CCmdUI *pCmdUI);
 	void OnUpdateIsBBS(CCmdUI* pCmdUI);
 	void OnUpdateSetCharset(CCmdUI* pCmdUI);
+	void OnCommitUpdate();
 	void RestoreWindow();
 	LRESULT OnNotifyIcon(WPARAM wp, LPARAM lp);
 	LRESULT OnHotKey(WPARAM wp, LPARAM lp);
@@ -177,6 +179,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnClose();
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	afx_msg BOOL OnQueryEndSession();
 	afx_msg void OnShowTabBar();
 	afx_msg void OnShowToolbar();
 	afx_msg void OnCloseBtn();
@@ -215,7 +218,6 @@ public:
 	afx_msg void OnAnsiBarSendDropDown();
 	afx_msg void OnUpdateAnsiBarBlink(CCmdUI* pCmdUI);
 	afx_msg void OnCustomizeMainToolbar();
-	afx_msg void OnGetLocalIP();
 	afx_msg LRESULT OnMenuChar(UINT nChar, UINT nFlags, CMenu* pMenu);
 	afx_msg void OnUpdateEditOpenURL(CCmdUI* pCmdUI);
 	afx_msg void OnBackupConfig();
@@ -264,17 +266,13 @@ public:
 	afx_msg void OnWebSearch();
 	afx_msg void OnUpdateBBSMouseCTL(CCmdUI* pCmdUI);
 	afx_msg void OnBBSMouseCTL();
-	afx_msg void OnAutoUpdate();
-	afx_msg LRESULT OnCommitUpdate(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnDownLoadUpdateComplete(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu,UINT nIndex,BOOL bSysMenu);
-	afx_msg void OnCheckUpdate();
 	afx_msg void OnNciku();
 	afx_msg void OnWikipedia();
 	//}}AFX_MSG
 
 	void OnFavorite(UINT id);
-	void OnDownloadPage();
+	LRESULT OnDownloadPage(WPARAM, LPARAM);
 
 #if	_MFC_VER >= 0x0700
 	afx_msg void OnActivateApp(BOOL bActive, DWORD hTask);
@@ -344,6 +342,7 @@ protected:
 
 private:
 	bool setCharset;
+	CScaler scaler;
 };
 
 /////////////////////////////////////////////////////////////////////////////

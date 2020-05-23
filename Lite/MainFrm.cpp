@@ -7,6 +7,7 @@
 #include "PCMan.h"
 
 #include "MainFrm.h"
+#include "../BuildMenu/BuildMenu.h"
 #include "WinUtils.h"
 #include "CustomizeDlg.h"
 #include "PasswdDlg.h"
@@ -59,14 +60,6 @@ extern CFont fnt;
 CUcs2Conv g_ucs2conv;
 
 /////////////////////////////////////////////////////////////////////////////
-UINT BackgroundAutoUpdate(LPVOID pParam)
-{
-	CAutoUpdater updater;
-	updater.CheckForUpdate();
-	return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // CMainFrame
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
@@ -78,6 +71,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_INITMENUPOPUP()
 	ON_WM_CLOSE()
 	ON_WM_ACTIVATE()
+	ON_WM_QUERYENDSESSION()
 	ON_COMMAND(ID_TAB, OnShowTabBar)
 	ON_COMMAND(ID_TOOLBAR, OnShowToolbar)
 	ON_COMMAND(ID_CLOSEBTN, OnCloseBtn)
@@ -116,7 +110,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_BN_CLICKED(IDC_ANSIBAR_SENDDROP, OnAnsiBarSendDropDown)	//used by ansi bar
 	ON_UPDATE_COMMAND_UI(IDC_ANSIBAR_BLINK, OnUpdateAnsiBarBlink)	//used by ansi bar
 	ON_COMMAND(ID_CUSTOMIZE_MAINTB, OnCustomizeMainToolbar)
-	ON_COMMAND(ID_GET_LOCALIP, OnGetLocalIP)
 	ON_WM_MENUCHAR()
 	ON_UPDATE_COMMAND_UI(ID_EDIT_OPENURL, OnUpdateEditOpenURL)
 	ON_COMMAND(ID_BACKUP_CONFIG, OnBackupConfig)
@@ -192,9 +185,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_NOTIFY(NM_RCLICK, IDC_MAINTAB, OnRClickTab)
 	ON_WM_ACTIVATEAPP()
 	ON_WM_VSCROLL()
-	ON_REGISTERED_MESSAGE(WM_COMMIT_UPDATE, OnCommitUpdate)
-	ON_REGISTERED_MESSAGE(WM_DOWNLOAD_UPDATE_COMPLETE, OnDownLoadUpdateComplete)
-	ON_COMMAND(ID_CHECK_UPDATE, OnCheckUpdate)
 	ON_COMMAND(ID_NCIKU, OnNciku)
 	ON_COMMAND(ID_WIKIPEDIA, OnWikipedia)
 	//}}AFX_MSG_MAP
@@ -255,6 +245,36 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 END_MESSAGE_MAP()
 
+CAddress ParseAddress(const CString& url)
+{
+	CAddress address;
+	if (url.Find(_T("://")) >= 0)
+		address.Parse(url);
+	else if (url.Find(_T(":\\")) < 0 && url.Find(_T("\\")) < 0 && url.Find(_T("/")) < 0)
+		address.Parse(_T("telnet://") + url);
+	else
+		address.Parse(_T("file://") + url);
+	return address;
+}
+
+CString NameFromAddress(const CAddress& address)
+{
+	const CString& protocol = address.Protocol();
+
+	unsigned short default_port;
+	if (protocol != "telnet" && protocol != "bbs" &&
+		protocol != "ws" && protocol != "wss")
+		return address.URL();  // Non-BBS. Show full URL.
+
+	if (address.Port() != address.DefaultPort())
+	{
+		CString s;
+		s.Format(_T("%s:%d"), address.Server(), address.Port());
+		return s;
+	}
+	return address.Server();
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame construction/destruction
 
@@ -266,8 +286,6 @@ CMainFrame::CMainFrame()
 #if defined(_COMBO_)
 	CWebBrowser::parent = this;
 #endif
-	accels = NULL;
-
 	main_menu = NULL;
 	edit_menu = NULL;
 	auto_dbcs_menu = NULL;
@@ -293,18 +311,22 @@ CMainFrame::CMainFrame()
 CMainFrame::~CMainFrame()
 {
 	DestroyAcceleratorTable(m_hAccelTable);
-	if (accels)
-		delete []accels;
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+//	DPI
+	scaler.Update(this);
+	HDC hdc = GetDC()->m_hDC;
+	UINT dpiy = GetDeviceCaps(hdc, LOGPIXELSY);
+
 //	用來建造control的temp Rect
 	CRect tmprc(0, 0, 0, 0);
 
 //	Load PCMan Icon
 	icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	SetIcon(icon, TRUE);	SetIcon(icon, FALSE);
+	SetIcon(icon, TRUE);
+	SetIcon(icon, FALSE);
 
 	CBitmap imglist_bmp;
 //	Load Image List for Site List and Tab...
@@ -312,16 +334,18 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	img_icons.Create(16, 16, ILC_COLOR32 | ILC_MASK, 9, 0);
 	ImageList_AddMasked(img_icons.m_hImageList, (HBITMAP)imglist_bmp.m_hObject, RGB(255, 0, 255));
 
+
 //	Create font for UI
-	LOGFONT lf;	::GetObject(GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
-	lf.lfHeight = -12;	bar_font.CreateFontIndirect(&lf);
+	LOGFONT lf;
+	::GetObject(GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
+	lf.lfHeight = -scaler.CalcY(12);
+	bar_font.CreateFontIndirect(&lf);
 
 //	Create Main Toolbar
-	SIZE sizebtn;
-	SIZE sizeimg;
 	BITMAP bmp;
-	toolbar.CreateEx(this,  TBSTYLE_FLAT, CCS_ADJUSTABLE | CBRS_ALIGN_TOP | CBRS_TOOLTIPS |
-					 WS_CHILD | WS_VISIBLE, tmprc, IDC_TOOLBAR);
+	toolbar.CreateEx(this, TBSTYLE_FLAT| TBSTYLE_TRANSPARENT,
+		CCS_ADJUSTABLE | CBRS_ALIGN_TOP | CBRS_TOOLTIPS | WS_CHILD | WS_VISIBLE,
+		tmprc, IDC_TOOLBAR);
 	
 	CBitmap toolbar_bkgnd;
 
@@ -345,10 +369,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//bmp.bmWidth/=17;
 #endif
 	bmp.bmWidth = bmp.bmHeight;
+
+	SIZE sizebtn;
+	SIZE sizeimg;
 	sizeimg.cx = bmp.bmWidth;
 	sizeimg.cy = bmp.bmHeight;
-	sizebtn.cx = bmp.bmWidth + 7;
-	sizebtn.cy = bmp.bmHeight + 6;
+	sizebtn.cx = bmp.bmWidth + scaler.CalcX(7);
+	sizebtn.cy = bmp.bmHeight + scaler.CalcY(6);
 	toolbar.SetSizes(sizebtn, sizeimg);
 	//toolbar.SetBitmap((HBITMAP)toolbar_bkgnd.m_hObject);
 	toolbar.LoadToolBar(&AppConfig.main_toolbar_inf);
@@ -380,8 +407,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 //	Create Address Bar
 //----------位址列-------------
-	address_bar.Create(CBS_AUTOHSCROLL | CBS_DROPDOWN, CRect(0, 0, 0, 320), this, IDC_ADS_COMBO);
-	address_bar.MoveWindow(0, 0, 200, 24);
+	address_bar.Create(CBS_AUTOHSCROLL | CBS_DROPDOWN, scaler.Calc(CRect(0, 0, 0, 320)), this, IDC_ADS_COMBO);
+	address_bar.MoveWindow(scaler.Calc(CRect(0, 0, 200, 24)));
 	address_bar.SetFont(&bar_font);
 	HWND hedit =::GetTopWindow(address_bar.m_hWnd);
 	old_address_bar_proc = (WNDPROC)::GetWindowLong(hedit, GWL_WNDPROC);
@@ -564,18 +591,10 @@ void CMainFrame::OnClose()
 		if (MessageBox(LoadString(IDS_EXIT_CONFIRM), LoadString(IDS_CONFIRM), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
 			return;
     
-	OnCommitUpdate(NULL, NULL);
+	OnCommitUpdate();
 }
 
-
-LRESULT CMainFrame::OnDownLoadUpdateComplete(WPARAM wparam, LPARAM lparam)
-{
-	CDownloadUpdateDlg *dlg = (CDownloadUpdateDlg *) wparam;
-	dlg->OnCancel();
-	return 0;
-}
-
-LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
+void CMainFrame::OnCommitUpdate()
 {
 	WSACancelBlockingCall();
 
@@ -610,21 +629,12 @@ LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
 					continue;
 				CString line = (pcon->is_web ? 'w' : 's') + pcon->name;
 				line += '\t';
-				if (0 == strnicmp("telnet://", pcon->address, 9))	// BBS
-					line += LPCTSTR(pcon->address) + 9;	// skip "telnet://"
-				else	// Web
-					line += pcon->address;
+				line += pcon->address.URL();
 #ifdef	_COMBO_
 				// FIXME: should this be pcon->is_telnet? what about ansi editor?
 				if (!pcon->is_web)
 				{
 #endif
-					if (static_cast<CTelnetConn*>(pcon)->port != 23)
-					{
-						char port_str[16];
-						sprintf(port_str, ":%d", static_cast<CTelnetConn*>(pcon)->port);
-						line += port_str;
-					}
 					CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
 					if (! telnet->cfg_path.IsEmpty())
 					{
@@ -653,7 +663,6 @@ LRESULT CMainFrame::OnCommitUpdate(WPARAM wparam, LPARAM lparam)
 	}
 
 	CFrameWnd::OnClose();
-	return 0;
 }
 
 void CMainFrame::UpdateStatus()
@@ -671,7 +680,20 @@ void CMainFrame::UpdateStatus()
 			int hr = telnet->time / 3600;
 			min = min % 60;
 //			text.Format("\t連線時間：%d 小時 %d 分 %d 秒\t\t位址：%s",hr,min,sec,(LPCTSTR)telnet->address);
-			text.Format(con_status, hr, min, sec, (LPCTSTR)telnet->address);
+			text.Format(con_status, hr, min, sec, (LPCTSTR)telnet->address.URL());
+
+			if (telnet->IsSecureConn())
+			{
+				text += LoadString(IDS_CON_SECURE);
+			}
+
+#ifdef _DEBUG
+			if (telnet->conn_io)
+			{
+				text += " ";
+				text += telnet->conn_io->Description().c_str();
+			}
+#endif
 
 			char *szMouseGesture;
 
@@ -688,10 +710,10 @@ void CMainFrame::UpdateStatus()
 			CString mode;
 			mode.LoadString(telnet->insert_mode ? IDS_INSERT : IDS_REPLACE);
 			CString file;
-			if (telnet->address.IsEmpty())
+			if (telnet->address.Path().IsEmpty())
 				file.LoadString(IDS_NOT_SAVED);
 			else
-				file = telnet->address;
+				file = telnet->address.Path();
 //			text.Format( "ANSI彩色編輯\t編輯模式：%s\t檔案：%s", LPCTSTR(mode), LPCTSTR(file) );
 			text.Format(ansied_status, LPCTSTR(mode), LPCTSTR(file));
 		}
@@ -756,8 +778,8 @@ void CMainFrame::OnRClickTab(NMHDR *pNMHDR, LRESULT *pResult)
 
 		::TrackPopupMenu(popup, TPM_RIGHTBUTTON | TPM_LEFTALIGN, pt.x, pt.y, 0, m_hWnd, NULL);
 		DeleteMenu(popup, pos, MF_BYPOSITION);
-		DeleteMenu(popup, ID_CONNECT_CLOSE_ALL_OTHERS, MF_BYCOMMAND);
-		DeleteMenu(popup, ID_CONNECT_CLOSE, MF_BYCOMMAND);
+DeleteMenu(popup, ID_CONNECT_CLOSE_ALL_OTHERS, MF_BYCOMMAND);
+DeleteMenu(popup, ID_CONNECT_CLOSE, MF_BYCOMMAND);
 
 	}
 	*pResult = 0;
@@ -781,8 +803,13 @@ void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 #if !defined(_COMBO_)
 #else
 	//	else if(::GetFocus())
-	focus =::GetFocus();
+	focus = ::GetFocus();
 #endif
+}
+
+BOOL CMainFrame::OnQueryEndSession()
+{
+	return 1;
 }
 
 void CMainFrame::OnShowTabBar()
@@ -837,67 +864,40 @@ void CMainFrame::OnNewConnectionAds(LPCTSTR cmdline)
 
 	AddToTypedHistory(cmdline);
 
-	if (0 == strnicmp(cmdline, "telnet:", 7))
+	CAddress addr = ParseAddress(cmdline);
+	OutputDebugString(addr.Description());
+	if (!addr.IsValid())
 	{
-		cmdline += 7;
-		while (*cmdline == '/')
-			cmdline++;
+		return;
 	}
-	else if (0 == strnicmp(cmdline, "bbs:", 4))
+	const CString& protocol = addr.Protocol();
+
+	if (protocol == "telnet" ||
+		protocol == "bbs" ||
+		protocol == "ws" ||
+		protocol == "wss")
 	{
-		cmdline += 4;
-		while (*cmdline == '/')
-			cmdline++;
+		// BBS.
 	}
-	else if (IsFileExist(cmdline))
+	else if (protocol == "file" && addr.Path().Right(4) == ".ans")
 	{
-		int l = strlen(cmdline);
-		if (l > 4)
+		// Support "file://{...}.ans".
+		if (IsFileExist(addr.Path()))
 		{
-			if (0 == strnicmp(cmdline + (l - 4), ".ans", 4))
-			{
-				if (view.OpenAnsFile(cmdline))
-					return;
-			}
-			else
-			{
-#if defined(_COMBO_)
-				view.ConnectWeb(cmdline, TRUE);
-#endif
-				return;
-			}
+			view.OpenAnsFile(addr.Path());
+			return;
 		}
 	}
 #if defined(_COMBO_)
 	else
 	{
-		view.ConnectWeb(cmdline, TRUE);
+		view.ConnectWeb(addr, TRUE);
 		return;
 	}
 #endif
 
-	CString param = cmdline;
-	if (param[param.GetLength()-1] == '/')
-		param = param.Left(param.GetLength() - 1);
+	view.Connect(addr, NameFromAddress(addr));
 
-	int pos = param.Find(':');
-
-	CString address;
-	unsigned short port;
-	if (pos == -1)
-	{
-		address = param;
-		port = 23;
-	}
-	else
-	{
-		address = param.Left(pos);
-		CString port_str = param.Mid(pos + 1);
-		port = (unsigned short)atoi(port_str);
-		if (port == 23)
-			param = address;
-	}
-	view.Connect(address, param, port);
 	if(!setCharset)
 	{
 		switch(AppConfig.saved_charset)
@@ -965,17 +965,18 @@ void CMainFrame::OnKKmanStyleTab()
 	CRect view_rect;
 	view.GetWindowRect(view_rect);
 	ScreenToClient(view_rect);
+	int tab_bar_height = scaler.CalcY(TABH);
 	if (AppConfig.kktab)
 	{
-		view_rect.top -= TABH;
+		view_rect.top -= tab_bar_height;
 		view.SetWindowPos(&wndTop, 0, view_rect.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-		tab.SetWindowPos(&wndTop, 0, view_rect.bottom - TABH, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+		tab.SetWindowPos(&wndTop, 0, view_rect.bottom - tab_bar_height, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	}
 	else
 	{
-		view.SetWindowPos(&wndTop, 0, view_rect.top + TABH, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+		view.SetWindowPos(&wndTop, 0, view_rect.top + tab_bar_height, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 		tab.SetWindowPos(&wndTop, 0, view_rect.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-		view_rect.top += TABH;
+		view_rect.top += tab_bar_height;
 	}
 }
 
@@ -985,17 +986,7 @@ void CMainFrame::UpdateAddressBar()
 	if (view.con)
 	{
 		SetWindowText(view.con->name + window_title);
-		CString address = view.con->address;
-		if (view.telnet && !view.telnet->is_ansi_editor)
-		{
-			if (view.telnet->port != 23)
-			{
-				char port_str[16];
-				sprintf(port_str, ":%d", view.telnet->port);
-				address += port_str;
-			}
-		}
-		address_bar.SetWindowText(address);
+		address_bar.SetWindowText(view.con->address.URL());
 	}
 	else
 	{
@@ -1005,17 +996,7 @@ void CMainFrame::UpdateAddressBar()
 #else
 	if (view.telnet)
 	{
-		CString address = view.telnet->address;
-		if (!view.telnet->is_ansi_editor)
-		{
-			if (view.telnet->port != 23)
-			{
-				char port_str[16];
-				sprintf(port_str, ":%d", view.telnet->port);
-				address += port_str;
-			}
-		}
-		address_bar.SetWindowText(address);
+		address_bar.SetWindowText(view.telnet->address.URL());
 	}
 	else
 		address_bar.SetWindowText("");
@@ -1041,68 +1022,6 @@ void CMainFrame::OnSearchBarFocus()
 	search_bar.SetEditFocus();
 }
 #endif
-
-/* Menu 和 Command Item的結構
-檔案內部儲存方式:
-WORD MAIN_ITEM_COUNT
-CMDITEM ITEMS[TOTAL_COUNT]
-DWORD ACCELCOUNT
-ACCEL ACC_ITEMS[ACCELCOUNT]
-
-struct CMDITEM
-{
-	BYTE TYPE,	CT_MENU,CT_HAS_SUB,CT_CMD,如果TYPE=0則為Separator，後面幾項都沒有
-	WORD ID_OR_SUBCOUNT		如果有CT_HAS_SUB,為SUBCOUNT,如果沒有則為ID
-	WORD state
-	WORD LEN	TEXT的長度,含0
-	CHAR TEXT[]		長度不定,0結尾
-}
-*/
-
-char* UIAddMenu(char* buf, HMENU menu)
-{
-	BYTE type = *buf;
-	//	*buf=TYPE;
-	buf++;
-	WORD count = *(WORD*)buf;	//取得sub item count
-	buf += 6 + *(WORD*)(buf + 4);	//到第一個sub item
-
-	while (count)
-	{
-		LPSTR text;
-		WORD len;
-		if (!*buf)	//Separator
-		{
-			AppendMenu(menu, MF_SEPARATOR, 0, NULL);
-			buf++;
-		}
-		else
-		{
-			text = buf + 7;
-			len = *(WORD*)(buf + 5);
-			if (*buf & CT_HAS_SUB)
-			{
-				if (*buf & CT_MENU)	//如果是一般選單項目才加入選單
-				{
-					HMENU sub = CreatePopupMenu();
-					AppendMenu(menu, MF_STRING | MF_POPUP | LOBYTE(*(WORD*)(buf + 3)), (UINT)sub, text);
-					buf = UIAddMenu(buf, sub);
-				}
-				else	//不是一般選單項目
-					buf = UIAddMenu(buf, NULL);
-			}
-			else
-			{
-				//buf=ID
-				if (*buf & CT_MENU)	//如果是一般選單項目才加入選單,不是選單，就直接略過
-					AppendMenu(menu, MF_STRING | *(WORD*)(buf + 3), *(WORD*)(buf + 1), text);
-				buf += 7 + len;	//Next item
-			}
-		}
-		count--;
-	}
-	return buf;
-}
 
 void CMainFrame::OnShowAnsiBar()
 {
@@ -1393,13 +1312,13 @@ void CMainFrame::OnAdsTelnet()
 
 void CMainFrame::OnNewWebConn()
 {
-	view.ConnectWeb("", TRUE);
+	view.ConnectWeb(CAddress(), TRUE);
 	OnAdsHttp();
 }
 
 void CMainFrame::OnNewHome()
 {
-	view.ConnectWeb("", TRUE);
+	view.ConnectWeb(CAddress(), TRUE);
 	((CWebConn*)view.con)->web_browser.wb_ctrl.GoHome();
 }
 
@@ -1467,7 +1386,7 @@ void CMainFrame::OnWebPageOpen()
 {
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, LoadString(IDS_WEBPAGE_FILTER), this);
 	if (dlg.DoModal() == IDOK)
-		view.ConnectWeb(dlg.GetPathName(), TRUE);
+		view.ConnectWeb(CAddress(dlg.GetPathName()), TRUE);
 }
 
 void CMainFrame::OnWebPageViewSrc()
@@ -1488,13 +1407,13 @@ void CMainFrame::OnWebPageViewSrc()
 
 void CMainFrame::OnNewCurPage()
 {
-	view.ConnectWeb((view.con && !view.telnet) ? view.con->address : "about:blank", TRUE);
+	view.ConnectWeb((view.con && !view.telnet) ? view.con->address : CAddress(), TRUE);
 }
 
 void CMainFrame::OnNewCurPageInIE()
 {
 	if (view.con && view.con->is_web)
-		::ShellExecute(m_hWnd, "open", GetIEPath(), view.con->address, NULL, SW_SHOW);
+		::ShellExecute(m_hWnd, "open", GetIEPath(), view.con->address.URL(), NULL, SW_SHOW);
 }
 
 void CMainFrame::OnWebPageSaveAs()
@@ -1603,7 +1522,7 @@ void CMainFrame::OnWebHome()
 			return;
 		}
 	}
-	view.ConnectWeb("", TRUE)->web_browser.wb_ctrl.GoHome();
+	view.ConnectWeb(CAddress(), TRUE)->web_browser.wb_ctrl.GoHome();
 }
 
 #endif
@@ -1698,11 +1617,12 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	top = barh;
 	height -= barh;
 
+	UINT status_bar_height = scaler.CalcY(SBH);
 	if (showsb)
 	{
 		status_bar.ShowWindow(SW_SHOW);
-		status_bar.MoveWindow(0, rc.bottom - SBH, rc.right, SBH);
-		height -= SBH;
+		status_bar.MoveWindow(0, rc.bottom - status_bar_height, rc.right, status_bar_height);
+		height -= status_bar_height;
 	}
 	else
 		status_bar.ShowWindow(SW_HIDE);
@@ -1712,22 +1632,23 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	progress_bar.MoveWindow(rc.right - pbw, 0, pbw, SBH);
 #endif
 
+	UINT tab_bar_height = scaler.CalcY(TABH);
 	if (AppConfig.kktab)	//如果使用和KKman相同的連線標籤
 	{
-		int _top = rc.bottom - TABH - (showsb ? SBH : 0);
-		tab.MoveWindow(0, _top, rc.right, TABH);
+		int _top = rc.bottom - tab_bar_height - (showsb ? status_bar_height : 0);
+		tab.MoveWindow(0, _top, rc.right, tab_bar_height);
 	}
 	else
 	{
-		tab.MoveWindow(0, top, rc.right, TABH);
+		tab.MoveWindow(0, top, rc.right, tab_bar_height);
 		if (showtab)
-			top += TABH;
+			top += tab_bar_height;
 	}
 
 	if (showtab)
 	{
 		tab.ShowWindow(SW_SHOW);
-		height -= TABH;
+		height -= tab_bar_height;
 	}
 	else
 		tab.ShowWindow(SW_HIDE);
@@ -1891,27 +1812,6 @@ void CMainFrame::OnCustomizeWebBar()
 
 #endif
 
-void CMainFrame::OnGetLocalIP()
-{
-	char hostname[128];
-	gethostname(hostname, 128);
-	hostent* host = gethostbyname(hostname);
-
-	if (!host)
-		return;
-
-	char** paddr = host->h_addr_list;
-
-	if (!*paddr)
-		return;
-
-	while (*(paddr + 1))
-		paddr++;
-
-	char *ip = inet_ntoa(*(in_addr*) * paddr);
-	MessageBox(ip, LoadString(IDS_LOCAL_IP), MB_OK | MB_ICONINFORMATION);
-}
-
 LRESULT CMainFrame::OnMenuChar(UINT nChar, UINT nFlags, CMenu* pMenu)
 {
 	LRESULT l = CFrameWnd::OnMenuChar(nChar, nFlags, pMenu);
@@ -2005,12 +1905,6 @@ void CMainFrame::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpms)
 	CFrameWnd::OnMeasureItem(nIDCtl, lpms);
 	if (lpms->CtlType == ODT_MENU)
 		AppConfig.favorites.MeasureItem(lpms);
-}
-
-void CMainFrame::OnAutoUpdate()
-{
-	if(!AppConfig.autoupdate_disable)
-		CWinThread * controlThread = AfxBeginThread(BackgroundAutoUpdate,NULL,THREAD_PRIORITY_NORMAL);
 }
 
 void CMainFrame::OnToolLock()
@@ -2393,7 +2287,7 @@ void CMainFrame::OnConnectCloseAllOthers()
 	int all = tab.GetItemCount();
 	for(int i=0;i<sel;i++)
 		CloseConn(0, true);
-	for(i=sel+1;i<all;i++)
+	for(int i=sel+1;i<all;i++)
 		CloseConn(1,true);
 }
 
@@ -2417,7 +2311,7 @@ void CMainFrame::CloseConn(int i, bool confirm)
 		CString str("w");
 		str += pCon->name;
 		str += '\t';
-		str += pCon->address;
+		str += pCon->address.URL();
 		AddToHistoryMenu(str);
 	}
 #endif
@@ -2444,6 +2338,7 @@ void CMainFrame::CloseConn(int i, bool confirm)
 
 	if (pCon->is_lookup_host)
 	{
+		// In DNS lookup, the lookup callback is responsible for deleting.
 		pCon->is_lookup_host = false;
 		pCon->is_cancelled = true;
 	}
@@ -2533,38 +2428,11 @@ void CMainFrame::OnBBSMouseCTL()
 
 BOOL CMainFrame::LoadUI()
 {
-	CFile ui;
-	if (!ui.Open(ConfigPath + UI_FILENAME, CFile::modeRead)
-		&& !ui.Open(DefaultConfigPath + UI_FILENAME, CFile::modeRead))
-		return FALSE;
+	AcceleratorTable accel_table = AcceleratorTable::Load();
+	main_menu = LoadResourceMenu(IDR_BUILD_UI, accel_table);
 
-	main_menu = CreateMenu();
-	DWORD l = ui.GetLength();
-	WORD count;
-//取得ACC table長度
-	ui.Read(&count, sizeof(WORD));
-//開始建立Accelerator
-	if (accels)
-		delete []accels;
 	DestroyAcceleratorTable(m_hAccelTable);
-
-	accel_count = count;
-	accels = new ACCEL[count];	//配置記憶體給acc table
-	ui.Read(accels, count*sizeof(ACCEL));	//換算成byte
-
-	m_hAccelTable = CreateAcceleratorTable(accels, count);
-//問題出在這裡,傳入CreateAcceleratorTable的應該是ACCEL的數量,而不是大小(位元組數)!!!!!!
-
-//		Accelerator建立結束,開始讀取 UI
-
-	l -= count + 2;	//剩餘UI長度
-	char* ui_buf = new char[l+32];
-	ui.Read(ui_buf, l);
-	ui.Close();
-
-	UIAddMenu(ui_buf, main_menu);
-	delete []ui_buf;
-//		選單建立結束
+	m_hAccelTable = accel_table.CreateHandle();
 
 	::SetMenu(m_hWnd, main_menu);
 
@@ -2928,17 +2796,7 @@ void CMainFrame::OnFavorite(UINT id)
 					{
 						name = 's';	name += telnet->name;
 						name += '\t';
-#ifdef _COMBO_
-						name += telnet->address.Mid(9);
-#else
-						name += telnet->address;
-#endif
-						if (telnet->port != 23 && telnet->port > 0)
-						{
-							char port_str[16];
-							sprintf(port_str, ":%d", telnet->port);
-							name += port_str;
-						}
+						name += telnet->address.URL();
 						fav->InsertAt(id - 1, name);
 						AppConfig.favorites.SaveFavorites(TRUE);
 						LoadBBSFavorites();
@@ -3037,10 +2895,6 @@ void CMainFrame::OnToolSymbols()
 		ShellExecute(m_hWnd, "open", AppPath + "Symbols.exe", NULL, NULL, SW_SHOW);
 }
 
-
-extern int _afxComCtlVersion;
-DWORD AFXAPI _AfxGetComCtlVersion();
-
 void CMainFrame::OnViewConfig()
 {
 	BYTE autofont = AppConfig.auto_font;
@@ -3098,20 +2952,7 @@ void CMainFrame::OnViewConfig()
 
 	if (AppConfig.tab_button != tab_button)
 	{
-		if (_afxComCtlVersion >= MAKELONG(0, 6))	//Win XP IE 6.0
-		{
-			MessageBox(LoadString(IDS_TAB_STYLE_ERR_MSG), LoadString(IDS_ATTENTION), MB_OK | MB_ICONINFORMATION);
-		}
-		else
-		{
-			if (AppConfig.tab_button)
-			{
-				tab.ModifyStyle(TCS_BOTTOM, (TCS_FLATBUTTONS | TCS_BUTTONS | TCS_HOTTRACK));
-				tab.ModifyStyleEx(0, TCS_EX_FLATSEPARATORS);
-			}
-			else
-				tab.ModifyStyle(TCS_FLATBUTTONS | TCS_BUTTONS, AppConfig.kktab ? TCS_BOTTOM : 0);
-		}
+		MessageBox(LoadString(IDS_TAB_STYLE_ERR_MSG), LoadString(IDS_ATTENTION), MB_OK | MB_ICONINFORMATION);
 	}
 
 	while (AppConfig.max_history < AppConfig.history.GetCount())
@@ -3263,7 +3104,7 @@ void CMainFrame::SwitchToConn(int index)
 #endif /////////////////////////////////
 		view.telnet = NULL;
 		view.SetFocus();
-		view.SetCaretPos(CPoint(view.left_margin, view.top_margin + view.lineh - 2));
+		view.SetCursorPos(0, 0);
 		CRect &view_rect = view.view_rect;
 		view.GetClientRect(view_rect);
 		view.AdjustFont(view_rect.right, view_rect.bottom);
@@ -3444,19 +3285,13 @@ void CMainFrame::OnAddToHome()
 	{
 		txt = "w" + view.con->name;
 		txt += '\t';
-		txt += view.con->address;
+		txt += view.con->address.URL();
 	}
 	else
 	{
 		txt = 's' + view.telnet->name;
 		txt += '\t';
-		txt += view.telnet->address.Mid(9);
-		if (view.telnet->port != 23)
-		{
-			char port_str[16];
-			sprintf(port_str, ":%d", view.telnet->port);
-			txt += port_str;
-		}
+		txt += view.telnet->address.URL();
 	}
 #else
 	if (!view.telnet || view.telnet->is_ansi_editor)
@@ -3464,13 +3299,7 @@ void CMainFrame::OnAddToHome()
 
 	txt = "s" + view.telnet->name;
 	txt += '\t';
-	txt += view.telnet->address;
-	if (view.telnet->port != 23)
-	{
-		char port_str[16];
-		sprintf(port_str, ":%d", view.telnet->port);
-		txt += port_str;
-	}
+	txt += view.telnet->address.URL();
 #endif
 
 	txt += "\x0d\x0a";
@@ -3525,11 +3354,11 @@ void CMainFrame::OnNciku()
 #endif
 		return;
 	}
-	CString tmp = "http://www.nciku.com.tw/search/all/"+view.GetSelText();
+	CAddress tmp("http://www.nciku.com.tw/search/all/" + view.GetSelText());
 #if defined _COMBO_
 	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tmp, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", tmp, NULL, NULL, SW_SHOWMAXIMIZED);
+	ShellExecute(m_hWnd, "open", tmp.URL(), NULL, NULL, SW_SHOWMAXIMIZED);
 #endif
 }
 
@@ -3548,11 +3377,11 @@ void CMainFrame::OnWikipedia()
 #endif
 		return;
 	}
-	CString tmp = "http://zh.wikipedia.org/wiki/"+view.GetSelText();
+	CAddress tmp("http://zh.wikipedia.org/wiki/" + view.GetSelText());
 #if defined _COMBO_
 	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tmp, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", tmp, NULL, NULL, SW_SHOWMAXIMIZED);
+	ShellExecute(m_hWnd, "open", tmp.URL(), NULL, NULL, SW_SHOWMAXIMIZED);
 #endif
 }
 
@@ -3760,7 +3589,7 @@ void CMainFrame::OnExit()
 void CMainFrame::OnHelp()
 {
 #if defined	_COMBO_
-	view.ConnectWeb("http://pcman.ptt.cc/pcman_help.html", TRUE);
+	view.ConnectWeb(CAddress("http://pcman.ptt.cc/pcman_help.html"), TRUE);
 #else
 //	if((long)ShellExecute(m_hWnd,"open",AppPath+"pcman.html",NULL,NULL,SW_SHOWMAXIMIZED)<=32)
 	ShellExecute(m_hWnd, "open", "http://pcman.ptt.cc/pcman_help.html", NULL, NULL, SW_SHOWMAXIMIZED);
@@ -3787,48 +3616,16 @@ void CMainFrame::OpenHomepage()
 				int p = str.Find('\t');
 				if (p < 0)
 					break;
-				CString address = str.Mid(p + 1);
-				int port = 0;
-				CTelnetConn* telnet = NULL;
-				if (str[0] == 's')	// telnet
-				{
-					p = address.Find(':');
-					if (p > 0)
-					{
-						port = atoi((LPCTSTR(address) + p + 1));
-						address = address.Left(p);
-					}
-					else
-						port = 23;
-
-#if defined(_COMBO_)
-					address = "telnet://" + address;
-#endif
-				}
+				CAddress address = ParseAddress(str.Mid(p + 1));
 				int i;
 				int c = tab.GetItemCount();
 				for (i = 0; i < c; i++)
 				{
 					CConn* pcon = tab.GetCon(i);
 					// The same site has been opened
-					if (0 == pcon->address.CompareNoCase(address))
+					if (0 == pcon->address.URL().CompareNoCase(address.URL()))
 					{
-						if (pcon->is_telnet)	// this is a telnet connection
-						{
-							CTelnetConn* telnet = static_cast<CTelnetConn*>(pcon);
-							if (port == telnet->port)  // both address and port are duplicated
-							{
-								// If the site has been loaded with advanced settings, or
-								// we cannot provide more useful advanced settings over the loaded one,
-								// just skip this site.
-								if (! telnet->cfg_path.IsEmpty() || adv.IsEmpty())
-									break;
-							}
-						}
-						else
-						{
-							break;
-						}
+						break;
 					}
 				}
 				if (i < c)
@@ -3915,7 +3712,11 @@ void CMainFrame::OnNewConn()
 		return;
 	}
 
-	view.Connect(dlg.address, dlg.name, dlg.port);
+	CAddress address = ParseAddress(dlg.GetFormattedAddress());
+	if (!address.IsValid())
+		return;
+
+	view.Connect(address, dlg.name);
 	dlg.name.Empty();
 	dlg.address.Empty();
 	
@@ -4026,25 +3827,21 @@ void CMainFrame::OnBBSFont()
 			view.lineh = sz.cy;//字高
 			view.left_margin = (rc.right - view.chw * cols_per_page) / 2;
 			view.top_margin = (rc.bottom - view.lineh * lines_per_page) / 2;
-			view.CreateCaret();
-			view.ShowCaret();
-			if (telnet)
-				telnet->UpdateCursorPos();
-			else
-				SetCaretPos(CPoint(view.left_margin, view.top_margin + view.lineh - 2));
+			view.OnLayoutChanged();
 		}
 		view.Invalidate(FALSE);
 	}
 }
 
-void CMainFrame::OnDownloadPage()
+LRESULT CMainFrame::OnDownloadPage(WPARAM, LPARAM)
 {
-	const char url[] = "http://of.openfoundry.org/projects/744/download";
+	CAddress url("http://of.openfoundry.org/projects/744/download");
 #ifdef	_COMBO_
 	((CMainFrame*)AfxGetApp()->GetMainWnd())->view.ConnectWeb(url, TRUE);
 #else
-	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", url.URL(), NULL, NULL, SW_SHOW);
 #endif
+	return 0;
 }
 
 
@@ -4079,10 +3876,4 @@ void CMainFrame::OnInitMenuPopup(CMenu* pMenu,UINT nIndex,BOOL bSysMenu)
 		pMenu->InsertMenu(1, MF_BYPOSITION, CSearchPluginCollection::ID_TRANSLATION, result);
 	}
 	CFrameWnd::OnInitMenuPopup(pMenu, nIndex, bSysMenu);
-}
-
-void CMainFrame::OnCheckUpdate()
-{
-	CWinThread * controlThread = AfxBeginThread(BackgroundAutoUpdate,NULL,THREAD_PRIORITY_NORMAL);
-	//TODO: 沒有更新的話不會有任何訊息
 }

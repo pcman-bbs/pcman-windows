@@ -137,9 +137,7 @@
 #define IDI_PCMAN_96                    179
 #define IDD_DOWNLOADING                 182
 #define IDD_DIALOG1                     186
-#define IDD_DOWNLOADING_UPDATE          186
 #define IDD_INSTANT_TRAN                187
-#define IDD_AUTOUPDATE                  188
 #define IDI_ANSFILE                     200
 #define IDD_AUTO_REPLY                  200
 #define IDC_ANSIBAR_FG                  328
@@ -225,7 +223,6 @@
 #define IDC_DBLCLK_CLOSE                1057
 #define IDC_AUTOJUMP                    1058
 #define IDC_LINKAUTOSWITCH              1058
-#define IDC_ENABLE_AUTOUPDATE           1058
 #define IDC_AUTOJUMP2                   1059
 #define IDC_PASTE_AUTOWRAP_COL          1060
 #define IDC_AUTOJUMP3                   1060
@@ -348,6 +345,7 @@
 #define IDC_VERSION                     1138
 #define IDC_MAX_TRANLENSPIN             1141
 #define IDR_BUILD_UI                    1234
+#define IDR_MENU_HIDDEN                 1235
 #define IDR_MAINMENU                    1236
 #define ID_LAST_WEB_FAVORITE            6000
 #define ID_FIRST_HOTSTR                 6001
@@ -468,7 +466,6 @@
 #define ID_CURCON_SETTINGS              32874
 #define ID_EDIT_COPYURL                 32876
 #define ID_UPDATE_BBSLIST               32884
-#define ID_GET_LOCALIP                  32885
 #define ID_CUSTOMIZE_MAINTB             32886
 #define ID_BACKUP_CONFIG                32887
 #define ID_EDIT_OPENURL                 32888
@@ -561,7 +558,6 @@
 #define IDS_SET_DEFAULT_BROWSER         32975
 #define IDS_SET_TO_DEFAULT_ANS          32976
 #define IDS_WEBPAGE_FILTER              32977
-#define IDS_LOCAL_IP                    32978
 #define IDS_CHOOSE_BACKUP_DIR           32979
 #define IDS_CHOOSE_2003_DIR             32980
 #define IDS_IMPORT_IE_FAV               32981
@@ -619,18 +615,16 @@
 #define IDS_PROMPT_IMPORT               33031
 #define ID_MOUSE_CTL                    33032
 #define IDS_PCMAN_CLOSE                 33032
-#define ID_AUTO_UPDATE                  33033
-#define IDS_INSTALL_UPDATE              33033
 #define IDS_MOUSE_GESTURE               33034
 #define IDS_UNKNOWN_GESTURE             33035
 #define ID_INSTANT_TRAN                 33036
 #define IDS_TRANSLATION                 33036
-#define ID_CHECK_UPDATE                 33037
 #define ID_NCIKU                        33039
 #define ID_WIKIPEDIA                    33040
 #define ID_SEARCHBAR_CLEANUP            33040
 #define IDS_CLOSE_ALL_OTHER_PAGES       33041
 #define ID_CONNECT_CLOSE_ALL_OTHERS     33042
+#define IDS_CON_SECURE                  33043
 
 // Next default values for new objects
 // 

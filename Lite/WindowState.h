@@ -24,8 +24,8 @@ public:
 
 	void Load(char* value)
 	{
-		sscanf(value, "%d,%d,%d,%d,%d", &rect.left,
-			   &rect.top, &rect.right, &rect.bottom, &showcmd);
+		sscanf_s(value, "%d,%d,%d,%d,%d", &rect.left,
+			&rect.top, &rect.right, &rect.bottom, &showcmd);
 	}
 	void Save(CString& value)
 	{

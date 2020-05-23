@@ -1,0 +1,33 @@
+version: '{build}'
+image: Visual Studio 2017
+configuration: Release
+init:
+- ps: Set-Culture zh-TW
+install:
+# update vcpkg
+- cd "C:\Tools\vcpkg"
+- git pull
+- .\bootstrap-vcpkg.bat
+- cd "%APPVEYOR_BUILD_FOLDER%"
+- vcpkg remove --outdated --recurse
+- vcpkg install cpprestsdk
+
+- ps: .\Scripts\BeforeBuild.ps1
+clone_folder: C:\projects\pcman-windows
+cache: c:\tools\vcpkg\installed\
+build:
+  project: PCMan.sln
+  parallel: true
+  verbosity: minimal
+after_build:
+- ps: .\Scripts\DownloadNonFree.ps1
+- ps: .\Scripts\AfterBuild.ps1
+artifacts:
+- path: Lite\Release\PCMan.zip
+- path: Combo\Release\PCManCB.zip
+- path: Release\PCMan.exe
+- path: Release\PCManCB.exe
+deploy:
+  provider: GitHub
+  auth_token: $(github_auth_token)
+  draft: true

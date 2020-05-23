@@ -387,14 +387,7 @@ void CListDlg::OnEditSite()
 
 		CConnectPage page0;
 		CString name = page0.name = str.Left(pos);
-		page0.address = str.Mid(pos + SEPARATOR_LEN);
-		page0.port = 23;
-		pos = page0.address.ReverseFind(':');
-		if (pos != -1)
-		{
-			page0.port = (unsigned short)atoi(page0.address.Mid(pos + 1));
-			page0.address = page0.address.Left(pos);
-		}
+		page0.InitWithAddress(str.Mid(pos + SEPARATOR_LEN));
 
 		CPropertySheet dlg(IDS_SITE_SETTINGS);
 		CSitePage page1;
@@ -416,9 +409,7 @@ void CListDlg::OnEditSite()
 		{
 			sites.changed = TRUE;
 
-			CString text = page0.name + SEPARATOR + page0.address;
-			if (page0.port != 23 && page0.port > 0)
-				text.Format("%s%s%s:%d", LPCTSTR(page0.name), SEPARATOR, LPCTSTR(page0.address), page0.port);
+			CString text = page0.name + SEPARATOR + page0.GetFormattedAddress();
 
 			sites.SetItemText(item, text);
 			path1 = CSiteSettings::GetFilePath(path1);

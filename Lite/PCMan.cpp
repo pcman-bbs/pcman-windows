@@ -194,7 +194,6 @@ BOOL CApp::InitInstance()
 
 //如果只允許執行一個 PCMan，則把User data設為1
 	SetWindowLong(m_pMainWnd->m_hWnd, GWL_USERDATA, !AppConfig.multiple_instance);
-	pFrame->OnAutoUpdate();
 	return TRUE;
 }
 
@@ -221,19 +220,17 @@ protected:
 
 // Implementation
 protected:
-	static char web[];
 	//{{AFX_MSG(CAboutDlg)
-	afx_msg void OnReport();
 	afx_msg void OnWeb();
-	afx_msg void OnWeb2();
 	afx_msg void OnHelp();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-};
 
-char CAboutDlg::web[] = "http://pcman.ptt.cc/pcman_help.html";
+private:
+	void OpenUrl(const TCHAR *url);
+};
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 {
@@ -243,9 +240,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-	ON_BN_CLICKED(IDC_MAIL, OnReport)
 	ON_BN_CLICKED(IDC_WEB, OnWeb)
-	ON_BN_CLICKED(IDC_WEB2, OnWeb2)
 	ON_BN_CLICKED(IDB_HELP, OnHelp)
 	ON_WM_CTLCOLOR()
 	//}}AFX_MSG_MAP
@@ -262,44 +257,22 @@ void CApp::OnAppAbout()
 // CApp message handlers
 
 
-void CAboutDlg::OnReport()
-{
-	const char tracker[] = "http://rt.openfoundry.org/Foundry/Project/Tracker/?Queue=744";
-#ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(tracker, TRUE);
-#else
-	ShellExecute(m_hWnd, "open", tracker, NULL, NULL, SW_SHOW);
-#endif
-}
-
 void CAboutDlg::OnWeb()
 {
-	web[20] = 0;
-#ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(web, TRUE);
-#else
-	ShellExecute(m_hWnd, "open", web, NULL, NULL, SW_SHOW);
-#endif
-	web[20] = 'p';
-}
-
-void CAboutDlg::OnWeb2()
-{
-	const char url[] = "http://pcman.openfoundry.org/";
-#ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(url, TRUE);
-#else
-	ShellExecute(m_hWnd, "open", url , NULL, NULL, SW_SHOW);
-#endif
+	OpenUrl(TEXT("http://pcman.ptt.cc/"));
 }
 
 void CAboutDlg::OnHelp()
 {
+	OpenUrl(TEXT("http://pcman.ptt.cc/pcman_help.html"));
+}
+
+void CAboutDlg::OpenUrl(const TCHAR *url)
+{
 #ifdef	_COMBO_
-	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(web, TRUE);
+	((CMainFrame*)AfxGetApp()->m_pMainWnd)->view.ConnectWeb(CAddress(url), TRUE);
 #else
-	if ((long)ShellExecute(m_hWnd, "open", AppPath + "pcman.html", NULL, NULL, SW_SHOWMAXIMIZED) <= 32)
-		ShellExecute(m_hWnd, "open", web, NULL, NULL, SW_SHOWMAXIMIZED);
+	ShellExecute(m_hWnd, "open", url, NULL, NULL, SW_SHOW);
 #endif
 }
 
@@ -309,25 +282,38 @@ int CApp::ExitInstance()
 	return CWinApp::ExitInstance();
 }
 
+bool ReadFileAppend(const CString& path, std::string* buf)
+{
+	CFile f;
+	if (!f.Open(path, CFile::modeRead))
+		return false;
+	size_t orig_buf_size = buf->size();
+	size_t size = f.GetLength();
+	buf->resize(orig_buf_size + size);
+	if (f.Read(&(*buf)[orig_buf_size], size) != size)
+	{
+		buf->resize(orig_buf_size);
+		return false;
+	}
+	f.Close();
+	return true;
+}
+
 BOOL CAboutDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	CFile story;
-	if (story.Open((AppPath + "story.txt"), CFile::modeRead))
-	{
-		DWORD size = story.GetLength();
-		char* buf = new char[size+1];
-		story.Read(buf, size);
-		buf[size] = '\0';
-		story.Close();
-		GetDlgItem(IDC_EDIT)->SetWindowText(buf);
-		delete []buf;
-	}
+
+	std::string buffer;
+	ReadFileAppend(AppPath + "story.txt", &buffer);
+	buffer += _T("\r\n");
+	ReadFileAppend(AppPath + "OpenSourceLicenses.txt", &buffer);
+	buffer += _T("\r\n");
+	GetDlgItem(IDC_EDIT)->SetWindowText(buffer.c_str());
 
 	char buf1[0x100];
 
-	wsprintf(buf1, "%s - %d.%d.%d (Novus), Build %d, %s",
-			 Version_InternalNameA, Version_Major, Version_Minor, Version_PatchLevel, Version_BuildNumber, Version_RevDateA);
+	wsprintf(buf1, "%s - %d.%d.%d%s (Novus)",
+			 Version_InternalNameA, Version_Major, Version_Minor, Version_PatchLevel, Version_Append);
 
 	GetDlgItem(IDC_VERSION)->SetWindowText(buf1);
 	return TRUE;
@@ -338,8 +324,6 @@ HBRUSH CAboutDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	if (nCtlColor == CTLCOLOR_STATIC && IDC_EDIT == pWnd->GetDlgCtrlID())
 	{
 		pDC->SetBkColor(GetSysColor(COLOR_WINDOW));
-//        pDC->SetBkColor( 0 );
-//        pDC->SetTextColor( RGB(255, 255, 255) );
 		return HBRUSH(COLOR_WINDOW + 1);
 	}
 	return CDialog::OnCtlColor(pDC, pWnd, nCtlColor);

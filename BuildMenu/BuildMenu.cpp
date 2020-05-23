@@ -1,8 +1,12 @@
 // BuildMenu.cpp : Defines the class behaviors for the application.
 //
 
-#include "stdafx.h"
+#include <optional>
+
+#include <cpprest/json.h>
+
 #include "BuildMenu.h"
+#include "..\Lite\StdAfx.h"
 #include "..\Lite\AppConfig.h"
 #include "..\Resource\resource.h"
 
@@ -12,120 +16,215 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// CBuildMenuApp
+namespace {
 
-BEGIN_MESSAGE_MAP(CBuildMenuApp, CWinApp)
-	//{{AFX_MSG_MAP(CBuildMenuApp)
-	//}}AFX_MSG
-	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
-END_MESSAGE_MAP()
+constexpr const TCHAR *kHotkeyFileName = TEXT("hotkeys.json");
 
-/////////////////////////////////////////////////////////////////////////////
-// CBuildMenuApp construction
+constexpr const wchar_t *kHotkeys = L"hotkeys";
+constexpr const wchar_t *kCmd = L"cmd";
+constexpr const wchar_t *kFVirt = L"fVirt";
+constexpr const wchar_t *kKey = L"key";
 
-CBuildMenuApp::CBuildMenuApp()
+constexpr const size_t kReadSize = 4096;
+
+// Appends hot key to right side of menu.
+class MenuHotkeyUpdater : public MenuVisitor
 {
-}
+public:
+	MenuHotkeyUpdater(const AcceleratorTable *accel_table)
+		: accel_table_(accel_table) {}
 
-/////////////////////////////////////////////////////////////////////////////
-// The one and only CBuildMenuApp object
-
-CBuildMenuApp theApp;
-
-/////////////////////////////////////////////////////////////////////////////
-// CBuildMenuApp initialization
-
-/* Menu 和 Command Item的結構
-
-檔案內部儲存方式:
-WORD MAIN_ITEM_COUNT
-CMDITEM ITEMS[TOTAL_COUNT]
-DWORD ACCELCOUNT
-ACCEL ACC_ITEMS[ACCELCOUNT]
-
-struct CMDITEM
-{
-	BYTE TYPE,	CT_MENU,CT_HAS_SUB,CT_CMD,如果TYPE=0則為Separator，後面幾項都沒有
-	WORD ID_OR_SUBCOUNT		如果有CT_HAS_SUB,為SUBCOUNT,如果沒有則為ID
-	WORD state	只有Menu才有此項目
-	WORD LEN	TEXT的長度,含0
-	CHAR TEXT[]		長度不定,0結尾
-}
-
-*/
-
-//		用來產生UI檔的程式碼
-void UIWriteMenu(CFile& ui, HMENU hmenu, char* text, WORD state)
-{
-	CMenu menu;		menu.Attach(hmenu);
-	SHORT c = menu.GetMenuItemCount();
-	WORD l = strlen(text) + 1;
-	BYTE type = (state & (MF_DISABLED | MF_CHECKED | MF_MENUBARBREAK) ? CT_CMD : CT_MENU) | CT_HAS_SUB;
-	ui.Write(&type, 1);
-	ui.Write(&c, 2);
-	if (!(type & CT_MENU))
-		state = 0;
-	ui.Write(&state, sizeof(WORD));
-	ui.Write(&l, 2);
-	ui.Write(text, l);
-
-	CString str;
-	c--;
-	for (int i = 0;i <= c;i++)
-	{
-		menu.GetMenuString(i, str, MF_BYPOSITION);
-		HMENU sub = GetSubMenu(hmenu, i);
-		state = LOWORD(menu.GetMenuState(i, MF_BYPOSITION));
-		if (sub)
-			UIWriteMenu(ui, sub, LPSTR(LPCTSTR(str)), state);
-		else
-		{
-			if (state & MF_SEPARATOR)
-			{
-				BYTE type = 0;
-				ui.Write(&type, 1);
-				continue;
-			}
-			SHORT id = menu.GetMenuItemID(i);
-			BYTE type = (state & (MF_DISABLED | MF_CHECKED | MF_MENUBARBREAK) ? CT_CMD : CT_MENU);
-			ui.Write(&type, 1);
-			ui.Write(&id, sizeof(WORD));
-			if (!(type&CT_MENU))
-				state = 0;
-			ui.Write(&state, sizeof(WORD));
-			l = str.GetLength() + 1;
-			ui.Write(&l, 2);
-			ui.Write(LPCTSTR(str), l);
+	void VisitMenuItem(CMenu *menu, UINT index) override {
+		UINT cmd = menu->GetMenuItemID(index);
+		std::optional<ACCEL> accel = accel_table_->GetByCmd(cmd);
+		if (accel) {
+			CString text;
+			menu->GetMenuString(index, text, MF_BYPOSITION);
+			text.Append(_T("\t"));
+			text.Append(HotkeyToStr(accel->fVirt, accel->key));
+			menu->ModifyMenu(index, MF_BYPOSITION, cmd, text);
 		}
 	}
+
+private:
+	const AcceleratorTable *accel_table_;  // Not owned.
+};
+
+}  // namespace
+
+void TraverseMenuPreorder(CMenu *menu, MenuVisitor *visitor)
+{
+	UINT count = menu->GetMenuItemCount();
+	for (UINT i = 0; i < count; ++i) {
+		visitor->VisitMenuItem(menu, i);
+
+		CMenu *submenu = menu->GetSubMenu(i);
+		if (submenu != nullptr) {
+			TraverseMenuPreorder(submenu, visitor);
+		}
+
+		visitor->LeaveMenuItem(menu, i);
+	}
+}
+
+void TraverseMenuPreorder(HMENU hMenu, MenuVisitor *visitor)
+{
+	CMenu menu;
+	menu.Attach(hMenu);
+	TraverseMenuPreorder(&menu, visitor);
 	menu.Detach();
 }
 
-BOOL CBuildMenuApp::InitInstance()
+void AcceleratorTable::Set(const ACCEL &accel)
 {
-//		用來產生UI檔的程式碼
-	CFile ui;
-	CString OutPath(m_lpCmdLine);
-	OutPath += '\\';
-	OutPath += UI_FILENAME;
+	DeleteByCmd(accel.cmd);
+	DeleteByKey(accel.fVirt, accel.key);
+	cmd_to_accel_.emplace(accel.cmd, accel);
+	key_to_cmd_.emplace(Key{ accel.fVirt, accel.key }, accel.cmd);
+}
 
-//	MessageBox( NULL, OutPath, NULL, MB_OK );
-	ui.Open(OutPath, CFile::modeWrite | CFile::modeCreate);
+void AcceleratorTable::DeleteByCmd(WORD cmd)
+{
+	auto it = cmd_to_accel_.find(cmd);
+	if (it == cmd_to_accel_.end()) {
+		return;
+	}
+	key_to_cmd_.erase(Key{it->second.fVirt, it->second.key});
+	cmd_to_accel_.erase(it);
+}
 
+void AcceleratorTable::DeleteByKey(BYTE fVirt, WORD key)
+{
+	auto it = key_to_cmd_.find(Key{ fVirt, key });
+	if (it == key_to_cmd_.end()) {
+		return;
+	}
+	cmd_to_accel_.erase(it->second);
+	key_to_cmd_.erase(it);
+}
+
+std::optional<ACCEL> AcceleratorTable::GetByCmd(WORD cmd) const
+{
+	auto it = cmd_to_accel_.find(cmd);
+	if (it == cmd_to_accel_.end()) {
+		return std::nullopt;
+	}
+	return it->second;
+}
+
+std::optional<ACCEL> AcceleratorTable::GetByKey(BYTE fVirt, WORD key) const
+{
+	auto it = key_to_cmd_.find(Key{fVirt, key});
+	if (it == key_to_cmd_.end()) {
+		return std::nullopt;
+	}
+	return cmd_to_accel_.at(it->second);
+}
+
+HACCEL AcceleratorTable::CreateHandle() const
+{
+	std::vector<ACCEL> accels;
+	std::transform(
+		cmd_to_accel_.begin(),
+		cmd_to_accel_.end(),
+		std::back_inserter(accels),
+		[](auto& p) { return p.second; });
+	return CreateAcceleratorTable(&accels[0], accels.size());
+}
+
+bool AcceleratorTable::Save()
+{
+	using web::json::value;
+
+	value hotkeys = value::array();
+	for (const auto &[cmd, accel] : cmd_to_accel_) {
+		value jaccel = value::object();
+		jaccel[kCmd] = value::number(cmd);
+		jaccel[kFVirt] = value::number(accel.fVirt);
+		jaccel[kKey] = value::number(accel.key);
+		hotkeys[hotkeys.size()] = jaccel;
+	}
+
+	std::ostringstream ss;
+	value obj = web::json::value::object();
+	obj[kHotkeys] = hotkeys;
+	obj.serialize(ss);
+
+	std::string data = ss.str();
+
+	CFile output;
+	if (!output.Open(ConfigPath + kHotkeyFileName, CFile::modeCreate | CFile::modeWrite))
+		return false;
+	output.Write(&data[0], data.size());
+	output.Close();
+	return true;
+}
+
+// static
+AcceleratorTable AcceleratorTable::Load()
+{
+	using web::json::value;
+	using web::json::array;
+	using web::json::object;
+
+	std::stringstream ss;
+	{
+		CFile input;
+		if (!input.Open(ConfigPath + kHotkeyFileName, CFile::modeRead))
+			return Default();
+		std::string buf;
+		buf.resize(kReadSize);
+		int n;
+		while ((n = input.Read(&buf[0], buf.size())) > 0) {
+			ss.write(&buf[0], n);
+		}
+		input.Close();
+	}
+
+	try {
+		AcceleratorTable table;
+		array hotkeys = value::parse(ss).as_object()[kHotkeys].as_array();
+		for (auto &jaccels : hotkeys) {
+			ACCEL accel;
+			accel.cmd = jaccels[kCmd].as_number().to_int32();
+			accel.fVirt = jaccels[kFVirt].as_number().to_int32();
+			accel.key = jaccels[kKey].as_number().to_int32();
+			table.Set(accel);
+		}
+		return table;
+	} catch (web::json::json_exception &) {
+		return Default();
+	}
+}
+
+// static
+AcceleratorTable AcceleratorTable::Default()
+{
 	HACCEL hacc = LoadAccelerators(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
-	WORD c = CopyAcceleratorTable(hacc, NULL, 0);
-	ui.Write(&c, 2);
-	ACCEL *accels = new ACCEL[c];
-	CopyAcceleratorTable(hacc, accels, c);
-	ui.Write(accels, sizeof(ACCEL)*c);
-	delete []accels;
+	AcceleratorTable table = From(hacc);
 	DestroyAcceleratorTable(hacc);
+	return table;
+}
 
-	HMENU tmp = LoadMenu(AfxGetInstanceHandle(), LPSTR(IDR_BUILD_UI));
-	UIWriteMenu(ui, tmp, "", 0);
-	DestroyMenu(tmp);
-	ui.Close();
+// static
+AcceleratorTable AcceleratorTable::From(HACCEL haccel)
+{
+	std::vector<ACCEL> accels;
+	accels.resize(CopyAcceleratorTable(haccel, NULL, 0));
+	CopyAcceleratorTable(haccel, &accels[0], accels.size());
 
-	return FALSE;
+	AcceleratorTable table;
+	for (const ACCEL &accel : accels) {
+		table.Set(accel);
+	}
+	return table;
+}
+
+HMENU LoadResourceMenu(UINT resource_id, const AcceleratorTable &accel_table)
+{
+	CMenu menu;
+	menu.LoadMenu(resource_id);
+	MenuHotkeyUpdater updater(&accel_table);
+	TraverseMenuPreorder(&menu, &updater);
+	return menu.Detach();
 }

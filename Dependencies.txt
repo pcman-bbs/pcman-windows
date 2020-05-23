@@ -1,0 +1,17 @@
+﻿這份文件說明開發和釋出的需求
+
+- [開發] Visual Studio 2017 (Community 即可)
+
+請至官方網站下載: https://www.visualstudio.com/
+
+- [開發] cpprestsdk
+
+這兩個推薦使用 vcpkg 安裝, 安裝說明請至以下網站:
+https://github.com/Microsoft/vcpkg
+
+安裝指令: vcpkg install cpprestsdk
+
+- [釋出] Microsoft Visual C++ Redistributable for Visual Studio 2017 (或相對應的版本)
+
+可至 https://www.visualstudio.com/downloads/ 的
+Other Tools and Frameworks 區域下載.

@@ -7,6 +7,9 @@
 // TelnetConn.h : header file
 //
 
+#include <memory>
+#include <atomic>
+
 #include <winsock2.h>
 // #include <WS2TCPIP.h> // for future IPV6 support
 
@@ -14,11 +17,38 @@
 #include "SiteSettings.h"
 #include "KeyMap.h"	// Added by ClassView
 #include "TriggerList.h"	// Added by ClassView
+#include "ConnIO.h"
+#include "TcpSocket.h"
 
 /////////////////////////////////////////////////////////////////////////////
 
 class CTermView;
 class CDownloadArticleDlg;
+
+struct CConnEvent
+{
+	enum EventType
+	{
+		EVENT_CONNECT = 0,
+		EVENT_CLOSE = 1,
+		EVENT_DATA = 2,
+		EVENT_CONNECT_FAILED = 3,
+	};
+	uint64_t connection_id;
+	EventType event_type;
+	std::string data;
+
+	CConnEvent(uint64_t connection_id, EventType event_type)
+		: connection_id(connection_id)
+		, event_type(event_type)
+	{}
+
+	static std::unique_ptr<CConnEvent> MakeUnique(
+		uint64_t connection_id, EventType event_type) {
+		return std::unique_ptr<CConnEvent>(new CConnEvent(
+			connection_id, event_type));
+	}
+};
 
 int find_sub_str(char* str, char* sub);
 
@@ -37,12 +67,13 @@ public:
 		MIN_LINE_COUNT = 24
 	};
 
-	unsigned short	port;
 	CString cfg_path;	//站台進階設定檔相對路徑
 	CKeyMap* key_map;	//鍵盤對映
 
 //	Socket handle
-	SOCKET telnet;
+	uint64_t connection_id;
+	std::shared_ptr<CConnIO> conn_io;
+	std::shared_ptr<CTcpSocket> tcp_socket;
 
 //	Screen Data
 	LPSTR *screen;	//screen buffer
@@ -88,6 +119,8 @@ BYTE get_article_in_editor : 1;
 	static CString downloaded_article;
     static int current_download_line;
 
+	static std::atomic<uint64_t> connection_counter;
+
 public:
 	CTelnetConn();
 	virtual ~CTelnetConn();
@@ -100,64 +133,70 @@ public:
 	int IsEndOfArticleReached();
 	void SendNaws();
 	void SendMacroString(CString str);
-	inline int GetLineBufLen();
-	inline int GetLineBufLen(int _cols_per_page);
-	inline LPBYTE GetLineAttr(const char* line);
-	inline LPBYTE GetLineAttr(const int line);
-	inline LPBYTE GetLineAttr(const int line, const int len);
-	inline void InitNewLine(char* line);
+	int GetLineBufLen();
+	int GetLineBufLen(int _cols_per_page);
+	LPBYTE GetLineAttr(const char* line);
+	LPBYTE GetLineAttr(const int line);
+	LPBYTE GetLineAttr(const int line, const int len);
+	void InitNewLine(char* line);
 	void Home();
 	void End();
 	void Delete(int num = 1);
-	inline void SetHyperLink(long i, BOOL haslink = TRUE);
-	inline BOOL GetHyperLink(const char* line);
-	inline BOOL GetHyperLink(long i);
-	inline void SetUpdateWholeLine(long line);
-	inline BOOL GetUpdateLine(long line);
-	inline void RemoveUpdateLine(long line);
+	void SetHyperLink(long i, BOOL haslink = TRUE);
+	BOOL GetHyperLink(const char* line);
+	BOOL GetHyperLink(long i);
+	void SetUpdateWholeLine(long line);
+	BOOL GetUpdateLine(long line);
+	void RemoveUpdateLine(long line);
 	void SetUpdateLine(long line, BYTE curx);
 	void Back(int num = 1);
 	void EditorLineBack(LPSTR newline, LPBYTE newlineatb, int l);
 	void EditorCarriageRetiurn();
 	void EditorLineFeed(LPSTR newline, LPBYTE newlineatb, int l);
 	BOOL IsEmptyLine(LPSTR line, int len);
-	inline char* AllocNewLine();
+	char* AllocNewLine();
 	char* ResizeLine(int line, int newl);
 	void ReSizeBuffer(long new_line_count, int new_cols_per_page, int new_lines_per_page);
-	inline void ProcessAnsiEscapeSequence();
-	inline void SetCurrentAttributes(USHORT clr);
-	inline void GoUp(int p);
-	inline void GoDown(int p);
+	void ProcessAnsiEscapeSequence();
+	void SetCurrentAttributes(USHORT clr);
+	void GoUp(int p);
+	void GoDown(int p);
 	void GoRight(int p);
-	inline void GoLeft(int p);
-	inline void LineFeed(int param);
-	inline void ScrollUp();
-	inline void ScrollDown();
-	inline void SetScrollRange(int pt, int progress_bar);
-	inline void GotoXY(int line, int col);
-	inline void InsertLines(int num);
+	void GoLeft(int p);
+	void LineFeed(int param);
+	void ScrollUp();
+	void ScrollDown();
+	void SetScrollRange(int pt, int progress_bar);
+	void GotoXY(int line, int col);
+	void InsertLines(int num);
 	void ClearScreen(int param);
-	inline void ClearCurrentLine(int param);
-	inline void SaveCursorPos();
-	inline void RestoreCursorPos();
-	inline void InsertChar(int n);
-	inline void DeleteLines(int n);
-	inline void DeleteChar(int n);
-	inline void NextPages(int n);
-	inline void PrevPages(int n);
-	inline void BackTab(int n);
-	inline void SetMode(int p);
-	inline void ResetMode(int p);
-	inline void DeviceStatusReport(int p);
+	void ClearCurrentLine(int param);
+	void SaveCursorPos();
+	void RestoreCursorPos();
+	void InsertChar(int n);
+	void DeleteLines(int n);
+	void DeleteChar(int n);
+	void NextPages(int n);
+	void PrevPages(int n);
+	void BackTab(int n);
+	void SetMode(int p);
+	void ResetMode(int p);
+	void DeviceStatusReport(int p);
 
-	inline int Close();
-	inline int Shutdown();
-	inline int Recv(void* buf, int len);
-	inline void Connect(sockaddr* addr, int len);
+	uint64_t GetConnectionID() const { return connection_id; }
+	bool HasSocket() const { return tcp_socket.operator bool(); }
+	SOCKET GetSocket() const { return tcp_socket->GetSocket(); }
+	bool IsSecureConn() const { return conn_io && conn_io->IsSecure(); }
+	void OnSocket(WPARAM wparam, LPARAM lparam);
+	int Close();
+	int Shutdown();
+	void HandleConnEvent(std::unique_ptr<CConnEvent> event);
+	void Connect(sockaddr* addr, int len);
+	void ConnectWebsocket();
 	BOOL Create();
 	int SendString(LPCTSTR str);
 	void LocalEcho(void* str, int len);
-	void ReceiveData();
+	void ProcessData(int len);
 	void CreateBuffer();
 	void CheckStrTrigger();
 	int Send(const void* lpBuf, int nBufLen);
@@ -166,7 +205,7 @@ public:
 	static void SetBgColor(BYTE& attr, BYTE bk);
 	void LineFeed();
 	void UpdateLine(int line);
-	void OnClose(int nErrorCode);
+	void OnClose();
 	void UpdateCursorPos();
 	void OnText();
 	void OnIAC();
@@ -183,8 +222,8 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CTelnetConn)
 public:
-	virtual void OnReceive(int nErrorCode);
-	virtual void OnConnect(int nErrorCode);
+	virtual void OnReceive(int len);
+	virtual void OnConnect(bool success);
 	//}}AFX_VIRTUAL
 
 	// Generated message map functions
@@ -195,34 +234,6 @@ public:
 // Implementation
 protected:
 };
-
-
-int CTelnetConn::Close()
-{
-	int r =::closesocket(telnet);
-	telnet = 0;
-	return r;
-}
-
-void CTelnetConn::Connect(sockaddr *addr, int len)
-{
-	::connect(telnet, addr, len);
-}
-
-int CTelnetConn::Recv(void *buf, int len)
-{
-	return ::recv(telnet, (char*)buf, len, 0);
-}
-
-
-#ifndef SD_SEND
-#define	SD_SEND	1
-#endif
-
-int CTelnetConn::Shutdown()
-{
-	return ::shutdown(telnet, SD_SEND);
-}
 
 inline void CTelnetConn::SetBgColor(BYTE &attr, BYTE bk)
 {
@@ -252,7 +263,7 @@ inline void CTelnetConn::Home()
 	UpdateCursorPos();
 }
 
-
+// FIXME: There isn't enough space to fit UTF8 chinese string.
 inline LPBYTE CTelnetConn::GetLineAttr(const char *line)
 {
 	return LPBYTE(line + site_settings.cols_per_page + 5);

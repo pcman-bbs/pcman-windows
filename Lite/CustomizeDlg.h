@@ -1,6 +1,10 @@
 #if !defined(AFX_CUSTOMIZEDLG_H__191EDA05_2EF0_11D7_A5E5_DAA8618A9A2A__INCLUDED_)
 #define AFX_CUSTOMIZEDLG_H__191EDA05_2EF0_11D7_A5E5_DAA8618A9A2A__INCLUDED_
 
+#include <list>
+#include <map>
+
+#include "..\BuildMenu\BuildMenu.h"
 #include "HotkeyEdit.h"	// Added by ClassView
 #if _MSC_VER > 1000
 #pragma once
@@ -18,40 +22,16 @@ public:
 	struct HotkeyData
 	{
 		BYTE type;
-		WORD id;
-		BYTE fVirt;
-		WORD key;
 		WORD state;
+		WORD cmd;
 		HTREEITEM hitem;
-		HotkeyData* pnext;
-		HotkeyData* pprev;
 
-		HotkeyData(){pnext = NULL;}
+		HotkeyData(){}
 		~HotkeyData(){}
 	};
 
 	CCustomizeDlg(CWnd* pParent = NULL);   // standard constructor
 
-	void DeleteHotkeyForID(HotkeyData* hkdel);
-	HotkeyData* HotkeyDataFromKeys(BYTE fVirt, WORD key);
-	HotkeyData* HotkeyDataFromID(HotkeyData* start, WORD id);
-	char* UIRead(CTreeCtrl& tree, char* buf, HTREEITEM parent);
-	void UICleanup();
-	void UIWriteAccels();
-	void UIWrite(CFile& ui, HTREEITEM parent);
-	void UpdateItemDisplay(HTREEITEM item);
-	static LRESULT CALLBACK HotkeyEdit2Proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-	CWnd assign;
-	WNDPROC old_hkedit2_proc;
-	ACCEL* accels;
-	WORD accel_count;
-	WORD menuitem_count;
-	CEdit hkedit2;
-	CHotkeyEdit hkedit;
-	CTreeCtrl tree;
-	CListBox list;
-	HotkeyData* pfirst;
-	HotkeyData* plast;
 // Dialog Data
 	//{{AFX_DATA(CCustomizeDlg)
 	enum { IDD = IDD_CUSTOMIZEKEY };
@@ -67,8 +47,6 @@ protected:
 
 // Implementation
 protected:
-	void DeleteHotkeyData(HotkeyData* hkdel);
-	HotkeyData* NewHotkeyData();
 	afx_msg LRESULT OnHotkeyDone(WPARAM wparam, LPARAM lparam);
 
 	// Generated message map functions
@@ -79,9 +57,27 @@ protected:
 	afx_msg void OnDel();
 	afx_msg void OnSelChanged(NMHDR* pNMHDR, LRESULT* pResult);
 	virtual void OnCancel();
-	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+private:
+	CTreeCtrl menu_tree_;
+	CListBox key_list_;
+	CWnd text_assigned_to_;
+	CHotkeyEdit hkedit_;
+	CButton btn_apply_hotkey_;
+	CButton btn_delete_hotkey_;
+
+	AcceleratorTable accel_table_;
+	std::list<HotkeyData> hotkey_data_storage_;
+	std::map<WORD, HotkeyData *> cmd_to_hotkey_data_;
+
+	HotkeyData *NewHotkeyData();
+	void UpdateTreeItemDisplay(HotkeyData *data);
+	void UpdateHotkeyDisplay(HotkeyData *data);
+	void DeleteHotkeyForID(HotkeyData *hkdel);
+	HotkeyData *HotkeyDataFromKeys(BYTE fVirt, WORD key);
+	void UIWriteAccels();
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -1,4 +1,4 @@
-PCMan ¨Ï¥Îªº Command ID
+PCMan ä½¿ç”¨çš„ Command ID
 
 	500  ---> 1000	// BBS Favorite	500
 	1001  ---> 6000	// WWW Favorite	5000
@@ -9,7 +9,7 @@ PCMan ¨Ï¥Îªº Command ID
 
 	0x8000 = 32768 ---> ...	// Main Menu
 
-¥H¤U¸`¿ı¦Û MFC ©x¤è¤å¥ó
+ä»¥ä¸‹ç¯€éŒ„è‡ª MFC å®˜æ–¹æ–‡ä»¶
 
 MFC Command ID
 
@@ -29,4 +29,4 @@ Please do not rely on the specific values of these IDs since
 they are subject to change in future versions of the library.
 Your application should define its commands in the range 0x8000 to 0xDFFF.
 
-¼Ğ·Çªº VC++ resource editor ·|§â Menu ªº ID ³]©w¦b 0x8000 ¤§«á¡A©Ò¥H¤§«eªº ID ´N¥i¥H¦Û¥Ñ¨Ï¥Î¤F¡C
+æ¨™æº–çš„ VC++ resource editor æœƒæŠŠ Menu çš„ ID è¨­å®šåœ¨ 0x8000 ä¹‹å¾Œï¼Œæ‰€ä»¥ä¹‹å‰çš„ ID å°±å¯ä»¥è‡ªç”±ä½¿ç”¨äº†ã€‚

@@ -155,7 +155,7 @@ void CAppConfig::Save(LPCTSTR config_path)
 	fprintf(file, "save_session=%d\r\n", save_session);
 	fprintf(file, "switch_back_on_close=%d\r\n", switch_back_on_close);
 	fprintf(file, "dblclk_select=%d\r\n", 1);
-	fprintf(file, "bkpath=%s\r\n", LPCTSTR(bkpath));	//­I´º¹Ï¸ô®|
+	fprintf(file, "bkpath=%s\r\n", LPCTSTR(bkpath));	//èƒŒæ™¯åœ–è·¯å¾‘
 	fprintf(file, "wavepath=%s\r\n", LPCTSTR(wavepath));
 
 //	AnsiEditor Settings
@@ -324,7 +324,7 @@ void CAppConfig::SaveHistory(CFile &f)
 			if (p <= 0)
 				continue;
 			int p2 = str.Find('\t', p + 1);
-			if (p2 > 0)	// ¦³¶i¶¥³]©wÀÉ
+			if (p2 > 0)	// æœ‰é€²éšŽè¨­å®šæª”
 			{
 				CString name = str.Mid(1, p - 1);
 				CString address = str.Mid(p, (p2 - p));

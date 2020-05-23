@@ -44,15 +44,15 @@ public:
 	BYTE auto_dbcs_backspace;
 	BYTE localecho;
 
-	char KeyMapName[11];	// ­ì¥»¬O12²{§ï¬°11¡AÀ½¥X 1 byte ©ñ «á­±³o¨â­Ó³]©w­È
-BYTE text_output_conv: 4;	// Åã¥Ü¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
-BYTE text_input_conv: 4;		// ¿é¤J¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
+	char KeyMapName[11];	// åŸæœ¬æ˜¯12ç¾æ”¹ç‚º11ï¼Œæ“ å‡º 1 byte æ”¾ å¾Œé¢é€™å…©å€‹è¨­å®šå€¼
+BYTE text_output_conv: 4;	// é¡¯ç¤ºæ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
+BYTE text_input_conv: 4;		// è¼¸å…¥æ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
 
 //	object section of Site Settings
 	CString termtype;
 	CString idle_str;
 	CString esc_convert;
-	CTriggerList triggers;	//Ä²µo¦r¦ê
+	CTriggerList triggers;	//è§¸ç™¼å­—ä¸²
 
 	bool use_global;
 //	inline void CopyFrom(CSiteSettings* newval);
@@ -107,8 +107,8 @@ inline void CSiteSettings::Default()
 	termtype = "VT100";
 	esc_convert = "\x15";	//	Ctrl+U
 
-	text_output_conv = 0;	// Åã¥Ü¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
-	text_input_conv = 0;		// ¿é¤J¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
+	text_output_conv = 0;	// é¡¯ç¤ºæ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
+	text_input_conv = 0;		// è¼¸å…¥æ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
 
 	use_global = 1;
 }

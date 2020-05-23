@@ -35,6 +35,7 @@
 
 #include <wininet.h>
 #include <afxtempl.h>
+#include <afxinet.h>
 
 #if _MFC_VER >= 0x0700	// MFC 7.0 and 4.2 are not compatible
 #include <atlimage.h>
@@ -69,6 +70,7 @@ inline void swap(long& v1, long& v2)		{	long t;	t = v1;	v1 = v2;	v2 = t;	}
 
 BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_MESSAGE(WM_SOCKET, OnSocket)
+	ON_MESSAGE(WM_CONN_EVENT, OnConnEvent)
 	//{{AFX_MSG_MAP(CTermView)
 	ON_WM_ERASEBKGND()
 	ON_WM_CHAR()
@@ -114,6 +116,7 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_COMMAND(ID_ANSI_INS, OnAnsiIns)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_IME_CHAR, OnImeChar)
+	ON_MESSAGE(WM_IME_STARTCOMPOSITION, OnImeStartComposition)
 	ON_MESSAGE(WM_IME_COMPOSITION, OnImeComposition)
 	ON_MESSAGE(WM_INPUTLANGCHANGE, OnInputLangChange)
 	ON_MESSAGE(WM_DNSLOOKUP_END, OnDNSLookupEnd)
@@ -127,11 +130,19 @@ END_MESSAGE_MAP()
 
 CFont fnt;
 
+CAddress AnsiAddressFromPath(const CString& path)
+{
+	CString url;
+	url.Format("file://%s", path);
+	return CAddress(url);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CTermView construction/destruction
 
 
 CPtrArray CTermView::all_telnet_conns;
+const int CTermView::kCaretHeight = 2;
 
 CTermView::CTermView()
 {
@@ -787,10 +798,8 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point_In)
 	else
 	{
 //	----------¦pªG¤£¬O¦b¿ï¨ú¤å¦r¡A´N³B²z¶W³sµ²--------------
-		int x, y;
-		PtToLineCol(point, x, y, false);	//´«ºâ¦¨²×ºÝ¾÷¿Ã¹õ®y¼Ð
 		int l;	char* url;
-		if ((url = HyperLinkHitTest(x, y, l)))	//¦pªG·Æ¹«ÂI¿ï¨ì¶W³sµ²
+		if ((url = HyperLinkHitTest(point, l)))	//¦pªG·Æ¹«ÂI¿ï¨ì¶W³sµ²
 		{
 			char tmp;	tmp = url[l];	url[l] = 0;
 			//	©I¥sµ{¦¡¶}±Ò¶W³sµ²
@@ -938,7 +947,7 @@ void CTermView::OnMouseMove(UINT nFlags, CPoint point_In)
 	else
 	{
 		int len;
-		if (HyperLinkHitTest(lx, ly, len))
+		if (HyperLinkHitTest(point_In, len))
 		{
 			if (MouseCTL_GetCurrentMouseCursor() == NULL)
 				SetCursor(hand_cursor);
@@ -1006,7 +1015,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		ScreenToClient(&pt);
 		PtToLineCol(pt, x, y, false);
 
-		if ((link = HyperLinkHitTest(x, y, len)))	//¦pªG°»´ú¨ì¬O¶W³sµ²
+		if ((link = HyperLinkHitTest(pt, len)))	//¦pªG°»´ú¨ì¬O¶W³sµ²
 		{
 			InsertMenu(parent->edit_menu, 0, MF_SEPARATOR | MF_BYPOSITION, 0, 0);
 			InsertMenu(parent->edit_menu, 0, MF_STRING | MF_BYPOSITION, ID_EDIT_COPYURL, LoadString(IDS_COPY_URL));
@@ -1148,12 +1157,7 @@ void CTermView::OnSetFocus(CWnd* pOldWnd)
 		MouseCTL_OnSetFocus(m_hWnd);
 
 	CWnd::OnSetFocus(pOldWnd);
-	CreateCaret();
-	ShowCaret();
-	if (telnet)
-		telnet->UpdateCursorPos();
-	else
-		SetCaretPos(CPoint(left_margin, lineh + top_margin - 2));
+	OnLayoutChanged();
 }
 
 void CTermView::OnKillFocus(CWnd* pNewWnd)
@@ -1204,6 +1208,23 @@ LRESULT CTermView::OnInputLangChange(WPARAM wparam, LPARAM lparam)
 
 	ime_prop = ImmGetProperty((HKL)lparam, IGP_PROPERTY);
 	return 0;
+}
+
+void CTermView::UpdateImeCompositionFont()
+{
+	HIMC hImc = ImmGetContext(m_hWnd);
+	if (hImc)
+	{
+		ImmSetCompositionFont(hImc, &AppConfig.font_info);
+		ImmReleaseContext(m_hWnd, hImc);
+	}
+}
+
+LRESULT CTermView::OnImeStartComposition(WPARAM wparam, LPARAM lparam)
+{
+	UpdateImeCompositionFont();
+	// Need this or composition window won't show up, or it's out of bounds.
+	return DefWindowProc(WM_IME_STARTCOMPOSITION, wparam, lparam);
 }
 
 LRESULT CTermView::OnImeComposition(WPARAM wparam, LPARAM lparam)
@@ -1328,16 +1349,18 @@ LRESULT CTermView::_OnImeCompositionA(WPARAM wparam, LPARAM lparam)
 	return 0;
 }
 
-BOOL CTermView::Connect(CString address, CString name, unsigned short port, LPCTSTR cfg_path)
+BOOL CTermView::Connect(CAddress address, CString name, LPCTSTR cfg_path)
 {
-	if (name.IsEmpty())
-		return FALSE;
-#if defined	_COMBO_
-	if (port > 0 && address.Find("telnet://") == -1)
-		address = "telnet://" + address;
+#ifdef _DEBUG
+	CString s;
+	s.Format(_T("[Connect address=%s name=%s]\n"), address.Description(), name);
+	OutputDebugString(s);
 #endif
 
-	CConn* ncon = NewConn(address, name, port, cfg_path);	//²£¥Í¤F·sªº³s½uµe­±¡A§¹¦¨©Ò¦³³]©w
+	if (name.IsEmpty())
+		return FALSE;
+
+	CConn* ncon = NewConn(address, name, cfg_path);	//²£¥Í¤F·sªº³s½uµe­±¡A§¹¦¨©Ò¦³³]©w
 	if (!ncon)
 		return FALSE;
 
@@ -1357,7 +1380,9 @@ LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam)
 	SOCKADDR_IN& sockaddr = data->sockaddr;
 //³]©w¦n¬ÛÃö¸ê°T
 	sockaddr.sin_family = AF_INET;
-	sockaddr.sin_port = htons((u_short)new_telnet->port);
+	// XXX: This path only serves telnet, but we might server others as well later.
+	// Don't hard code default port 23.
+	sockaddr.sin_port = htons((u_short)new_telnet->address.Port());
 //	sockaddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
 
 	if (found)
@@ -1376,7 +1401,7 @@ LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam)
 		if (new_telnet->is_cancelled)
 			delete new_telnet;
 		else
-			new_telnet->OnConnect(WSAEADDRNOTAVAIL);	//Connection failed
+			new_telnet->OnConnect(false);	//Connection failed
 	}
 	WaitForSingleObject(data->hTask, INFINITE);
 	CloseHandle(data->hTask);
@@ -1421,7 +1446,6 @@ void CTermView::ReConnect(CTelnetConn *retelnet)
 		parent->tab.SetItem(idx, &item);
 		retelnet->time = 0;
 		retelnet->ClearAllFlags();
-		retelnet->is_lookup_host = true;
 		retelnet->Close();
 		retelnet->ClearScreen(2);
 		retelnet->site_settings.Load(retelnet->cfg_path);
@@ -1431,7 +1455,8 @@ void CTermView::ReConnect(CTelnetConn *retelnet)
 	}
 	else
 	{
-		Connect(retelnet->address, retelnet->name, retelnet->port, retelnet->cfg_path);
+		// Open in a new tab.
+		Connect(retelnet->address, retelnet->name, retelnet->cfg_path);
 	}
 }
 
@@ -1477,7 +1502,7 @@ void CTermView::OnAnsiCopy()
 
 void CTermView::OnAnsiEditor()
 {
-	Connect(LoadString(IDS_NOT_SAVED), LoadString(IDS_ANSI_EDIT), 0);
+	Connect(CAddress(_T("file://")), LoadString(IDS_ANSI_EDIT));
 }
 
 
@@ -1520,7 +1545,7 @@ void CTermView::OnAnsiSaveAs()
 			telnet->sel_end = telnet->sel_start;
 			file.Write(LPCTSTR(str), str.GetLength());
 			file.Abort();
-			telnet->address = dlg.GetPathName();
+			telnet->address = AnsiAddressFromPath(dlg.GetPathName());
 			telnet->name = dlg.GetFileName();
 
 			parent->tab.SetItemText(parent->tab.GetCurSel(), telnet->name);
@@ -1681,14 +1706,14 @@ void CTermView::OnAnsiSave()
 	if (!telnet)
 		return;
 
-	if (!telnet->address.Compare(LoadString(IDS_NOT_SAVED)))
+	if (telnet->address.Path().IsEmpty())
 	{
 		OnAnsiSaveAs();
 	}
 	else
 	{
 		CFile file;
-		if (file.Open(telnet->address, CFile::modeCreate | CFile::modeWrite))
+		if (file.Open(telnet->address.Path(), CFile::modeCreate | CFile::modeWrite))
 		{
 			OnSelAllBuf();
 			while (telnet->sel_end.y > telnet->sel_start.y && telnet->IsEmptyLine(telnet->screen[telnet->sel_end.y], telnet->site_settings.cols_per_page))
@@ -1919,19 +1944,16 @@ void CTermView::OnBackspaceNoDBCS()
 	}
 }
 
-CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LPCTSTR cfg_path)
+CConn* CTermView::NewConn(CAddress address, CString name, LPCTSTR cfg_path)
 {
-	CConn* newcon = NULL;
-	newcon = new CTelnetConn;
-	newcon->address = address;
-	newcon->name = name;
+	CTelnetConn* new_telnet = new CTelnetConn;
+	new_telnet->address = address;
+	new_telnet->name = name;
 
 #if defined	_COMBO_
-	if (!newcon->is_web)	//¦pªG¬O³s½uBBS,·s¶}BBSµe­±
+	if (!new_telnet->is_web)	//¦pªG¬O³s½uBBS,·s¶}BBSµe­±
 	{
 #endif
-		CTelnetConn* new_telnet = (CTelnetConn*)newcon;
-		new_telnet->port = port;
 		new_telnet->cfg_path = cfg_path;
 
 		//¬°·sªºsocket¸ü¤J³]©w­È
@@ -1946,7 +1968,7 @@ CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LP
 		if (new_telnet->site_settings.text_input_conv || new_telnet->site_settings.text_output_conv)
 			chi_conv.AddRef();
 
-		if (0 == port)  // port = 0 ¥Nªí ansi editor ( dirty hack :( )
+		if (address.Protocol() == "file")
 		{
 			new_telnet->ClearAllFlags();
 			new_telnet->is_ansi_editor = true;
@@ -1960,9 +1982,9 @@ CConn* CTermView::NewConn(CString address, CString name, unsigned short port, LP
 #if defined	_COMBO_
 	}
 #endif
-	parent->NewTab(newcon);
-	all_telnet_conns.Add(newcon);
-	return newcon;
+	parent->NewTab(new_telnet);
+	all_telnet_conns.Add(new_telnet);
+	return new_telnet;
 }
 
 DWORD CTermView::DNSLookupThread(LPVOID param)
@@ -1995,21 +2017,29 @@ LRESULT CTermView::OnSocket(WPARAM wparam, LPARAM lparam)
 	for (; pptelnet < plasttelnet; pptelnet++)
 	{
 		CTelnetConn* ptelnet = *pptelnet;
-		if (ptelnet->is_telnet && ptelnet->telnet == (SOCKET)wparam)
+		if (ptelnet->HasSocket() && ptelnet->GetSocket() == (SOCKET)wparam)
 		{
-			WORD err = HIWORD(lparam);
+			ptelnet->OnSocket(wparam, lparam);
+		}
+	} //end for
+	return 0;
+}
 
-			switch (LOWORD(lparam))
-			{
-			case FD_READ:
-				ptelnet->OnReceive(err);
-				break;
-			case FD_CONNECT:
-				ptelnet->OnConnect(err);
-				break;
-			case FD_CLOSE:
-				ptelnet->OnClose(err);
-			}
+LRESULT CTermView::OnConnEvent(WPARAM wparam, LPARAM lparam)
+{
+	if (!all_telnet_conns.GetData())
+		return 0;
+
+	std::unique_ptr<CConnEvent> event((CConnEvent*)wparam);
+	CTelnetConn** pptelnet = (CTelnetConn**)all_telnet_conns.GetData();
+	CTelnetConn** plasttelnet = pptelnet + all_telnet_conns.GetSize();
+	for (; pptelnet < plasttelnet; pptelnet++)
+	{
+		CTelnetConn* ptelnet = *pptelnet;
+		if (ptelnet->GetConnectionID() == event->connection_id)
+		{
+			ptelnet->HandleConnEvent(std::move(event));
+			return 0;
 		}
 	} //end for
 	return 0;
@@ -2019,22 +2049,34 @@ void CTermView::ConnectSocket(CTelnetConn *new_telnet)
 {
 	if (InternetAttemptConnect(0) != ERROR_SUCCESS)
 	{
-		new_telnet->OnConnect(WSAENOTCONN);
+		new_telnet->OnConnect(false);
 		return;
 	}
 
 	new_telnet->Create();
 
-#if defined	_COMBO_
-	const LPCTSTR paddress = LPCTSTR(new_telnet->address) + 9;
-#else
-	CString &paddress = new_telnet->address;
-#endif
+	const CAddress& address = new_telnet->address;
+	const CString& protocol = address.Protocol();
+
+	if (protocol == "telnet" ||
+		protocol == "bbs")
+	{
+		ConnectTcp(new_telnet, address.Server(), address.Port());
+	}
+	else if (protocol == "ws" ||
+			 protocol == "wss")
+	{
+		new_telnet->ConnectWebsocket();
+	}
+}
+
+void CTermView::ConnectTcp(CTelnetConn* new_telnet, CString host, unsigned short port)
+{
 	SOCKADDR_IN sockaddr;
 	memset(&sockaddr, 0, sizeof(SOCKADDR_IN));
 	sockaddr.sin_family = AF_INET;
-	sockaddr.sin_port = htons((u_short) new_telnet->port);
-	sockaddr.sin_addr.s_addr = inet_addr(paddress);
+	sockaddr.sin_port = htons(port);
+	sockaddr.sin_addr.s_addr = inet_addr(host);
 	if (sockaddr.sin_addr.s_addr != INADDR_NONE)
 	{
 		new_telnet->ClearAllFlags();
@@ -2043,10 +2085,11 @@ void CTermView::ConnectSocket(CTelnetConn *new_telnet)
 		return;
 	}
 //	¦pªG¤£¬OIP¡A¥²¶·´M§ä¥D¾÷
+	new_telnet->is_lookup_host = true;
 //	¥[¤J·s°õ¦æºü
 	DNSLookupData *newfind = new DNSLookupData;
 	newfind->new_telnet = new_telnet;
-	newfind->address = paddress;
+	newfind->address = host;
 	DWORD tid;
 //	¶}©l·sªº°õ¦æºü
 	memset(&sockaddr, 0, sizeof(SOCKADDR_IN));
@@ -2423,7 +2466,7 @@ BOOL CTermView::OpenAnsFile(LPCTSTR filepath)
 		SetScrollBar();
 		UnlockWindowUpdate();
 		delete []data;
-		telnet->address = filepath;
+		telnet->address = AnsiAddressFromPath(filepath);
 		parent->UpdateStatus();
 		parent->UpdateAddressBar();
 		return TRUE;
@@ -2499,21 +2542,21 @@ void CTermView::MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint)
 		((CWebConn*)con)->web_browser.MoveWindow(x, y, nWidth, nHeight, bRepaint);
 }
 
-CWebConn* CTermView::ConnectWeb(CString address, BOOL act)
+CWebConn* CTermView::ConnectWeb(CAddress address, BOOL act)
 {
 	CWebConn* newcon = new CWebConn;
 	newcon->web_browser.view = this;
-	newcon->name = newcon->address = address;
+	newcon->name = (newcon->address = address).URL();
 	newcon->web_browser.parent = parent;
 	newcon->web_browser.Create(NULL, NULL, WS_CHILD, CRect(0, 0, 0, 0), parent, 0);
 	newcon->web_browser.wb_ctrl.put_RegisterAsBrowser(TRUE);
 	newcon->web_browser.wb_ctrl.put_RegisterAsDropTarget(TRUE);
 	parent->NewTab(newcon);
 
-	if (!address.IsEmpty())
+	if (address.IsValid())
 	{
 		COleVariant v;
-		COleVariant url = address;
+		COleVariant url = address.URL();
 		newcon->web_browser.wb_ctrl.Navigate2(&url, &v, &v, &v, &v);
 	}
 	if (act)
@@ -2672,7 +2715,7 @@ void CTermView::FindStart()
 		pfinddlg->SetForegroundWindow();
 }
 
-inline void CTermView::PtToLineCol(POINT pt, int &x, int &y, bool adjust_x)
+void CTermView::PtToLineCol(POINT pt, int &x, int &y, bool adjust_x)
 {
 	pt.x -= left_margin;	pt.y -= top_margin;
 	if (pt.x < 0)	pt.x = 0;
@@ -2709,15 +2752,30 @@ inline void CTermView::PtToLineCol(POINT pt, int &x, int &y, bool adjust_x)
 		x = 0;
 }
 
+CRect CTermView::TextRect() const
+{
+	return CRect(
+		left_margin,
+		top_margin,
+		left_margin + chw * telnet->site_settings.cols_per_page,
+		top_margin + lineh * telnet->site_settings.lines_per_page);
+}
 
-inline char* CTermView::HyperLinkHitTest(int x, int y, int& len)	//¥Î¨Ó´ú¸Õµe­±¤W¬YÂI¬O§_¬°¶W³sµ²
+
+char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤W¬YÂI¬O§_¬°¶W³sµ²
 //x,y¬°²×ºÝ¾÷¦æ¦C®y¼Ð¡A¦Ó¤£¬O·Æ¹«®y¼Ð
 {
+	CRect text_rect = TextRect();
+	if (!PtInRect(&text_rect, client_point))
+		return nullptr;
+
+	int x, y;
+	PtToLineCol(client_point, x, y, false);
 	y += telnet->scroll_pos;
 	const char* plink = telnet->screen[y];
 
 	if (!telnet->GetHyperLink(plink))
-		return NULL;
+		return nullptr;
 
 	const char* eol = plink + telnet->site_settings.cols_per_page;
 	while (plink = AppConfig.hyper_links.FindHyperLink(plink, len))
@@ -2727,7 +2785,7 @@ inline char* CTermView::HyperLinkHitTest(int x, int y, int& len)	//¥Î¨Ó´ú¸Õµe­±¤
 			return (char*)plink;
 		plink += len;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CTermView::OnCurConSettings()
@@ -2803,7 +2861,9 @@ void CTermView::OnUpdateBBSList()
 CString CTermView::GetSelText()
 {
 	CString ret;
-	if (telnet->sel_end.x != telnet->sel_start.x || telnet->sel_end.y != telnet->sel_start.y)
+	if (telnet != nullptr &&
+		(telnet->sel_end.x != telnet->sel_start.x ||
+			telnet->sel_end.y != telnet->sel_start.y))
 	{
 		UINT tmp;
 
@@ -2935,49 +2995,42 @@ void CTermView::AdjustFont(int cx, int cy)
 	}
 	left_margin = (cx - chw * cols_per_page) / 2;
 	top_margin = (cy - lineh * lines_per_page) / 2;
+	OnLayoutChanged();
+}
 
+void CTermView::OnLayoutChanged()
+{
+	UpdateImeCompositionFont();
 	CreateCaret();
 	ShowCaret();
 	if (telnet)
 		telnet->UpdateCursorPos();
 	else
-		SetCaretPos(CPoint(left_margin, top_margin + lineh - 2));
+		SetCursorPos(0, 0);
 }
 
 void CTermView::ConnectStr(CString name, CString dir)
 {
-	CString address;
+	CString url;
 	unsigned short port;
 	int i = name.Find('\t');
-	address = name.Mid(i + 1);
+	url = name.Mid(i + 1);
 	char type = name[0];
 	name = name.Mid(1, i - 1);
 
 #if defined(_COMBO_)
 	if (type != 's')
 	{
-		ConnectWeb(address, TRUE);
+		ConnectWeb(CAddress(url), TRUE);
 		return;
-	}
-	if (0 == strncmp("telnet:", address, 7))
-	{
-		LPCTSTR p = address;
-		p += 7;
-		while (*p && *p == '/')
-			++p;
-		address = p;
 	}
 #endif
 
-	i = address.ReverseFind(':');
-	if (i == -1)
-		port = 23;
-	else
-	{
-		port = (unsigned short)atoi(LPCTSTR(address.Mid(i + 1)));
-		address = address.Left(i);
-	}
 	SetFocus();
+
+	CAddress address = ParseAddress(url);
+	if (!address.IsValid())
+		return;
 
 	CString conf;
 	if (dir.IsEmpty())
@@ -2987,7 +3040,7 @@ void CTermView::ConnectStr(CString name, CString dir)
 		conf = dir;
 		conf += name;
 	}
-	Connect(address, name, port, conf);
+	Connect(address, name, conf);
 }
 
 
@@ -3194,6 +3247,9 @@ BOOL CTermView::ExtTextOut(CDC& dc, int x, int y, UINT nOptions, LPCRECT lpRect,
 	UINT cp_id = this->GetCodePage();
 	if (cp_id != 950)
 	{
+		// FIXME: nCount is the number of half-width character on the screen,
+		// not size of bytes for the string to draw.
+
 		// in¥þ¬°dbcs, in[n]=out[n/2+1]; in¥þ¬°acsii, in[n]=out[n+1]
 		memset(wbuf, 0, (nCount + 1)*sizeof(wchar_t)); // <-- in bytes
 		::MultiByteToWideChar(cp_id, 0, lpszString, nCount, wbuf, nCount + 1);
@@ -3323,4 +3379,23 @@ BOOL CTermView::CanUseMouseCTL()
 		xRet = TRUE;
 
 	return xRet;
+}
+
+void CTermView::SetCursorPos(int text_x, int text_y)
+{
+	CPoint pos;
+	pos.x = text_x * chw + left_margin;
+	pos.y = (text_y + 1) * lineh + top_margin - kCaretHeight;
+	SetCaretPos(pos);
+
+	HIMC hImc = ImmGetContext(m_hWnd);
+	if (hImc)
+	{
+		COMPOSITIONFORM comp;
+		comp.dwStyle = CFS_POINT;
+		comp.ptCurrentPos.x = pos.x;
+		comp.ptCurrentPos.y = text_y * lineh + top_margin;
+		ImmSetCompositionWindow(hImc, &comp);
+		ImmReleaseContext(m_hWnd, hImc);
+	}
 }
