@@ -12,4 +12,4 @@ PCMan
 
 Getting started
 ---
-   * [PCMan程式專案建置和執行：逐步解說](https://github.com/name2name2/pcman-windows/wiki/PCMan%E7%A8%8B%E5%BC%8F%E5%B0%88%E6%A1%88%E5%BB%BA%E7%BD%AE%E5%92%8C%E5%9F%B7%E8%A1%8C%EF%BC%9A%E9%80%90%E6%AD%A5%E8%A7%A3%E8%AA%AA)
+   * [PCMan程式專案建置和執行：逐步解說](Building_PCMan)
