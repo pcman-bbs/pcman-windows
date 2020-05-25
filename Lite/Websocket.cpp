@@ -16,6 +16,9 @@ using web::websockets::client::websocket_outgoing_message;
 using web::websockets::client::websocket_close_status;
 using web::websockets::client::websocket_message_type;
 
+// kMaxMessageSize is the maximum websocket message size for binary data.
+constexpr size_t kMaxMessageSize = 1024;
+
 enum class WebsocketState {
 	NEW = 0,
 	CONNECTING = 1,
@@ -140,13 +143,21 @@ int CWebsocket::Send(const void* data, size_t length)
 	if (state_ != WebsocketState::ESTABLISHED)
 		return length;
 
-	std::vector<uint8_t> buf(length);
-	memcpy(&buf[0], data, length);
 	bool initiate_send;
 	{
 		std::lock_guard<std::mutex> lk(mu_);
+
 		initiate_send = send_buffers_.empty();
-		send_buffers_.push_back(std::move(buf));
+
+		// We should append to last *queued* buffer until kMaxMessageSize reached.
+		// Note that send_buffers_[0] is the current buffer being sent, we must not append to it.
+		if (send_buffers_.size() < 2 || send_buffers_.back().size() >= kMaxMessageSize)
+			send_buffers_.emplace_back();
+
+		auto& buf = send_buffers_.back();
+		size_t offset = buf.size();
+		buf.resize(offset + length);
+		memcpy(&buf[offset], data, length);
 	}
 	if (initiate_send)
 		SendQueue();
