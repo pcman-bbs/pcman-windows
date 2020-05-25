@@ -28,7 +28,7 @@ public:
 	HTREEITEM copyitem;
 	CString m_InitPath;
 	void LoadSite(HTREEITEM parent, LPCTSTR fpath);
-	void SaveSite(register CFile& file, HTREEITEM parent);
+	void SaveSite(CFile& file, HTREEITEM parent);
 	CSiteListCtrl sites;
 	HTREEITEM FindSite(HTREEITEM item, LPCTSTR str);
 	CDlgLayout dlgl;
@@ -56,7 +56,7 @@ protected:
 
 // Implementation
 protected:
-	void AddSite(register CArchive* ar, HTREEITEM parent, char* str);
+	void AddSite(CArchive* ar, HTREEITEM parent, char* str);
 	// Generated message map functions
 	//{{AFX_MSG(CListDlg)
 	afx_msg void OnCancel();

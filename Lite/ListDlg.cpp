@@ -178,7 +178,7 @@ void CListDlg::OnSelchangedSites(NMHDR* pNMHDR, LRESULT* pResult)
 	UpdateCmdUI();
 }
 
-void CListDlg::AddSite(register CArchive* ar, HTREEITEM parent, char* str)
+void CListDlg::AddSite(CArchive* ar, HTREEITEM parent, char* str)
 {
 	HTREEITEM item;
 	while (ar->ReadString(str, 2048) && *str)
@@ -451,7 +451,7 @@ void CListDlg::OnSitesAddfavorite()
 	sites.SelectItem(item);
 }
 
-void CListDlg::SaveSite(register CFile& file, HTREEITEM parent)
+void CListDlg::SaveSite(CFile& file, HTREEITEM parent)
 {
 	CString str;
 	const char *crlf = "\r\n";
