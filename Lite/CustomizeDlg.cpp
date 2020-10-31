@@ -197,17 +197,27 @@ void CCustomizeDlg::OnApply()
 
 void CCustomizeDlg::OnDel()
 {
-	int sel = key_list_.GetCurSel();
-	if (sel == -1)
+	auto* menu_item = menu_tree_.GetSelectedItem();
+	if (!menu_item)
+		return;
+	HotkeyData *data = reinterpret_cast<HotkeyData *>(menu_tree_.GetItemData(menu_item));
+
+	int key_sel = key_list_.GetCurSel();
+	if (key_sel == -1)
 		return;
 
 	// Confirm deletion.
-	if (MessageBox(LoadString(IDS_DEL_CONFIRM) , NULL, MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
+	if (MessageBox(LoadString(IDS_DEL_CONFIRM), NULL, MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
 		return;
 
 	hkedit_.Reset();
 
-	DeleteHotkeyForID(reinterpret_cast<HotkeyData *>(key_list_.GetItemData(sel)));
+	std::vector<ACCEL> accels = accel_table_.GetByCmd(data->cmd);
+	if (key_sel >= 0 && key_sel < accels.size()) {
+		accel_table_.Delete(accels[key_sel]);
+	}
+
+	UpdateHotkeyDisplay(data);
 }
 
 void CCustomizeDlg::OnSelChanged(NMHDR* pNMHDR, LRESULT* pResult)
@@ -250,15 +260,12 @@ void CCustomizeDlg::UpdateHotkeyDisplay(CCustomizeDlg::HotkeyData *data)
 
 	UpdateTreeItemDisplay(data);
 
-	std::optional<ACCEL> accel = accel_table_.GetByCmd(data->cmd);
-	if (accel) {
-		CString hotkey_text = HotkeyToStr(accel->fVirt, accel->key);
-		int index = key_list_.AddString(hotkey_text);
-		key_list_.SetItemData(index, reinterpret_cast<DWORD_PTR>(data));
-		key_list_.SetCurSel(0);
-
-		hkedit_.SetWindowText(hotkey_text);
-		text_assigned_to_.SetWindowText(menu_tree_.GetItemText(data->hitem));
+	std::vector<ACCEL> accels = accel_table_.GetByCmd(data->cmd);
+	if (!accels.empty()) {
+		for (const auto& accel : accels) {
+			CString hotkey_text = HotkeyToStr(accel.fVirt, accel.key);
+			key_list_.AddString(hotkey_text);
+		}
 	} else {
 		btn_delete_hotkey_.EnableWindow(false);
 		hkedit_.Reset();
@@ -273,10 +280,10 @@ void CCustomizeDlg::UpdateTreeItemDisplay(CCustomizeDlg::HotkeyData *data)
 	if ((p = text.Find('\t')) != -1)
 		text = text.Left(p);
 
-	std::optional<ACCEL> accel = accel_table_.GetByCmd(data->cmd);
-	if (accel) {
+	std::vector<ACCEL> accel = accel_table_.GetByCmd(data->cmd);
+	if (!accel.empty()) {
 		text += '\t';
-		text += HotkeyToStr(accel->fVirt, accel->key);
+		text += HotkeyToStr(accel[0].fVirt, accel[0].key);
 	}
 	menu_tree_.SetItemText(data->hitem, text);
 }
@@ -309,11 +316,4 @@ CCustomizeDlg::HotkeyData* CCustomizeDlg::HotkeyDataFromKeys(BYTE fVirt, WORD ke
 		return nullptr;
 	}
 	return it->second;
-}
-
-// 從所有具有相同 ID (hkdel->id) 的選單項目中，移除和 hkdel 相同的熱鍵 (hkdel->fVirt + hkdel->key)
-void CCustomizeDlg::DeleteHotkeyForID(CCustomizeDlg::HotkeyData* hkdel)
-{
-	accel_table_.DeleteByCmd(hkdel->cmd);
-	UpdateHotkeyDisplay(hkdel);
 }

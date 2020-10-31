@@ -15,9 +15,8 @@
 class AcceleratorTable {
 public:
 	void Set(const ACCEL &accel);
-	void DeleteByCmd(WORD cmd);
-	void DeleteByKey(BYTE fVirt, WORD key);
-	std::optional<ACCEL> GetByCmd(WORD cmd) const;
+	void Delete(const ACCEL &accel);
+	std::vector<ACCEL> GetByCmd(WORD cmd) const;
 	std::optional<ACCEL> GetByKey(BYTE fVirt, WORD key) const;
 
 	HACCEL CreateHandle() const;
@@ -30,8 +29,8 @@ public:
 private:
 	using Key = std::pair<BYTE, WORD>;
 
-	std::map<WORD, ACCEL> cmd_to_accel_;
-	std::map<Key, WORD> key_to_cmd_;
+	std::multimap<WORD, ACCEL> cmd_to_accel_;
+	std::map<Key, ACCEL> key_to_accel_;
 };
 
 class MenuVisitor {

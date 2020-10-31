@@ -36,12 +36,13 @@ public:
 
 	void VisitMenuItem(CMenu *menu, UINT index) override {
 		UINT cmd = menu->GetMenuItemID(index);
-		std::optional<ACCEL> accel = accel_table_->GetByCmd(cmd);
-		if (accel) {
+		std::vector<ACCEL> accels = accel_table_->GetByCmd(cmd);
+		if (!accels.empty()) {
+			const auto& accel = accels[0];
 			CString text;
 			menu->GetMenuString(index, text, MF_BYPOSITION);
 			text.Append(_T("\t"));
-			text.Append(HotkeyToStr(accel->fVirt, accel->key));
+			text.Append(HotkeyToStr(accel.fVirt, accel.key));
 			menu->ModifyMenu(index, MF_BYPOSITION, cmd, text);
 		}
 	}
@@ -77,48 +78,47 @@ void TraverseMenuPreorder(HMENU hMenu, MenuVisitor *visitor)
 
 void AcceleratorTable::Set(const ACCEL &accel)
 {
-	DeleteByCmd(accel.cmd);
-	DeleteByKey(accel.fVirt, accel.key);
+	Delete(accel);
+	key_to_accel_[Key{ accel.fVirt, accel.key }] = accel;
 	cmd_to_accel_.emplace(accel.cmd, accel);
-	key_to_cmd_.emplace(Key{ accel.fVirt, accel.key }, accel.cmd);
 }
 
-void AcceleratorTable::DeleteByCmd(WORD cmd)
+void AcceleratorTable::Delete(const ACCEL &accel)
 {
-	auto it = cmd_to_accel_.find(cmd);
-	if (it == cmd_to_accel_.end()) {
+	Key key = Key{ accel.fVirt, accel.key };
+
+	auto it = key_to_accel_.find(key);
+	if (it == key_to_accel_.end())
 		return;
+
+	auto range = cmd_to_accel_.equal_range(it->second.cmd);
+	for (auto rt = range.first; rt != range.second; rt++) {
+		if (key == Key{ rt->second.fVirt, rt->second.key }) {
+			cmd_to_accel_.erase(rt);
+			break;
+		}
 	}
-	key_to_cmd_.erase(Key{it->second.fVirt, it->second.key});
-	cmd_to_accel_.erase(it);
+
+	key_to_accel_.erase(it);
 }
 
-void AcceleratorTable::DeleteByKey(BYTE fVirt, WORD key)
+std::vector<ACCEL> AcceleratorTable::GetByCmd(WORD cmd) const
 {
-	auto it = key_to_cmd_.find(Key{ fVirt, key });
-	if (it == key_to_cmd_.end()) {
-		return;
+	std::vector<ACCEL> accels;
+	auto range = cmd_to_accel_.equal_range(cmd);
+	for (auto it = range.first; it != range.second; it++) {
+		accels.push_back(it->second);
 	}
-	cmd_to_accel_.erase(it->second);
-	key_to_cmd_.erase(it);
-}
-
-std::optional<ACCEL> AcceleratorTable::GetByCmd(WORD cmd) const
-{
-	auto it = cmd_to_accel_.find(cmd);
-	if (it == cmd_to_accel_.end()) {
-		return std::nullopt;
-	}
-	return it->second;
+	return accels;
 }
 
 std::optional<ACCEL> AcceleratorTable::GetByKey(BYTE fVirt, WORD key) const
 {
-	auto it = key_to_cmd_.find(Key{fVirt, key});
-	if (it == key_to_cmd_.end()) {
+	auto it = key_to_accel_.find(Key{fVirt, key});
+	if (it == key_to_accel_.end()) {
 		return std::nullopt;
 	}
-	return cmd_to_accel_.at(it->second);
+	return it->second;
 }
 
 HACCEL AcceleratorTable::CreateHandle() const

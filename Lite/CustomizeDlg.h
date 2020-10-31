@@ -75,7 +75,6 @@ private:
 	HotkeyData *NewHotkeyData();
 	void UpdateTreeItemDisplay(HotkeyData *data);
 	void UpdateHotkeyDisplay(HotkeyData *data);
-	void DeleteHotkeyForID(HotkeyData *hkdel);
 	HotkeyData *HotkeyDataFromKeys(BYTE fVirt, WORD key);
 	void UIWriteAccels();
 };
