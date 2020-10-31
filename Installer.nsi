@@ -133,7 +133,6 @@ Section SEC01
 
   StrCmp $LANGUAGE ${LANG_TRADCHINESE} Chi Eng
   Chi:
-#this line makes error in utf-8 encoding  
     CreateShortCut "$SMPROGRAMS\${PRODUCT_DIR}\標點符號輸入程式.lnk" "$INSTDIR\Symbols.exe" "$INSTDIR\Symbols.exe"
     Goto +2
   Eng:
