@@ -252,8 +252,15 @@ CAddress ParseAddress(const CString& url)
 		address.Parse(url);
 	else if (url.Find(_T(":\\")) < 0 && url.Find(_T("\\")) < 0 && url.Find(_T("/")) < 0)
 		address.Parse(_T("telnet://") + url);
-	else
-		address.Parse(_T("file://") + url);
+	else {
+		// Try to handle it as files.
+		TCHAR buf[INTERNET_MAX_URL_LENGTH];
+		DWORD len = INTERNET_MAX_URL_LENGTH;
+		if (UrlCreateFromPath(url, buf, &len, NULL) == S_OK) {
+			buf[len] = 0;
+			address.Parse(buf);
+		}
+	}
 	return address;
 }
 
