@@ -1,4 +1,4 @@
-// SitePage.cpp : implementation file
+ï»¿// SitePage.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -190,15 +190,15 @@ void CSitePage::OnAddMap()
 		if (dlg.DoModal() != IDOK)
 			return;
 	CKeyMapDlg kmdlg;
-	//²£¥Í·sªºKeyMap
+	//ç”¢ç”Ÿæ–°çš„KeyMap
 	//and also load default
 	kmdlg.pmap = CKeyMap::Load(dlg.name);
 
 #if 0
-	//¸ü¤J¹w³]­È
+	//è¼‰å…¥é è¨­å€¼
 	CKeyMap* defkm = CKeyMap::Load(CKeyMap::default_kmname);
-	//½Æ»s¹w³]­È¨ì·sªºÁä½L¹ï¬M
-	kmdlg.pmap->Copy(/*(CArray<CKeyMapEntry,CKeyMapEntry&>&)*/*defkm); //144ª©«á·|¦³bug
+	//è¤‡è£½é è¨­å€¼åˆ°æ–°çš„éµç›¤å°æ˜ 
+	kmdlg.pmap->Copy(/*(CArray<CKeyMapEntry,CKeyMapEntry&>&)*/*defkm); //144ç‰ˆå¾Œæœƒæœ‰bug
 	defkm->Release();
 #endif
 

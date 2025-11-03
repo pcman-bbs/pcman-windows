@@ -1,4 +1,4 @@
-// AppConfig.cpp: implementation of the CAppConfig class.
+﻿// AppConfig.cpp: implementation of the CAppConfig class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -350,7 +350,7 @@ bool CAppConfig::OnDataExchange(bool load)
 	CFG_BYTE(save_session)
 	CFG_BYTE(switch_back_on_close)
 	CFG_BYTE(dblclk_select)
-	CFG_STR(bkpath)	//�I���ϸ��|
+	CFG_STR(bkpath)	//嚙瘢嚙踝蕭嚙誕賂蕭嚙罵
 	CFG_STR(wavepath)
 
 //	AnsiEditor Settings
@@ -401,8 +401,8 @@ bool CAppConfig::OnDataExchange(bool load)
 	_CFG_BYTE("auto_dbcs_backspace", site_settings.auto_dbcs_backspace)
 	_CFG_BYTE("localecho", site_settings.localecho)
 
-	_CFG_BYTE("text_output_conv", site_settings.text_output_conv)	// ��ܤ�r��X	0=none, 1=gb2big5, 2=big52gb
-	_CFG_BYTE("text_input_conv", site_settings.text_input_conv)		// ��J��r��X	0=none, 1=gb2big5, 2=big52gb
+	_CFG_BYTE("text_output_conv", site_settings.text_output_conv)	// 嚙踝蕭雂嚙緝嚙踝蕭X	0=none, 1=gb2big5, 2=big52gb
+	_CFG_BYTE("text_input_conv", site_settings.text_input_conv)		// 嚙踝蕭J嚙踝蕭r嚙踝蕭X	0=none, 1=gb2big5, 2=big52gb
 
 	_CFG_STR("key_map_name", site_settings.key_map_name)
 	_CFG_STR("termtype", site_settings.termtype)

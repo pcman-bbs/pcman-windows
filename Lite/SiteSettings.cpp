@@ -1,4 +1,4 @@
-// SiteSettings.cpp: implementation of the CSiteSettings class.
+ï»¿// SiteSettings.cpp: implementation of the CSiteSettings class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -79,14 +79,14 @@ public:
 		_CFG_BYTE("auto_dbcs_backspace", site_settings.auto_dbcs_backspace)
 		_CFG_BYTE("localecho", site_settings.localecho)
 
-		_CFG_BYTE("text_output_conv", site_settings.text_output_conv)	// Åã¥Ü¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
-		_CFG_BYTE("text_input_conv", site_settings.text_input_conv)		// ¿é¤J¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
+		_CFG_BYTE("text_output_conv", site_settings.text_output_conv)	// é¡¯ç¤ºæ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
+		_CFG_BYTE("text_input_conv", site_settings.text_input_conv)		// è¼¸å…¥æ–‡å­—è½‰ç¢¼	0=none, 1=gb2big5, 2=big52gb
 
 		_CFG_STR("key_map_name", site_settings.key_map_name)
 		_CFG_STR("termtype", site_settings.termtype)
 		_CFG_STR("idle_str", site_settings.idle_str)
 		_CFG_ESTR("esc_convert", site_settings.esc_convert)
-		// CTriggerList triggers;	//Ä²µo¦r¦ê
+		// CTriggerList triggers;	//è§¸ç™¼å­—ä¸²
 		END_CFG_SECTION()
 
 		BEGIN_CFG_FILE(table)

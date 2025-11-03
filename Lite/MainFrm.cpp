@@ -1,4 +1,4 @@
-// MainFrm.cpp : implementation of the CMainFrame class
+ï»¿// MainFrm.cpp : implementation of the CMainFrame class
 //
 
 #include "stdafx.h"
@@ -193,9 +193,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_NOTIFYICON, OnNotifyIcon)
 	ON_MESSAGE(WM_QUERY_APPCONFIG, OnQueryAppConfig)
 	ON_MESSAGE(WM_DOWNLOAD_PAGE, OnDownloadPage)
-	ON_COMMAND_RANGE(ID_FIRST_HOTSTR, ID_LAST_HOTSTR, OnFrequentlyUsedStr)	//¼öÁä°e¥X¦r¦ê
-	ON_COMMAND_RANGE(ID_FIRST_BBS_FAVORITE, ID_LAST_WEB_FAVORITE, OnFavorite)	//§Úªº³Ì·R
-	ON_COMMAND_RANGE(ID_SWITCHCON1, ID_SWITCHCON10, OnHotkeySwitch)	//µøµ¡¤Á´«
+	ON_COMMAND_RANGE(ID_FIRST_HOTSTR, ID_LAST_HOTSTR, OnFrequentlyUsedStr)	//ç†±éµé€å‡ºå­—ä¸²
+	ON_COMMAND_RANGE(ID_FIRST_BBS_FAVORITE, ID_LAST_WEB_FAVORITE, OnFavorite)	//æˆ‘çš„æœ€æ„›
+	ON_COMMAND_RANGE(ID_SWITCHCON1, ID_SWITCHCON10, OnHotkeySwitch)	//è¦–çª—åˆ‡æ›
 
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnToolTipNeedText)	// For tooltips
 
@@ -327,7 +327,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	HDC hdc = GetDC()->m_hDC;
 	UINT dpiy = GetDeviceCaps(hdc, LOGPIXELSY);
 
-//	¥Î¨Ó«Ø³ycontrolªºtemp Rect
+//	ç”¨ä¾†å»ºé€ controlçš„temp Rect
 	CRect tmprc(0, 0, 0, 0);
 
 //	Load PCMan Icon
@@ -361,7 +361,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	toolbar_bkgnd.GetBitmap(&bmp);
 
 	//img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, ILC_COLOR32|ILC_MASK, 9,0);
-	//¨Ï¥Î bmBitsPixel ¨Ó·í§@ ILC_COLOR* ªº flags ­È
+	//ä½¿ç”¨ bmBitsPixel ä¾†ç•¶ä½œ ILC_COLOR* çš„ flags å€¼
 #ifdef _COMBO_
 	img_toolbar.Create(bmp.bmHeight, bmp.bmHeight, bmp.bmBitsPixel | ILC_MASK, 19, 0);
 #else
@@ -394,8 +394,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		 :	(AppConfig.kktab ? TCS_BOTTOM : 0))
 		| WS_VISIBLE | TCS_HOTTRACK | TCS_FOCUSNEVER | TCS_TOOLTIPS,
 		tmprc, this, IDC_MAINTAB);
-//	«D±`¸Ş²§¡A·N¥~µo²{¡A¦pªG¤@¶}©l«Ø¥ßOwnerDraw¡AWin XP¤UHotTrack´N·|¥¢®Ä
-//	¦ı¬O¦pªG¥ı«Ø¥ß¤@¯ëªºHotTrack Tab¡A¦A§ï¦¨OwnerDraw¡A´N¥i¥H«O¯dHotTrack :)
+//	éå¸¸è©­ç•°ï¼Œæ„å¤–ç™¼ç¾ï¼Œå¦‚æœä¸€é–‹å§‹å»ºç«‹OwnerDrawï¼ŒWin XPä¸‹HotTrackå°±æœƒå¤±æ•ˆ
+//	ä½†æ˜¯å¦‚æœå…ˆå»ºç«‹ä¸€èˆ¬çš„HotTrack Tabï¼Œå†æ”¹æˆOwnerDrawï¼Œå°±å¯ä»¥ä¿ç•™HotTrack :)
 #if defined(_COMBO_)
 	tab.ModifyStyle(0, TCS_FIXEDWIDTH | TCS_OWNERDRAWFIXED);
 #else
@@ -413,7 +413,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 #endif
 
 //	Create Address Bar
-//----------¦ì§}¦C-------------
+//----------ä½å€åˆ—-------------
 	address_bar.Create(CBS_AUTOHSCROLL | CBS_DROPDOWN, scaler.Calc(CRect(0, 0, 0, 320)), this, IDC_ADS_COMBO);
 	address_bar.MoveWindow(scaler.Calc(CRect(0, 0, 200, 24)));
 	address_bar.SetFont(&bar_font);
@@ -425,7 +425,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 #ifdef	_COMBO_
 // Search Bar
-//----------·j´M¦C------------
+//----------æœå°‹åˆ—------------
 	search_bar.Create(this);
 	search_bar.SetFont(&bar_font);
 #endif
@@ -436,7 +436,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	close_btn.LoadToolBar(IDR_CLOSEBTN);
 
 #if defined(_COMBO_)
-//----------Web¤u¨ã¦C-------------
+//----------Webå·¥å…·åˆ—-------------
 	web_bar.CreateEx(this, TBSTYLE_TRANSPARENT | TBSTYLE_FLAT, CBRS_TOOLTIPS | CBRS_ALIGN_TOP | CCS_ADJUSTABLE | WS_CHILD |
 					 WS_VISIBLE, tmprc, IDC_WEBBAR);
 	web_bar_bkgnd.Attach((HBITMAP)LoadImage(AfxGetInstanceHandle(), ConfigPath + WEB_ICON_BMP_FILENAME,
@@ -448,7 +448,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//web_bar.SetBitmap((HBITMAP)web_bar_bkgnd.m_hObject);
 	web_bar.LoadToolBar(&AppConfig.webbar_inf);
 	web_bar.GetToolBarCtrl().SetImageList(&img_webbar);
-//¦ì§}¦Cªº combobox ¸ê®Æ¦b LoadHistory¸Ì­±¸ü¤J
+//ä½å€åˆ—çš„ combobox è³‡æ–™åœ¨ LoadHistoryè£¡é¢è¼‰å…¥
 #endif
 
 //-----------------------------
@@ -462,7 +462,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	status_bar.SetFont(&bar_font);
 
 #if defined(_COMBO_)
-//	Create Progress Control (ºô­¶)
+//	Create Progress Control (ç¶²é )
 	progress_bar.Create(WS_CLIPSIBLINGS | WS_CHILD | PBS_SMOOTH, tmprc, &status_bar, IDC_PROGRESS);
 #endif
 
@@ -475,21 +475,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CReBarCtrl& rbc = rebar.GetReBarCtrl();
 	REBARBANDINFO rbi;	rbi.cbSize = sizeof(rbi);
 	rbi.fMask = RBBIM_ID;
-	//¥[¤J¥D¤u¨ã¦C	id=1
+	//åŠ å…¥ä¸»å·¥å…·åˆ—	id=1
 	rebar.AddBar(&toolbar);	rbi.wID = 1; rbc.SetBandInfo(0, &rbi);
 
-	//¥[¤JANSI±m¦â¤u¨ã¦C	id=2
+	//åŠ å…¥ANSIå½©è‰²å·¥å…·åˆ—	id=2
 	rebar.AddBar(&ansi_bar);
 	rbi.cx = 548;
 	rbi.fMask = RBBIM_ID | RBBIM_SIZE;
 	rbi.wID = 2;	rbc.SetBandInfo(1, &rbi);
 	rbi.fMask = RBBIM_ID;
 
-	//¥[¤JÃö³¬«ö¶s	id=3
+	//åŠ å…¥é—œé–‰æŒ‰éˆ•	id=3
 	rebar.AddBar(&close_btn);	rbi.wID = 3;	rbc.SetBandInfo(2, &rbi);
 
 #ifdef	_COMBO_
-	//¥[¤J¦ì§}¦C	id=4
+	//åŠ å…¥ä½å€åˆ—	id=4
 	rebar.AddBar(&address_bar);
 #else
 	rebar.AddBar(&address_bar, LoadString(IDS_ADS_BAR_TITLE));
@@ -500,9 +500,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	rbi.fStyle = RBBS_GRIPPERALWAYS | RBBS_FIXEDBMP;
 	rbi.fMask = RBBIM_ID;
 #if defined(_COMBO_)
-	//¥[¤JWeb¤u¨ã¦C	id=5
+	//åŠ å…¥Webå·¥å…·åˆ—	id=5
 	rebar.AddBar(&web_bar);	rbi.wID = 5;	rbc.SetBandInfo(4, &rbi);
-	//¥[¤J·j´M¦C id=6
+	//åŠ å…¥æœå°‹åˆ— id=6
 	rebar.AddBar(&search_bar, LoadString(IDS_SEARCH_BAR_TITLE));
 	rbi.wID = 6; rbc.SetBandInfo(5, &rbi);
 #endif
@@ -609,7 +609,7 @@ void CMainFrame::OnCommitUpdate()
 
 	auto_complete.DetachEdit();
 
-	//µøµ¡¤j¤p¦ì¸m
+	//è¦–çª—å¤§å°ä½ç½®
 	AppConfig.mainwnd_state.Save(m_hWnd);
 
 	//ReBar Position
@@ -621,7 +621,7 @@ void CMainFrame::OnCommitUpdate()
 	AppConfig.Save(ConfigPath + CONFIG_FILENAME);
 	ShowWindow(SW_HIDE);
 
-//	²M°£©Ò¦³ new ¥X¨Óªº¤À­¶ª«¥ó
+//	æ¸…é™¤æ‰€æœ‰ new å‡ºä¾†çš„åˆ†é ç‰©ä»¶
 	int c = tab.GetItemCount();
 	if (AppConfig.save_session)
 	{
@@ -663,7 +663,7 @@ void CMainFrame::OnCommitUpdate()
 				delete tab.GetCon(i);
 		}
 	}
-	else	//¤£¬ö¿ı¡A¥u§R°£¤À­¶
+	else	//ä¸ç´€éŒ„ï¼Œåªåˆªé™¤åˆ†é 
 	{
 		for (int i = 0; i < c;  i++)
 			delete tab.GetCon(i);
@@ -686,7 +686,7 @@ void CMainFrame::UpdateStatus()
 			int min = (telnet->time - sec) / 60;
 			int hr = telnet->time / 3600;
 			min = min % 60;
-//			text.Format("\t³s½u®É¶¡¡G%d ¤p®É %d ¤À %d ¬í\t\t¦ì§}¡G%s",hr,min,sec,(LPCTSTR)telnet->address);
+//			text.Format("\té€£ç·šæ™‚é–“ï¼š%d å°æ™‚ %d åˆ† %d ç§’\t\tä½å€ï¼š%s",hr,min,sec,(LPCTSTR)telnet->address);
 			text.Format(con_status, hr, min, sec, (LPCTSTR)telnet->address.URL());
 
 			if (telnet->IsSecureConn())
@@ -721,7 +721,7 @@ void CMainFrame::UpdateStatus()
 				file.LoadString(IDS_NOT_SAVED);
 			else
 				file = telnet->address.Path();
-//			text.Format( "ANSI±m¦â½s¿è\t½s¿è¼Ò¦¡¡G%s\tÀÉ®×¡G%s", LPCTSTR(mode), LPCTSTR(file) );
+//			text.Format( "ANSIå½©è‰²ç·¨è¼¯\tç·¨è¼¯æ¨¡å¼ï¼š%s\tæª”æ¡ˆï¼š%s", LPCTSTR(mode), LPCTSTR(file) );
 			text.Format(ansied_status, LPCTSTR(mode), LPCTSTR(file));
 		}
 		status_bar.SetWindowText(text);
@@ -1534,7 +1534,7 @@ void CMainFrame::OnWebHome()
 
 #endif
 
-//-------------------¥H¤U¨âª©¥»³q¥Î---------------------
+//-------------------ä»¥ä¸‹å…©ç‰ˆæœ¬é€šç”¨---------------------
 
 void CMainFrame::RecalcLayout(BOOL bNotify)
 {
@@ -1640,7 +1640,7 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 #endif
 
 	UINT tab_bar_height = scaler.CalcY(TABH);
-	if (AppConfig.kktab)	//¦pªG¨Ï¥Î©MKKman¬Û¦Pªº³s½u¼ĞÅÒ
+	if (AppConfig.kktab)	//å¦‚æœä½¿ç”¨å’ŒKKmanç›¸åŒçš„é€£ç·šæ¨™ç±¤
 	{
 		int _top = rc.bottom - tab_bar_height - (showsb ? status_bar_height : 0);
 		tab.MoveWindow(0, _top, rc.right, tab_bar_height);
@@ -1772,7 +1772,7 @@ void CMainFrame::OnWebSearch()
 				return;
 			}
 		*/
-		OnNewConnectionAds(searchurl);	// ¤º³¡·|©I¥s view.AddToTypedHistory(address);
+		OnNewConnectionAds(searchurl);	// å…§éƒ¨æœƒå‘¼å« view.AddToTypedHistory(address);
 	}
 
 }
@@ -1859,7 +1859,7 @@ void CMainFrame::RestoreWindow()
 		Shell_NotifyIcon(NIM_DELETE, &nd);
 		ShowWindow(SW_SHOW);
 	}
-	if (IsIconic())	// Restore minimized window ±q Delphi VCL¾Ç¨Óªº!
+	if (IsIconic())	// Restore minimized window å¾ Delphi VCLå­¸ä¾†çš„!
 		DefWindowProc(WM_SYSCOMMAND, SC_RESTORE, 0);
 
 	BringWindowToTop();
@@ -1930,7 +1930,7 @@ void CMainFrame::OnToolLock()
 	::SetMenu(m_hWnd, main_menu);
 	AppConfig.lock_pcman = false;
 
-	// °Ñ¦Ò Delphi VCL¡Aµo²{¤è«KÁÙ­ìµøµ¡ªº©Ç©Û
+	// åƒè€ƒ Delphi VCLï¼Œç™¼ç¾æ–¹ä¾¿é‚„åŸè¦–çª—çš„æ€ªæ‹›
 	DefWindowProc(WM_SYSCOMMAND, SC_RESTORE, 0);
 }
 
@@ -2265,7 +2265,7 @@ int CMainFrame::NewTab(CConn *pCon, BOOL bActive, int idx)
 	if (idx == -1)	idx = tab.GetItemCount();
 	int img;
 #if defined	_COMBO_
-	if (pCon->is_web)	//¦pªG·s¶}ÂsÄı¾¹µe­±
+	if (pCon->is_web)	//å¦‚æœæ–°é–‹ç€è¦½å™¨ç•«é¢
 		img = 8;
 	else
 	{
@@ -2459,7 +2459,7 @@ BOOL CMainFrame::LoadUI()
 	inf.fMask = MIIM_SUBMENU;
 
 	LoadHistoryMenu();
-	inf.hSubMenu = history_menu;	//³s½u¬ö¿ı
+	inf.hSubMenu = history_menu;	//é€£ç·šç´€éŒ„
 
 #if defined(_COMBO_)
 	SetMenuItemInfo(main_menu, 5, TRUE, &inf);
@@ -2514,7 +2514,7 @@ void CMainFrame::OnShowFrequentlyUsedStr()
 
 void CMainFrame::LoadFrequentlyUsedStr()
 {
-	//Åª¨ú¼öÁä¦r¦ê
+	//è®€å–ç†±éµå­—ä¸²
 	if (hhotstr_acc)
 	{
 		::DestroyAcceleratorTable(hhotstr_acc);
@@ -2541,7 +2541,7 @@ void CMainFrame::LoadFrequentlyUsedStr()
 				inf = 0;
 				f.Read4(&inf);
 				tmp = LoadString(f);
-				if (LOWORD(inf))	//¦³¼öÁä
+				if (LOWORD(inf))	//æœ‰ç†±éµ
 				{
 					hotstr.Add(tmp);
 					hotstr_inf.Add(BYTE(inf >> 24));
@@ -2620,11 +2620,11 @@ void CMainFrame::AddToHistoryMenu(CString str)
 			break;
 	}
 
-	if (i < c)	//¦pªG¦³§ä¨ì¤@¼Ëªº¡A¿ï³æ¤£§ïÅÜ¡A¥u²¾°Ê¤º³¡¶¶§Ç
+	if (i < c)	//å¦‚æœæœ‰æ‰¾åˆ°ä¸€æ¨£çš„ï¼Œé¸å–®ä¸æ”¹è®Šï¼Œåªç§»å‹•å…§éƒ¨é †åº
 		AppConfig.favorites.history.RemoveAt(i);
-	else	//¦pªG·s¼W¿ï³æ¶µ¥Ø
+	else	//å¦‚æœæ–°å¢é¸å–®é …ç›®
 	{
-		//­««Ø¿ï³æ
+		//é‡å»ºé¸å–®
 		for (i = 0;i < AppConfig.favorites.history.GetSize(); i++)
 		{
 			UINT id = ID_FIRST_HISTORY + i + 1;
@@ -2866,7 +2866,7 @@ void CMainFrame::OnFavorite(UINT id)
 
 void CMainFrame::OnViewFullscr()
 {
-	if (AppConfig.is_full_scr)	//¦pªG¤w¸g¬O¥ş¿Ã¹õ
+	if (AppConfig.is_full_scr)	//å¦‚æœå·²ç¶“æ˜¯å…¨è¢å¹•
 	{
 		ModifyStyle(WS_POPUP, WS_OVERLAPPEDWINDOW);
 		ShowWindow(SW_HIDE);
@@ -2876,7 +2876,7 @@ void CMainFrame::OnViewFullscr()
 		ShowWindow(SW_HIDE);
 		ShowWindow(showcmd);
 	}
-	else	//¦pªG¤£¬O¥ş¿Ã¹õ
+	else	//å¦‚æœä¸æ˜¯å…¨è¢å¹•
 	{
 		WINDOWPLACEMENT wpm;
 		GetWindowPlacement(&wpm);
@@ -3140,12 +3140,12 @@ void CMainFrame::SwitchToConn(int index)
 	int lines_per_page = 0;
 
 #if defined _COMBO_/////////////////////////
-	if (view.telnet)	//¦pªG­ì¥»¬OBBS¡A°O¿ı­ì¥»ªº¦æ¦C¼Æ
+	if (view.telnet)	//å¦‚æœåŸæœ¬æ˜¯BBSï¼Œè¨˜éŒ„åŸæœ¬çš„è¡Œåˆ—æ•¸
 	{
 		cols_per_page = view.telnet->site_settings.cols_per_page;
 		lines_per_page = view.telnet->site_settings.lines_per_page;
 	}
-	else	//¦pªG­ì¥»¬Oºô­¶¡A©Î¬O®Ú¥»¨Sµe­±
+	else	//å¦‚æœåŸæœ¬æ˜¯ç¶²é ï¼Œæˆ–æ˜¯æ ¹æœ¬æ²’ç•«é¢
 	{
 		if (view.con)
 		{
@@ -3155,7 +3155,7 @@ void CMainFrame::SwitchToConn(int index)
 	}
 	view.con = newcon;
 
-	if (newcon->is_web)	//¦pªG·sµe­±¬OWWW
+	if (newcon->is_web)	//å¦‚æœæ–°ç•«é¢æ˜¯WWW
 	{
 		view.telnet = NULL;
 		view.GetWindowRect(view.view_rect);
@@ -3166,7 +3166,7 @@ void CMainFrame::SwitchToConn(int index)
 		((CWebConn*)view.con)->web_browser.EnableWindow(TRUE);
 		((CWebConn*)view.con)->web_browser.SetFocus();
 	}
-	else	//¦pªG·sµe­±¬OBBS
+	else	//å¦‚æœæ–°ç•«é¢æ˜¯BBS
 	{
 #endif///////////////////////////////////
 		view.telnet = (CTelnetConn*)newcon;
@@ -3435,7 +3435,7 @@ void CMainFrame::OnPasteTinyUrl()
 {
 	CString url = TINY_URL;
 	CString text;
-	if (!CClipboard::GetText(text)) //²Ä¤@¦¸±q°Å¶KÃ¯¨ú¦r¦ê (ansi¦r¦ê)
+	if (!CClipboard::GetText(text)) //ç¬¬ä¸€æ¬¡å¾å‰ªè²¼ç°¿å–å­—ä¸² (ansiå­—ä¸²)
 		return;
 	url += text;
 
@@ -3495,13 +3495,13 @@ void CMainFrame::OnPaste()
 	if (!CClipboard::GetText(text))
 		return;
 
-	//°»´ú¬O§_¥]§t¦â±m½X
-	//¦pªG¦³¦â±m½X¡A§ï¦¨±m¦â¶K¤W
+	//åµæ¸¬æ˜¯å¦åŒ…å«è‰²å½©ç¢¼
+	//å¦‚æœæœ‰è‰²å½©ç¢¼ï¼Œæ”¹æˆå½©è‰²è²¼ä¸Š
 	if (IsContainAnsiCode(text))
 		view.SendAnsiString(text);
-	else	//§_«h¥¿±`¶K¤W¯Â¤å¦r
+	else	//å¦å‰‡æ­£å¸¸è²¼ä¸Šç´”æ–‡å­—
 	{
-		//¨Ã¥B¦pªG¤£¥]§t¦â±m½X¡A¦A­«·s±q°Å¶KÃ¯¨ú¤@¦¸¦r¦ê (§ï¨úUnicode¦r¦ê)
+		//ä¸¦ä¸”å¦‚æœä¸åŒ…å«è‰²å½©ç¢¼ï¼Œå†é‡æ–°å¾å‰ªè²¼ç°¿å–ä¸€æ¬¡å­—ä¸² (æ”¹å–Unicodeå­—ä¸²)
 
 		wchar_t* pwstr = NULL;
 		if (CClipboard::GetTextW(&pwstr))
@@ -3526,8 +3526,8 @@ void CMainFrame::OnPaste()
 				delete [] pstr;
 			if (pwstr)
 				delete [] pwstr;
-			//¦Ò¼{¨ì server ºİ¹ê»Ú±µ¦¬¸ê®Æªº³t«×¤£§Ö¡A
-			//©Ò¥H³oÃä¸Õ¹Ï©¿²¤±¼±q°Å¶KÃ¯¨ú¨â¦¸¸ê®Æªº¶}¾P·l¥¢
+			//è€ƒæ…®åˆ° server ç«¯å¯¦éš›æ¥æ”¶è³‡æ–™çš„é€Ÿåº¦ä¸å¿«ï¼Œ
+			//æ‰€ä»¥é€™é‚Šè©¦åœ–å¿½ç•¥æ‰å¾å‰ªè²¼ç°¿å–å…©æ¬¡è³‡æ–™çš„é–‹éŠ·æå¤±
 		}
 		view.telnet->SendString(text);
 	}
@@ -3605,7 +3605,7 @@ void CMainFrame::OnHelp()
 
 void CMainFrame::OpenHomepage()
 {
-//¶}±Ò­º­¶
+//é–‹å•Ÿé¦–é 
 	CString str, adv;
 	CFile cfgf;
 	if (cfgf.Open(ConfigPath + HOMEPAGE_FILENAME, CFile::modeRead))
@@ -3820,7 +3820,7 @@ void CMainFrame::OnBBSFont()
 		int lines_per_page = telnet ? telnet->site_settings.lines_per_page : AppConfig.site_settings.lines_per_page;
 		CRect rc;
 		view.GetClientRect(&rc);
-		if (AppConfig.auto_font)	//¦pªG¨Ï¥Î°ÊºA¦rÅé½Õ¾ã
+		if (AppConfig.auto_font)	//å¦‚æœä½¿ç”¨å‹•æ…‹å­—é«”èª¿æ•´
 		{
 			view.AdjustFont(rc.right, rc.bottom);
 		}
@@ -3828,10 +3828,10 @@ void CMainFrame::OnBBSFont()
 		{
 			CWindowDC dc(this);
 			CGdiObject* old = dc.SelectObject(&fnt);
-			CSize& sz = dc.GetTextExtent(LoadString(IDS_DOUBLE_SPACE_CHAR) , 2);	// ¥ş§ÎªÅ¥Õfontªºsize
+			CSize& sz = dc.GetTextExtent(LoadString(IDS_DOUBLE_SPACE_CHAR) , 2);	// å…¨å½¢ç©ºç™½fontçš„size
 			dc.SelectObject(&old);
-			view.chw = sz.cx / 2;//¥b«¬¦r¼e
-			view.lineh = sz.cy;//¦r°ª
+			view.chw = sz.cx / 2;//åŠå‹å­—å¯¬
+			view.lineh = sz.cy;//å­—é«˜
 			view.left_margin = (rc.right - view.chw * cols_per_page) / 2;
 			view.top_margin = (rc.bottom - view.lineh * lines_per_page) / 2;
 			view.OnLayoutChanged();
@@ -3873,11 +3873,11 @@ void CMainFrame::OnInitMenuPopup(CMenu* pMenu,UINT nIndex,BOOL bSysMenu)
 			if (result.GetLength() > 0)
 				result.TrimRight();
 			else
-				result = _T("¬dµL¦¹Â½Ä¶");
+				result = _T("æŸ¥ç„¡æ­¤ç¿»è­¯");
 		}
 		else
 		{			
-			result = _T("¬dµL¦¹Â½Ä¶");
+			result = _T("æŸ¥ç„¡æ­¤ç¿»è­¯");
 		}
 		pMenu->RemoveMenu(1, MF_BYPOSITION);
 		pMenu->InsertMenu(1, MF_BYPOSITION, CSearchPluginCollection::ID_TRANSLATION, result);

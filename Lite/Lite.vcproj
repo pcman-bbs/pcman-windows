@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="big5"?>
+ï»¿<?xml version="1.0" encoding="big5"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
@@ -510,7 +510,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\¬x¥ô¿Ù\®à­±\Open PCMan 2007\trunk\Resource"
+						AdditionalIncludeDirectories="\Documents and Settings\æ´ªä»»è«­\æ¡Œé¢\Open PCMan 2007\trunk\Resource"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -520,7 +520,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\¬x¥ô¿Ù\®à­±\Open PCMan 2007\trunk\Resource"
+						AdditionalIncludeDirectories="\Documents and Settings\æ´ªä»»è«­\æ¡Œé¢\Open PCMan 2007\trunk\Resource"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1001,7 +1001,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\¬x¥ô¿Ù\®à­±\Open PCMan 2007\trunk\Resource"
+						AdditionalIncludeDirectories="\Documents and Settings\æ´ªä»»è«­\æ¡Œé¢\Open PCMan 2007\trunk\Resource"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -1010,7 +1010,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\¬x¥ô¿Ù\®à­±\Open PCMan 2007\trunk\Resource"
+						AdditionalIncludeDirectories="\Documents and Settings\æ´ªä»»è«­\æ¡Œé¢\Open PCMan 2007\trunk\Resource"
 					/>
 				</FileConfiguration>
 			</File>

@@ -1,4 +1,4 @@
-// HotkeyEdit.cpp : implementation file
+ï»¿// HotkeyEdit.cpp : implementation file
 
 #include "stdafx.h"
 #include "Hotkey.h"
@@ -27,7 +27,7 @@ static VKT vkt[] =
 	{VK_CAPITAL, "Caps Lock"},
 	{VK_ESCAPE, "Esc"},
 	{VK_SPACE, "Space"},
-//	³o¨Ç¬O¥»¨Óªº non extended¡A§âIBM extended key¿W¥ß¥X¨Ó¤F
+//	é€™äº›æ˜¯æœ¬ä¾†çš„ non extendedï¼ŒæŠŠIBM extended keyç¨ç«‹å‡ºä¾†äº†
 	{VK_INSERT, "Num Ins"},
 	{VK_DELETE, "Num Del"},
 	{VK_END, "Num End"},
@@ -115,7 +115,7 @@ CString HotkeyToStr(BYTE fVirt, WORD key)
 		int i;
 
 		char *name = NULL;
-		//¥ı¦bIBM extended¸Ì­±§ä
+		//å…ˆåœ¨IBM extendedè£¡é¢æ‰¾
 		for (i = 0;i < sizeof(extvkt) / sizeof(VKT);i++)
 		{
 			if (key == extvkt[i].key)
@@ -125,7 +125,7 @@ CString HotkeyToStr(BYTE fVirt, WORD key)
 			}
 		}
 
-		if (name && !(fVirt&FNUMPAD))	//¦pªG¦³§ä¨ì¡A¨Ã¥B¤£¬ONumpad
+		if (name && !(fVirt&FNUMPAD))	//å¦‚æœæœ‰æ‰¾åˆ°ï¼Œä¸¦ä¸”ä¸æ˜¯Numpad
 			str += name;
 		else
 		{

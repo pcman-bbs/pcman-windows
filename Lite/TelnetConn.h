@@ -1,4 +1,4 @@
-#if !defined(AFX_MYSOCKET_H__1837C9F6_3C2A_11D5_A2FD_946114C10000__INCLUDED_)
+ï»¿#if !defined(AFX_MYSOCKET_H__1837C9F6_3C2A_11D5_A2FD_946114C10000__INCLUDED_)
 #define AFX_MYSOCKET_H__1837C9F6_3C2A_11D5_A2FD_946114C10000__INCLUDED_
 
 #if _MSC_VER > 1000
@@ -67,8 +67,8 @@ public:
 		MIN_LINE_COUNT = 24
 	};
 
-	CString cfg_path;	//¯¸¥x¶i¶¥³]©wÀÉ¬Û¹ï¸ô®|
-	CKeyMap* key_map;	//Áä½L¹ï¬M
+	CString cfg_path;	//ç«™å°é€²éšè¨­å®šæª”ç›¸å°è·¯å¾‘
+	CKeyMap* key_map;	//éµç›¤å°æ˜ 
 
 //	Socket handle
 	uint64_t connection_id;
@@ -92,19 +92,19 @@ public:
 	CSiteSettings site_settings;	// BBS Site Settings
 
 //	Runtime Internal Data
-	static BYTE buffer[4096];	//±µ¦¬ºô¸ô¸ê®Æªºbuffer¡A©Ò¦³socket¦@¥Î
+	static BYTE buffer[4096];	//æ¥æ”¶ç¶²è·¯è³‡æ–™çš„bufferï¼Œæ‰€æœ‰socketå…±ç”¨
 	BYTE *buf;
 	BYTE *last_byte;	//End of buffer
-	ULONG time;		//³s½u®É¶¡
-	ULONG idle_time;	//¶¢¸m®É¶¡
-	int scroll_pos;	//µøµ¡±²¶b¦ì¸m
+	ULONG time;		//é€£ç·šæ™‚é–“
+	ULONG idle_time;	//é–’ç½®æ™‚é–“
+	int scroll_pos;	//è¦–çª—æ²è»¸ä½ç½®
 
-	char ansi_param[64];	//¥Î¨Ó³B²zANSI±m¦â¦r¦êªº¼È¦sbuffer
-	char* pansi_param;		//¥Î¨Ó¾Ş§@ansi_param¸ê®Æªº«ü¼Ğ
+	char ansi_param[64];	//ç”¨ä¾†è™•ç†ANSIå½©è‰²å­—ä¸²çš„æš«å­˜buffer
+	char* pansi_param;		//ç”¨ä¾†æ“ä½œansi_paramè³‡æ–™çš„æŒ‡æ¨™
 	CPoint old_cursor_pos;	//saved position
 	BYTE saved_attr;		//saved attributes
-	BYTE cur_attr;			//¥Ø«eªº¿Ã¹õ¦r¤¸Äİ©Ê
-	BYTE attr_flags;	//¿Ã¹õ¦r¤¸Äİ©Ê¥Îªº¼È¦sflag¡AÀx¦s¬O§_¤Ï¬Ûµ¥¸ê°T
+	BYTE cur_attr;			//ç›®å‰çš„è¢å¹•å­—å…ƒå±¬æ€§
+	BYTE attr_flags;	//è¢å¹•å­—å…ƒå±¬æ€§ç”¨çš„æš«å­˜flagï¼Œå„²å­˜æ˜¯å¦åç›¸ç­‰è³‡è¨Š
 
 BYTE ansi_mode: 1;
 BYTE insert_mode: 1;

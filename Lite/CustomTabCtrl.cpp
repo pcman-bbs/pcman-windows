@@ -1,4 +1,4 @@
-// CustomTabCtrl.cpp : implementation file
+ï»¿// CustomTabCtrl.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -92,7 +92,7 @@ void CCustomTabCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 			TCITEM tmp;
 			tmp.mask = TCIF_PARAM;
-			//¥ý§R°£¦A·s¼W
+			//å…ˆåˆªé™¤å†æ–°å¢ž
 			int c = GetItemCount();
 			DeleteItem(sel);
 			/*			if(oldc->pprev)
@@ -105,7 +105,7 @@ void CCustomTabCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 			item.pszText = (LPSTR)(LPCTSTR)txt;
 			InsertItem(newsel, &item);
 
-			/*			if(newsel>0)	//¦pªG´¡¤J«á¤£¬O²Ä¤@¶µ,¦³«e¤@¶µ
+			/*			if(newsel>0)	//å¦‚æžœæ’å…¥å¾Œä¸æ˜¯ç¬¬ä¸€é …,æœ‰å‰ä¸€é …
 						{
 							GetItem(newsel-1,&tmp);
 							oldc->pprev=(CTelnetConn*)tmp.lParam;
@@ -114,7 +114,7 @@ void CCustomTabCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 						else
 							oldc->pprev=NULL;
 
-						if( newsel<c-1 )	//¦pªG´¡¤J«á¤£¬O³Ì¥½¶µ,¦³«á¤@¶µ
+						if( newsel<c-1 )	//å¦‚æžœæ’å…¥å¾Œä¸æ˜¯æœ€æœ«é …,æœ‰å¾Œä¸€é …
 						{
 							GetItem(newsel+1,&tmp);
 							oldc->pnext=(CTelnetConn*)tmp.lParam;
@@ -288,12 +288,12 @@ void CCustomTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpds)
 	CConn* con = (CConn*)lpds->itemData;
 	COLORREF bkcolor, textcolor;
 	dc.SetBkMode(TRANSPARENT);
-//³]©w¤å¦r©M­I´ºÃC¦â
+//è¨­å®šæ–‡å­—å’ŒèƒŒæ™¯é¡è‰²
 #ifdef	_COMBO_
-	//¦¬¨ì¼ö°T¡A©ÎªÌºô­¶¤U¸ü§¹²¦¡A¤Ï¥Õ´£¥Ü!
+	//æ”¶åˆ°ç†±è¨Šï¼Œæˆ–è€…ç¶²é ä¸‹è¼‰å®Œç•¢ï¼Œåç™½æç¤º!
 	if (item.iImage == 5 && !(lpds->itemState & ODS_SELECTED))
 #else
-	if (item.iImage == 5 && !(lpds->itemState & ODS_SELECTED))	//¦¬¨ì¼ö°T¡A¤Ï¥Õ´£¥Ü!
+	if (item.iImage == 5 && !(lpds->itemState & ODS_SELECTED))	//æ”¶åˆ°ç†±è¨Šï¼Œåç™½æç¤º!
 #endif
 
 	{
@@ -312,12 +312,12 @@ void CCustomTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpds)
 //---------------------------------------------------------------
 
 	int icox, icoy;
-//	¶ñ¥R­I´º
-	if (style&TCS_BUTTONS)		//¬OButton§Î¦¡ªº
+//	å¡«å……èƒŒæ™¯
+	if (style&TCS_BUTTONS)		//æ˜¯Buttonå½¢å¼çš„
 	{
-		//	­«­n¡A¬d¾\CDC¬ÛÃö¤å¥ó¡A CDC::GetHalftoneBrush()
-		//	¤£»Ý­nDeleteObject¡A¦]¬°¾ã­Óµ{¦¡¦@¥Î¤@­Óbrush
-		//	¦¹¬°MFC¤º³¡´£¨Ñ¡A¨Æ¹ê¤WÁÙ¬O«Ø¥ßBitmapµM«áCreatePatternBrush
+		//	é‡è¦ï¼ŒæŸ¥é–±CDCç›¸é—œæ–‡ä»¶ï¼Œ CDC::GetHalftoneBrush()
+		//	ä¸éœ€è¦DeleteObjectï¼Œå› ç‚ºæ•´å€‹ç¨‹å¼å…±ç”¨ä¸€å€‹brush
+		//	æ­¤ç‚ºMFCå…§éƒ¨æä¾›ï¼Œäº‹å¯¦ä¸Šé‚„æ˜¯å»ºç«‹Bitmapç„¶å¾ŒCreatePatternBrush
 		if (lpds->itemState & ODS_SELECTED)
 		{
 			CBrush *cbsh = CDC::GetHalftoneBrush();
@@ -331,17 +331,17 @@ void CCustomTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpds)
 		else
 			dc.FillSolidRect(&lpds->rcItem, bkcolor);
 	}
-	else	//Tab §Î¦¡
+	else	//Tab å½¢å¼
 	{
 		scaler.InflateRect(&lpds->rcItem, -2, -1);
 	}
-	//µe¥X icon
+	//ç•«å‡º icon
 	static const int icon_size = 16;
 	icox = lpds->rcItem.left + scaler.CalcX(2);
 	icoy = lpds->rcItem.top + (lpds->rcItem.bottom - lpds->rcItem.top - icon_size) / 2;
 	GetImageList()->Draw(&dc, item.iImage, CPoint(icox, icoy), ILD_TRANSPARENT);
 
-	//¿é¥X¤å¦r
+	//è¼¸å‡ºæ–‡å­—
 	dc.SetTextColor(textcolor);
 	lpds->rcItem.left = icox + icon_size + scaler.CalcX(2);
 	lpds->rcItem.top += (lpds->rcItem.bottom - lpds->rcItem.top - scaler.CalcY(12)) / 2;
@@ -373,12 +373,12 @@ CImageList* CCustomTabCtrl::CreateDragImage(int i)
 	HBITMAP bmp = CreateCompatibleBitmap(hdc, rc.right + 20, rc.bottom);
 	img->Create(rc.right + 20, rc.bottom, ILC_COLOR32 | ILC_MASK, 1, 0);
 	HGDIOBJ holdobj = SelectObject(memdc, bmp);
-//	²MªÅ­I´º
+//	æ¸…ç©ºèƒŒæ™¯
 	SetBkColor(memdc, 0xc0c0c0);
 	ExtTextOut(memdc, 0, 0, ETO_OPAQUE, rc, NULL, 0, NULL);
 
 	ImageList_Draw(GetImageList()->m_hImageList, item.iImage, memdc, 0, (rc.bottom - 16) / 2, ILD_TRANSPARENT);
-	//¿é¥X¤å¦r
+	//è¼¸å‡ºæ–‡å­—
 	SetTextColor(memdc, GetSysColor(COLOR_WINDOWTEXT));
 	rc.OffsetRect(20, 0);
 	DrawText(memdc, item.pszText, l, rc, DT_SINGLELINE);

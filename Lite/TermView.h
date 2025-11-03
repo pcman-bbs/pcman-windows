@@ -1,4 +1,4 @@
-// TermView.h : interface of the CTermView class
+ï»¿// TermView.h : interface of the CTermView class
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +34,7 @@ class CMainFrame;
 #ifdef	_COMBO_
 class CWebConn;
 struct MENUMAPITEM;
-#else	//¦b¤£¤ä´© Web ªºª©¥»¤¤ª½±µ§âTCon©w¸q¦¨MySocket¬Ù¥h³Â·Ğ
+#else	//åœ¨ä¸æ”¯æ´ Web çš„ç‰ˆæœ¬ä¸­ç›´æ¥æŠŠTConå®šç¾©æˆMySocketçœå»éº»ç…©
 //	typedef		CTelnetConn	CConn;
 #endif
 

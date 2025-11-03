@@ -1,4 +1,4 @@
-#if !defined(AFX_CUSTOMTOOLBAR_H__14ABF8CF_C7BD_46CE_8835_506BF5BFFAD7__INCLUDED_)
+﻿#if !defined(AFX_CUSTOMTOOLBAR_H__14ABF8CF_C7BD_46CE_8835_506BF5BFFAD7__INCLUDED_)
 #define AFX_CUSTOMTOOLBAR_H__14ABF8CF_C7BD_46CE_8835_506BF5BFFAD7__INCLUDED_
 
 #if _MSC_VER > 1000
@@ -13,7 +13,7 @@
 
 class CCustomToolBar;
 
-//�ثe�䴩�̦h255�ӫ��s
+//目前支援最多255個按鈕
 class CCustomToolBarInfo : public CConfigFile::ConfigHandler
 {
 public:

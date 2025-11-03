@@ -1,4 +1,4 @@
-// TelnetConn.cpp : implementation file
+ï»¿// TelnetConn.cpp : implementation file
 //
 
 #include <algorithm>
@@ -23,9 +23,9 @@ typedef void (CTelnetConn::*ansi_funcs)(CString);
 struct ANSI_TAB
 {
 	char code;
-	char param_type;	//-1ªí¥Üª½±µ¶Ç¤JLPCTSTR
-	char d1;	//-1ªí¥ÜµL®Ä
-	char d2;	//-1ªí¥ÜµL®Ä
+	char param_type;	//-1è¡¨ç¤ºç›´æ¥å‚³å…¥LPCTSTR
+	char d1;	//-1è¡¨ç¤ºç„¡æ•ˆ
+	char d2;	//-1è¡¨ç¤ºç„¡æ•ˆ
 	ansi_func pfunc;	//ansi function
 };
 
@@ -42,7 +42,7 @@ struct ANSI_TAB ansi_tab[]={
 	{'B',1,1,-1,CTelnetConn::GoDown},	//down
 	{'C',1,1,-1,CTelnetConn::GoRight},	//right
 	{'D',1,1,-1,CTelnetConn::GoLeft},	//left
-	//·s¼WªºANSI¤ä´©
+	//æ–°å¢çš„ANSIæ”¯æ´
 	{'s',1,-1,-1,CTelnetConn::SaveCursorPos},
 	{'u',1,-1,-1,CTelnetConn::RestoreCursorPos},
 	{'@',1,1,-1,CTelnetConn::InsertChar},	//insert char
@@ -399,7 +399,7 @@ void CTelnetConn::OnText()
 
 		if (ansi_mode)
 		{
-			if (*ansi_param != '[')	//¦pªG¬OESC ' 'Ãş±±¨î½X
+			if (*ansi_param != '[')	//å¦‚æœæ˜¯ESC ' 'é¡æ§åˆ¶ç¢¼
 			{
 				if (*buf == 0x1b)
 					buf++;
@@ -410,7 +410,7 @@ void CTelnetConn::OnText()
 			}
 			else
 			{
-				if (*buf >= '@' && *buf <= '~')	//¦pªG¤w¸gµ²§ôANSI mode
+				if (*buf >= '@' && *buf <= '~')	//å¦‚æœå·²ç¶“çµæŸANSI mode
 					ansi_mode = 0;
 
 				if (*buf == 0x0A)
@@ -421,17 +421,17 @@ void CTelnetConn::OnText()
 				}
 			}
 
-			if ((pansi_param - ansi_param) < 63)	//ÀË¬d¬O§_¤w¸g¶W¥Xansi_buffer,64th byte¬Oµ²§À0
+			if ((pansi_param - ansi_param) < 63)	//æª¢æŸ¥æ˜¯å¦å·²ç¶“è¶…å‡ºansi_buffer,64th byteæ˜¯çµå°¾0
 			{
 				*pansi_param = *buf;
 				pansi_param++;
 			}
 
-			if (ansi_mode == 0)	//¦pªG¤w¸gµ²§ôANSI mode¡A¶}©l³B²z±±¨î½X
+			if (ansi_mode == 0)	//å¦‚æœå·²ç¶“çµæŸANSI modeï¼Œé–‹å§‹è™•ç†æ§åˆ¶ç¢¼
 			{
 				*pansi_param = 0;
 				ProcessAnsiEscapeSequence();
-				*ansi_param = 0;	//²MªÅANSI°Ñ¼Æ
+				*ansi_param = 0;	//æ¸…ç©ºANSIåƒæ•¸
 				pansi_param = ansi_param;
 			}
 		}	//end if(ansi_mode)
@@ -528,7 +528,7 @@ void CTelnetConn::OnText()
 						{
 							// reduce unnecessary update.  does this work?
 							if (curstr[cursor_pos.x] != *buf || pcuratb[cursor_pos.x] != cur_attr)
-								SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);	//±N³o¦æ³]¬°µ¥«İ§ó·s
+								SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);	//å°‡é€™è¡Œè¨­ç‚ºç­‰å¾…æ›´æ–°
 						}
 
 						pcuratb[cursor_pos.x] = cur_attr;
@@ -562,8 +562,8 @@ void CTelnetConn::OnText()
 
 		if (is_getting_article)
 		{
-			//¬°¤F¬Û®eFirebird BBS
-			//¦p³Ì«á¤@¦æÁÙ¬OªÅ¥Õ«hµ¥«İBBS server¶Ç°e³Ì«á¤@¦æ
+			//ç‚ºäº†ç›¸å®¹Firebird BBS
+			//å¦‚æœ€å¾Œä¸€è¡Œé‚„æ˜¯ç©ºç™½å‰‡ç­‰å¾…BBS serverå‚³é€æœ€å¾Œä¸€è¡Œ
 			char* last_line_txt = screen[ last_line ];
 			while (*last_line_txt == ' ')
 				last_line_txt++;
@@ -662,22 +662,22 @@ void CTelnetConn::OnClose()
 
 	int idx = view->parent->ConnToIndex(this);
 
-	if (idx < view->parent->tab.GetItemCount())	//¦pªG¤w¸gÂ_½u«o¥¼Ãö³¬µe­±
+	if (idx < view->parent->tab.GetItemCount())	//å¦‚æœå·²ç¶“æ–·ç·šå»æœªé—œé–‰ç•«é¢
 	{
-		view->parent->tab.SetItem(idx, &tcitem);	//§ï¬°¬õ¦â¹Ï¥Ü
-		//¦pªG³]©w¦Û­q­«³s¡A¦Ó¥B¦b®É¶¡¤º³QÂ_½u¡A¥B¶¡¹j®É¶¡¤w¨ì
+		view->parent->tab.SetItem(idx, &tcitem);	//æ”¹ç‚ºç´…è‰²åœ–ç¤º
+		//å¦‚æœè¨­å®šè‡ªè¨‚é‡é€£ï¼Œè€Œä¸”åœ¨æ™‚é–“å…§è¢«æ–·ç·šï¼Œä¸”é–“éš”æ™‚é–“å·²åˆ°
 		if (site_settings.auto_reconnect &&
 			time <= site_settings.connect_interval
 			&& site_settings.reconnect_interval == 0)
 		{
-			view->ReConnect(this);	//­«·s³s½u
+			view->ReConnect(this);	//é‡æ–°é€£ç·š
 		}
 		else
 		{
-			if (AppConfig.auto_close)	//¦pªG³]©w¬°Â_½u¦Û°ÊÃö³¬
+			if (AppConfig.auto_close)	//å¦‚æœè¨­å®šç‚ºæ–·ç·šè‡ªå‹•é—œé–‰
 			{
-				view->parent->SwitchToConn(this);	//¤Á´«¨ì¤w¸gÂ_½uªºµe­±
-				view->parent->CloseConn(view->parent->ConnToIndex(this));	//Ãö³¬µe­±
+				view->parent->SwitchToConn(this);	//åˆ‡æ›åˆ°å·²ç¶“æ–·ç·šçš„ç•«é¢
+				view->parent->CloseConn(view->parent->ConnToIndex(this));	//é—œé–‰ç•«é¢
 			}
 		}
 	}
@@ -730,10 +730,10 @@ void CTelnetConn::ClearScreen(int param)
 {
 	long a;
 
-	for (a = 0;a < site_settings.line_count - site_settings.lines_per_page;a++)	//¤¤¶¡¨C¦æªº«ü¼Ğ³£©¹«e²¾°Ê24¦æ
+	for (a = 0;a < site_settings.line_count - site_settings.lines_per_page;a++)	//ä¸­é–“æ¯è¡Œçš„æŒ‡æ¨™éƒ½å¾€å‰ç§»å‹•24è¡Œ
 	{
-		//2004/2/1 ²×©ó·Q¨ì§óÁo©úªº!!
-		//±N­n¥á±óªºÂÂ¦æ½w½Ä°Ïª½±µ©M­n·s°t¸mªº·s­¶½w½Ä°Ïswap!!! ³o¼Ë³ÌÂ²«K :
+		//2004/2/1 çµ‚æ–¼æƒ³åˆ°æ›´è°æ˜çš„!!
+		//å°‡è¦ä¸Ÿæ£„çš„èˆŠè¡Œç·©è¡å€ç›´æ¥å’Œè¦æ–°é…ç½®çš„æ–°é ç·©è¡å€swap!!! é€™æ¨£æœ€ç°¡ä¾¿ :
 		char* tmpline = screen[a];
 		screen[a] = screen[a+site_settings.lines_per_page];
 		RemoveUpdateLine(a);
@@ -743,13 +743,13 @@ void CTelnetConn::ClearScreen(int param)
 //		SetUpdateWholeLine(a+site_settings.lines_per_page);
 	}
 
-	for (a = site_settings.line_count - site_settings.lines_per_page;a < site_settings.line_count;a++)	//²MªÅ·sªº¤@­¶
+	for (a = site_settings.line_count - site_settings.lines_per_page;a < site_settings.line_count;a++)	//æ¸…ç©ºæ–°çš„ä¸€é 
 	{
 		InitNewLine(screen[a]);
 		SetUpdateWholeLine(a);
 	}
 
-//	²{¦b©Ò¦³µe­±¤w¸g¦V¤W±²°Ê¤@­¶¤F
+//	ç¾åœ¨æ‰€æœ‰ç•«é¢å·²ç¶“å‘ä¸Šæ²å‹•ä¸€é äº†
 
 	switch (param)
 	{
@@ -757,7 +757,7 @@ void CTelnetConn::ClearScreen(int param)
 		break;
 	case 0:
 	default:
-		for (a = site_settings.line_count - site_settings.lines_per_page;a < cursor_pos.y;a++)	//±NÂÂªºµe­±½Æ»s¤@¥÷¹L¨Ó
+		for (a = site_settings.line_count - site_settings.lines_per_page;a < cursor_pos.y;a++)	//å°‡èˆŠçš„ç•«é¢è¤‡è£½ä¸€ä»½éä¾†
 		{
 			if (a < site_settings.lines_per_page)
 				break;
@@ -771,7 +771,7 @@ void CTelnetConn::ClearScreen(int param)
 		}
 		break;
 	case 1:
-		//±NÂÂªºµe­±½Æ»s¤@¥÷¹L¨Ó
+		//å°‡èˆŠçš„ç•«é¢è¤‡è£½ä¸€ä»½éä¾†
 		if (cursor_pos.y >= site_settings.lines_per_page)
 		{
 			memcpy(screen[cursor_pos.y],
@@ -1010,7 +1010,7 @@ const char* memstr(const char *src, const char *end, const char *key)
 
 void CTelnetConn::CheckStrTrigger()
 {
-	//³]©wfirst=n¡A²Än¦¸¤~¶}©lÄ²µo¡A«h¨C¦¬¨ì¤@¦¸msg´Nfirst--
+	//è¨­å®šfirst=nï¼Œç¬¬næ¬¡æ‰é–‹å§‹è§¸ç™¼ï¼Œå‰‡æ¯æ”¶åˆ°ä¸€æ¬¡msgå°±first--
 	if (site_settings.triggers.count > 0)
 	{
 //		for(int i=first_line;i<=last_line;i++)
@@ -1033,16 +1033,16 @@ void CTelnetConn::CheckStrTrigger()
 						respond.Replace("\x0d\x0a", enter);
 						respond.Replace("\x0d", enter);
 						SendMacroString(respond);
-						if (item->count > 0)	//¨Ï¥ÎÄ²µo¦¸¼Æ(¤£­pºâ¦¸¼Æªºcount=0)
+						if (item->count > 0)	//ä½¿ç”¨è§¸ç™¼æ¬¡æ•¸(ä¸è¨ˆç®—æ¬¡æ•¸çš„count=0)
 						{
 							item->count--;
-							if (item->count == 0)	//¦pªG¦¸¼Æ¨ì¤F¡A´N¤£¦AÄ²µo¡A¨Ã¥B²¾°£¦¹Ä²µo¶µ¥Ø
+							if (item->count == 0)	//å¦‚æœæ¬¡æ•¸åˆ°äº†ï¼Œå°±ä¸å†è§¸ç™¼ï¼Œä¸¦ä¸”ç§»é™¤æ­¤è§¸ç™¼é …ç›®
 							{
-								if (pprev)	//¦pªG¦³«e¤@¶µ
+								if (pprev)	//å¦‚æœæœ‰å‰ä¸€é …
 									pprev->pnext = item->pnext;
-								else	//¦pªG¨S¦³«e¤@¶µ¡Aªí¥Ü¬O²Ä¤@¶µ
+								else	//å¦‚æœæ²’æœ‰å‰ä¸€é …ï¼Œè¡¨ç¤ºæ˜¯ç¬¬ä¸€é …
 									site_settings.triggers.pfirst = item->pnext;
-								if (item == site_settings.triggers.plast)	//¦pªG¬O§R°£³Ì«á¤@¶µ
+								if (item == site_settings.triggers.plast)	//å¦‚æœæ˜¯åˆªé™¤æœ€å¾Œä¸€é …
 									site_settings.triggers.plast = pprev;
 								delete item;
 								site_settings.triggers.count--;
@@ -1051,7 +1051,7 @@ void CTelnetConn::CheckStrTrigger()
 						}
 					}
 				}
-				pprev = item;	//¬ö¿ı«e¤@­Ó¡A¥H¥Î©ó§R°£¶µ¥Ø®É
+				pprev = item;	//ç´€éŒ„å‰ä¸€å€‹ï¼Œä»¥ç”¨æ–¼åˆªé™¤é …ç›®æ™‚
 				item = item ? item->pnext : NULL;	//next item
 			}
 		}
@@ -1083,9 +1083,9 @@ void CTelnetConn::CreateBuffer()
 	}
 
 	screen = new LPSTR[site_settings.line_count*2];
-//­ì¥»¿ù»~µo¥Í¦b³o¤@¦æ....
+//åŸæœ¬éŒ¯èª¤ç™¼ç”Ÿåœ¨é€™ä¸€è¡Œ....
 //	attrib=(LPBYTE*)&screen[site_settings.line_count];
-//¦]¬° screenªº«¬ºA¬OLPSTR*,¤£¬OLPSTR,©Ò¥H±Nscreen+1 ·|µ¥©óscreen+sizeof(LPSTR)=¦Ó«DLPBYTE(screen)+1
+//å› ç‚º screençš„å‹æ…‹æ˜¯LPSTR*,ä¸æ˜¯LPSTR,æ‰€ä»¥å°‡screen+1 æœƒç­‰æ–¼screen+sizeof(LPSTR)=è€ŒéLPBYTE(screen)+1
 
 	for (long i = 0;i < site_settings.line_count;i++)
 		screen[i] = AllocNewLine();
@@ -1098,7 +1098,7 @@ inline void CTelnetConn::ProcessData(int len)
 	{
 		if (*((BYTE*)ansi_param) == IAC)
 		{
-			if ((pansi_param - ansi_param) < 63)	//ÀË¬d¬O§_¤w¸g¶W¥Xansi_buffer,64th byte¬Oµ²§À0
+			if ((pansi_param - ansi_param) < 63)	//æª¢æŸ¥æ˜¯å¦å·²ç¶“è¶…å‡ºansi_buffer,64th byteæ˜¯çµå°¾0
 			{
 				*pansi_param = *buf;
 				pansi_param++;
@@ -1106,21 +1106,21 @@ inline void CTelnetConn::ProcessData(int len)
 			if ((long(pansi_param - ansi_param) == 3 && ((BYTE)*(ansi_param + 1)) != SB) || *buf == SE)
 			{
 				OnIAC();
-				*ansi_param = 0;	//²M°£IAC«ü¥O¼È¦s
+				*ansi_param = 0;	//æ¸…é™¤IACæŒ‡ä»¤æš«å­˜
 				pansi_param = ansi_param;
 			}
 		}
 		else if (*buf == IAC)
 		{
 			if (!*ansi_param)
-				//¦pªG¤£¬Osub negotiationªºµ²§À (IAC SB...SB IAC)
+				//å¦‚æœä¸æ˜¯sub negotiationçš„çµå°¾ (IAC SB...SB IAC)
 			{
 				*((BYTE*)pansi_param) = IAC;
 				pansi_param++;
 			}
 			else
 			{
-				if ((pansi_param - ansi_param) < 63)	//ÀË¬d¬O§_¤w¸g¶W¥Xansi_buffer,64th byte¬Oµ²§À0
+				if ((pansi_param - ansi_param) < 63)	//æª¢æŸ¥æ˜¯å¦å·²ç¶“è¶…å‡ºansi_buffer,64th byteæ˜¯çµå°¾0
 				{
 					*pansi_param = *buf;
 					pansi_param++;
@@ -1153,7 +1153,7 @@ int CTelnetConn::SendString(LPCTSTR str)
 	if (is_ansi_editor)
 	{
 		l = cursor_pos.x;
-		if (view->paste_block)	//°Ï¶ô¶K¤W
+		if (view->paste_block)	//å€å¡Šè²¼ä¸Š
 		{
 			char* eol;
 			int x = cursor_pos.x;
@@ -1173,19 +1173,19 @@ int CTelnetConn::SendString(LPCTSTR str)
 				rl += Send(str, strlen(str));
 			return rl;
 		}
-		if (!AppConfig.site_settings.paste_autowrap || strstr(str, "\x1b["))	//¦³±±¨î½X
+		if (!AppConfig.site_settings.paste_autowrap || strstr(str, "\x1b["))	//æœ‰æ§åˆ¶ç¢¼
 			return Send(str, strlen(str));
 		else
 			enter = CRLF;
 		limit = AppConfig.ed_cols_per_page;
 	}
-	else	//¤£¬OANSI Editor,¬OBBS
+	else	//ä¸æ˜¯ANSI Editor,æ˜¯BBS
 	{
 		limit = AppConfig.site_settings.paste_autowrap_col;
 		l = 0;
 	}
 
-	if (AppConfig.site_settings.paste_autowrap)	//¦pªG¨Ï¥Î¦Û°Ê´«¦æ
+	if (AppConfig.site_settings.paste_autowrap)	//å¦‚æœä½¿ç”¨è‡ªå‹•æ›è¡Œ
 	{
 		while (*str)
 		{
@@ -1220,7 +1220,7 @@ int CTelnetConn::SendString(LPCTSTR str)
 			}
 		}
 	}
-	else	//¦pªG¤£¥Î¦Û°Ê´«¦æ
+	else	//å¦‚æœä¸ç”¨è‡ªå‹•æ›è¡Œ
 	{
 		data = str;
 		data.Replace("\x0d\x0a", enter);
@@ -1439,7 +1439,7 @@ inline void CTelnetConn::ProcessAnsiEscapeSequence()
 //	int l=strlen(ansi_param);
 	if (*ansi_param == '[')
 	{
-		pansi_param--;	//¦^¨ì³Ì«á¤@­Ó¦r¤¸
+		pansi_param--;	//å›åˆ°æœ€å¾Œä¸€å€‹å­—å…ƒ
 
 		char *param = ansi_param + 1;
 		BYTE type = *pansi_param;
@@ -1516,7 +1516,7 @@ inline void CTelnetConn::ProcessAnsiEscapeSequence()
 					p1 = 1;
 				GoLeft(p1);
 				break;
-//·s¥[¤Jªºansi¤ä´©
+//æ–°åŠ å…¥çš„ansiæ”¯æ´
 			case 's':	//save cursor pos
 				SaveCursorPos();
 				break;
@@ -1560,7 +1560,7 @@ inline void CTelnetConn::ProcessAnsiEscapeSequence()
 			}
 		}
 	}
-	else	//¦pªG¨S¦³'['
+	else	//å¦‚æœæ²’æœ‰'['
 	{
 		switch (*buf)
 		{
@@ -1593,7 +1593,7 @@ inline void CTelnetConn::SetCurrentAttributes(USHORT clr)
 	{
 		if (clr >= 40)
 		{
-			//­I´º¦â
+			//èƒŒæ™¯è‰²
 			clr -= 40;
 			if (!attr_flags&1)
 				SetBgColor(cur_attr, (BYTE)clr);
@@ -1602,7 +1602,7 @@ inline void CTelnetConn::SetCurrentAttributes(USHORT clr)
 		}
 		else if (clr >= 30)
 		{
-			//«e´º¦â
+			//å‰æ™¯è‰²
 			clr -= 30;
 			if (!attr_flags&1)
 				SetFgColor(cur_attr, (BYTE)clr);
@@ -1611,27 +1611,27 @@ inline void CTelnetConn::SetCurrentAttributes(USHORT clr)
 		}
 		else //clr<30
 		{
-			//¨ä¥LÄİ©Ê
+			//å…¶ä»–å±¬æ€§
 			switch (clr)
 			{
-			case 0:		//²M°£
+			case 0:		//æ¸…é™¤
 				cur_attr = 7;		//0000,0111b=7d
 				attr_flags = 0;
 				break;
-			case 1:		//°ª«G«×
+			case 1:		//é«˜äº®åº¦
 				cur_attr |= 8;		//0000,1000b=8d
 				break;
-			case 5:		//°{Ã{
+			case 5:		//é–ƒçˆ
 				cur_attr |= 128;		//1000,0000b=128d
 				break;
 			case 7:
 				{
-					attr_flags |= 1;	//¤Ï¬Û
-					BYTE fg = cur_attr & 7;	//Àx¦s«e´º¦â
+					attr_flags |= 1;	//åç›¸
+					BYTE fg = cur_attr & 7;	//å„²å­˜å‰æ™¯è‰²
 					cur_attr &= 248;		//1111,1000b=248d
-					cur_attr |= ((cur_attr & 112) >> 4);	//±N­I´º¦â¦s¨ì«e´º	//0111,0000b=112d
+					cur_attr |= ((cur_attr & 112) >> 4);	//å°‡èƒŒæ™¯è‰²å­˜åˆ°å‰æ™¯	//0111,0000b=112d
 					cur_attr &= 143;		//1000,1111b=143d;
-					cur_attr |= (fg << 4);	//±N«e´º¦â¦s¨ì­I´º
+					cur_attr |= (fg << 4);	//å°‡å‰æ™¯è‰²å­˜åˆ°èƒŒæ™¯
 				}
 			}
 		}
@@ -1674,9 +1674,9 @@ void CTelnetConn::ReSizeBuffer(long new_line_count, int new_cols_per_page, int n
 	site_settings.lines_per_page = new_lines_per_page;
 	scr_bottom = site_settings.lines_per_page - 1;
 
-	if (new_line_count == site_settings.line_count)	//¦pªG³Ì¤j¦æ¼Æ¤£ÅÜ
+	if (new_line_count == site_settings.line_count)	//å¦‚æœæœ€å¤§è¡Œæ•¸ä¸è®Š
 	{
-		if (site_settings.cols_per_page != new_cols_per_page)	//¦pªG¦³§ïÅÜ¨C¦æ¦r¼Æ¤~­«·s°t¸m
+		if (site_settings.cols_per_page != new_cols_per_page)	//å¦‚æœæœ‰æ”¹è®Šæ¯è¡Œå­—æ•¸æ‰é‡æ–°é…ç½®
 			for (int i = 0;i < site_settings.line_count;i++)
 				screen[i] = ResizeLine(i, new_cols_per_page);
 	}
@@ -1769,8 +1769,8 @@ inline void CTelnetConn::EditorLineFeed(LPSTR newline, LPBYTE newlineatb, int l)
 	{
 		if (insert_mode)
 		{
-			if (!IsEmptyLine(screen[last_line], site_settings.cols_per_page))		//³Ì«á¤@¦æ¦³¸ê®Æ
-				ReSizeBuffer(site_settings.line_count + site_settings.lines_per_page, site_settings.cols_per_page, site_settings.lines_per_page);	//¥[¤j½w½Ä°Ï
+			if (!IsEmptyLine(screen[last_line], site_settings.cols_per_page))		//æœ€å¾Œä¸€è¡Œæœ‰è³‡æ–™
+				ReSizeBuffer(site_settings.line_count + site_settings.lines_per_page, site_settings.cols_per_page, site_settings.lines_per_page);	//åŠ å¤§ç·©è¡å€
 
 			LPSTR tmp = screen[last_line];
 			for (int i = last_line;i > cursor_pos.y;i--)
@@ -1785,7 +1785,7 @@ inline void CTelnetConn::EditorLineFeed(LPSTR newline, LPBYTE newlineatb, int l)
 			}
 		}
 
-		if (cursor_pos.y == scroll_pos + site_settings.lines_per_page)	//¦pªG¦bµe­±ªº³Ì«á¤@¦æ
+		if (cursor_pos.y == scroll_pos + site_settings.lines_per_page)	//å¦‚æœåœ¨ç•«é¢çš„æœ€å¾Œä¸€è¡Œ
 		{
 			if (view->telnet == this)
 				view->OnVScroll(SB_LINEDOWN, 0, NULL);
@@ -1815,7 +1815,7 @@ inline void CTelnetConn::EditorCarriageRetiurn()
 		cursor_pos.y--;
 		EditorLineFeed(NULL, NULL, 0);
 		cursor_pos.y++;
-		if (cursor_pos.y == scroll_pos + site_settings.lines_per_page)	//¦pªG¦bµe­±ªº³Ì«á¤@¦æ
+		if (cursor_pos.y == scroll_pos + site_settings.lines_per_page)	//å¦‚æœåœ¨ç•«é¢çš„æœ€å¾Œä¸€è¡Œ
 		{
 			if (view->telnet == this)
 				view->OnVScroll(SB_LINEDOWN, 0, NULL);
@@ -1870,7 +1870,7 @@ inline void CTelnetConn::EditorLineBack(LPSTR newline, LPBYTE newlineatb, int l)
 	memset(newlineatb, 7, site_settings.cols_per_page);
 	*(DWORD*)(newlineatb + site_settings.cols_per_page) = 0;
 
-	if (cursor_pos.y < scroll_pos)	//¦pªG¦bµe­±ªº²Ä¤@¦æ
+	if (cursor_pos.y < scroll_pos)	//å¦‚æœåœ¨ç•«é¢çš„ç¬¬ä¸€è¡Œ
 	{
 		if (view->telnet == this)
 			view->OnVScroll(SB_LINEUP, 0, NULL);
@@ -1915,17 +1915,17 @@ void CTelnetConn::Back(int num)
 inline void CTelnetConn::SetUpdateLine(long line, BYTE curx)
 {
 	LPBYTE attrib = GetLineAttr(line);
-	if (GetUpdateLine(line))	//¦pªG³o¦æ¤w¸g³]¬°µ¥«İ§ó·s
+	if (GetUpdateLine(line))	//å¦‚æœé€™è¡Œå·²ç¶“è¨­ç‚ºç­‰å¾…æ›´æ–°
 	{
-		if (curx < *(attrib - 2))	//¦pªG¤ñstart§ó¤p
+		if (curx < *(attrib - 2))	//å¦‚æœæ¯”startæ›´å°
 			*(attrib - 2) = curx;
-		if (curx > *(attrib - 3))	//¦pªG¤ñend§ó¤j
+		if (curx > *(attrib - 3))	//å¦‚æœæ¯”endæ›´å¤§
 			*(attrib - 3) = curx;
 	}
 	else
 	{
-		*(attrib - 1) = 1;	//²Ä¤@¦¸³]¬°µ¥«İ§ó·s
-		*(attrib - 2) = *(attrib - 3) = curx;	//start©Mend=curx
+		*(attrib - 1) = 1;	//ç¬¬ä¸€æ¬¡è¨­ç‚ºç­‰å¾…æ›´æ–°
+		*(attrib - 2) = *(attrib - 3) = curx;	//startå’Œend=curx
 	}
 }
 
@@ -1953,10 +1953,10 @@ void CTelnetConn::CheckHyperLinks()
 	for (long i = scroll_pos;i < bottom;i++)
 	{
 		screen[i][site_settings.cols_per_page] = 0;
-		if (GetUpdateLine(i))	//¦pªG³o¦æ¤º®e¦³ÅÜ§ó¡A¤~­«·s§ä¶W³sµ²
+		if (GetUpdateLine(i))	//å¦‚æœé€™è¡Œå…§å®¹æœ‰è®Šæ›´ï¼Œæ‰é‡æ–°æ‰¾è¶…é€£çµ
 		{
-			// ¦pªG§ä¨ì¶W³sµ²¡A³]©w¶W³sµ²ºX¼Ğ
-			// ¦pªG¨S§ä¨ì¡A²M°£¶W³sµ²ºX¼Ğ
+			// å¦‚æœæ‰¾åˆ°è¶…é€£çµï¼Œè¨­å®šè¶…é€£çµæ——æ¨™
+			// å¦‚æœæ²’æ‰¾åˆ°ï¼Œæ¸…é™¤è¶…é€£çµæ——æ¨™
 			int len;
 			SetHyperLink(i, !!AppConfig.hyper_links.FindHyperLink(screen[i], len));
 		}
@@ -2002,7 +2002,7 @@ void CTelnetConn::End()
 
 void CTelnetConn::SendMacroString(CString str)
 {
-//	¥ıÀË¬d¬O§_¦³¥¨¶°«ü¥O¡A¹³¬O¼È°±
+//	å…ˆæª¢æŸ¥æ˜¯å¦æœ‰å·¨é›†æŒ‡ä»¤ï¼Œåƒæ˜¯æš«åœ
 	const char* _pstr = str;
     const char* pstr;
     for (pstr = _pstr; *pstr; pstr += get_chw(pstr))
@@ -2129,27 +2129,27 @@ CString AttrToStr(BYTE prevatb, BYTE attr)
 	BYTE fg_changed = 0;
 	BYTE bk_changed = 0;
 
-	if (fg != (prevatb&7))	//¦pªG«e´º¦â§ïÅÜ
+	if (fg != (prevatb&7))	//å¦‚æœå‰æ™¯è‰²æ”¹è®Š
 		fg_changed = 1;
-	if (bk != GetAttrBkColor(prevatb))	//¦pªG­I´º¦â§ïÅÜ
+	if (bk != GetAttrBkColor(prevatb))	//å¦‚æœèƒŒæ™¯è‰²æ”¹è®Š
 		bk_changed = 1;
 
-	if (hilight != (prevatb&8))	//¦pªG°ª«G«×§ïÅÜ
+	if (hilight != (prevatb&8))	//å¦‚æœé«˜äº®åº¦æ”¹è®Š
 	{
 		hilight_changed = 1;
-		if (!hilight)	//¦pªGÅÜ¦¨¤£«G,­n­«³]©Ò¦³Äİ©Ê
+		if (!hilight)	//å¦‚æœè®Šæˆä¸äº®,è¦é‡è¨­æ‰€æœ‰å±¬æ€§
 		{
 			blink_changed = fg_changed = bk_changed = 1;
 			ret += ';';
 		}
 	}
 
-	if (blink != (prevatb&128))	//¦pªG°{Ã{§ïÅÜ
+	if (blink != (prevatb&128))	//å¦‚æœé–ƒçˆæ”¹è®Š
 	{
 		blink_changed = 1;
-		if (!blink)	//¦pªGÅÜ¦¨¤£°{Ã{,­n­«³]©Ò¦³Äİ©Ê
+		if (!blink)	//å¦‚æœè®Šæˆä¸é–ƒçˆ,è¦é‡è¨­æ‰€æœ‰å±¬æ€§
 		{
-			if (!(hilight_changed && !hilight))	//¦pªG©Ò¦³Äİ©ÊÁÙ¨S­«³]¹L¤~­«³]
+			if (!(hilight_changed && !hilight))	//å¦‚æœæ‰€æœ‰å±¬æ€§é‚„æ²’é‡è¨­éæ‰é‡è¨­
 			{
 				ret += ';';
 				hilight_changed = fg_changed = bk_changed = 1;

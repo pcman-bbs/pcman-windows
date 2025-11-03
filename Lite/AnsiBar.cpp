@@ -1,4 +1,4 @@
-// AnsiBar.cpp : implementation file
+ï»¿// AnsiBar.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -102,7 +102,7 @@ void CAnsiBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 		case IDC_ANSIBAR_SENDDROP:
 			dc.DrawFrameControl(&lpDrawItemStruct->rcItem, DFC_SCROLL, DFCS_SCROLLDOWN | (lpDrawItemStruct->itemState&ODS_SELECTED ? DFCS_PUSHED : 0));
 			break;
-		default:	//«e´º­I´º«ö¶s
+		default:	//å‰æ™¯èƒŒæ™¯æŒ‰éˆ•
 			clr = AppConfig.colormap[(nIDCtl==IDC_ANSIBAR_FG?fg:bk)];
 			dc.FillSolidRect(&lpDrawItemStruct->rcItem, clr);
 			if (GetRValue(clr) <= 128 && GetGValue(clr) <= 128 && GetBValue(clr) <= 128)
@@ -171,13 +171,13 @@ void CAnsiBar::UpdateColor(UINT type)
 			telnet->sel_start.y = tmp;
 		}
 
-		if (telnet->sel_block || telnet->sel_start.y == telnet->sel_end.y)	//¦pªG¨Ï¥Î°Ï¶ô¿ï¨ú©Î¥u¿ï¨ú³æ¦æ
+		if (telnet->sel_block || telnet->sel_start.y == telnet->sel_end.y)	//å¦‚æœä½¿ç”¨å€å¡Šé¸å–æˆ–åªé¸å–å–®è¡Œ
 		{
 			for (int i = telnet->sel_start.y;i <= telnet->sel_end.y;i++)
 				for (int p = telnet->sel_start.x;p < telnet->sel_end.x;p++)
 					AddAttr(telnet->GetLineAttr(i)[p], type);
 		}
-		else	//¤£¨Ï¥Î°Ï¶ô¨Ã¿ï¨ú¦h¦æ
+		else	//ä¸ä½¿ç”¨å€å¡Šä¸¦é¸å–å¤šè¡Œ
 		{
 			int i, p;
 			for (p = telnet->sel_start.x;p < telnet->site_settings.cols_per_page;p++)
@@ -203,7 +203,7 @@ void CAnsiBar::UpdateColor(UINT type)
 
 void CAnsiBar::OnSend()
 {
-	Send(0);	//¥ş³¡®æ¦¡
+	Send(0);	//å…¨éƒ¨æ ¼å¼
 }
 
 void CAnsiBar::AddAttr(BYTE &attr, UINT type)
@@ -247,13 +247,13 @@ void CAnsiBar::OnSendDropDown()
 	UINT id = pop->TrackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD, rc.left, rc.bottom, this);
 	switch (id)
 	{
-	case ID_SEND_RESETCLR:	//°e¥X¦â±mÁÙ­ì½X
+	case ID_SEND_RESETCLR:	//é€å‡ºè‰²å½©é‚„åŸç¢¼
 		Send(4);
 		break;
-	case ID_SEND_FG:	//°e¥X«e´º
+	case ID_SEND_FG:	//é€å‡ºå‰æ™¯
 		Send(1);
 		break;
-	case ID_SEND_BK:	//°e¥X­I´º
+	case ID_SEND_BK:	//é€å‡ºèƒŒæ™¯
 		Send(2);
 		break;
 	}
@@ -269,7 +269,7 @@ void CAnsiBar::Send(DWORD type)
 	char tmp[4];
 	switch (type)
 	{
-	case 1:	//°e¥X«e´º
+	case 1:	//é€å‡ºå‰æ™¯
 		if (is_blink)
 			escstr += "5;";
 		attr = fg;
@@ -282,12 +282,12 @@ void CAnsiBar::Send(DWORD type)
 		strcat(tmp, "m");
 		escstr += tmp;
 		break;
-	case 2:	//°e¥X­I´º
+	case 2:	//é€å‡ºèƒŒæ™¯
 		itoa(bk + 40, tmp, 10);
 		strcat(tmp, "m");
 		escstr += tmp;
 		break;
-	case 4:	//°e¥XÁÙ­ì½X
+	case 4:	//é€å‡ºé‚„åŸç¢¼
 		escstr += "m";
 		break;
 	default:
