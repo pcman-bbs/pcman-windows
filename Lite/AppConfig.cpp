@@ -324,6 +324,7 @@ bool CAppConfig::OnDataExchange(bool load)
 	CFG_INT(max_history)
 	CFG_BYTE(saved_charset)
 	CFG_INT(max_translation_length)
+	CFG_BOOL(enable_translation)
 
 	END_CFG_SECTION()
 
@@ -349,7 +350,7 @@ bool CAppConfig::OnDataExchange(bool load)
 	CFG_BYTE(save_session)
 	CFG_BYTE(switch_back_on_close)
 	CFG_BYTE(dblclk_select)
-	CFG_STR(bkpath)	//­I´º¹Ï¸ô®|
+	CFG_STR(bkpath)	//ï¿½Iï¿½ï¿½ï¿½Ï¸ï¿½ï¿½|
 	CFG_STR(wavepath)
 
 //	AnsiEditor Settings
@@ -400,8 +401,8 @@ bool CAppConfig::OnDataExchange(bool load)
 	_CFG_BYTE("auto_dbcs_backspace", site_settings.auto_dbcs_backspace)
 	_CFG_BYTE("localecho", site_settings.localecho)
 
-	_CFG_BYTE("text_output_conv", site_settings.text_output_conv)	// Åã¥Ü¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
-	_CFG_BYTE("text_input_conv", site_settings.text_input_conv)		// ¿é¤J¤å¦rÂà½X	0=none, 1=gb2big5, 2=big52gb
+	_CFG_BYTE("text_output_conv", site_settings.text_output_conv)	// ï¿½ï¿½Ü¤ï¿½rï¿½ï¿½X	0=none, 1=gb2big5, 2=big52gb
+	_CFG_BYTE("text_input_conv", site_settings.text_input_conv)		// ï¿½ï¿½Jï¿½ï¿½rï¿½ï¿½X	0=none, 1=gb2big5, 2=big52gb
 
 	_CFG_STR("key_map_name", site_settings.key_map_name)
 	_CFG_STR("termtype", site_settings.termtype)

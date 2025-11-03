@@ -116,6 +116,7 @@ public:
 
 //  Instant Translation
 	int max_translation_length;
+	bool enable_translation;
 
 //	AnsiEditor Settings
 	int	ed_cols_per_page;
@@ -160,7 +161,7 @@ public:
 	CSiteSettings site_settings;
 
 //	BBS Setttings
-	CString bkpath;	//­I´º¹Ï¸ô®|
+	CString bkpath;	//ï¿½Iï¿½ï¿½ï¿½Ï¸ï¿½ï¿½|
 	CString passwd;
 	CString wavepath;
 	CString last_bbslist_item;
@@ -244,6 +245,7 @@ inline void CAppConfig::Default()
 
 //	Instant Translation
 	max_translation_length = 20;
+	enable_translation = true;
 
 //Main window
 	mainwnd_state.showcmd = SW_SHOWMAXIMIZED;

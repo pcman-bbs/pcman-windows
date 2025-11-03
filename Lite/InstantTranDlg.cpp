@@ -30,6 +30,7 @@ void CTranslationDlg::DoDataExchange(CDataExchange* pDX)
 
 void CTranslationDlg::OnOK()
 {
+	AppConfig.enable_translation = IsDlgButtonChecked(IDC_ENABLE_TRANSLATION) == BST_CHECKED;
 	AppConfig.max_translation_length = GetDlgItemInt(IDC_MAX_TRANLEN, FALSE);
 	SearchPluginCollection.MaxTranLength = AppConfig.max_translation_length;
 	CDialog::OnOK();
@@ -44,6 +45,7 @@ BOOL CTranslationDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
+	CheckDlgButton(IDC_ENABLE_TRANSLATION, AppConfig.enable_translation ? BST_CHECKED : BST_UNCHECKED);
 	static_cast<CSpinButtonCtrl*>(GetDlgItem(IDC_MAX_TRANLENSPIN))->SetRange32(0, 100);
 	SetDlgItemInt(IDC_MAX_TRANLEN, AppConfig.max_translation_length, FALSE);
 

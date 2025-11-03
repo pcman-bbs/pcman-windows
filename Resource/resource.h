@@ -433,6 +433,7 @@
 #define ID_SHOW_SCROLL                  32836
 #define ID_IDLE_HELP                    32836
 #define ID_FREQ_STR                     32837
+#define IDC_ENABLE_TRANSLATION          1142
 #define IDC_MAKE_DEFAULT                32838
 #define ID_AUTOSORT_FAVORITE            32839
 #define ID_SETDEFAULT                   32840
