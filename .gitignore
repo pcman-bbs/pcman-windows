@@ -11,3 +11,4 @@
 *.tlog
 *.vcxproj.user
 .vs/
+.qodo

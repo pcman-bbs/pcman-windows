@@ -1,6 +1,6 @@
 PCMan
 ---
-這是 PCMan 2004 和 PCMan 2004 Combo 的程式碼，需使用 VC++ 6.0 以上版本
+這是 PCMan 2004 的程式碼，需使用 VC++ 6.0 以上版本
 
 除 Lite 目錄下的 Rijndael.cpp 和 Rijndael.h 為 George Anescu 撰寫，
 不是使用 GPL 授權以外，其餘程式碼皆是使用 GPL 授權。

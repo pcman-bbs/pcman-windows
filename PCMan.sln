@@ -2,8 +2,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Combo", "Combo\Combo.vcxproj", "{5AD86F36-2953-41FE-BD95-0E8DD0A4AF1D}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lite", "Lite\Lite.vcxproj", "{AC6C940E-CBB8-4FD8-AEF9-756EA50AF5C6}"
 EndProject
 Global
@@ -12,10 +10,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5AD86F36-2953-41FE-BD95-0E8DD0A4AF1D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{5AD86F36-2953-41FE-BD95-0E8DD0A4AF1D}.Debug|Win32.Build.0 = Debug|Win32
-		{5AD86F36-2953-41FE-BD95-0E8DD0A4AF1D}.Release|Win32.ActiveCfg = Release|Win32
-		{5AD86F36-2953-41FE-BD95-0E8DD0A4AF1D}.Release|Win32.Build.0 = Release|Win32
 		{AC6C940E-CBB8-4FD8-AEF9-756EA50AF5C6}.Debug|Win32.ActiveCfg = Debug|Win32
 		{AC6C940E-CBB8-4FD8-AEF9-756EA50AF5C6}.Debug|Win32.Build.0 = Debug|Win32
 		{AC6C940E-CBB8-4FD8-AEF9-756EA50AF5C6}.Release|Win32.ActiveCfg = Release|Win32

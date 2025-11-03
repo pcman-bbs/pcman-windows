@@ -26,9 +26,7 @@ after_build:
 - ps: .\Scripts\AfterBuild.ps1
 artifacts:
 - path: Lite\Release\PCMan.zip
-- path: Combo\Release\PCManCB.zip
 - path: Release\PCMan.exe
-- path: Release\PCManCB.exe
 deploy:
   provider: GitHub
   auth_token: $(github_auth_token)
