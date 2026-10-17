@@ -12,6 +12,7 @@
 #include "../Lite/SynchronizedOutput.h"
 #include "../Lite/KeepAlive.h"
 #include "../Lite/OscHyperlinks.h"
+#include "../Resource/resource.h"
 
 static unsigned int checks = 0;
 static void Check(bool ok, const char* why)
@@ -134,7 +135,136 @@ public:
     void SetCurrentAttributes(USHORT);
     CString GetLineWithAnsi(long);
 };
+// Keep real native menu APIs; intercept only the modal help window.
+class CMainFrame
+{
+public:
+    HWND m_hWnd = nullptr;
+    void OnAnsiOutputFormatHelp();
+};
+static std::wstring helpText, helpTitle;
+static UINT helpFlags = 0;
+static int WINAPI CaptureMessageBoxW(HWND owner, LPCWSTR text, LPCWSTR title, UINT flags)
+{
+    Check(owner == nullptr, "help uses the frame owner");
+    helpText = text; helpTitle = title; helpFlags = flags;
+    return IDOK;
+}
+#define MessageBoxW CaptureMessageBoxW
 #include "ProductionSgr66Methods.inc"
+#undef MessageBoxW
+
+static std::wstring MenuText(HMENU menu, int position)
+{
+    const int length = ::GetMenuStringW(menu, position, nullptr, 0, MF_BYPOSITION);
+    std::vector<wchar_t> text(static_cast<std::size_t>(length) + 1);
+    ::GetMenuStringW(menu, position, text.data(), length + 1, MF_BYPOSITION);
+    return text.data();
+}
+
+static std::wstring MenuSnapshot(HMENU menu, int limit = -1)
+{
+    const int count = limit < 0 ? ::GetMenuItemCount(menu) : limit;
+    std::wstring result = std::to_wstring(count) + L"{";
+    for (int i = 0; i < count; ++i)
+    {
+        result += std::to_wstring(::GetMenuItemID(menu, i)) + L":" +
+            std::to_wstring(::GetMenuState(menu, i, MF_BYPOSITION)) + L":" + MenuText(menu, i) + L";";
+        HMENU child = ::GetSubMenu(menu, i);
+        if (child) result += MenuSnapshot(child);
+    }
+    return result + L"}";
+}
+
+static int CountMenuCommand(HMENU menu, UINT command)
+{
+    int result = 0;
+    for (int i = 0; i < ::GetMenuItemCount(menu); ++i)
+    {
+        if (::GetMenuItemID(menu, i) == command) ++result;
+        HMENU child = ::GetSubMenu(menu, i);
+        if (child) result += CountMenuCommand(child, command);
+    }
+    return result;
+}
+
+static void CheckOutputMenu()
+{
+    // Load the built application's actual menu resources, without launching it.
+    wchar_t executable[MAX_PATH] = {};
+    Check(::GetModuleFileNameW(nullptr, executable, MAX_PATH) != 0, "locate test executable");
+    std::wstring root = executable;
+    for (int i = 0; i < 4; ++i) root.erase(root.find_last_of(L"\\/"));
+#ifdef _DEBUG
+    const std::wstring application = root + L"/Lite/Debug/PCMan/PCMan.exe";
+#else
+    const std::wstring application = root + L"/Lite/Release/PCMan/PCMan.exe";
+#endif
+    HMODULE resources = ::LoadLibraryExW(application.c_str(), nullptr,
+        LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+    Check(resources != nullptr, "load matching built PCMan resources without execution");
+    for (int reload = 0; reload < 3; ++reload)
+    {
+        HMENU menu = ::LoadMenuW(resources, MAKEINTRESOURCEW(IDR_BUILD_UI));
+        Check(menu != nullptr, "load actual main menu");
+        const int count = ::GetMenuItemCount(menu);
+        HMENU options = ::GetSubMenu(menu, 2);
+        const int optionsCount = ::GetMenuItemCount(options);
+        HMENU dbcs = ::GetSubMenu(options, 7);
+        Check(::GetMenuItemID(dbcs, 0) == ID_AUTODBCS_MOUSE, "original fixed DBCS index");
+        std::vector<HMENU> handles;
+        std::vector<std::wstring> labels, snapshots;
+        for (int i = 0; i < count; ++i)
+        {
+            HMENU child = ::GetSubMenu(menu, i);
+            handles.push_back(child);
+            labels.push_back(MenuText(menu, i));
+            snapshots.push_back(child ? MenuSnapshot(child) : L"");
+        }
+        AppConfig.ansi_output_format = reload;
+        AppendAnsiOutputMenu(menu); // Unmodified production code, real Windows menus.
+        Check(AppConfig.ansi_output_format == reload, "menu creation preserves saved format");
+        Check(::GetMenuItemCount(menu) == count, "all top-level menu positions preserved");
+        Check(::GetMenuItemCount(options) == optionsCount + 1, "append exactly one options submenu");
+        Check(::GetSubMenu(options, 7) == dbcs, "DBCS submenu handle and position preserved");
+        for (int i = 0; i < count; ++i)
+        {
+            HMENU child = ::GetSubMenu(menu, i);
+            Check(child == handles[i], "original top-level submenu handle preserved");
+            Check(MenuText(menu, i) == labels[i], "original top-level label preserved");
+            Check((child ? MenuSnapshot(child, i == 2 ? optionsCount : -1) : L"") == snapshots[i],
+                "every original command, separator, nested menu, state and position preserved");
+        }
+        Check(MenuText(options, optionsCount) == L"彩色內容輸出格式（全域）", "global scope in submenu title");
+        HMENU format = ::GetSubMenu(options, optionsCount);
+        Check(::GetMenuItemCount(format) == 5, "three formats plus separator and help");
+        const UINT commands[] = { ID_ANSI_FORMAT_AUTO, ID_ANSI_FORMAT_LEGACY, ID_ANSI_FORMAT_SGR66 };
+        const wchar_t* names[] = { L"自動（PTT／PTT2／ANSI 編輯器使用 SGR 66）", L"傳統 Big5 格式", L"SGR 66 相容格式" };
+        for (int i = 0; i < 3; ++i)
+        {
+            Check(::GetMenuItemID(format, i) == commands[i], "original format command IDs and order retained");
+            Check(MenuText(format, i) == names[i], "format label is readable Unicode");
+            Check(CountMenuCommand(menu, commands[i]) == 1, "exactly one entry for each format");
+            Check(CountMenuCommand(::GetSubMenu(menu, 5), commands[i]) == 0, "no format left in ANSI editor menu");
+        }
+        Check((::GetMenuState(format, 3, MF_BYPOSITION) & MF_SEPARATOR) != 0, "help separated from radio choices");
+        Check(::GetMenuItemID(format, 4) == ID_ANSI_FORMAT_HELP && MenuText(format, 4) == L"說明…", "help command present");
+        Check(CountMenuCommand(menu, ID_ANSI_FORMAT_HELP) == 1, "help command unique");
+        CMainFrame frame;
+        frame.OnAnsiOutputFormatHelp();
+        Check(AppConfig.ansi_output_format == reload, "reading help does not change format");
+        Check(helpTitle == L"彩色內容輸出格式（全域）說明", "help dialog title");
+        Check(helpFlags == (MB_OK | MB_ICONINFORMATION), "help uses informational message box");
+        for (const wchar_t* phrase : { L"全域設定", L"所有 BBS", L"ANSI 編輯器", L"不影響接收畫面",
+            L"自動（預設）", L"PTT／PTT2 及其子網域", L"傳統 Big5 格式", L"不把既有 SGR 66 轉回舊格式",
+            L"SGR 66 相容格式", L"目標站台支援", L"UTF-8", L"不轉換文字編碼" })
+            Check(helpText.find(phrase) != std::wstring::npos, "help explains each mode, scope and limitations");
+        Check(::DestroyMenu(menu) != FALSE, "release menu and appended popup on reload");
+    }
+    Check(::FreeLibrary(resources) != FALSE, "release resource module");
+    AppendAnsiOutputMenu(nullptr); // An invalid parent must not create an orphan popup.
+    AppConfig.ansi_output_format = Sgr66::Auto;
+}
 
 struct Decoded
 {
@@ -186,6 +316,7 @@ static void CheckRoundTrip(const std::string& encoded, const std::string& text,
 
 int main()
 {
+    CheckOutputMenu();
     CTelnetConn conn;
     std::memset(conn.text, ' ', 8);
     std::memset(conn.colors, 7, 8);

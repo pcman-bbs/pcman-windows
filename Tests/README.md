@@ -9,7 +9,11 @@ SGR Mouse 仍忽略，CPR 仍由既有空函式處理，不回覆。
 2026-10-17 已加入 OSC 字串解析與 OSC 8 目標點擊，見 [OSC 實作與驗收](../Docs/OSC-Validation.md)。
 同日後續實作 SGR 66 彩圖匯出／貼上與 Big5 讀回，新增第六組測試及人工工具，見 [SGR 66 實作與驗收](../Docs/SGR66-Validation.md)。
 PowerShell 驗收工具另有 `powershell -NoProfile -File Tests/Test-Sgr66Fixture.ps1`：兩種 PowerShell 環境各通過 179 項檢查，包含真正的本機 TCP 與原腳本重試／略過流程，不執行 PCMan GUI。
-SGR 66 本輪 Debug／Release 主程式均完整重建成功；六組測試每組態通過 SGR 66 197,558、解析器 11,451、Keep-Alive 2,318、同步 100、文章 810、OSC 目標 1,343 項，人工驗收待執行。
+SGR 66 原功能 Debug／Release 主程式均完整重建成功；六組測試每組態通過 SGR 66 197,558、解析器 11,451、Keep-Alive 2,318、同步 100、文章 810、OSC 目標 1,343 項，使用者已回報原功能測試正確。
+彩色輸出模式現移至「選項 > 彩色內容輸出格式（全域）」，附「說明…」文字視窗；不再位於 ANSI 編輯選單。
+本次 SGR 66 測試增加 195 項真實 Windows 選單／說明檢查，合計每組態 197,753 項；
+請先建置同組態的 PCMan 主程式，再建置並執行 `Tests/Sgr66Tests.vcxproj` 的測試程式，因其會唯讀載入主程式的選單資源。
+既有項目順序及索引保持不變；新的 GUI 人工回歸步驟見上述 SGR 66 文件。
 這不是完整的 ECMA-48 終端機實作，DCS 字串協定尚未實作。
 不將 Big5／UAO／UTF-8 中的高位元組當成 8-bit C1 控制碼。
 

@@ -71,6 +71,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_SEND_ANSICODE, OnShowAnsiBar)
 	ON_COMMAND_RANGE(ID_ANSI_FORMAT_AUTO, ID_ANSI_FORMAT_SGR66, OnAnsiOutputFormat)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_ANSI_FORMAT_AUTO, ID_ANSI_FORMAT_SGR66, OnUpdateAnsiOutputFormat)
+	ON_COMMAND(ID_ANSI_FORMAT_HELP, OnAnsiOutputFormatHelp)
 	ON_COMMAND(ID_SHOW_SCROLL, OnShowScroll)
 	ON_COMMAND(ID_SETDEFAULT, OnSetDefaultProgram)
 	ON_COMMAND(ID_CONFIG_AUTOSWITCH, OnAutoSwitch)
@@ -1592,6 +1593,25 @@ void CMainFrame::OnBBSMouseCTL()
 	MouseCTL_Reset();
 }
 
+static void AppendAnsiOutputMenu(HMENU mainMenu)
+{
+	HMENU optionsMenu = ::GetSubMenu(mainMenu, 2);
+	if (!optionsMenu)
+		return;
+	HMENU formatMenu = ::CreatePopupMenu();
+	if (!formatMenu)
+		return;
+	// Append only: existing submenu positions (especially auto_dbcs_menu) stay intact.
+	// Wide strings also leave the legacy CP950 resource files unchanged.
+	if (!::AppendMenuW(formatMenu, MF_STRING, ID_ANSI_FORMAT_AUTO, L"自動（PTT／PTT2／ANSI 編輯器使用 SGR 66）") ||
+		!::AppendMenuW(formatMenu, MF_STRING, ID_ANSI_FORMAT_LEGACY, L"傳統 Big5 格式") ||
+		!::AppendMenuW(formatMenu, MF_STRING, ID_ANSI_FORMAT_SGR66, L"SGR 66 相容格式") ||
+		!::AppendMenuW(formatMenu, MF_SEPARATOR, 0, NULL) ||
+		!::AppendMenuW(formatMenu, MF_STRING, ID_ANSI_FORMAT_HELP, L"說明…") ||
+		!::AppendMenuW(optionsMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(formatMenu), L"彩色內容輸出格式（全域）"))
+		::DestroyMenu(formatMenu);
+}
+
 BOOL CMainFrame::LoadUI()
 {
 	AcceleratorTable accel_table = AcceleratorTable::Load();
@@ -1605,11 +1625,7 @@ BOOL CMainFrame::LoadUI()
 	edit_menu =::GetSubMenu(main_menu, 1);
 	auto_dbcs_menu = GetSubMenu(GetSubMenu(main_menu, 2), 7);
 	ansi_menu =::GetSubMenu(main_menu, 5);
-	// Add format choices without converting the legacy CP950 .rc file.
-	::AppendMenu(ansi_menu, MF_SEPARATOR, 0, NULL);
-	::AppendMenu(ansi_menu, MF_STRING, ID_ANSI_FORMAT_AUTO, "彩圖輸出：自動（PTT／編輯器用 SGR 66）");
-	::AppendMenu(ansi_menu, MF_STRING, ID_ANSI_FORMAT_LEGACY, "彩圖輸出：傳統 Big5 格式");
-	::AppendMenu(ansi_menu, MF_STRING, ID_ANSI_FORMAT_SGR66, "彩圖輸出：SGR 66 相容格式");
+	AppendAnsiOutputMenu(main_menu);
 	bbs_fav_menu =::GetSubMenu(main_menu, 3);
 
 	MENUITEMINFO inf;
@@ -2705,6 +2721,18 @@ void CMainFrame::OnUpdateAnsiOutputFormat(CCmdUI* pCmdUI)
 	pCmdUI->SetRadio(static_cast<int>(pCmdUI->m_nID - ID_ANSI_FORMAT_AUTO) ==
 		Sgr66::NormalizeFormat(AppConfig.ansi_output_format));
 	pCmdUI->Enable(TRUE);
+}
+
+void CMainFrame::OnAnsiOutputFormatHelp()
+{
+	::MessageBoxW(m_hWnd,
+		L"這是全域設定，適用於所有 BBS 連線與 ANSI 編輯器分頁的彩色複製、彩色文章下載、彩色貼上及 ANSI 存檔。\r\n"
+		L"不影響接收畫面或純文字複製／貼上；選擇傳統輸出仍可接收 SGR 66 雙色字。\r\n\r\n"
+		L"自動（預設）：PTT／PTT2 及其子網域、本機 ANSI 編輯器使用 SGR 66；其他 BBS 使用傳統格式。\r\n\r\n"
+		L"傳統 Big5 格式：匯出使用舊式半字色碼；貼上不將舊式半字色碼轉為 SGR 66，也不把既有 SGR 66 轉回舊格式。\r\n\r\n"
+		L"SGR 66 相容格式：彩色輸出採用 SGR 66 處理，Big5 彩色貼上會轉換舊式半字色碼；請確認目標站台支援。\r\n\r\n"
+		L"新輸出處理僅適用於 Big5／UAO 與 UTF-8，其他編碼維持傳統方式。此設定不轉換文字編碼，來源與目前分頁的編碼需一致。",
+		L"彩色內容輸出格式（全域）說明", MB_OK | MB_ICONINFORMATION);
 }
 
 void CMainFrame::OnInitMenuPopup(CMenu* pMenu,UINT nIndex,BOOL bSysMenu)

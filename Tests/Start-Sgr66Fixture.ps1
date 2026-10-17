@@ -36,7 +36,7 @@ try {
     Send-Text "${esc}[?2026l"
     Write-Output 'B：同步期間維持 OLD，結束後才顯示 NEW 藍／黃雙色，請人工確認畫面。'
     Write-Output 'C：以下是另一項「手動貼上」檢查；只看畫面或按 Enter，不會自動送回測試圖。'
-    Write-Output '1. 將 PCMan「ANSI 編輯」的彩圖輸出切成「SGR 66 相容格式」（本機連線的自動模式仍用傳統格式）。'
+    Write-Output '1. 在 PCMan「選項 > 彩色內容輸出格式（全域）」選擇「SGR 66 相容格式」（本機連線的自動模式仍用傳統格式；各模式可按「說明」查看）。'
     Write-Output '2. 用 ANSI 編輯器開啟 Tests/fixtures/LegacySplitPicture.ans，選取完整的「中 PICTURE」。'
     Write-Output '3. 使用「複製（包含 ANSI 彩色）」，切回本機測試連線，執行貼上；畫面不會回顯貼上內容。'
     Write-Output '不做貼上測試可輸入 S 略過，會記錄 SKIP，不會算通過。接收內容不會輸出或儲存。'
