@@ -19,6 +19,7 @@
 
 #include "ConfigFile.h"
 #include "MemIniFile.h"
+#include "Sgr66.h"
 
 //Application Private Messages
 #define WM_NOTIFYICON		(WM_APP+'G')
@@ -111,6 +112,7 @@ public:
 //	AnsiEditor Settings
 	int	ed_cols_per_page;
 	int	ed_lines_per_page;
+	int ansi_output_format;
 
 //Main window
 	CWindowState mainwnd_state;
@@ -206,6 +208,7 @@ inline void CAppConfig::Default()
 //	AnsiEditor Settings
 	ed_cols_per_page = 80;
 	ed_lines_per_page = 24;
+	ansi_output_format = Sgr66::Auto;
 
 //	Instant Translation
 	max_translation_length = 20;

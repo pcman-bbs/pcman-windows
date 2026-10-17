@@ -257,6 +257,7 @@ bool CAppConfig::OnDataExchange(bool load)
 //	AnsiEditor Settings
 	CFG_INT(ed_cols_per_page)
 	CFG_INT(ed_lines_per_page)
+	CFG_INT(ansi_output_format)
 
 //	HyperLink Settings
 	CFG_INT(link_underline)

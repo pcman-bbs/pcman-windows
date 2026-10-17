@@ -403,6 +403,7 @@ void CTelnetConn::OnText()
 		}
 
 		const AnsiSequenceParser::Result parsed = ansi_parser.Feed(*buf);
+		if (*buf == 0x18 || *buf == 0x1a) sgr66_attribute.Reset();
 		if (parsed == AnsiSequenceParser::Osc)
 			osc_links.Command(ansi_parser.OscSequence(), ansi_parser.OscValid());
 		else if (parsed == AnsiSequenceParser::SyncBegin)
@@ -411,6 +412,8 @@ void CTelnetConn::OnText()
 			EndSynchronizedOutput();
 		else if (parsed == AnsiSequenceParser::Dispatch)
 		{
+			if (ansi_parser.Sequence()[ansi_parser.Length() - 1] != 'm')
+				sgr66_attribute.Reset();
 			// The parser only dispatches complete, bounded, plain numeric CSI
 			// or single-character ESC commands understood by the legacy handler.
 			memcpy(ansi_param, ansi_parser.Sequence(), ansi_parser.Length() + 1);
@@ -420,6 +423,8 @@ void CTelnetConn::OnText()
 			pansi_param = ansi_param;
 		}
 		else if (parsed == AnsiSequenceParser::Text)
+		{
+			if (*buf < ' ') sgr66_attribute.Reset();
 			switch (*buf)
 			{
 			case 13:	//Carrige Return
@@ -477,6 +482,8 @@ void CTelnetConn::OnText()
 					break;
 				}
 			default:	//normal plain text
+				{
+				const BYTE text_attr = sgr66_attribute.Take(cur_attr);
 				if (cursor_pos.y > last_line || cursor_pos.y < first_line)
 					break;
 
@@ -510,20 +517,22 @@ void CTelnetConn::OnText()
 						else
 						{
 							// reduce unnecessary update.  does this work?
-							if (curstr[cursor_pos.x] != *buf || pcuratb[cursor_pos.x] != cur_attr ||
+							if (curstr[cursor_pos.x] != *buf || pcuratb[cursor_pos.x] != text_attr ||
 								osc_links.At(curstr, cursor_pos.x))
 								SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);	//將這行設為等待更新
 						}
 
 						if (osc_links.Write(curstr, cursor_pos.x, site_settings.cols_per_page))
 							SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);
-						pcuratb[cursor_pos.x] = cur_attr;
+						pcuratb[cursor_pos.x] = text_attr;
 						curstr[cursor_pos.x] = *buf;
 
 						cursor_pos.x++;
 					}
 				}
 			}
+			}
+		}
 		buf++;
 	}
 	// Triggers retain their raw receive-data semantics; do not replay buffers.
@@ -1588,6 +1597,13 @@ inline void CTelnetConn::ProcessAnsiEscapeSequence()
 
 inline void CTelnetConn::SetCurrentAttributes(USHORT clr)
 {
+	if (clr == 66)
+	{
+		// Big5 rows already store an attribute per half. UTF-8 presentation
+		// keeps its existing single-color fallback instead of coloring bytes.
+		if (view->GetCodePage() == 950) sgr66_attribute.Capture(cur_attr);
+		return;
+	}
 	if (clr < 48)
 	{
 		if (clr >= 40)
@@ -2095,8 +2111,21 @@ ArticleProgress::Progress CTelnetConn::GetArticleProgress()
 	return ArticleProgress::Parse(screen[last_line], site_settings.cols_per_page);
 }
 
+bool CTelnetConn::UseSgr66() const
+{
+	const UINT cp = view->GetCodePage();
+	return (cp == 950 || cp == CP_UTF8) && Sgr66::Enabled(AppConfig.ansi_output_format,
+		address.IsValid() && KeepAlive::IsPttHost(LPCTSTR(address.Server())), is_ansi_editor);
+}
+
 CString CTelnetConn::GetLineWithAnsi(long line)
 {
+	if (UseSgr66())
+	{
+		const std::string encoded = Sgr66::EncodeRange(screen[line], GetLineAttr(line),
+			site_settings.cols_per_page, 0, site_settings.cols_per_page, view->GetCodePage());
+		return CString(encoded.data(), static_cast<int>(encoded.size()));
+	}
 	CString data("\x1b[m");
 
 	LPSTR str = screen[line];
@@ -2108,8 +2137,10 @@ CString CTelnetConn::GetLineWithAnsi(long line)
 
 	strend = str + site_settings.cols_per_page - 1;
 	BYTE *atbend = GetLineAttr(line) + site_settings.cols_per_page - 1;
-	while (*strend == ' ' && GetAttrBkColor(*atbend) == 0)
+	while (strend > str && *strend == ' ' && GetAttrBkColor(*atbend) == 0)
 		strend--, atbend--;
+	if (strend == str && *strend == ' ' && GetAttrBkColor(*atbend) == 0)
+		return "\x1b[m";
 
 	while (str <= strend)
 	{

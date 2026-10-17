@@ -1409,8 +1409,9 @@ void CTermView::OnEditPastefile()
 			file.Read(data, len);
 			data[len] = 0;
 			file.Abort();
-			telnet->SendString(data);
-			delete data;
+			if (IsContainAnsiCode(data)) SendAnsiString(CString(data, len));
+			else telnet->SendString(data);
+			delete []data;
 		}
 	}
 }
@@ -1535,7 +1536,27 @@ void CTermView::OnAnsiSaveAs()
 CString CTermView::GetSelAnsi()
 {
 	CString data;
-	if (telnet && telnet->sync_output.Active()) return data;
+	if (!telnet || telnet->sync_output.Active()) return data;
+	if (telnet->UseSgr66())
+	{
+		CPoint start = telnet->sel_start, end = telnet->sel_end;
+		if (start == end) return data;
+		if (start.y > end.y || (start.y == end.y && start.x > end.x)) std::swap(start, end);
+		const int left = (std::min)(start.x, end.x), right = (std::max)(start.x, end.x);
+		const int cols = telnet->site_settings.cols_per_page;
+		const int first = (std::max)(0, static_cast<int>(start.y));
+		const int last = (std::min)(static_cast<int>(telnet->site_settings.line_count - 1), static_cast<int>(end.y));
+		for (int y = first; y <= last; ++y)
+		{
+			const int begin = telnet->sel_block ? left : y == start.y ? start.x : 0;
+			const int finish = telnet->sel_block ? right : y == end.y ? end.x : cols;
+			const std::string encoded = Sgr66::EncodeRange(telnet->screen[y], telnet->GetLineAttr(y),
+				cols, begin, finish, GetCodePage());
+			if (y != first) data += "\r\n";
+			data.Append(encoded.data(), static_cast<int>(encoded.size()));
+		}
+		return data;
+	}
 	if (telnet->sel_end.x != telnet->sel_start.x || telnet->sel_end.y != telnet->sel_start.y)
 	{
 		UINT tmp;
@@ -1567,12 +1588,12 @@ CString CTermView::GetSelAnsi()
 		}
 		if (selstarty == selendy)	//if a single line is selected
 		{
-			strend = telnet->screen[selendy] + telnet->sel_end.x - 1;
-			BYTE *atbend = telnet->GetLineAttr(selendy) + telnet->sel_end.x - 1;
-			while (*strend == ' ' && GetAttrBkColor(*atbend) == 0)
+			strend = telnet->screen[selendy] + telnet->sel_end.x;
+			BYTE *atbend = telnet->GetLineAttr(selendy) + telnet->sel_end.x;
+			while (strend > str && strend[-1] == ' ' && GetAttrBkColor(atbend[-1]) == 0)
 				strend--, atbend--;
 
-			while (str <= strend)
+			while (str < strend)
 			{
 				if (*attr != tmpatb)
 				{
@@ -1603,12 +1624,12 @@ CString CTermView::GetSelAnsi()
 				x2 = telnet->site_settings.cols_per_page - 1;
 			}
 
-			strend = telnet->screen[selstarty] + x2;
-			LPBYTE atbend = telnet->GetLineAttr(selstarty) + x2;
-			while (*strend == ' ' && GetAttrBkColor(*atbend) == 0)
+			strend = telnet->screen[selstarty] + x2 + 1;
+			LPBYTE atbend = telnet->GetLineAttr(selstarty) + x2 + 1;
+			while (strend > str && strend[-1] == ' ' && GetAttrBkColor(atbend[-1]) == 0)
 				strend--, atbend--;
 
-			while (str <= strend)
+			while (str < strend)
 			{
 				if (*attr != tmpatb)
 				{
@@ -1628,13 +1649,13 @@ CString CTermView::GetSelAnsi()
 			{
 				str = telnet->screen[i] + x;
 				attr = telnet->GetLineAttr(i) + x;
-				strend = str + x2;
-				atbend = attr + x2;
-				while (*strend == ' ' && GetAttrBkColor(*atbend) == 0)
+				strend = telnet->screen[i] + x2 + 1;
+				atbend = telnet->GetLineAttr(i) + x2 + 1;
+				while (strend > str && strend[-1] == ' ' && GetAttrBkColor(atbend[-1]) == 0)
 					strend--, atbend--;
 
 				tmpatb = 7;
-				while (str <= strend)
+				while (str < strend)
 				{
 					if (*attr != tmpatb)
 					{
@@ -1652,15 +1673,15 @@ CString CTermView::GetSelAnsi()
 			}
 			str = telnet->screen[telnet->sel_end.y];
 			attr = telnet->GetLineAttr(telnet->sel_end.y);
-			strend = str + telnet->sel_end.x - 1;
-			atbend = attr + telnet->sel_end.x - 1;
+			strend = str + telnet->sel_end.x;
+			atbend = attr + telnet->sel_end.x;
 			str += x;
 			attr += x;
-			while (*strend == ' ' && GetAttrBkColor(*atbend) == 0)
+			while (strend > str && strend[-1] == ' ' && GetAttrBkColor(atbend[-1]) == 0)
 				strend--, atbend--;
 
 			tmpatb = 7;
-			while (str <= strend)
+			while (str < strend)
 			{
 				if (*attr != tmpatb)
 				{
@@ -2476,6 +2497,13 @@ BOOL CTermView::OpenAnsFile(LPCTSTR filepath)
 
 void CTermView::SendAnsiString(CString data)	//送出ESC轉換後的ANSI字串
 {
+	if (!telnet) return;
+	if (telnet->UseSgr66())
+	{
+		const std::string converted = Sgr66::ConvertSplitBig5(
+			std::string(LPCTSTR(data), data.GetLength()), GetCodePage());
+		data.SetString(converted.data(), static_cast<int>(converted.size()));
+	}
 //使用彩色貼上含有控制碼，要暫時關閉自動換行功能
 	BOOL tmp_autowrap = AppConfig.site_settings.paste_autowrap;
 	AppConfig.site_settings.paste_autowrap = 0;

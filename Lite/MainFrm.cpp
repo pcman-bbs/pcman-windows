@@ -69,6 +69,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_PGU, OnPgu)
 	ON_COMMAND(ID_ADSFOCUS, OnAddressFocus)
 	ON_COMMAND(ID_SEND_ANSICODE, OnShowAnsiBar)
+	ON_COMMAND_RANGE(ID_ANSI_FORMAT_AUTO, ID_ANSI_FORMAT_SGR66, OnAnsiOutputFormat)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_ANSI_FORMAT_AUTO, ID_ANSI_FORMAT_SGR66, OnUpdateAnsiOutputFormat)
 	ON_COMMAND(ID_SHOW_SCROLL, OnShowScroll)
 	ON_COMMAND(ID_SETDEFAULT, OnSetDefaultProgram)
 	ON_COMMAND(ID_CONFIG_AUTOSWITCH, OnAutoSwitch)
@@ -1603,6 +1605,11 @@ BOOL CMainFrame::LoadUI()
 	edit_menu =::GetSubMenu(main_menu, 1);
 	auto_dbcs_menu = GetSubMenu(GetSubMenu(main_menu, 2), 7);
 	ansi_menu =::GetSubMenu(main_menu, 5);
+	// Add format choices without converting the legacy CP950 .rc file.
+	::AppendMenu(ansi_menu, MF_SEPARATOR, 0, NULL);
+	::AppendMenu(ansi_menu, MF_STRING, ID_ANSI_FORMAT_AUTO, "彩圖輸出：自動（PTT／編輯器用 SGR 66）");
+	::AppendMenu(ansi_menu, MF_STRING, ID_ANSI_FORMAT_LEGACY, "彩圖輸出：傳統 Big5 格式");
+	::AppendMenu(ansi_menu, MF_STRING, ID_ANSI_FORMAT_SGR66, "彩圖輸出：SGR 66 相容格式");
 	bbs_fav_menu =::GetSubMenu(main_menu, 3);
 
 	MENUITEMINFO inf;
@@ -2687,6 +2694,18 @@ LRESULT CMainFrame::OnDownloadPage(WPARAM, LPARAM)
 	return 0;
 }
 
+
+void CMainFrame::OnAnsiOutputFormat(UINT id)
+{
+	AppConfig.ansi_output_format = static_cast<int>(id - ID_ANSI_FORMAT_AUTO);
+}
+
+void CMainFrame::OnUpdateAnsiOutputFormat(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetRadio(static_cast<int>(pCmdUI->m_nID - ID_ANSI_FORMAT_AUTO) ==
+		Sgr66::NormalizeFormat(AppConfig.ansi_output_format));
+	pCmdUI->Enable(TRUE);
+}
 
 void CMainFrame::OnInitMenuPopup(CMenu* pMenu,UINT nIndex,BOOL bSysMenu)
 {

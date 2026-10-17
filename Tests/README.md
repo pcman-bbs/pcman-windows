@@ -7,12 +7,16 @@ PTT 新介面（主選單、列表、空結果、看板資訊及自訂觸發器�
 DEC2026 現已加入專用同步處理，見 [同步更新驗收](../Docs/DEC2026-Validation.md)；
 SGR Mouse 仍忽略，CPR 仍由既有空函式處理，不回覆。
 2026-10-17 已加入 OSC 字串解析與 OSC 8 目標點擊，見 [OSC 實作與驗收](../Docs/OSC-Validation.md)。
+同日後續實作 SGR 66 彩圖匯出／貼上與 Big5 讀回，新增第六組測試及人工工具，見 [SGR 66 實作與驗收](../Docs/SGR66-Validation.md)。
+PowerShell 驗收工具另有 `powershell -NoProfile -File Tests/Test-Sgr66Fixture.ps1`：兩種 PowerShell 環境各通過 179 項檢查，包含真正的本機 TCP 與原腳本重試／略過流程，不執行 PCMan GUI。
+SGR 66 本輪 Debug／Release 主程式均完整重建成功；六組測試每組態通過 SGR 66 197,558、解析器 11,451、Keep-Alive 2,318、同步 100、文章 810、OSC 目標 1,343 項，人工驗收待執行。
 這不是完整的 ECMA-48 終端機實作，DCS 字串協定尚未實作。
 不將 Big5／UAO／UTF-8 中的高位元組當成 8-bit C1 控制碼。
 
 2026-10-17 六則公告的程式碼評估與待補驗收，見 [近期公告評估](../Docs/PTT-Announcements-2026-10.md)。
 OSC 8 的 payload 不流入文字；完整命令以有界 payload 傳給目標模組，標籤可點擊、右鍵複製網址並優先於文字自動辨識。
-SGR 66 接收顯示降級與彩圖輸出遷移、DECAWM 折行、DECSTBM 邊界及 VCOL 新畫面均需對應驗證；
+SGR 66 已加入 Big5 匯出／貼上與雙色讀回（UTF-8 接收仍降級），人工驗收見專用文件；
+DECAWM 折行、DECSTBM 邊界及 VCOL 新畫面仍需對應驗證。
 N5 的解析／接收路徑已有自動測試；2026-10-17 使用者確認兩個 OSC 人工驗收腳本及流程皆正確，
 實際瀏覽 PTT 無特殊異常。本輪 OSC 人工驗收完成，其他 N1～N6 範圍仍依各項狀態記錄。
 
