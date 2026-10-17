@@ -2231,8 +2231,9 @@ void CTelnetConn::CopyArticleComplete(bool cancel)
 		}
 		else
 		{
-			// FIXME: unicode???
-			CClipboard::SetText(view->m_hWnd, downloaded_article);
+			// Use the same station encoding/UAO mapping as selection copy and search.
+			const CStringW unicode = view->DecodeText(downloaded_article);
+			CClipboard::SetTextW(view->m_hWnd, unicode);
 		}
 
 		if (download_article_dlg)	// dismiss cancel dialog
