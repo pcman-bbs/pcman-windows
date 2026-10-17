@@ -97,7 +97,8 @@ BOOL CClipboard::SetTextW(HWND owner, const wchar_t* str, int len)
 		if (hmem)
 		{
 			wchar_t* buf = (wchar_t*)GlobalLock(hmem);
-			memcpy(buf, str, len + 4);
+			memcpy(buf, str, len);
+			buf[len / sizeof(wchar_t)] = L'\0';
 			GlobalUnlock(hmem);
 			SetClipboardData(CF_UNICODETEXT, hmem);
 		}

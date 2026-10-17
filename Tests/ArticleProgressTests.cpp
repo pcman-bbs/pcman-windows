@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <fstream>
+#include <iterator>
+#include <vector>
 #include "../Lite/ArticleProgress.h"
 #include "../Lite/SynchronizedOutput.h"
 
@@ -16,15 +19,48 @@ static void Check(bool ok, const char* why)
 static int TestMessageBox(const char*, unsigned int) { ++messages; return 0; }
 #define AfxMessageBox TestMessageBox
 class CTelnetConn;
+struct CUcs2Conv
+{
+    unsigned char* m_Big52Ucs2_Tab = nullptr;
+    size_t Big52Ucs2(const char*, wchar_t*, int);
+} g_ucs2conv;
+struct CClipboard
+{
+    static CStringW text;
+    static void SetTextW(HWND, const wchar_t* value) { text = value; }
+};
+CStringW CClipboard::text = L"unchanged";
+struct CTermView
+{
+    HWND m_hWnd = nullptr;
+    CTelnetConn* telnet = nullptr;
+    UINT codePage = 950;
+    int editorOpens = 0;
+    UINT GetCodePage() { return codePage; }
+    CStringW DecodeText(const CString&);
+    void OnAnsiEditor() { ++editorOpens; }
+    void LockWindowUpdate() {}
+    void UnlockWindowUpdate() {}
+    void SetScrollBar() {}
+};
 struct CDownloadArticleDlg
 {
     explicit CDownloadArticleDlg(CTelnetConn*) {}
     int DoModal() { return 0; }
+    void OnCancel() {}
 };
 static CDownloadArticleDlg* download_article_dlg = nullptr;
 class CTelnetConn
 {
 public:
+    CTermView testView;
+    CTermView* view = &testView;
+    POINT cursor_pos = {};
+    CString editorBytes;
+    CTelnetConn() { testView.telnet = this; }
+    void Send(const char* bytes, int length) { editorBytes.SetString(bytes, length); }
+    void UpdateCursorPos() {}
+    void ProductionCopyArticleComplete(bool cancel = false);
 	SynchronizedOutput sync_output;
     struct Settings { int line_count = 4; int cols_per_page = 80; } site_settings;
     struct KeyMap { const char* FindKey(int, int) { return nullptr; } } keys;
@@ -118,6 +154,46 @@ static void InterfaceRegression()
 int main()
 {
     using namespace ArticleProgress;
+    // Use the shipped B2U table, not a synthetic replacement mapping.
+    std::ifstream tableFile("Lite/Release/PCMan/B2U", std::ios::binary);
+    Check(tableFile.good(), "run from repository root; shipped B2U readable");
+    std::vector<unsigned char> table((std::istreambuf_iterator<char>(tableFile)),
+        std::istreambuf_iterator<char>());
+    Check(table.size() >= 38u * 157u * 2u, "B2U covers extension ranges");
+    g_ucs2conv.m_Big52Ucs2_Tab = table.data();
+    const CString japanese = "\xc7\xd2\xc7\xe7\xc7\x7c\xc7\xa7MAD\xad\xb5\x92\x62\xb2\xbd";
+    const CStringW expectedJapanese = L"ブルアカMAD音楽祭";
+    for (UINT cp : { 950u, static_cast<UINT>(CP_UTF8) })
+    {
+        for (bool ansi : { false, true })
+        {
+            CTelnetConn c;
+            c.testView.codePage = cp;
+            const auto utf8Bytes = Encode(static_cast<LPCWSTR>(expectedJapanese), CP_UTF8);
+            const CString body = cp == 950 ? japanese : CString(utf8Bytes.c_str());
+            c.downloaded_article = ansi ? CString("\x1b[31m") + body + "\x1b[m\r\n" : body + "\r\n";
+            c.get_article_with_ansi = ansi;
+            c.is_getting_article = true;
+            c.ProductionCopyArticleComplete();
+            const CStringW expected = ansi ? CStringW(L"\x1b[31m") + expectedJapanese + L"\x1b[m\r\n" : expectedJapanese + L"\r\n";
+            Check(CClipboard::text == expected, "article Unicode output preserves Japanese and ANSI escapes");
+            Check(c.downloaded_article.IsEmpty() && !c.is_getting_article && !c.get_article_with_ansi,
+                "completion clears download state");
+        }
+    }
+    {
+        CTelnetConn c;
+        c.downloaded_article = japanese;
+        c.get_article_in_editor = true;
+        CClipboard::text = L"keep clipboard";
+        c.ProductionCopyArticleComplete();
+        Check(c.editorBytes == japanese && c.testView.editorOpens == 1,
+            "ANSI editor receives original station bytes");
+        Check(CClipboard::text == L"keep clipboard", "editor does not overwrite clipboard");
+        c.downloaded_article = japanese;
+        c.ProductionCopyArticleComplete(true);
+        Check(CClipboard::text == L"keep clipboard", "cancel does not overwrite clipboard");
+    }
     InterfaceRegression();
     const std::string valid = Footer(50, 1, 3);
     for (const char* bad : { "", "    ", "100%", "(101%) 1~3 \xa6\xe6", "(-1%) 1~3 \xa6\xe6",
