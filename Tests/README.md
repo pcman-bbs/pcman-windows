@@ -9,6 +9,11 @@ SGR Mouse 仍忽略，CPR 仍由既有空函式處理，不回覆。
 這不是完整的 ECMA-48 終端機實作，OSC／DCS 字串協定未納入本次範圍。
 不將 Big5／UAO／UTF-8 中的高位元組當成 8-bit C1 控制碼。
 
+2026-10-17 六則公告的程式碼評估與待補驗收，見 [近期公告評估](../Docs/PTT-Announcements-2026-10.md)。
+目前 OSC 8 會使 payload 流入文字路徑，不能把「未知 CSI 可略過」宣稱成「OSC 已安全吸收」。
+SGR 66 接收顯示降級與彩圖輸出遷移、DECAWM 折行、DECSTBM 邊界及 VCOL 新畫面均需對應驗證；
+N1～N6 是待辦，不是本輪新增或已通過的自動測試。
+
 ## 自動測試
 
 使用 Visual Studio Developer PowerShell，在專案根目錄執行：
@@ -138,6 +143,10 @@ MSBuild Tests/ArticleProgressTests.vcxproj /t:Rebuild /p:Configuration=Release /
 
 測試正式解析 helper，並擷取正式 `GetArticleProgress`、`IsEndOfArticleReached`、
 `CopyArticle`、`ContinueCopyArticle` 方法。UI、網路、ANSI 文字產生及剪貼簿完成端使用替身。
+日文轉碼回歸另擷取正式 `CopyArticleComplete`、`DecodeText`、`Big52Ucs2`，
+使用隨附的 `Lite/Release/PCMan/B2U` 字碼表驗證完成端輸出的 Unicode；請從專案根目錄執行。
+涵蓋「ブルアカMAD音楽祭」、Big5／UAO 與 UTF-8、ANSI 控制碼保留、取消不覆寫，
+以及 ANSI 編輯器仍接收原始位元組。Windows 剪貼簿 API 與編輯器 UI 使用替身，不會更動實際剪貼簿。
 包括無 NUL 輸入、保護記憶體頁邊界、空白／缺少符號／超大數字／非法百分比、
 Big5／UTF-8 行單位、不完整單位、右側提示、不完整底列逐段更新、重複／異常跳行、
 單頁完成、增加一／兩行、純文字與帶色路徑。不等於實際 MFC、WSS 或剪貼簿驗證。
@@ -160,6 +169,11 @@ Debug／Release 分開執行；使用原建置目錄，不需調整防閒置設�
 5. 在較長文章下載中按取消：應停止後續送鍵、不把部分內容當完成；重新從 Home 複製應可正常進行。
 6. 若連線較慢或遇到不完整底列，應等待而非閃退、狂送按鍵或提早完成；可取消後回到文章畫面重試。
 7. 如有使用「播放動畫」，確認一般文章仍可推進，到末端停止；不在文章畫面時不得持續送鍵。
+8. 日文轉碼：找含「ブルアカMAD音楽祭」或其他日文的文章，從 Home 開始整篇複製，
+   貼到記事本，確認與一般選取複製／右鍵搜尋的字元一致，不再出現方框或私人使用區錯字。
+   單頁與多頁各測一次，並確認中文、英文及換行正常。
+9. 同一篇文章執行帶 ANSI 色碼複製及下載至 ANSI 編輯器，確認前者日文正確且仍含控制碼
+   （記事本不會呈現色彩），後者文字與色彩正常；取消下載不應覆寫原剪貼簿。
 
 目前採保守辨識：需有 `(百分比%)` 及 `起始~結束 行`；橫向捲動／其他 BBS 不相容底列
 可能拒絕啟動或等待，請提供底列截圖再評估支援，不要據此宣稱所有 BBS 相容。
