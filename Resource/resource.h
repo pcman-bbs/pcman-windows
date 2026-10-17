@@ -635,13 +635,17 @@
 #define IDS_IDLE_CUSTOM_HELP            33051
 #define IDC_IDLE_MODE                   1142
 #define IDC_IDLE_HINT                   1143
+#define ID_ANSI_FORMAT_AUTO             33052
+#define ID_ANSI_FORMAT_LEGACY           33053
+#define ID_ANSI_FORMAT_SGR66            33054
+#define ID_ANSI_FORMAT_HELP             33055
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        189
-#define _APS_NEXT_COMMAND_VALUE         33052
+#define _APS_NEXT_COMMAND_VALUE         33056
 #define _APS_NEXT_CONTROL_VALUE         1144
 #define _APS_NEXT_SYMED_VALUE           154
 #endif

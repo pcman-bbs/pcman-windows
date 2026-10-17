@@ -23,6 +23,7 @@
 #include "ArticleProgress.h"
 #include "SynchronizedOutput.h"
 #include "OscHyperlinks.h"
+#include "Sgr66.h"
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +109,7 @@ public:
 	AnsiSequenceParser ansi_parser; // Separate from the Telnet IAC buffer.
 	SynchronizedOutput sync_output;
 	OscHyperlinks osc_links, osc_snapshot;
+	Sgr66::PendingAttribute sgr66_attribute;
 	int sync_scroll_pos = 0;
 	void BeginSynchronizedOutput();
 	void EndSynchronizedOutput();
@@ -141,6 +143,7 @@ public:
 	void CopyArticleComplete(bool cancel = false);
 	void CopyArticle(bool with_color, bool in_editor);
 	CString GetLineWithAnsi(long line);
+	bool UseSgr66() const;
 	int IsEndOfArticleReached();
 	ArticleProgress::Progress GetArticleProgress();
 	void ContinueCopyArticle();
@@ -229,6 +232,7 @@ public:
 		sync_output.Reset();
 		osc_links.Reset();
 		osc_snapshot.Reset();
+		sgr66_attribute.Reset();
 		ansi_parser = AnsiSequenceParser();
 		is_telnet = true;
 

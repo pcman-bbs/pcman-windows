@@ -193,6 +193,9 @@ public:
 	afx_msg void OnAnsiBarFg();
 	afx_msg void OnAnsiBarBlink();
 	afx_msg void OnAnsiBarSend();
+	afx_msg void OnAnsiOutputFormat(UINT id);
+	afx_msg void OnUpdateAnsiOutputFormat(CCmdUI* pCmdUI);
+	afx_msg void OnAnsiOutputFormatHelp();
 	afx_msg void OnAnsiBarSendDropDown();
 	afx_msg void OnUpdateAnsiBarBlink(CCmdUI* pCmdUI);
 	afx_msg void OnCustomizeMainToolbar();
