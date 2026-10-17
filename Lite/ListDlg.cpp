@@ -1,4 +1,4 @@
-// ListDlg.cpp : implementation file
+﻿// ListDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -318,7 +318,7 @@ void CListDlg::OnEditSite()
 		CSiteSettings tmpset;
 		page1.psettings = &tmpset;
 
-		//�۰ʵn�J
+		//自動登入
 		CAutoReplyPage page2;
 		page2.triggers = &tmpset.triggers;
 
@@ -510,7 +510,7 @@ void CListDlg::OnPaste(UINT id)
 		{	after = target;	target = sites.GetParentItem(target);	}
 
 	HTREEITEM newitem = sites.CopyTo(copyitem, target, after);
-	if (bcut)	//�O�ŤU
+	if (bcut)	//是剪下
 	{
 		sites.DeleteItem(copyitem, FALSE);
 		sites.SetItemState(newitem, 0, TVIS_CUT);

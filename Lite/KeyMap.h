@@ -1,4 +1,4 @@
-// KeyMap.h: interface for the CKeyMap class.
+ï»¿// KeyMap.h: interface for the CKeyMap class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -51,7 +51,7 @@ public:
 inline const char* CKeyMap::FindKey(WORD key, UINT nFlags)
 {
 	BYTE fVirt = 0;
-	if (!(nFlags &(1 << 8)))	//¦pªG¤£¬Oextended¡AÀË¬d¬O¤£¬ONumPad
+	if (!(nFlags &(1 << 8)))	//å¦‚æžœä¸æ˜¯extendedï¼Œæª¢æŸ¥æ˜¯ä¸æ˜¯NumPad
 	{
 		if ((key >= VK_PRIOR && key <= VK_DOWN) || key == VK_INSERT || key == VK_DELETE)
 			fVirt |= FNUMPAD;

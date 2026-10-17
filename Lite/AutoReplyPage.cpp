@@ -1,4 +1,4 @@
-// AutoReplyPage.cpp : implementation file
+ï»¿// AutoReplyPage.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -170,7 +170,7 @@ BOOL CAutoReplyPage::OnInitDialog()
 
 void CAutoReplyPage::OnCancel()
 {
-	if (respond.IsWindowEnabled())	//ÁÙ¦b½s¿èª¬ºA
+	if (respond.IsWindowEnabled())	//é‚„åœ¨ç·¨è¼¯ç‹€æ…‹
 		return;
 
 	int c = list.GetCount();
@@ -221,7 +221,7 @@ void CAutoReplyPage::OnSave()
 	msg.GetWindowText(tmp);
 	if (tmp.IsEmpty())
 	{
-		// ³]©w¤£§¹¾ã¡A¥²¶·¿é¤J­n¦Û°Ê¦^À³ªº°T®§!
+		// è¨­å®šä¸å®Œæ•´ï¼Œå¿…é ˆè¼¸å…¥è¦è‡ªå‹•å›æ‡‰çš„è¨Šæ¯!
 		MessageBox(LoadString(IDS_INCOMPLETE_AUTO_SETTINGS) , NULL, MB_OK | MB_ICONSTOP);
 		msg.SetFocus();
 		return;
@@ -231,14 +231,14 @@ void CAutoReplyPage::OnSave()
 	CTriggerItem* item;
 	BOOL badd = (add.GetDlgCtrlID() == IDC_SAVE);
 	int i;
-	if (badd)		//·s¼W
+	if (badd)		//æ–°å¢
 	{
 		if (list.FindString(0, tmp) != LB_ERR)
 			return;
 		item = new CTriggerItem;
 		item->pnext = NULL;
 	}
-	else	//­×§ï
+	else	//ä¿®æ”¹
 	{
 		i = list.GetCurSel();
 		item = (CTriggerItem*)list.GetItemDataPtr(i);
@@ -263,9 +263,9 @@ void CAutoReplyPage::OnSave()
 	else
 		item->count = atoi(scount);
 
-	if (badd)	//¦pªG·s¼W
+	if (badd)	//å¦‚æœæ–°å¢
 		i = list.AddString(item->msg);
-	else	//¦pªG­×§ï
+	else	//å¦‚æœä¿®æ”¹
 	{
 		list.DeleteString(i);
 		list.InsertString(i, item->msg);
@@ -318,14 +318,14 @@ void CAutoReplyPage::EnableEdits(BOOL enable)
 
 void CAutoReplyPage::OnProtect()
 {
-	if (protect.GetCheck())	//¦pªG¬O¤Ä¿ï±K½X«OÅ@
+	if (protect.GetCheck())	//å¦‚æœæ˜¯å‹¾é¸å¯†ç¢¼ä¿è­·
 	{
 		if (!AppConfig.QueryPassword(TRUE))
 			protect.SetCheck(0);
 		else
 			respond.SetPasswordChar('*');
 	}
-	else	//¦pªG¬O¨ú®ø±K½X«OÅ@
+	else	//å¦‚æœæ˜¯å–æ¶ˆå¯†ç¢¼ä¿è­·
 	{
 		CPasswdDlg dlg;
 		if (dlg.DoModal() == IDCANCEL)

@@ -1,4 +1,4 @@
-// SetBkDlg.cpp : implementation file
+ï»¿// SetBkDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -68,7 +68,7 @@ BOOL CSetBkDlg::OnInitDialog()
 	CSliderCtrl* slider = (CSliderCtrl*)GetDlgItem(IDC_RATIO);
 	slider->SetRange(0, 10);
 	slider->SetPos(AppConfig.bkratio);
-	((CButton*)GetDlgItem(AppConfig.bktype + 100))->SetCheck(TRUE);	//Radio ªºID=100~104
+	((CButton*)GetDlgItem(AppConfig.bktype + 100))->SetCheck(TRUE);	//Radio çš„ID=100~104
 	GetDlgItem(IDC_PATH)->SetWindowText(AppConfig.bkpath);
 	return TRUE;
 }

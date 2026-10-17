@@ -1,9 +1,9 @@
-#if !defined(_MYSTRING_H_INCLUDED_)
+ï»¿#if !defined(_MYSTRING_H_INCLUDED_)
 #define _MYSTRING_H_INCLUDED_
 #include <string.h>
-//str[nr]str[i]»¡©ú
-//r: §ä³Ì«á¤@­Ó
-//n: ­­¨î·j´M½d³ò±q¶}ÀY¨ìlenªø
+//str[nr]str[i]èªªæ˜
+//r: æ‰¾æœ€å¾Œä¸€å€‹
+//n: é™åˆ¶æœå°‹ç¯„åœå¾é–‹é ­åˆ°lené•·
 //i: case insensitive
 //case sensitive
 char* strrstr(const char* str, const char* sub);

@@ -1,4 +1,4 @@
-// CtrlEdit.cpp : implementation file
+ï»¿// CtrlEdit.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -40,7 +40,7 @@ LRESULT CCtrlEdit::OnPaste(WPARAM w, LPARAM l)
 	if (hmem != NULL)
 	{
 		LPSTR data = (LPSTR)GlobalLock(hmem);
-		if (strstr(data, "\x1b["))	//¦pªG§t¦³¦â±m±±¨î½X
+		if (strstr(data, "\x1b["))	//å¦‚æœå«æœ‰è‰²å½©æ§åˆ¶ç¢¼
 		{
 			CString tmp = data;
 			tmp.Replace("\x1b[", "^[[");
@@ -48,7 +48,7 @@ LRESULT CCtrlEdit::OnPaste(WPARAM w, LPARAM l)
 			CStringDlg* pdlg = (CStringDlg*)GetParent();
 			if (pdlg)
 			{
-				pdlg->ansi.SetCheck(1);	//¤Ä¿ï±±¨î½X¿ï¶µ
+				pdlg->ansi.SetCheck(1);	//å‹¾é¸æ§åˆ¶ç¢¼é¸é …
 			}
 		}
 		else

@@ -1,4 +1,4 @@
-// KeyMap.cpp: implementation of the CKeyMap class.
+ï»¿// KeyMap.cpp: implementation of the CKeyMap class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@ CKeyMap* CKeyMap::FindMap(LPCTSTR kmname)
 	for (int i = 0; i < CTermView::all_telnet_conns.GetSize(); i++)
 	{
 		CConn* pcon = (CConn*)CTermView::all_telnet_conns[i];
-		if (!pcon->is_ansi_editor && !pcon->is_web)	//½T©w¬OBBS¯¸¥x¤~¥ÎKeymap
+		if (!pcon->is_ansi_editor && !pcon->is_web)	//ç¢ºå®šæ˜¯BBSç«™å°æ‰ç”¨Keymap
 		{
 			if (((CTelnetConn*)pcon)->key_map)
 				if (strncmp(((CTelnetConn*)pcon)->key_map->name, kmname, 11) == 0)
@@ -43,7 +43,7 @@ CKeyMap* CKeyMap::FindMap(LPCTSTR kmname)
 CKeyMap* CKeyMap::Load(LPCTSTR kmname)
 {
 	CKeyMap* pkm = FindMap(kmname);
-	if (pkm)	//¦pªG¤w¸g¸ü¤J
+	if (pkm)	//å¦‚æžœå·²ç¶“è¼‰å…¥
 	{
 		pkm->ref_count++;
 		return pkm;

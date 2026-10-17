@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2007/06/29
 	created:	29:6:2007   0:26
 	filename: 	MouseCTL.cpp
@@ -199,7 +199,7 @@ void MouseCTL_OnLButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 
 	if (m_MouseState.L & MT_STATE_STILL_BY_TIMER)
 	{
-		m_MouseState.L |= MT_STATE_STILL;//¤£¦n¡A¦]¬°¤U­±¦³¤@­Ó¤]¬O¦b³]  MT_STATE_STILL
+		m_MouseState.L |= MT_STATE_STILL;//ä¸å¥½ï¼Œå› ç‚ºä¸‹é¢æœ‰ä¸€å€‹ä¹Ÿæ˜¯åœ¨è¨­  MT_STATE_STILL
 		return;
 	}
 
@@ -280,7 +280,7 @@ BOOL MouseCTL_OnRButtonUp(HWND hWnd, UINT nFlags, CPoint point)
 	KillTimer(hWnd, MT_EVENT_STILL);
 	if (m_MouseState.R & MT_STATE_STILL_BY_TIMER)
 	{
-		m_MouseState.R |= MT_STATE_STILL;//¤£¦n¡A¦]¬°¤U­±¦³¤@­Ó¤]¬O¦b³]  MT_STATE_STILL
+		m_MouseState.R |= MT_STATE_STILL;//ä¸å¥½ï¼Œå› ç‚ºä¸‹é¢æœ‰ä¸€å€‹ä¹Ÿæ˜¯åœ¨è¨­  MT_STATE_STILL
 		goto __Exit;
 	}
 
@@ -558,7 +558,7 @@ void MouseCTL_Init(HWND hWnd)
 	m_gesture.m_szDirctionNow = g_szMouseGesture;
 	m_gesture.m_dwDirction_BufLen = sizeof(g_szMouseGesture) / sizeof(TCHAR);
 	m_gesture.fnUpdateMessage = MouseCTL_UpdateStatus;
-	m_gesture.Attach(hWnd, 20);//³]©w¤â¶ÕªºÆF±Ó«×¡A­È·U¤jªº¸Ü¡A·U¤£ÆF±Ó¡A¤è¦Vªº§ïÅÜ­n¤j¤@ÂI¡A¦ı¬O·Æ¹«ªº°Ê§@´N­nÅÜ¤j
+	m_gesture.Attach(hWnd, 20);//è¨­å®šæ‰‹å‹¢çš„éˆæ•åº¦ï¼Œå€¼æ„ˆå¤§çš„è©±ï¼Œæ„ˆä¸éˆæ•ï¼Œæ–¹å‘çš„æ”¹è®Šè¦å¤§ä¸€é»ï¼Œä½†æ˜¯æ»‘é¼ çš„å‹•ä½œå°±è¦è®Šå¤§
 
 	MouseCTL_MouseAction_Setup_Cmd(MouseActionArray_Default);
 	MouseCTL_Gesture_Setup_Cmd(GestureArray_Default);
@@ -659,11 +659,11 @@ void MouseCTL_Reset()
 }
 
 /*
-¬°¤°»ò¤£¥Îkey_map->FindKey(cKey_In, 0);
-¦]¬°¦b¨Ï¥ÎVK_NEXT®É¡A§ä¨ìªºÂà´«ªí¬O¿ùªº¡AÁÙ­n¦A¶ñFlagªº­È¤~¦æ
+ç‚ºä»€éº¼ä¸ç”¨key_map->FindKey(cKey_In, 0);
+å› ç‚ºåœ¨ä½¿ç”¨VK_NEXTæ™‚ï¼Œæ‰¾åˆ°çš„è½‰æ›è¡¨æ˜¯éŒ¯çš„ï¼Œé‚„è¦å†å¡«Flagçš„å€¼æ‰è¡Œ
 
-Extend key ¦³PageDown PageUp Home End Up Down Left Right Insert Delete ÁÙ¦³¥kÃäªºCtrlÁä
-¦¹®ÉªºExtend Keyªºvirtual-key ·|¸ò²{¦æªº«öÁä·|¦³­«ÂĞ¡A©Ò¥H¤@°»´ú¨ìExtend Key´Nvirtual-key´N¬O¤£¤@¼Ë
+Extend key æœ‰PageDown PageUp Home End Up Down Left Right Insert Delete é‚„æœ‰å³é‚Šçš„Ctrléµ
+æ­¤æ™‚çš„Extend Keyçš„virtual-key æœƒè·Ÿç¾è¡Œçš„æŒ‰éµæœƒæœ‰é‡è¦†ï¼Œæ‰€ä»¥ä¸€åµæ¸¬åˆ°Extend Keyå°±virtual-keyå°±æ˜¯ä¸ä¸€æ¨£
 */
 BOOL MouseCTL_SendInput(char cKey_In, BOOL bExtendKey, BOOL bControlKey)
 {
@@ -717,10 +717,10 @@ __Exit:
 }
 
 /************************************************************************
-EXTEND_KEY¤¤ªº¦r¦ê¬°ÃöÁä¦r¡A©Ò¥H¼g¦r¦ê»İ­n¥[¤W" "  ¦p"HOME"
-­Y¬O·Q¥Î"¸¹ªº¸Ü  ´N¥Î \"
-­Y¬O¦b¨â­Ó"¸¹¤¤ªº¦r¦ê¡A¤£¬O§Ú­ÌªºÃöÁä¦r¡A«h³o­Ó°Ï¶ô¸õ¹L¤£¬İ
-­Y¬O¥uµo²{¤@­Ó"¸¹¡A«h³o­Ó¦r¤¸´N·í°µ¬O¿é¤J¿ù»~¦Ó¸õ¹L¡A¦ì²¾¤@­Ó¦r¤¸¡A¬İ¤U¤@­Ó¦r¶}©lÅª
+EXTEND_KEYä¸­çš„å­—ä¸²ç‚ºé—œéµå­—ï¼Œæ‰€ä»¥å¯«å­—ä¸²éœ€è¦åŠ ä¸Š" "  å¦‚"HOME"
+è‹¥æ˜¯æƒ³ç”¨"è™Ÿçš„è©±  å°±ç”¨ \"
+è‹¥æ˜¯åœ¨å…©å€‹"è™Ÿä¸­çš„å­—ä¸²ï¼Œä¸æ˜¯æˆ‘å€‘çš„é—œéµå­—ï¼Œå‰‡é€™å€‹å€å¡Šè·³éä¸çœ‹
+è‹¥æ˜¯åªç™¼ç¾ä¸€å€‹"è™Ÿï¼Œå‰‡é€™å€‹å­—å…ƒå°±ç•¶åšæ˜¯è¼¸å…¥éŒ¯èª¤è€Œè·³éï¼Œä½ç§»ä¸€å€‹å­—å…ƒï¼Œçœ‹ä¸‹ä¸€å€‹å­—é–‹å§‹è®€
 ************************************************************************/
 const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_In, BOOL *bExtendKey, BOOL *bControlKey)
 {
@@ -738,19 +738,19 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 	if (szKeyString == NULL || szKeyString[0] == 0)
 		return NULL;
 
-	//·í¦³¥¢±Ñµo¥Í®É¡A´N©¹¤U¤@­Ó¦r¦ê²¾°Ê
+	//ç•¶æœ‰å¤±æ•—ç™¼ç”Ÿæ™‚ï¼Œå°±å¾€ä¸‹ä¸€å€‹å­—ä¸²ç§»å‹•
 	pszNext = szKeyString + 1;
 
 	if (szKeyString[0] == '\"')
 	{
 		szKeyString++;
 
-		//´M§ä¬Û¾Fªº'\"'  ¦ı¬O ""\\\""­n©¿²¤
+		//å°‹æ‰¾ç›¸é„°çš„'\"'  ä½†æ˜¯ ""\\\""è¦å¿½ç•¥
 		pszBlockEnd = (char*)szKeyString;
 		i = 0;
 		while (pszBlockEnd[0] && pszBlockEnd[0] != '\"')
 		{
-			//­Y¬O""\\\""­n©¿²¤
+			//è‹¥æ˜¯""\\\""è¦å¿½ç•¥
 			if (pszBlockEnd[0] == '\\' && pszBlockEnd[1] == '\"')
 				pszBlockEnd ++;
 
@@ -760,14 +760,14 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 		}
 		szStringBlock[i] = 0;
 
-		//¾Fªñ¨S¦³'\"'ªº¸Ü¡A¨º³o¦¸ªº¿é¤J¤£ºâ¡A·í¦¨³o­Ó'\"'¬O¤£¤p¤ß¿é¤J¿ù»~¡A¤U­Ó¦r¦ê+1 ¦b­«·s¨Ó¤ñ¹ï
+		//é„°è¿‘æ²’æœ‰'\"'çš„è©±ï¼Œé‚£é€™æ¬¡çš„è¼¸å…¥ä¸ç®—ï¼Œç•¶æˆé€™å€‹'\"'æ˜¯ä¸å°å¿ƒè¼¸å…¥éŒ¯èª¤ï¼Œä¸‹å€‹å­—ä¸²+1 åœ¨é‡æ–°ä¾†æ¯”å°
 		if (pszBlockEnd[0] == 0)
 			goto __Exit;
 
-		pszBlockEnd ++;//³Ì«á¤@­Ó¦r¤¸¬°'\"'
+		pszBlockEnd ++;//æœ€å¾Œä¸€å€‹å­—å…ƒç‚º'\"'
 		pszNext = pszBlockEnd;
 
-		//§PÂ_¬O§_¬°ExtendKey
+		//åˆ¤æ–·æ˜¯å¦ç‚ºExtendKey
 		for (i = 0; i < sizeof(Extend_Key) / sizeof(Extend_Key[0]); i++)
 		{
 			pBuf1 = Extend_Key[i].szName;
@@ -783,18 +783,18 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 			goto __Exit;
 
 
-		//§PÂ_¬O§_¬°Enter
+		//åˆ¤æ–·æ˜¯å¦ç‚ºEnter
 		if (stricmp(szStringBlock, KEYSTR_ENTER) == 0)
 		{
 			*cKey_In = VK_RETURN;
 		}
 
-		//­Y¨S¦³²Å¦Xªº©R¥O¡A¦ı¬O«o¦³  ""¨Ó¥]¦r¦ê¡A©Ò¥H³o­Ó¦r¦ê¸õ¹L  ¤£¬İ¡A¬İ¤U¤@­Ó°Ï¶ô
+		//è‹¥æ²’æœ‰ç¬¦åˆçš„å‘½ä»¤ï¼Œä½†æ˜¯å»æœ‰  ""ä¾†åŒ…å­—ä¸²ï¼Œæ‰€ä»¥é€™å€‹å­—ä¸²è·³é  ä¸çœ‹ï¼Œçœ‹ä¸‹ä¸€å€‹å€å¡Š
 		goto __Exit;
 	}
 
 
-	//§PÂ_¬O§_¬°Ctrl½Æ¦XÁä
+	//åˆ¤æ–·æ˜¯å¦ç‚ºCtrlè¤‡åˆéµ
 	if (szKeyString[0] == '^' && szKeyString[1] && isupper(szKeyString[1]))
 	{
 		*cKey_In = szKeyString[1];
@@ -805,7 +805,7 @@ const char *MouseCTL_KeyStringToKeyInput(const char *szKeyString_In, char *cKey_
 	if (*cKey_In)
 		goto __Exit;
 
-	//­Y¬O""\\\""­n©¿²¤
+	//è‹¥æ˜¯""\\\""è¦å¿½ç•¥
 	if (szKeyString[0] == '\\' && szKeyString[1] == '\"')
 	{
 		*cKey_In = szKeyString[1];

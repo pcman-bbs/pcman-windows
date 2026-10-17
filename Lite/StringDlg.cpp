@@ -1,4 +1,4 @@
-// StringDlg.cpp : implementation file
+ï»¿// StringDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -204,7 +204,7 @@ BOOL CStringDlg::OnInitDialog()
 	list.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 
 	LoadList();
-//ÁÙ­ìµøµ¡ª¬ºA
+//é‚„åŸè¦–çª—ç‹€æ…‹
 	AppConfig.freqstr_state.Restore(m_hWnd);
 	UpdateDisplay();
 	ResetUI();
@@ -244,7 +244,7 @@ void CStringDlg::SaveList()
 	DWORD tinf;
 	if (f.Open(ConfigPath + FUS_FILENAME, CFile::modeWrite | CFile::modeCreate))
 	{
-		f.Write(&tc, sizeof(short));	//Àx¦s­¶ÅÒ¼Æ
+		f.Write(&tc, sizeof(short));	//å„²å­˜é ç±¤æ•¸
 		CString tmp;
 		for (int i = 0;i < tc;i++)
 		{
@@ -257,13 +257,13 @@ void CStringDlg::SaveList()
 			stra = (MyStringArray*)item.lParam;
 			short c = stra->GetSize();
 
-			SaveString(f, tmp);		//Àx¦s­¶ÅÒ¦WºÙ
-			f.Write(&c, sizeof(short));	//Àx¦s¸Ó­¶ªº¦r¦ê¼Æ
+			SaveString(f, tmp);		//å„²å­˜é ç±¤åç¨±
+			f.Write(&c, sizeof(short));	//å„²å­˜è©²é çš„å­—ä¸²æ•¸
 			for (int i2 = 0;i2 < c;i2++)
 			{
-				tinf = stra->inf.ElementAt(i2);	//Àx¦s¦r¦ê¸ê°T
+				tinf = stra->inf.ElementAt(i2);	//å„²å­˜å­—ä¸²è³‡è¨Š
 				f.Write(&tinf, sizeof(DWORD));
-				SaveString(f, stra->ElementAt(i2));	//Àx¦s¦r¦ê
+				SaveString(f, stra->ElementAt(i2));	//å„²å­˜å­—ä¸²
 			}
 		}
 	}
@@ -324,19 +324,19 @@ void CStringDlg::OnSave()
 
 	BOOL badd = (add.GetDlgCtrlID() == IDC_SAVE);
 	int i = (int)list.GetFirstSelectedItemPosition() - 1;
-	if (badd)	//¦pªG·s¼W
+	if (badd)	//å¦‚æœæ–°å¢
 	{
 		i = list.InsertItem((i == -1 ? list.GetItemCount() : i) , LPSTR_TEXTCALLBACK);
 		stra->InsertAt(i, tmp);
 		stra->inf.InsertAt(i, ninf);
 
-//		if((stra->inf.ElementAt(i)&~(3<<30)))	//³]¤F¼öÁä
+//		if((stra->inf.ElementAt(i)&~(3<<30)))	//è¨­äº†ç†±éµ
 //			hotkey_changed=TRUE;
 
 	}
-	else	//¦pªG­×§ï
+	else	//å¦‚æœä¿®æ”¹
 	{
-//		if( (stra->inf.ElementAt(i)&~(3<<30)) != (ninf&~(3<<30)) )	//¼öÁä§ïÅÜ
+//		if( (stra->inf.ElementAt(i)&~(3<<30)) != (ninf&~(3<<30)) )	//ç†±éµæ”¹è®Š
 //			hotkey_changed=TRUE;
 
 		list.SetItemText(i, 0, LPSTR_TEXTCALLBACK);
