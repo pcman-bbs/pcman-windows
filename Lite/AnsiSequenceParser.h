@@ -8,7 +8,7 @@
 class AnsiSequenceParser
 {
 public:
-	enum Result { Text, Consumed, Dispatch, SyncBegin, SyncEnd, Osc };
+	enum Result { Text, Consumed, Dispatch, SyncBegin, SyncEnd, Osc, AutoWrapOn, AutoWrapOff };
 	static const unsigned int MaxOscLength = 4096;
 	AnsiSequenceParser() { Reset(); }
 
@@ -159,14 +159,22 @@ private:
 	{
 		state = Ground;
 		sequence[length] = 0;
-		// Recognize ONLY this private mode, never forward private parameters
-		// to the legacy numeric dispatcher. Overlong prefixes cannot qualify.
-		if (!overflow && length == 7 && sequence[0] == '[' &&
-			sequence[1] == '?' && sequence[2] == '2' && sequence[3] == '0' &&
-			sequence[4] == '2' && sequence[5] == '6')
+		// Recognized private modes bypass the legacy numeric dispatcher.
+		// Validate the entire scalar parameter, including leading zeros; lists,
+		// intermediates, subparameters and oversized input remain ignored.
+		if (!overflow && length >= 4 && sequence[0] == '[' && sequence[1] == '?' &&
+			(sequence[length - 1] == 'h' || sequence[length - 1] == 'l'))
 		{
-			if (sequence[6] == 'h') return SyncBegin;
-			if (sequence[6] == 'l') return SyncEnd;
+			unsigned int mode = 0;
+			for (unsigned int i = 2; i < length - 1; ++i)
+			{
+				if (sequence[i] < '0' || sequence[i] > '9') return Consumed;
+				mode = mode * 10 + sequence[i] - '0';
+				if (mode > 32767) return Consumed;
+			}
+			const bool enabled = sequence[length - 1] == 'h';
+			if (mode == 7) return enabled ? AutoWrapOn : AutoWrapOff;
+			if (mode == 2026) return enabled ? SyncBegin : SyncEnd;
 		}
 		if (!supported)
 			return Consumed;

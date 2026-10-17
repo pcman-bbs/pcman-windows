@@ -410,10 +410,26 @@ void CTelnetConn::OnText()
 			BeginSynchronizedOutput();
 		else if (parsed == AnsiSequenceParser::SyncEnd)
 			EndSynchronizedOutput();
+		else if (parsed == AnsiSequenceParser::AutoWrapOn || parsed == AnsiSequenceParser::AutoWrapOff)
+		{
+			sgr66_attribute.Reset();
+			if (!is_ansi_editor)
+			{
+				remote_line_wrap = parsed == AnsiSequenceParser::AutoWrapOn ? 1 : 0;
+				if (cursor_pos.x >= site_settings.cols_per_page)
+					cursor_pos.x = site_settings.cols_per_page - 1;
+			}
+		}
 		else if (parsed == AnsiSequenceParser::Dispatch)
 		{
 			if (ansi_parser.Sequence()[ansi_parser.Length() - 1] != 'm')
+			{
 				sgr66_attribute.Reset();
+				// The one-past-right position denotes a delayed wrap. Cursor/control
+				// operations address the last cell instead; SGR keeps wrap pending.
+				if (!is_ansi_editor && cursor_pos.x >= site_settings.cols_per_page)
+					cursor_pos.x = site_settings.cols_per_page - 1;
+			}
 			// The parser only dispatches complete, bounded, plain numeric CSI
 			// or single-character ESC commands understood by the legacy handler.
 			memcpy(ansi_param, ansi_parser.Sequence(), ansi_parser.Length() + 1);
@@ -434,9 +450,15 @@ void CTelnetConn::OnText()
 				break;
 			case 10:	//line feed
 				if (!is_ansi_editor)
+				{
+					if (cursor_pos.x >= site_settings.cols_per_page)
+						cursor_pos.x = site_settings.cols_per_page - 1;
 					LineFeed();
+				}
 				break;
 			case 8:
+				if (!is_ansi_editor && cursor_pos.x >= site_settings.cols_per_page)
+					cursor_pos.x = site_settings.cols_per_page - 1;
 				Back();
 				break;
 			case 7:
@@ -487,12 +509,15 @@ void CTelnetConn::OnText()
 				if (cursor_pos.y > last_line || cursor_pos.y < first_line)
 					break;
 
-				if (site_settings.line_wrap &&
-					cursor_pos.x >= site_settings.cols_per_page
-					&& !is_ansi_editor)
+				if (!is_ansi_editor && *buf >= ' ' && cursor_pos.x >= site_settings.cols_per_page)
 				{
-					cursor_pos.x = 0;
-					LineFeed();
+					if (remote_line_wrap < 0 ? site_settings.line_wrap != 0 : remote_line_wrap != 0)
+					{
+						cursor_pos.x = 0;
+						LineFeed();
+					}
+					else if (remote_line_wrap == 0)
+						cursor_pos.x = site_settings.cols_per_page - 1;
 				}
 
 				// FIXME: The cursor_pos.x will be incorrent when buffer is UTF8.
@@ -835,24 +860,30 @@ void CTelnetConn::SetScrollRange(int pt, int pb)
 	if (pb <= 0)	pb = site_settings.lines_per_page;
 	if (pb > site_settings.lines_per_page)	pb = site_settings.lines_per_page;
 
+	// A scrolling region needs at least two rows. Invalid requests leave both
+	// the previous margins and the cursor unchanged (VT100 DECSTBM).
+	if (pt >= pb)
+		return;
 	scr_top = pt - 1;
 	scr_bottom = pb - 1;
-	if (scr_top > scr_bottom)
-	{
-		scr_top = 0;
-		scr_bottom = site_settings.lines_per_page - 1;
-	}
+	GotoXY(1, 1); // Origin mode is not implemented; Home is screen-relative.
 }
 
 void CTelnetConn::LineFeed()
 {
 	int _firstl = first_line + scr_top;
 	int _lastl = first_line + scr_bottom;
-	if (cursor_pos.y < _lastl)	//if at the middle of screen
-		cursor_pos.y++;
-	else	//at the buttom of the scroll range
+	if (cursor_pos.y != _lastl)
 	{
-		if (scr_top == 0)
+		// A cursor below the region moves down without scrolling that region.
+		if (cursor_pos.y < last_line)
+			cursor_pos.y++;
+	}
+	else	//at the bottom of the scroll range
+	{
+		// Preserve scrollback only for a full-screen region, not a partial
+		// region whose top happens to be the first visible row.
+		if (scr_top == 0 && scr_bottom == site_settings.lines_per_page - 1)
 			_firstl = 0;
 
 		LPSTR tmpline = screen[_firstl];
@@ -1362,8 +1393,9 @@ void CTelnetConn::GoRight(int p)	//Right
 		}
 	*/
 	cursor_pos.x += p;
-	if (cursor_pos.x > site_settings.cols_per_page)
-		cursor_pos.x = site_settings.cols_per_page;
+	const int right = site_settings.cols_per_page - (is_ansi_editor ? 0 : 1);
+	if (cursor_pos.x > right)
+		cursor_pos.x = right;
 	UpdateCursorPos();
 }
 void CTelnetConn::GoLeft(int p)	//Left
@@ -1443,13 +1475,12 @@ inline void CTelnetConn::ProcessAnsiEscapeSequence()
 		char *param = ansi_param + 1;
 		BYTE type = *pansi_param;
 
-		// DEC private control sequences use '?' before their parameters. PCMan
-		// does not currently implement these modes, so consume the complete
-		// sequence without treating it as the corresponding standard CSI command.
-		// This also safely ignores synchronized output (CSI ? 2026 h/l) and
-		// XTerm mouse modes (CSI ? 1000 h through CSI ? 1006 l).
+		// Recognized private modes are handled by OnText, never by the legacy
+		// numeric dispatcher. Keep this guard for unrecognized private sequences.
 		if (*param == '?')
 			return;
+		if (type == 'r' && std::count(param, pansi_param, ';') > 1)
+			return; // DECSTBM accepts at most two parameters.
 
 		*pansi_param = ';';
 
@@ -1659,7 +1690,7 @@ char* CTelnetConn::ResizeLine(int line, int newl)
 	if (site_settings.cols_per_page == newl)
 		return screen[line];
 
-	DWORD d = *(DWORD*)(attr + (GetLineBufLen() / 2));
+	DWORD d = *(DWORD*)(attr + site_settings.cols_per_page);
 	char* str = screen[line];
 	char* newstr = new char[GetLineBufLen(newl)];
 	LPBYTE newatb = (LPBYTE)newstr + (GetLineBufLen(newl) / 2);
@@ -1693,6 +1724,7 @@ void CTelnetConn::ReSizeBuffer(long new_line_count, int new_cols_per_page, int n
 		new_line_count = MAX_LINE_COUNT;
 
 	site_settings.lines_per_page = new_lines_per_page;
+	scr_top = 0;
 	scr_bottom = site_settings.lines_per_page - 1;
 
 	if (new_line_count == site_settings.line_count)	//如果最大行數不變
@@ -1733,6 +1765,8 @@ void CTelnetConn::ReSizeBuffer(long new_line_count, int new_cols_per_page, int n
 	}
 	site_settings.line_count = new_line_count;
 	site_settings.cols_per_page = new_cols_per_page;
+	if (!is_ansi_editor && cursor_pos.x >= new_cols_per_page)
+		cursor_pos.x = new_cols_per_page - 1;
 	first_line = site_settings.line_count - site_settings.lines_per_page;
 	last_line = site_settings.line_count - 1;
 	if (scroll_pos > first_line)
@@ -1745,6 +1779,8 @@ void CTelnetConn::ReSizeBuffer(long new_line_count, int new_cols_per_page, int n
 		scroll_pos = site_settings.line_count - site_settings.lines_per_page;
 		cursor_pos.y = last_line;
 	}
+	if (!is_ansi_editor && cursor_pos.y < first_line)
+		cursor_pos.y = first_line;
 	if (view->telnet == this)
 	{
 		view->SetScrollBar();

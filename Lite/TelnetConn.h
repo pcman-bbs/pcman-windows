@@ -110,6 +110,7 @@ public:
 	SynchronizedOutput sync_output;
 	OscHyperlinks osc_links, osc_snapshot;
 	Sgr66::PendingAttribute sgr66_attribute;
+	int remote_line_wrap = -1; // -1: local preference; 0/1: per-session DECAWM.
 	int sync_scroll_pos = 0;
 	void BeginSynchronizedOutput();
 	void EndSynchronizedOutput();
@@ -233,6 +234,7 @@ public:
 		osc_links.Reset();
 		osc_snapshot.Reset();
 		sgr66_attribute.Reset();
+		remote_line_wrap = -1;
 		ansi_parser = AnsiSequenceParser();
 		is_telnet = true;
 
