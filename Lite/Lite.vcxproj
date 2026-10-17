@@ -508,6 +508,7 @@
     <ClInclude Include="AES.h" />
     <ClInclude Include="AnsiBar.h" />
     <ClInclude Include="AnsiSequenceParser.h" />
+    <ClInclude Include="OscHyperlinks.h" />
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="AutoComplete.h" />
     <ClInclude Include="AutoReplyPage.h" />

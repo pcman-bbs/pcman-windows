@@ -1,7 +1,8 @@
 # 近期 PTT 公告與 PCMan LITE 相容性評估
 
 評估日期：2026-10-17。範圍：使用者提供的六則公告，以及目前本機 `master`（`c8404c6`）。
-本次讀取公告原文並檢查程式碼，只更新文件；沒有修改正式程式、重新編譯、操作 GUI 或登入站台。
+初評讀取公告原文並檢查程式碼；同日後續已完成 OSC 接收修正與 OSC 8 目標功能，見 [OSC 實作與驗收](OSC-Validation.md)。
+初評的其餘功能結論保留，未自動操作 GUI 或登入站台。
 下列上線日期與未來期限均為公告記載，不代表已實測伺服器部署；9/28、10/03 的人工回報亦不替代更新後驗收。
 
 ## 公告摘要與結論
@@ -12,14 +13,14 @@
 | [Keep-Alive](https://www.ptt.cc/bbs/PttCurrent/M.1790178013.A.9FB.html)（9/23） | 公告表示 PTT1／PTT2 已支援，適用 WSS | 使用原始 `FF FD 06` 保持雙向流量，避免模擬按鍵干擾 UI | 預設自動模式已有實作；保留的自訂模式可手動選擇，但在 PTT 使用時不符合公告推薦方式 |
 | [DECAWM 自動折行](https://www.ptt.cc/bbs/PttCurrent/M.1790662175.A.563.html)（9/29） | PTT1 10/04、PTT2 9/29 | `ESC[?7h/l` 控制右側邊界折行；站台初始化會送關閉 | 目前安全忽略，預設 `line_wrap=0` 符合 BBS 建議；使用者啟用本機折行時需特別驗證 |
 | [DECSTBM 捲動範圍](https://www.ptt.cc/bbs/PttCurrent/M.1790697156.A.14E.html)（9/29） | PTT1 10/04、PTT2 9/29 | `ESC[top;bottomr`／`ESC[r`；超過有效列數時限制捲動區 | 已有設定／重設與 LF 捲動路徑；缺少游標 Home。UI 上限 64 列，公告超過 150 列的主要情境目前不由正常設定觸發 |
-| [OSC 8 超連結](https://www.ptt.cc/bbs/PttCurrent/M.1790734943.A.8D4.html)（9/30） | PTT1 10/11、PTT2 9/30；Markdown 超連結為後續計畫 | OSC 字串包含 URL，ST 結束；可不支援點擊，但必須完整吃掉控制內容 | 明確解析缺口，應優先修正。現有解析器只吃掉 `ESC ]`，其後的 `8;...URL` 會流入文字路徑 |
+| [OSC 8 超連結](https://www.ptt.cc/bbs/PttCurrent/M.1790734943.A.8D4.html)（9/30） | PTT1 10/11、PTT2 9/30；Markdown 超連結為後續計畫 | OSC 字串包含 URL，ST 結束；可不支援點擊，但必須完整吃掉控制內容 | 已實作有界解析、HTTP／HTTPS 目標點擊、下劃線與右鍵複製；其他 OSC 忽略，人工驗收完成、待提交 |
 | [VCOL 動態分欄](https://www.ptt.cc/bbs/PttCurrent/M.1790827526.A.744.html)（10/1） | PTT2 9/30、PTT1 10/4；80×24 原則上維持原貌，之後小幅對齊調整不再逐次公告 | 列表隨終端寬度調整欄位／省略內容，不能依賴固定欄位座標 | 未發現內建列表資料擷取依賴固定欄位的直接調整需求；應補寬畫面、空列表與自訂觸發器驗收 |
 
 ### 程式碼查核入口
 
 | 路徑 | 本輪檢查的方法／設定 |
 | --- | --- |
-| [AnsiSequenceParser.h](../Lite/AnsiSequenceParser.h) | `Feed`、`Finish`：CSI／ESC 分派、private sequence 忽略及缺少 OSC string 狀態 |
+| [AnsiSequenceParser.h](../Lite/AnsiSequenceParser.h) | `Feed`、`Finish`、`Reset`：CSI／ESC 分派、private sequence 忽略及後續新增的 OSC string 狀態 |
 | [TelnetConn.cpp](../Lite/TelnetConn.cpp) | `OnIAC`、`OnText`、`ProcessAnsiEscapeSequence`、`SetCurrentAttributes`、`SetScrollRange`、`LineFeed`、`GetLineWithAnsi`、`GetArticleProgress`、`CheckHyperLinks`、`CheckStrTrigger` |
 | [TelnetConn.h](../Lite/TelnetConn.h)／[SitePage.cpp](../Lite/SitePage.cpp) | UI 終端範圍為 40～160 欄、24～64 列，儲存設定時限制在範圍內 |
 | [SiteSettings.h](../Lite/SiteSettings.h) | 預設 80×24、`line_wrap=0` |
@@ -88,26 +89,29 @@ PTT 請使用自動／TIMING-MARK；若使用 IP 或非 PTT 網域別名，需�
 後續應補捲動區、區外游標、重設、相等／反向邊界、resize 與文章複製測試，
 再決定修正 Home、邊界與有效底列的具體方式。標準 80×24 的風險較低，但尚未由本輪重驗。
 
-## 5. OSC 8：最高優先的解析補強
+## 5. OSC 8：解析、目標功能與人工驗收已完成
 
 公告格式是 `OSC 8;params;URL ST label OSC 8;; ST`；OSC 是 `ESC ]`，ST 是 `0x1B 0x5C`（ESC 加反斜線）。
 應只把 `label` 送到畫面；開啟與結束標記內的資料不應佔用游標欄位。
 
-目前 `AnsiSequenceParser::Feed` 沒有 OSC string 狀態。收到 `ESC ]` 後就返回 Ground，
+初評時 `AnsiSequenceParser::Feed` 沒有 OSC string 狀態。收到 `ESC ]` 後就返回 Ground，
 因此最簡單的空 params 範例在文字路徑會變成 `8;;https://example.comlabel8;;`，
 而不是單獨 `label`；這會影響排版、選取複製、文章擷取與既有自動網址辨識。
 OSC 內如果包含 ESC／CSI，目前也可能重新進入一般解析路徑，不能視為已安全消化未知 OSC。
 DEC2026 只控制重畫時機，無法修復此解析缺口。
 
-第一階段至少新增可跨接收區塊、逐位元組吸收到 ST（`0x1B 0x5C`）的有界 OSC 處理，
-先忽略開啟／結束標記而保留標籤文字；不需要同時完成可點擊超連結。
-實作時應定義 BEL 結束、CAN／SUB 取消、未結束／超長字串與斷線重設行為，
-超長時不得將尾端 payload 當文字釋出。ST 與 OSC 8 關閉連結標記是兩個不同層次：
+同日已新增可跨接收區塊、逐位元組吸收到 ST（`0x1B 0x5C`）或 BEL 的 OSC 狀態，
+並依後續要求實作指定目標：OSC 8 開啟／關閉範圍，其他 OSC 忽略；payload 不顯示在畫面上。
+CAN／SUB 取消、未結束／超長字串與連線重設均已定義並補解析測試；最多保留 4096-byte 命令，
+超長時不建立截斷網址、不將尾端當文字釋出，未終止時持續吸收至明確終止／取消或重設。
+ST 與 OSC 8 關閉連結標記是兩個不同層次：
 ST 結束每一段 OSC，空 URL 才結束目前的超連結範圍。
 
-第二階段若支援點擊，需保存文字範圍與目標 URL、同步快照／捲動／尺寸變動的生命週期，
-並讓 OSC 8 的目標優先於畫面文字的 auto-link。依公告只允許 `http://`／`https://`，
-使用者點擊前不自動開啟或請求 URL。目前 `CheckHyperLinks` 僅掃描畫面文字，沒有 OSC 目標資料。
+目標功能保存每列／每個文字位元組的目標，配合清除、覆寫、捲動、編輯、resize 及同步快照生命週期，
+讓 OSC 8 優先於畫面文字的 auto-link；非法目標亦不退回文字網址。
+依公告只允許 `http://`／`https://`，接收時不自動開啟或請求 URL；點擊、手形、下劃線與右鍵複製已接現有流程。
+每連線目標數／網址總量有上限。2026-10-17 使用者確認離線與本機連線兩個人工驗收腳本及流程皆正確，
+實際瀏覽 PTT 也未發現特殊異常；本輪 OSC 人工驗收完成，詳見 [驗收紀錄](OSC-Validation.md#人工驗收紀錄)。
 
 ## 6. VCOL：以回歸驗證與使用者規則為主
 
@@ -125,15 +129,17 @@ UI 允許 40～160 欄，寬畫面可選平常使用的 120／160 欄；不要�
 
 | 優先序 | 後續工作 | 完成條件 |
 | --- | --- | --- |
-| 1 | OSC 字串安全吸收 | 不顯示 URL／控制 payload、不錯執行其中 CSI；ST 切段、長字串、取消與連線隔離有測試 |
+| 已實作、驗收完成、待提交 | OSC 字串解析與 OSC 8 目標功能 | 有界命令、目標白名單、點擊／下劃線／右鍵複製、範圍更新與同步快照；自動測試通過，使用者確認兩個腳本及流程正確，PTT 瀏覽無特殊異常 |
 | 2 | SGR 66 彩圖匯出／貼上 | 不在 Big5 字元內插入控制碼；可保留半字屬性；新檔讀回與其他 BBS 格式選項完成驗證 |
 | 3 | 新介面與邊界回歸 | 完成下列 N1～N6，記錄組態、站台、連線及終端尺寸；DECAWM／DECSTBM 異常再開修正 |
-| 後續 | OSC 8 點擊、SGR 66 完整顯示、CPR、SGR Mouse | 各自設計與驗證，不與最低限度解析修正綁成同一功能 |
+| 後續 | SGR 66 完整顯示、CPR、SGR Mouse | 各自設計與驗證，不與 OSC 8 功能綁成同一功能 |
 
 本輪確認 PR #5（`fcd3950`）、#6（`b13d995`）、#7（`c8404c6`）已在本機歷史中。
 PR #7 的日文／Unicode 複製修正不再是未提交功能；相關文件原有的人工驗收待辦予以保留，
 不能僅由合併推論已完成實際剪貼簿／編輯器驗收。
-本輪沒有重跑原有自動測試，也沒有新增上述公告的功能測試；下列均為待驗收。
+初評未跑測試；後續最終版 Debug／Release 五組：OSC 目標 1,343、解析器 11,451、Keep-Alive 2,318、同步 100、文章 810 項均通過。
+N5 的解析／接收與同步隔離已有自動覆蓋，兩個人工驗收腳本及流程已由使用者確認正確，實際瀏覽 PTT 無特殊異常。
+其他項目仍依各項限制驗收，不宣稱六則公告皆已測畢。
 
 | 編號 | 驗證項目 | 預期／目前限制 |
 | --- | --- | --- |
@@ -141,5 +147,5 @@ PR #7 的日文／Unicode 複製修正不再是未提交功能；相關文件原
 | N2 | Keep-Alive：自動／TIMING-MARK，WSS PTT1／PTT2，停在列表與輸入框 | 選取列與未送出文字不被改動，WONT 被吸收；保留先前驗收紀錄，本輪尚未重驗 |
 | N3 | DECAWM：`?7l/h`、折行設定開／關、右邊界雙位元組 | 不顯示控制碼；記錄本機設定而非假定遠端模式已生效 |
 | N4 | DECSTBM：設定／重設、區內／區外 LF、resize、文章下載 | 先以本機 fixture 測局部捲動區與 Home；UI 僅 24～64 列，不繞過上限模擬 PTT 超過 150 列的情境 |
-| N5 | OSC 8：ST 分段、開／關連結、未知 OSC、很長或未結束 payload、取消 | 目前列為已知不相容；最低修正後只能看見 label。此項先以本機 fixture／解析器測試驗證 |
+| N5 | OSC 8：ST 分段、開／關連結、未知 OSC、很長或未結束 payload、取消 | 自動解析／接收／範圍測試通過；使用者確認離線與本機連線兩個腳本及驗收流程正確，實際瀏覽 PTT 無特殊異常 |
 | N6 | VCOL：80×24 與較寬畫面、長標題／省略號、空結果、選取及文章複製 | 無多餘折行、欄位殘字或錯誤完成；自訂規則未使用時可記 N/A，不要求新增規則 |

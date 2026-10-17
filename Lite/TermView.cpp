@@ -789,13 +789,12 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point_In)
 	else
 	{
 //	----------¦pªG¤£¬O¦b¿ï¨ú¤å¦r¡A´N³B²z¶W³sµ²--------------
-		int l;	char* url;
+		int l;	const char* url;
 		if ((url = HyperLinkHitTest(point, l)))	//¦pªG·Æ¹«ÂI¿ï¨ì¶W³sµ²
 		{
-			char tmp;	tmp = url[l];	url[l] = 0;
+			const CString target(url, l);
 			//	©I¥sµ{¦¡¶}±Ò¶W³sµ²
-			AppConfig.hyper_links.OpenURL(url);
-			url[l] = tmp;
+			AppConfig.hyper_links.OpenURL(target);
 		}
 		else
 		{
@@ -997,7 +996,8 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		}
 	}
 
-	char* link = NULL;
+	const char* link = NULL;
+	CString contextUrl;
 	int len;
 	if (telnet)
 	{
@@ -1013,6 +1013,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		}
 	}
 
+	if (link) contextUrl.SetString(link, len); // Popup messages may update/free terminal rows.
 	int c = GetMenuItemCount(parent->edit_menu);
 	AppendMenu(parent->edit_menu, MF_SEPARATOR, 0, NULL);
 	HMENU config = GetSubMenu(parent->main_menu, 2);
@@ -1031,7 +1032,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		RemoveMenu(parent->edit_menu, 0, MF_BYPOSITION);
 		if (cmd == ID_EDIT_COPYURL)
 		{
-			CClipboard::SetText(m_hWnd, link, len);
+			CClipboard::SetText(m_hWnd, contextUrl);
 			return;
 		}
 	}
@@ -2322,16 +2323,41 @@ void CTermView::DrawLineBlink(CDC &dc, LPCSTR line, int y)
 
 inline void CTermView::DrawLink(CDC &dc, LPSTR line, LPBYTE atbline, int y)
 {
-	if (!telnet->GetHyperLink(line))
+	const OscHyperlinks& explicitLinks = telnet->sync_output.Active() ? telnet->osc_snapshot : telnet->osc_links;
+	const int width = telnet->site_settings.cols_per_page;
+	if (!telnet->GetHyperLink(line) && !explicitLinks.Overlaps(line, 0, width))
 		return;
 
 	int start, len;
 	HPEN pen = NULL;
 	y += lineh - 1;
+	for (int column = 0; column < width;)
+	{
+		const auto target = explicitLinks.At(line, column);
+		int end = column + 1;
+		while (end < width && explicitLinks.At(line, end) == target) ++end;
+		if (target && !target->empty())
+		{
+			const int type = AppConfig.hyper_links.GetURLType(target->c_str());
+			const COLORREF color = type >= 0 ? AppConfig.hyper_links.links[type].color : RGB(0, 102, 255);
+			pen = CreatePen(PS_SOLID, 1, color);
+			HGDIOBJ old = SelectObject(dc.m_hDC, pen);
+			dc.MoveTo(left_margin + column * chw, y);
+			dc.LineTo(left_margin + end * chw, y);
+			SelectObject(dc.m_hDC, old);
+			DeleteObject(pen);
+		}
+		column = end;
+	}
 	const char* plink = line;
 	const char* eol = line + telnet->site_settings.cols_per_page;
 	while ((plink < eol) && (plink = AppConfig.hyper_links.FindHyperLink(plink, len)))
 	{
+		if (explicitLinks.Overlaps(line, static_cast<int>(plink - line), len))
+		{
+			plink += len;
+			continue;
+		}
 		start = (int(plink) - int(line)) * chw + left_margin;
 		char tmp = plink[len];	((char*)plink)[len] = 0;
 		int t = AppConfig.hyper_links.GetURLType(plink);
@@ -2694,11 +2720,11 @@ CRect CTermView::TextRect() const
 }
 
 
-char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤W¬YÂI¬O§_¬°¶W³sµ²
+const char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤W¬YÂI¬O§_¬°¶W³sµ²
 //x,y¬°²×ºÝ¾÷¦æ¦C®y¼Ð¡A¦Ó¤£¬O·Æ¹«®y¼Ð
 {
-	CRect text_rect = TextRect();
 	if (!telnet || telnet->sync_output.Active()) return nullptr;
+	CRect text_rect = TextRect();
 	if (!PtInRect(&text_rect, client_point))
 		return nullptr;
 
@@ -2706,6 +2732,12 @@ char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤
 	PtToLineCol(client_point, x, y, false);
 	y += telnet->scroll_pos;
 	const char* plink = telnet->screen[y];
+	const auto target = telnet->osc_links.At(plink, x);
+	if (target)
+	{
+		len = static_cast<int>(target->size());
+		return target->empty() ? nullptr : target->c_str();
+	}
 
 	if (!telnet->GetHyperLink(plink))
 		return nullptr;
@@ -2715,7 +2747,8 @@ char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤
 	{
 		char* px = telnet->screen[y] + x;
 		if (px >= plink && px < plink + len)
-			return (char*)plink;
+			return telnet->osc_links.Overlaps(telnet->screen[y],
+				static_cast<int>(plink - telnet->screen[y]), len) ? nullptr : plink;
 		plink += len;
 	}
 	return nullptr;

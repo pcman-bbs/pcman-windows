@@ -22,6 +22,7 @@
 #include "AnsiSequenceParser.h"
 #include "ArticleProgress.h"
 #include "SynchronizedOutput.h"
+#include "OscHyperlinks.h"
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -106,6 +107,7 @@ public:
 	char* pansi_param;		//用來操作ansi_param資料的指標
 	AnsiSequenceParser ansi_parser; // Separate from the Telnet IAC buffer.
 	SynchronizedOutput sync_output;
+	OscHyperlinks osc_links, osc_snapshot;
 	int sync_scroll_pos = 0;
 	void BeginSynchronizedOutput();
 	void EndSynchronizedOutput();
@@ -225,6 +227,8 @@ public:
 	{
 		CConn::ClearAllFlags();
 		sync_output.Reset();
+		osc_links.Reset();
+		osc_snapshot.Reset();
 		ansi_parser = AnsiSequenceParser();
 		is_telnet = true;
 
@@ -294,6 +298,7 @@ inline LPBYTE CTelnetConn::GetLineAttr(const int line, const int len)
 
 inline void CTelnetConn::InitNewLine(char *line)
 {
+	osc_links.Clear(line);
 	LPBYTE attr = GetLineAttr(line);
 	memset(line, ' ', site_settings.cols_per_page);
 	*(DWORD*)(line + site_settings.cols_per_page) = 0;

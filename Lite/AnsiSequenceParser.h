@@ -1,19 +1,48 @@
 #pragma once
+#include <string>
 
-// Streaming parser for 7-bit ESC/CSI sequences. No platform or UI dependencies.
-// Bytes >= 0x80 remain text (Big5/UAO and UTF-8 must not become C1 controls).
-// OSC/DCS string protocols are outside this parser's scope.
+// Streaming parser for 7-bit ESC/CSI sequences and bounded OSC commands.
+// No platform or UI dependencies. OSC payload is never executed as CSI.
+// Outside OSC, bytes >= 0x80 remain text (Big5/UAO and UTF-8 are not C1 controls).
+// OSC interpretation belongs to the consumer; DCS remains outside this scope.
 class AnsiSequenceParser
 {
 public:
-	enum Result { Text, Consumed, Dispatch, SyncBegin, SyncEnd };
-	AnsiSequenceParser() : state(Ground), length(0), supported(true), number(0), overflow(false)
+	enum Result { Text, Consumed, Dispatch, SyncBegin, SyncEnd, Osc };
+	static const unsigned int MaxOscLength = 4096;
+	AnsiSequenceParser() { Reset(); }
+
+	void Reset()
 	{
+		state = Ground;
+		length = 0;
+		supported = true;
+		number = 0;
+		overflow = false;
 		sequence[0] = 0;
+		osc.clear();
+		oscValid = true;
 	}
 
 	Result Feed(unsigned char byte)
 	{
+		// Handle OSC before generic ESC/C0/high-byte processing. Payload may
+		// contain any of them, but must not draw, ring BEL or dispatch CSI.
+		// Keep discarding oversized/unfinished strings through their terminator.
+		if (state == OscString || state == OscEscape)
+		{
+			if (byte == 0x07 || byte == 0x18 || byte == 0x1a ||
+				(state == OscEscape && byte == '\\'))
+			{
+				if (byte == 0x18 || byte == 0x1a) oscValid = false;
+				state = Ground;
+				return Osc; // Only the completed command is exposed to the consumer.
+			}
+			if (state == OscEscape) AppendOsc(0x1b);
+			if (byte != 0x1b) AppendOsc(byte);
+			state = byte == 0x1b ? OscEscape : OscString;
+			return Consumed;
+		}
 		if (byte == 0x1b)
 		{
 			state = Escape;
@@ -40,6 +69,13 @@ public:
 			return Text;
 		}
 
+		if (state == Escape && byte == ']')
+		{
+			osc.clear();
+			oscValid = true;
+			state = OscString;
+			return Consumed;
+		}
 		if (state == Escape && byte == '[')
 		{
 			Append(byte);
@@ -86,15 +122,27 @@ public:
 	// Valid only when Feed returns Dispatch, and until the next Feed call.
 	const char* Sequence() const { return sequence; }
 	unsigned int Length() const { return length; }
+	// Valid after Osc until the next OSC starts or Reset. Invalid commands
+	// (overflow/cancellation) must never be interpreted as a truncated URL.
+	const std::string& OscSequence() const { return osc; }
+	bool OscValid() const { return oscValid; }
 
 private:
-	enum State { Ground, Escape, EscapeIntermediate, Parameters, Intermediate };
+	enum State { Ground, Escape, EscapeIntermediate, Parameters, Intermediate, OscString, OscEscape };
 	State state;
 	char sequence[64]; // Includes the '[' for CSI and a trailing NUL.
 	unsigned int length;
 	bool supported;
 	unsigned int number;
 	bool overflow;
+	std::string osc;
+	bool oscValid;
+
+	void AppendOsc(unsigned char byte)
+	{
+		if (osc.size() < MaxOscLength) osc += static_cast<char>(byte);
+		else oscValid = false;
+	}
 
 	void Append(unsigned char byte)
 	{

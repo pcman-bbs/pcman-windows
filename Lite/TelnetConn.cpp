@@ -403,7 +403,9 @@ void CTelnetConn::OnText()
 		}
 
 		const AnsiSequenceParser::Result parsed = ansi_parser.Feed(*buf);
-		if (parsed == AnsiSequenceParser::SyncBegin)
+		if (parsed == AnsiSequenceParser::Osc)
+			osc_links.Command(ansi_parser.OscSequence(), ansi_parser.OscValid());
+		else if (parsed == AnsiSequenceParser::SyncBegin)
 			BeginSynchronizedOutput();
 		else if (parsed == AnsiSequenceParser::SyncEnd)
 			EndSynchronizedOutput();
@@ -496,6 +498,8 @@ void CTelnetConn::OnText()
 					{
 						if (is_ansi_editor && insert_mode)
 						{
+							osc_links.Copy(curstr, cursor_pos.x + 1, curstr, cursor_pos.x,
+								site_settings.cols_per_page - cursor_pos.x - 1, site_settings.cols_per_page);
 							for (int i = site_settings.cols_per_page - 1;i > cursor_pos.x;i--)
 							{
 								curstr[i] = curstr[i-1];
@@ -506,10 +510,13 @@ void CTelnetConn::OnText()
 						else
 						{
 							// reduce unnecessary update.  does this work?
-							if (curstr[cursor_pos.x] != *buf || pcuratb[cursor_pos.x] != cur_attr)
+							if (curstr[cursor_pos.x] != *buf || pcuratb[cursor_pos.x] != cur_attr ||
+								osc_links.At(curstr, cursor_pos.x))
 								SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);	//將這行設為等待更新
 						}
 
+						if (osc_links.Write(curstr, cursor_pos.x, site_settings.cols_per_page))
+							SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);
 						pcuratb[cursor_pos.x] = cur_attr;
 						curstr[cursor_pos.x] = *buf;
 
@@ -576,12 +583,17 @@ void CTelnetConn::BeginSynchronizedOutput()
 		site_settings.lines_per_page, GetLineBufLen()))
 	{
 		sync_scroll_pos = scroll_pos;
+		osc_snapshot.Reset();
+		for (int i = 0; i < site_settings.lines_per_page; ++i)
+			osc_snapshot.CopyFrom(osc_links, sync_output.Row(i), 0, screen[scroll_pos + i],
+				0, site_settings.cols_per_page, site_settings.cols_per_page);
 		if (view->telnet == this) view->HideCaret();
 	}
 }
 
 void CTelnetConn::RefreshSynchronizedOutput()
 {
+	osc_snapshot.Reset();
 	for (int i = first_line; i <= last_line; ++i) SetUpdateWholeLine(i);
 	if (view->telnet == this)
 	{
@@ -603,6 +615,9 @@ void CTelnetConn::CheckSynchronizedOutputTimeout()
 
 void CTelnetConn::OnClose()
 {
+	ansi_parser.Reset();
+	*ansi_param = 0;
+	pansi_param = ansi_param;
 	const bool unfinishedFrame = !sync_output.CopyReady();
 	ClearAllFlags();
 	if (unfinishedFrame)
@@ -669,14 +684,17 @@ void CTelnetConn::ClearCurrentLine(int param)
 	{
 	default:
 	case 0:
+		osc_links.Erase(screen[cursor_pos.y], cursor_pos.x, site_settings.cols_per_page - cursor_pos.x);
 		memset((screen[cursor_pos.y] + cursor_pos.x), ' ', site_settings.cols_per_page - cursor_pos.x);
 		memset((GetLineAttr(cursor_pos.y) + cursor_pos.x), 7, site_settings.cols_per_page - cursor_pos.x);
 		break;
 	case 1:
+		osc_links.Erase(screen[cursor_pos.y], 0, cursor_pos.x);
 		memset(screen[cursor_pos.y], ' ', cursor_pos.x);
 		memset(GetLineAttr(cursor_pos.y), 7, cursor_pos.x);
 		break;
 	case 2:
+		osc_links.Clear(screen[cursor_pos.y]);
 		memset(screen[cursor_pos.y], ' ', site_settings.cols_per_page);
 		screen[cursor_pos.y][site_settings.cols_per_page] = 0;
 		memset(GetLineAttr(cursor_pos.y), 7, site_settings.cols_per_page);
@@ -720,11 +738,15 @@ void CTelnetConn::ClearScreen(int param)
 			if (a < site_settings.lines_per_page)
 				break;
 			memcpy(screen[a], screen[a-site_settings.lines_per_page], GetLineBufLen());
+			osc_links.Copy(screen[a], 0, screen[a-site_settings.lines_per_page], 0,
+				site_settings.cols_per_page, site_settings.cols_per_page);
 			SetUpdateWholeLine(a);
 		}
 		if (cursor_pos.y >= site_settings.lines_per_page)
 		{
 			memcpy(screen[cursor_pos.y], screen[cursor_pos.y-site_settings.lines_per_page], cursor_pos.x);
+			osc_links.Copy(screen[cursor_pos.y], 0, screen[cursor_pos.y-site_settings.lines_per_page], 0,
+				cursor_pos.x, site_settings.cols_per_page);
 			memcpy(GetLineAttr(cursor_pos.y), GetLineAttr(cursor_pos.y - site_settings.lines_per_page), cursor_pos.x);
 		}
 		break;
@@ -734,6 +756,8 @@ void CTelnetConn::ClearScreen(int param)
 		{
 			memcpy(screen[cursor_pos.y],
 				   screen[cursor_pos.y-site_settings.lines_per_page] + cursor_pos.x, site_settings.cols_per_page - cursor_pos.x);
+			osc_links.Copy(screen[cursor_pos.y], 0, screen[cursor_pos.y-site_settings.lines_per_page], cursor_pos.x,
+				site_settings.cols_per_page - cursor_pos.x, site_settings.cols_per_page);
 			memcpy(GetLineAttr(cursor_pos.y),
 				   GetLineAttr(cursor_pos.y - site_settings.lines_per_page) + cursor_pos.x, site_settings.cols_per_page - cursor_pos.x);
 		}
@@ -743,6 +767,8 @@ void CTelnetConn::ClearScreen(int param)
 			if (a < site_settings.lines_per_page)
 				break;
 			memcpy(screen[a], screen[a-site_settings.lines_per_page], GetLineBufLen());
+			osc_links.Copy(screen[a], 0, screen[a-site_settings.lines_per_page], 0,
+				site_settings.cols_per_page, site_settings.cols_per_page);
 			SetUpdateWholeLine(a);
 		}
 		break;
@@ -894,6 +920,10 @@ int find_sub_str(char* str, char* sub)
 
 void CTelnetConn::OnConnect(bool success)
 {
+	// Never carry an unfinished OSC/CSI or Telnet negotiation into a new session.
+	ansi_parser.Reset();
+	*ansi_param = 0;
+	pansi_param = ansi_param;
 	TCITEM item;
 	item.mask = TCIF_IMAGE;
 	if (!success)
@@ -1245,6 +1275,8 @@ void CTelnetConn::InsertChar(int n)
 		eol--;
 	}
 	memset(curstr + cursor_pos.x, ' ', n);
+	osc_links.Copy(curstr, cursor_pos.x + n, curstr, cursor_pos.x, l, site_settings.cols_per_page);
+	osc_links.Erase(curstr, cursor_pos.x, n);
 	memset(GetLineAttr(cursor_pos.y) + cursor_pos.x, 7, n);
 	SetUpdateLine(cursor_pos.y, (BYTE)cursor_pos.x);
 	SetUpdateLine(cursor_pos.y, (BYTE)site_settings.cols_per_page);
@@ -1627,6 +1659,8 @@ char* CTelnetConn::ResizeLine(int line, int newl)
 		memset(newstr + site_settings.cols_per_page, ' ', newl - site_settings.cols_per_page);
 		memset(newatb + site_settings.cols_per_page, 7, newl - site_settings.cols_per_page);
 	}
+	osc_links.Copy(newstr, 0, str, 0, (std::min)(static_cast<int>(site_settings.cols_per_page), newl), newl);
+	osc_links.Clear(str);
 	delete []str;
 	*(DWORD*)(newatb + newl) = d;
 	return newstr;
@@ -1638,6 +1672,7 @@ void CTelnetConn::ReSizeBuffer(long new_line_count, int new_cols_per_page, int n
 	// Saved row layout is invalid after a terminal-size change. Keep copying
 	// blocked until a real sync end, even though presentation must resume.
 	if (sync_output.Active()) sync_output.Abort();
+	osc_snapshot.Reset();
 	if (new_line_count > MAX_LINE_COUNT)
 		new_line_count = MAX_LINE_COUNT;
 
@@ -1671,7 +1706,10 @@ void CTelnetConn::ReSizeBuffer(long new_line_count, int new_cols_per_page, int n
 				new_screen[i] = ResizeLine(i, new_cols_per_page);
 
 			for (;last_line >= new_line_count; last_line--)
+			{
+				osc_links.Clear(screen[last_line]);
 				delete []screen[last_line];
+			}
 
 			delete []screen;
 			screen = new_screen;
@@ -1728,6 +1766,8 @@ inline void CTelnetConn::EditorLineFeed(LPSTR newline, LPBYTE newlineatb, int l)
 		if (newline)
 		{
 			memcpy(screen[cursor_pos.y], newline, l);
+			osc_links.Copy(screen[cursor_pos.y], 0, screen[cursor_pos.y-1], site_settings.cols_per_page-l,
+				l, site_settings.cols_per_page);
 			memcpy(GetLineAttr(cursor_pos.y), newlineatb, l);
 		}
 		if (view->telnet == this)
@@ -1751,6 +1791,8 @@ inline void CTelnetConn::EditorLineFeed(LPSTR newline, LPBYTE newlineatb, int l)
 			if (newline)
 			{
 				memcpy(screen[cursor_pos.y], newline, l);
+				osc_links.Copy(screen[cursor_pos.y], 0, screen[cursor_pos.y-1], site_settings.cols_per_page-l,
+					l, site_settings.cols_per_page);
 				memcpy(GetLineAttr(cursor_pos.y), newlineatb, l);
 			}
 		}
@@ -1798,10 +1840,12 @@ inline void CTelnetConn::EditorCarriageRetiurn()
 	else
 	{
 		int newlinel = site_settings.cols_per_page - cursor_pos.x;
+		const void* originalRow = screen[cursor_pos.y];
 		LPSTR newline = screen[cursor_pos.y] + cursor_pos.x;
 		LPBYTE newlineatb = GetLineAttr(cursor_pos.y) + cursor_pos.x;
 		EditorLineFeed(newline, newlineatb, newlinel);
 		memset(newline, ' ', newlinel);
+		osc_links.Erase(originalRow, site_settings.cols_per_page-newlinel, newlinel);
 		memset(newlineatb, 7, newlinel);
 	}
 }
@@ -1814,12 +1858,16 @@ inline void CTelnetConn::EditorLineBack(LPSTR newline, LPBYTE newlineatb, int l)
 		if (space >= l)
 		{
 			memcpy(screen[cursor_pos.y] + cursor_pos.x, newline, l);
+			osc_links.Copy(screen[cursor_pos.y], cursor_pos.x, newline, 0, l, site_settings.cols_per_page);
 			memcpy(GetLineAttr(cursor_pos.y) + cursor_pos.x, newlineatb, l);
 		}
 		else
 		{
 			l = site_settings.cols_per_page - space;
 			memcpy(screen[cursor_pos.y] + cursor_pos.x, newline, space);
+			osc_links.Copy(screen[cursor_pos.y], cursor_pos.x, newline, 0, space, site_settings.cols_per_page);
+			osc_links.Copy(newline, 0, newline, space, l, site_settings.cols_per_page);
+			osc_links.Erase(newline, l, space);
 			memcpy(GetLineAttr(cursor_pos.y) + cursor_pos.x, newlineatb, space);
 			memcpy(newline, newline + space, l);
 			memcpy(newlineatb, newlineatb + space, l);
@@ -1836,6 +1884,7 @@ inline void CTelnetConn::EditorLineBack(LPSTR newline, LPBYTE newlineatb, int l)
 	screen[last_line] = newline;
 
 	memset(newline, ' ', site_settings.cols_per_page);
+	osc_links.Clear(newline);
 	*(DWORD*)(newline + site_settings.cols_per_page) = 0;
 	memset(newlineatb, 7, site_settings.cols_per_page);
 	*(DWORD*)(newlineatb + site_settings.cols_per_page) = 0;
@@ -1928,7 +1977,8 @@ void CTelnetConn::CheckHyperLinks()
 			// 如果找到超連結，設定超連結旗標
 			// 如果沒找到，清除超連結旗標
 			int len;
-			SetHyperLink(i, !!AppConfig.hyper_links.FindHyperLink(screen[i], len));
+			SetHyperLink(i, osc_links.Overlaps(screen[i], 0, site_settings.cols_per_page) ||
+				!!AppConfig.hyper_links.FindHyperLink(screen[i], len));
 		}
 	}
 }
@@ -1950,6 +2000,8 @@ void CTelnetConn::Delete(int num)
 
 	int len = site_settings.cols_per_page - (cursor_pos.x + num);
 	strncpy(curstr + cursor_pos.x , curstr + cursor_pos.x + num , len);
+	osc_links.Copy(curstr, cursor_pos.x, curstr, cursor_pos.x + num, len, site_settings.cols_per_page);
+	osc_links.Erase(curstr, cursor_pos.x + len, num);
 	memmove(GetLineAttr(curstr) + cursor_pos.x,
 			GetLineAttr(curstr) + cursor_pos.x + num, len);
 	memset(curstr + cursor_pos.x + len, ' ', num);
