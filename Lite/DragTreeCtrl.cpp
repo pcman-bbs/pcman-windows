@@ -1,4 +1,4 @@
-// DragTreeCtrl.cpp : implementation file
+ï»¿// DragTreeCtrl.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -119,7 +119,7 @@ void CDragTreeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 		if (flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON)
 		{
 			dragimg->DragShowNolock(FALSE);
-			if (newitem != hoveritem)	//¦pªG²¾°Ê¨ì¨ä¥Litem¡A­«·s­p®É
+			if (newitem != hoveritem)	//å¦‚æœç§»å‹•åˆ°å…¶ä»–itemï¼Œé‡æ–°è¨ˆæ™‚
 				hovertime = 0;
 			hoveritem = newitem;
 			SelectDropTarget(newitem);
@@ -192,7 +192,7 @@ void CDragTreeCtrl::OnTimer(UINT nIDEvent)
 	UINT flag;	HTREEITEM newitem = HitTest(point, &flag);
 	if (flag & TVHT_ONITEMLABEL || flag & TVHT_ONITEMICON)
 	{
-		if (newitem != hoveritem)	//¦pªG²¾°Ê¨ì¨ä¥Litem¡A­«·s­p®É
+		if (newitem != hoveritem)	//å¦‚æœç§»å‹•åˆ°å…¶ä»–itemï¼Œé‡æ–°è¨ˆæ™‚
 		{
 			hovertime = 0;
 			hoveritem = newitem;
@@ -262,7 +262,7 @@ HTREEITEM CDragTreeCtrl::PathToItem(LPCTSTR path, HTREEITEM root, TCHAR separato
 		if (text.CompareNoCase(path) == 0)
 			break;
 	}
-	if (ch == separator && item)	//¦pªGÁÙ¨S¨ì²×ÂI
+	if (ch == separator && item)	//å¦‚æœé‚„æ²’åˆ°çµ‚é»
 		return PathToItem(pch + 1, item, separator);
 
 	delete []path_buf;

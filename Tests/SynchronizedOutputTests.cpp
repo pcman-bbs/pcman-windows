@@ -1,5 +1,6 @@
 #include "../Lite/AnsiSequenceParser.h"
 #include "../Lite/SynchronizedOutput.h"
+#include "../Lite/OscHyperlinks.h"
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -26,11 +27,12 @@ class CTelnetConn
 public:
     AnsiSequenceParser parser;
     SynchronizedOutput sync_output;
+    OscHyperlinks osc_links, osc_snapshot;
     char model[4] = { 'O', 'L', 'D', 7 };
     char* screen[1] = { model };
     int scroll_pos = 0, sync_scroll_pos = 0, first_line = 0, last_line = 0;
     bool is_ansi_editor = false;
-    struct Settings { int lines_per_page = 1; } site_settings;
+    struct Settings { int lines_per_page = 1, cols_per_page = 3; } site_settings;
     FakeView ownView;
     FakeView* view = &ownView;
     unsigned int begins = 0, ends = 0, commands = 0, dirty = 0, cursors = 0;
@@ -49,10 +51,11 @@ public:
         for (unsigned char c : data)
         {
             const auto result = parser.Feed(c);
-            if (result == AnsiSequenceParser::SyncBegin) { ++begins; BeginSynchronizedOutput(); }
+            if (result == AnsiSequenceParser::Osc) osc_links.Command(parser.OscSequence(), parser.OscValid());
+            else if (result == AnsiSequenceParser::SyncBegin) { ++begins; BeginSynchronizedOutput(); }
             else if (result == AnsiSequenceParser::SyncEnd) { ++ends; EndSynchronizedOutput(); }
             else if (result == AnsiSequenceParser::Dispatch) ++commands;
-            else if (result == AnsiSequenceParser::Text) model[0] = static_cast<char>(c);
+            else if (result == AnsiSequenceParser::Text) { osc_links.Write(model, 0, 3); model[0] = static_cast<char>(c); }
         }
     }
     char Display() { return sync_output.Active() ? sync_output.Row(0)[0] : model[0]; }
@@ -109,11 +112,31 @@ int main()
         t.Feed(end); Check(t.Display() == 'B', "second frame release");
     }
     {
+        CTelnetConn t;
+        t.Feed(begin + "N\x1b]0;title" + end + "\x1b[2J");
+        Check(t.Display() == 'O' && t.begins == 1 && t.ends == 0 && t.commands == 0,
+            "OSC payload cannot dispatch or release presentation barrier");
+        t.Feed("\x1b\\" + end);
+        Check(t.Display() == 'N' && t.ends == 1 && t.sync_output.CopyReady(),
+            "real sync end after OSC releases presentation barrier");
+    }
+    {
         CTelnetConn t; t.view->telnet = nullptr;
         t.Feed(begin + "N" + end);
         Check(t.dirty == 1 && t.view->repaints == 0, "background connection does not repaint active tab");
         t.is_ansi_editor = true; t.Feed(begin);
         Check(!t.sync_output.Active(), "local ANSI editor unaffected");
+    }
+    {
+        CTelnetConn t;
+        t.Feed("\x1b]8;;https://old.example\x1b\\O\x1b]8;;\x1b\\" + begin);
+        t.Feed("\x1b]8;;https://new.example\x1b\\N\x1b]8;;\x1b\\");
+        const auto oldTarget = t.osc_snapshot.At(t.sync_output.Row(0), 0);
+        Check(oldTarget && *oldTarget == "https://old.example" && t.Display() == 'O',
+            "snapshot retains visible old OSC link while model receives new target");
+        t.Feed(end);
+        Check(t.osc_links.At(t.model, 0) && *t.osc_links.At(t.model, 0) == "https://new.example" && t.Display() == 'N',
+            "completed frame presents new OSC target with new text");
     }
     for (const std::string& bad : { std::string("\x1b[?2026;1000h"), std::string("\x1b[?2026 h"),
         std::string("\x1b[>2026h"), std::string("\x1b[2026h"), std::string("\x1b[?2026$p"),

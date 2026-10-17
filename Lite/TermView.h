@@ -125,7 +125,7 @@ public:
 		}
 	}
 
-	char* HyperLinkHitTest(CPoint client_point, int& len);
+	const char* HyperLinkHitTest(CPoint client_point, int& len);
 	void PtToLineCol(POINT pt, int& x, int& y, bool adjust_x = true);
 
 // Generated message map functions

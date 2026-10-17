@@ -1,4 +1,4 @@
-// Conn.h: interface for the CConn class.
+ο»Ώ// Conn.h: interface for the CConn class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -39,7 +39,7 @@ BYTE is_disconnected : 1;
 BYTE is_lookup_host : 1;
 BYTE is_cancelled : 1;
 
-	CString name;	//Εγ¥ά¦btabªΊ¦WΊΩ
+	CString name;	//ι΅―η¤Ίε¨tabη„εη¨±
 	CAddress address;
 
 	CConn();

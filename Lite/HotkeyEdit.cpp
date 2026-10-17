@@ -1,4 +1,4 @@
-// HotkeyEdit.cpp : implementation file
+ï»¿// HotkeyEdit.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -57,7 +57,7 @@ void CHotkeyEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		key = 0;
 	}
 
-	if (accepted & FNUMPAD)	//¦pªG­n¯S§O°Ï¤ÀExtended©Mnumpad
+	if (accepted & FNUMPAD)	//å¦‚æœè¦ç‰¹åˆ¥å€åˆ†Extendedå’Œnumpad
 	{
 		switch (nChar)
 		{
@@ -71,7 +71,7 @@ void CHotkeyEdit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case VK_DOWN:
 		case VK_INSERT:
 		case VK_DELETE:
-			if (!(nFlags & (1 << 8)))	//¦pªG¤£¬Oextended¡A´N¬ONum pad
+			if (!(nFlags & (1 << 8)))	//å¦‚æœä¸æ˜¯extendedï¼Œå°±æ˜¯Num pad
 			{
 				fVirt |= FNUMPAD;
 				break;

@@ -1,4 +1,4 @@
-// KeyMapDlg.cpp : implementation file
+ï»¿// KeyMapDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -83,7 +83,7 @@ BOOL CKeyMapDlg::OnInitDialog()
 	{
 		CString str;
 		int idx = list.InsertItem(0,::HotkeyToStr(pmap->GetAt(i).fVirt, pmap->GetAt(i).key));
-		list.SetItemText(idx, 1, EscapeControlChars(pmap->GetAt(i).str));	//±N±±¨î½XÂà¦¨¥i¨£¦r¤¸
+		list.SetItemText(idx, 1, EscapeControlChars(pmap->GetAt(i).str));	//å°‡æ§åˆ¶ç¢¼è½‰æˆå¯è¦‹å­—å…ƒ
 		list.SetItemData(idx, MAKELONG(pmap->GetAt(i).key, pmap->GetAt(i).fVirt));
 	}
 	list.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
@@ -121,7 +121,7 @@ void CKeyMapDlg::OnAddKey()
 
 void CKeyMapDlg::OnDelKey()
 {
-	if (IsAdd() || IsEdit())	//¦pªG¬O¨ú®ø½s¿è
+	if (IsAdd() || IsEdit())	//å¦‚æœæ˜¯å–æ¶ˆç·¨è¼¯
 	{
 		LeaveEditMode();
 		return;

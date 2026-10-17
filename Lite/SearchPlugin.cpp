@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 
 #include "SearchPlugin.h"
 #include "StrUtils.h"
@@ -89,7 +89,7 @@ CString CSearchPlugin::ProcessContent(CString theContent){
 	CString returnStr = "";
 	CString tmpStr = "";
 	int counter = 0;
-	if (theContent.Find("¨Ò") > 0)
+	if (theContent.Find("ä¾‹") > 0)
 	{
 		int startPos, endPos, deletePos, rightLength;
 		CString startStr = "<p>";
@@ -121,7 +121,7 @@ CString CSearchPlugin::ProcessContent(CString theContent){
 		returnStr += findHead(leftStr) + _T(" ; ");
 		counter++;
 
-		//±N·j´M¹Lªº³¡¥÷®³±¼
+		//å°‡æœå°‹éŽçš„éƒ¨ä»½æ‹¿æŽ‰
 		int rightLen = theContent.GetLength() - theContent.Find(tagging) - tagging.GetLength();
 		CString rightStr = theContent.Right(rightLen);
 		theContent = rightStr;
@@ -176,7 +176,7 @@ CString CSearchPlugin::GetWebPage(const CString& theUrl)
 		{
 			//dataStore.WriteString(somecode);
 
-			if (somecode.Find("¨Ò") > 0 && ReadCounter == 0)
+			if (somecode.Find("ä¾‹") > 0 && ReadCounter == 0)
 			{				
 				ReturnContent = somecode;
 				ReadCounter++;

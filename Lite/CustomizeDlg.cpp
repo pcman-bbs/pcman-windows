@@ -1,4 +1,4 @@
-// CustomizeDlg.cpp : implementation file
+ï»¿// CustomizeDlg.cpp : implementation file
 //
 
 #include <functional>
@@ -177,7 +177,7 @@ void CCustomizeDlg::OnApply()
 		std::optional<ACCEL> existing_accel = accel_table_.GetByKey(accel.fVirt, accel.key);
 		HotkeyData *existing_data = nullptr;
 
-		if (existing_accel && existing_accel->cmd != data->cmd)	//¦pªG¥»¨Ó¬O³Q§Oªº¥\¯à¨Ï¥Î
+		if (existing_accel && existing_accel->cmd != data->cmd)	//å¦‚æžœæœ¬ä¾†æ˜¯è¢«åˆ¥çš„åŠŸèƒ½ä½¿ç”¨
 		{
 			if (MessageBox(LoadString(IDS_REPLACE_OLD_HOTKEY_CONFIRM), NULL, MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
 				return;

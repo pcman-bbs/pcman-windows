@@ -1,4 +1,4 @@
-// FavMenu.h: interface for the CFavMenu class.
+ï»¿// FavMenu.h: interface for the CFavMenu class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -21,8 +21,8 @@ public:
 	void SaveFavorites(BOOL bBBS);
 	inline int Lookup(HMENU hm)
 	{
-		for (int i = favmenus.GetSize() - 1;i >= 0;i--)	//·j´M¬İ¬O§_¬°CFavMenu
-			if (favmenus[i] == hm)	//¦pªG¦³§ä¨ì¡A¶}©lOnMenuChar
+		for (int i = favmenus.GetSize() - 1;i >= 0;i--)	//æœå°‹çœ‹æ˜¯å¦ç‚ºCFavMenu
+			if (favmenus[i] == hm)	//å¦‚æœæœ‰æ‰¾åˆ°ï¼Œé–‹å§‹OnMenuChar
 				return i;
 		return -1;
 	}

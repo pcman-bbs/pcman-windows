@@ -1,4 +1,4 @@
-// TriggerList.cpp: implementation of the CTriggerList class.
+ï»¿// TriggerList.cpp: implementation of the CTriggerList class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -194,7 +194,7 @@ void CTriggerList::Save(CString& section)
 				crypto.EnterPassword(AppConfig.passwd);
 
 			int len = item->respond.GetLength();
-			int dec_len = len + AppConfig.passwd.GetLength() + 1;	//³s±K½X¤@°_Àx¦s
+			int dec_len = len + AppConfig.passwd.GetLength() + 1;	//é€£å¯†ç¢¼ä¸€èµ·å„²å­˜
 			dec_len = (dec_len / 16 + (dec_len % 16 ? 1 : 0)) * 16;
 			char* dec_buf = new char[ dec_len ];
 			memset(dec_buf, 0, dec_len);

@@ -1,4 +1,4 @@
-//Generated from Version_Create.bat "Version_Set_Lite.bat" 
+ï»¿//Generated from Version_Create.bat "Version_Set_Lite.bat" 
 // 
 #define FILEVER            0,0,0,0 
 #define FILEVER_STRA       "0,0,0,0\0" 
@@ -25,11 +25,11 @@
 #define Version_ProductNameW   L"PCMan\0" 
 #define Version_InternalNameA   "PCMan\0" 
 #define Version_InternalNameW   L"PCMan\0" 
-#define Version_LegalCopyrightA   "Copyright (C) 2001 - 2009 ¥Ñ ¬x¥ô¿Ù¤Î Open PCMan Team ¦@¦P»s§@\0" 
-#define Version_LegalCopyrightW   L"Copyright (C) 2001 - 2009 ¥Ñ ¬x¥ô¿Ù¤Î Open PCMan Team ¦@¦P»s§@\0" 
+#define Version_LegalCopyrightA   "Copyright (C) 2001 - 2009 ç”± æ´ªä»»è«­åŠ Open PCMan Team å…±åŒè£½ä½œ\0" 
+#define Version_LegalCopyrightW   L"Copyright (C) 2001 - 2009 ç”± æ´ªä»»è«­åŠ Open PCMan Team å…±åŒè£½ä½œ\0" 
 #define Version_OriginalFilenameA   "PCMan.exe\0" 
 #define Version_OriginalFilenameW   L"PCMan.exe\0" 
 #define Version_FileDescriptionA   "PCMan\0" 
 #define Version_FileDescriptionW   L"PCMan\0" 
-#define Version_CommentsA   "¥»³nÅé¥Ñ¬x¥ô¿Ù¤Î Open PCMan Team ¦@¦P»s§@." 
-#define Version_CommentsW   L"¥»³nÅé¥Ñ¬x¥ô¿Ù¤Î Open PCMan Team ¦@¦P»s§@." 
+#define Version_CommentsA   "æœ¬è»Ÿé«”ç”±æ´ªä»»è«­åŠ Open PCMan Team å…±åŒè£½ä½œ." 
+#define Version_CommentsW   L"æœ¬è»Ÿé«”ç”±æ´ªä»»è«­åŠ Open PCMan Team å…±åŒè£½ä½œ." 

@@ -1,4 +1,4 @@
-// AppConfig.h: interface for the CAppConfig class.
+ï»¿// AppConfig.h: interface for the CAppConfig class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -151,7 +151,7 @@ public:
 	CSiteSettings site_settings;
 
 //	BBS Setttings
-	CString bkpath;	//­I´º¹Ï¸ô®|
+	CString bkpath;	//èƒŒæ™¯åœ–è·¯å¾‘
 	CString passwd;
 	CString wavepath;
 	CString last_bbslist_item;

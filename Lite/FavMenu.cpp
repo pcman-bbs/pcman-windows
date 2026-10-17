@@ -1,4 +1,4 @@
-// FavMenu.cpp: implementation of the CFavMenu class.
+ï»¿// FavMenu.cpp: implementation of the CFavMenu class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -132,18 +132,18 @@ void CFavMenu::LoadFavorites(HMENU &fav_menu, char type)
 		tmp.GetMenuString(last, str, MF_BYPOSITION);		_add_to_fav += str;
 	}
 
-//  Favorite ¤º®e¸g¹L­×§ï«á¡Amenu ¥²¶·­««Ø¡A¦Ó­ì¨Óªº favorite menu ·|³Q§R°£¡A
-//  ©Ò¥H¥ı«e«Ø¥ßªº menu ³£¤w¸gµL®Ä¡A¥²¶·±q CFavMenu ªº array ¤¤²¾°£±¼¡C
+//  Favorite å…§å®¹ç¶“éä¿®æ”¹å¾Œï¼Œmenu å¿…é ˆé‡å»ºï¼Œè€ŒåŸä¾†çš„ favorite menu æœƒè¢«åˆªé™¤ï¼Œ
+//  æ‰€ä»¥å…ˆå‰å»ºç«‹çš„ menu éƒ½å·²ç¶“ç„¡æ•ˆï¼Œå¿…é ˆå¾ CFavMenu çš„ array ä¸­ç§»é™¤æ‰ã€‚
 //	favmenus.RemoveAll();
-//	¿ù»~¡A³o¼Ë·|§â¨ä¥Lfavorite©MhistoryªºCFavMenu <-> HMENU¹ïÀ³§R°£
-//	§ï¦¨¤U¦C¤è¦¡¡A¦]¬°¤W­±¤w¸g DestroyMenu( fav_menu )¡A©Ò¥H¥i¥H«Ü§ë¾÷¨ú¥©ªº
-//	§Q¥Î IsMenu ¨ÓÀË¬d¡A²¾°£ favmenu ¤¤¤w¸gµL®Äªº Handles
-	int i;	//	¦¹ i ¦bµy«áªºµ{¦¡ÁÙ¦³¨Ï¥Î
-	for (i = favmenus.GetSize() - 1;i >= 0;i--)	//·j´M¬İ¬O§_¬°CFavMenu
+//	éŒ¯èª¤ï¼Œé€™æ¨£æœƒæŠŠå…¶ä»–favoriteå’Œhistoryçš„CFavMenu <-> HMENUå°æ‡‰åˆªé™¤
+//	æ”¹æˆä¸‹åˆ—æ–¹å¼ï¼Œå› ç‚ºä¸Šé¢å·²ç¶“ DestroyMenu( fav_menu )ï¼Œæ‰€ä»¥å¯ä»¥å¾ˆæŠ•æ©Ÿå–å·§çš„
+//	åˆ©ç”¨ IsMenu ä¾†æª¢æŸ¥ï¼Œç§»é™¤ favmenu ä¸­å·²ç¶“ç„¡æ•ˆçš„ Handles
+	int i;	//	æ­¤ i åœ¨ç¨å¾Œçš„ç¨‹å¼é‚„æœ‰ä½¿ç”¨
+	for (i = favmenus.GetSize() - 1;i >= 0;i--)	//æœå°‹çœ‹æ˜¯å¦ç‚ºCFavMenu
 		if (!IsMenu(reinterpret_cast<HMENU>(favmenus[i])))
 			favmenus.RemoveAt(i);
-	//	§R°£¯S©w¦ì¸m²Äi­Ó item «á¡A¨ä«áªºarray³£·|©¹«e shift 1¡A
-	//	¦ı¬O¤£¥ÎºŞ¥L¡A¦]¬°¬O¥Ñ«á©¹«eÀË¬d¡A©Ò¥Hi«á­±ªº³£¤w¸gÀË¬d¹L
+	//	åˆªé™¤ç‰¹å®šä½ç½®ç¬¬iå€‹ item å¾Œï¼Œå…¶å¾Œçš„arrayéƒ½æœƒå¾€å‰ shift 1ï¼Œ
+	//	ä½†æ˜¯ä¸ç”¨ç®¡ä»–ï¼Œå› ç‚ºæ˜¯ç”±å¾Œå¾€å‰æª¢æŸ¥ï¼Œæ‰€ä»¥iå¾Œé¢çš„éƒ½å·²ç¶“æª¢æŸ¥é
 
 	if ((i = _add_to_fav.Find('\t')) >= 0)
 		add_to_fav = _add_to_fav.Left(i);
@@ -290,7 +290,7 @@ void CFavMenu::MeasureItem(LPMEASUREITEMSTRUCT pms)
 
 	str = (i == -1) ? _str.Mid(1) : _str.Mid(1, i);
 	int len = str.GetLength();
-	if (len > 40 && ID_FIRST_HISTORY > pms->itemID && str.GetLength())	//¤£¬O³s½u¬ö¿ı¥B¤Óªø«hºIÂ_
+	if (len > 40 && ID_FIRST_HISTORY > pms->itemID && str.GetLength())	//ä¸æ˜¯é€£ç·šç´€éŒ„ä¸”å¤ªé•·å‰‡æˆªæ–·
 		len = 40;
 
 	DrawText(dc, LPCTSTR(str), len, rc, DT_SINGLELINE | DT_CALCRECT | DT_EXPANDTABS);

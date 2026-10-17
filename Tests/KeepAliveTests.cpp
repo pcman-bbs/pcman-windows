@@ -6,6 +6,7 @@
 #include <vector>
 #include "../Lite/KeepAliveConfig.h"
 #include "../Lite/AnsiSequenceParser.h"
+#include "../Lite/OscHyperlinks.h"
 
 static unsigned int checks = 0;
 static void Check(bool passed, const char* description)
@@ -42,6 +43,7 @@ public:
 	std::vector<std::string> csi;
 	std::vector<AnsiSequenceParser::Result> syncEvents;
 	AnsiSequenceParser parser;
+	OscHyperlinks osc_links;
 	unsigned int naws = 0;
 	void SendNaws() { ++naws; }
 	void OnIAC();
@@ -53,7 +55,12 @@ public:
 		{
 			if (*buf == IAC) { --buf; break; }
 			const auto result = parser.Feed(*buf);
-			if (result == AnsiSequenceParser::Text) text += static_cast<char>(*buf);
+			if (result == AnsiSequenceParser::Osc) osc_links.Command(parser.OscSequence(), parser.OscValid());
+			if (result == AnsiSequenceParser::Text)
+			{
+				osc_links.Write(this, static_cast<int>(text.size()), 4096);
+				text += static_cast<char>(*buf);
+			}
 			if (result == AnsiSequenceParser::Dispatch) csi.emplace_back(parser.Sequence());
 			if (result == AnsiSequenceParser::SyncBegin || result == AnsiSequenceParser::SyncEnd)
 				syncEvents.push_back(result);
@@ -191,6 +198,42 @@ int main()
 		Check(conn.syncEvents == std::vector<AnsiSequenceParser::Result>{
 			AnsiSequenceParser::SyncBegin, AnsiSequenceParser::SyncEnd }, "IAC inside split DEC2026");
 		Check(conn.text == "NEW" && conn.conn_io->sent.empty(), "sync and keepalive do not leak or reply");
+	}
+	for (unsigned char reply : { static_cast<unsigned char>(WILL), static_cast<unsigned char>(WONT) })
+	{
+		// IAC negotiation can arrive inside an OSC payload or between ESC and
+		// the backslash of ST. Neither may end OSC or leak protocol bytes.
+		const auto packet = Bytes({ IAC, reply, TIMING_MARK });
+		const std::string osc = std::string("\x1b[?2026hBEFORE\x1b]8;;https://example.com/") +
+			packet + "\x1b[?2026l\x1b" + packet + "\\LABEL\x1b]8;;\x1b\\AFTER\x1b[?2026l";
+		for (size_t split = 0; split <= osc.size(); ++split)
+		{
+			CTelnetConn conn;
+			conn.Feed(osc.substr(0, split));
+			conn.Feed(osc.substr(split));
+			Check(conn.text == "BEFORELABELAFTER" && conn.csi.empty(), "OSC and IAC payload never reaches text/CSI");
+			Check(conn.syncEvents == std::vector<AnsiSequenceParser::Result>{
+				AnsiSequenceParser::SyncBegin, AnsiSequenceParser::SyncEnd }, "OSC cannot prematurely end sync");
+			Check(conn.conn_io->sent.empty(), "no OSC or timing-mark response");
+		}
+		CTelnetConn conn;
+		for (char byte : osc) conn.Feed(std::string(1, byte));
+		Check(conn.text == "BEFORELABELAFTER" && conn.csi.empty() && conn.conn_io->sent.empty(), "OSC and IAC bytewise receive");
+		Check(conn.syncEvents == std::vector<AnsiSequenceParser::Result>{
+			AnsiSequenceParser::SyncBegin, AnsiSequenceParser::SyncEnd }, "OSC and IAC bytewise sync isolation");
+	}
+	for (unsigned char reply : { static_cast<unsigned char>(WILL), static_cast<unsigned char>(WONT) })
+	{
+		const std::string input = std::string("\x1b]8;;https://example.com/\x1b") +
+			Bytes({ IAC, reply, TIMING_MARK }) + "\\LABEL\x1b]8;;\x1b\\END";
+		for (size_t split = 0; split <= input.size(); ++split)
+		{
+			CTelnetConn conn;
+			conn.Feed(input.substr(0, split)); conn.Feed(input.substr(split));
+			Check(conn.osc_links.At(&conn, 0) && *conn.osc_links.At(&conn, 0) == "https://example.com/" &&
+				!conn.osc_links.At(&conn, 5), "OSC target survives IAC inside ST, ends before unlinked suffix");
+			Check(conn.text == "LABELEND" && conn.conn_io->sent.empty(), "no URL or protocol bytes displayed/replied");
+		}
 	}
 	std::printf("PASS: %u KeepAlive checks (real receive/negotiation/send methods)\n", checks);
 	return 0;

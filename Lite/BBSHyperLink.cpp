@@ -1,4 +1,4 @@
-// BBSHyperLink.cpp: implementation of the CBBSHyperLink class.
+ï»¿// BBSHyperLink.cpp: implementation of the CBBSHyperLink class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -136,7 +136,7 @@ const char* CBBSHyperLink::FindHyperLink(const char *src, int &len) const
 				if (pemail && pemail < plink)
 					return pemail;
 
-				//ÀË¬d¬O§_¬°¤wª¾³sµ²
+				//æª¢æŸ¥æ˜¯å¦ç‚ºå·²çŸ¥é€£çµ
 				for (int i = 0;i < links.GetSize();i++)
 				{
 					int scheme_len = links[i].scheme.GetLength();
@@ -158,16 +158,16 @@ const char* CBBSHyperLink::FindHyperLink(const char *src, int &len) const
 
 void CBBSHyperLink::OpenURL(LPCTSTR url)
 {
-	//¬d¸ß¬O§_¦³³]©w¶W³sµ²¶}±Òµ{¦¡¡A¦pªG¨S¦³¡A¥Î¹w³]µ{¦¡¶}±Ò
+	//æŸ¥è©¢æ˜¯å¦æœ‰è¨­å®šè¶…é€£çµé–‹å•Ÿç¨‹å¼ï¼Œå¦‚æœæ²’æœ‰ï¼Œç”¨é è¨­ç¨‹å¼é–‹å•Ÿ
 	int t = GetURLType(url);
 	CString mailto;
 	LPCTSTR path = url;
 	LPCTSTR param = NULL;
 
-	//ÀË¬d¬O¤£¬Oe-mail
+	//æª¢æŸ¥æ˜¯ä¸æ˜¯e-mail
 	if (t >= 0)
 	{
-		if (t == email)	//¦pªG¬OE-mail
+		if (t == email)	//å¦‚æœæ˜¯E-mail
 		{
 			mailto = "mailto:";
 			mailto += url;
@@ -210,7 +210,7 @@ void CBBSHyperLink::Default()
 	d.color = 0x00ff00;
 	links.Add(d);
 
-//	E-mail¬°¤º«Ø«¬ºA¡A­n¶i¶¥³B²z
+//	E-mailç‚ºå…§å»ºå‹æ…‹ï¼Œè¦é€²éšè™•ç†
 	d.scheme = "@";
 	d.color = 0xff0080;
 	email = links.Add(d);
@@ -221,16 +221,16 @@ void CBBSHyperLink::Default()
 int CBBSHyperLink::GetURLType(const char *url)
 {
 	CBBSHyperLinkData* plinks = links.GetData();
-	//ÀË¬d¬O¤£¬Oe-mail
+	//æª¢æŸ¥æ˜¯ä¸æ˜¯e-mail
 	const char* psymbol = strstr(url, "://");
-	if (!psymbol && strchr(url, '@'))	//¦pªG¬OE-mail
+	if (!psymbol && strchr(url, '@'))	//å¦‚æœæ˜¯E-mail
 		return email;
 
 	int len = int(psymbol) - int(url);
 	int i;
 	for (i = 0;i < links.GetSize(); ++i)
 	{
-		if (strnicmp(plinks[i].scheme, url, len) == 0)	//¦pªG¦³°»´ú¨ì
+		if (strnicmp(plinks[i].scheme, url, len) == 0)	//å¦‚æœæœ‰åµæ¸¬åˆ°
 			break;
 	}
 

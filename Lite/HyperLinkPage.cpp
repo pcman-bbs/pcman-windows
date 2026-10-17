@@ -1,4 +1,4 @@
-// HyperLinkPage.cpp : implementation file
+ï»¿// HyperLinkPage.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -76,7 +76,7 @@ void CHyperLinkPage::OnEdit()
 	list.EnableWindow(FALSE);
 	::EnableWindow(::GetDlgItem(m_hWnd, IDC_BROWSE), TRUE);
 	int i = int(list.GetFirstSelectedItemPosition()) - 1;
-//	if( list.GetItemText(i,0).CompareNoCase("") )	//E-mail¬°¤º«Ø«¬ºA
+//	if( list.GetItemText(i,0).CompareNoCase("") )	//E-mailç‚ºå…§å»ºå‹æ…‹
 	::EnableWindow(::GetDlgItem(m_hWnd, IDC_URLSCHEME), TRUE);
 	::EnableWindow(::GetDlgItem(m_hWnd, IDC_PROGRAM), TRUE);
 	::EnableWindow(::GetDlgItem(m_hWnd, IDC_COLOR), TRUE);
@@ -90,7 +90,7 @@ void CHyperLinkPage::OnEdit()
 
 void CHyperLinkPage::OnDel()
 {
-	if (::GetDlgItem(m_hWnd, IDC_SAVE))	//¦pªG¦b½s¿è¼Ò¦¡¤§¤º¡A¨ú®ø½s¿è
+	if (::GetDlgItem(m_hWnd, IDC_SAVE))	//å¦‚æœåœ¨ç·¨è¼¯æ¨¡å¼ä¹‹å…§ï¼Œå–æ¶ˆç·¨è¼¯
 	{
 		int i = int(list.GetFirstSelectedItemPosition()) - 1;
 		CString txt = list.GetItemText(i, 0);

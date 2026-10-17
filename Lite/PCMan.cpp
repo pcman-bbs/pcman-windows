@@ -1,4 +1,4 @@
-// PCMan4.cpp : Defines the class behaviors for the application.
+ï»¿// PCMan4.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
@@ -166,7 +166,7 @@ BOOL CApp::InitInstance()
 	AppConfig.mainwnd_state.Restore(pFrame->m_hWnd);
 	pFrame->UpdateWindow();
 
-//¦pªG¥u¤¹³\°õ¦æ¤@­Ó PCMan¡A«h§âUser data³]¬°1
+//å¦‚æžœåªå…è¨±åŸ·è¡Œä¸€å€‹ PCManï¼Œå‰‡æŠŠUser dataè¨­ç‚º1
 	SetWindowLong(m_pMainWnd->m_hWnd, GWL_USERDATA, !AppConfig.multiple_instance);
 	return TRUE;
 }

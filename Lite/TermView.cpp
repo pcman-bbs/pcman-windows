@@ -1,4 +1,4 @@
-// TermView.cpp : implementation of the CTermView class
+ï»¿// TermView.cpp : implementation of the CTermView class
 //
 #include "stdafx.h"
 
@@ -117,7 +117,7 @@ BEGIN_MESSAGE_MAP(CTermView, CWnd)
 	ON_MESSAGE(WM_DNSLOOKUP_END, OnDNSLookupEnd)
 	ON_WM_MOUSEWHEEL()
 	ON_COMMAND_RANGE(ID_EDIT_OPENURL, ID_EDIT_OPENURL_FTP, OnEditOpenURL)
-	ON_COMMAND_RANGE(ID_FIRST_HISTORY, ID_LAST_HISTORY, OnHistory)	//³s½u¬ö¿ı
+	ON_COMMAND_RANGE(ID_FIRST_HISTORY, ID_LAST_HISTORY, OnHistory)	//é€£ç·šç´€éŒ„
 	ON_REGISTERED_MESSAGE(WM_FINDREPLACE, OnFind)
 	ON_COMMAND_RANGE(CSearchPluginCollection::ID_SEARCHPLUGIN00, CSearchPluginCollection::ID_SEARCHPLUGIN31, OnSearchPlugin)
 	ON_COMMAND(CSearchPluginCollection::ID_TRANSLATION, OnTranslation)
@@ -221,7 +221,7 @@ void CTermView::OnInitialUpdate()
 		return;
 	}
 
-	if (!AppConfig.auto_font)	//¦pªG¤£¨Ï¥Î°ÊºA¦rÅé½Õ¾ã
+	if (!AppConfig.auto_font)	//å¦‚æœä¸ä½¿ç”¨å‹•æ…‹å­—é«”èª¿æ•´
 	{
 		fnt.DeleteObject();
 		fnt.CreateFontIndirect(&AppConfig.font_info);
@@ -246,7 +246,7 @@ BOOL CTermView::OnEraseBkgnd(CDC* pDC)
 	return FALSE;
 }
 
-UINT CTermView::SetDCColors(CDC *dc, BYTE color, BOOL invirt)	//¶Ç¦^ draw_opt: ETO_OPAQUE or 0
+UINT CTermView::SetDCColors(CDC *dc, BYTE color, BOOL invirt)	//å‚³å› draw_opt: ETO_OPAQUE or 0
 {
 	BYTE fg = GetAttrFgColor(color), bk = GetAttrBkColor(color);
 
@@ -569,7 +569,7 @@ void CTermView::OnLButtonDown(UINT nFlags, CPoint point_In)
 
 	point = point_In;
 	/*
-	//´ú¸Õ¥Î---------
+	//æ¸¬è©¦ç”¨---------
 		CWindowDC dc(this);
 		DWORD tc=GetTickCount();
 		for(int i=0;i<100;i++)
@@ -734,7 +734,7 @@ void CTermView::OnTimer(UINT nIDEvent)
 			}
 			else if (item->is_disconnected)
 			{
-				//¦pªG³]©w¦Û°Ê­«³s¡A¦Ó¥B¦b®É¶¡¤º³QÂ_½u¡A¥B¶¡¹j®É¶¡¤w¨ì
+				//å¦‚æœè¨­å®šè‡ªå‹•é‡é€£ï¼Œè€Œä¸”åœ¨æ™‚é–“å…§è¢«æ–·ç·šï¼Œä¸”é–“éš”æ™‚é–“å·²åˆ°
 				if (item->site_settings.auto_reconnect)
 				{
 					if (item->time <= item->site_settings.connect_interval)
@@ -742,7 +742,7 @@ void CTermView::OnTimer(UINT nIDEvent)
 						if (item->site_settings.reconnect_interval > 0)
 							item->site_settings.reconnect_interval--;
 						else
-							ReConnect(item);	//­«·s³s½u
+							ReConnect(item);	//é‡æ–°é€£ç·š
 					}
 				}
 			}
@@ -780,7 +780,7 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point_In)
 	::KillTimer(NULL, mouse_sel_timer);
 	if (!telnet)
 		return;
-//	----------¦pªG¦³¿ï¨ú°Ï¡A¦Ò¼{¬O§_¦³¦Û°Ê½Æ»s------------
+//	----------å¦‚æœæœ‰é¸å–å€ï¼Œè€ƒæ…®æ˜¯å¦æœ‰è‡ªå‹•è¤‡è£½------------
 	if (telnet->sel_start.x != telnet->sel_end.x || telnet->sel_start.y != telnet->sel_end.y)
 	{
 		if (AppConfig.auto_copy)
@@ -788,14 +788,13 @@ void CTermView::OnLButtonUp(UINT nFlags, CPoint point_In)
 	}
 	else
 	{
-//	----------¦pªG¤£¬O¦b¿ï¨ú¤å¦r¡A´N³B²z¶W³sµ²--------------
-		int l;	char* url;
-		if ((url = HyperLinkHitTest(point, l)))	//¦pªG·Æ¹«ÂI¿ï¨ì¶W³sµ²
+//	----------å¦‚æœä¸æ˜¯åœ¨é¸å–æ–‡å­—ï¼Œå°±è™•ç†è¶…é€£çµ--------------
+		int l;	const char* url;
+		if ((url = HyperLinkHitTest(point, l)))	//å¦‚æœæ»‘é¼ é»é¸åˆ°è¶…é€£çµ
 		{
-			char tmp;	tmp = url[l];	url[l] = 0;
-			//	©I¥sµ{¦¡¶}±Ò¶W³sµ²
-			AppConfig.hyper_links.OpenURL(url);
-			url[l] = tmp;
+			const CString target(url, l);
+			//	å‘¼å«ç¨‹å¼é–‹å•Ÿè¶…é€£çµ
+			AppConfig.hyper_links.OpenURL(target);
 		}
 		else
 		{
@@ -821,7 +820,7 @@ void CTermView::OnMouseMove(UINT nFlags, CPoint point_In)
 
 	PtToLineCol(point, lx, ly, false);
 
-	BOOL bsel = (nFlags & MK_LBUTTON && ::GetCapture() == m_hWnd);		//¬O§_¥¿¦b¿ï¨ú?
+	BOOL bsel = (nFlags & MK_LBUTTON && ::GetCapture() == m_hWnd);		//æ˜¯å¦æ­£åœ¨é¸å–?
 	point.x -= left_margin;	point.y -= top_margin;
 	if (point.x < 0)	point.x = 0;
 
@@ -830,13 +829,13 @@ void CTermView::OnMouseMove(UINT nFlags, CPoint point_In)
 	{
 		cy = telnet->site_settings.lines_per_page - 1;
 		if (bsel)
-			OnVScroll(SB_LINEDOWN, 0, NULL);	//¸ó­¶¿ï¨ú¡A±²°Ê
+			OnVScroll(SB_LINEDOWN, 0, NULL);	//è·¨é é¸å–ï¼Œæ²å‹•
 	}
 	if (point.y < 0)
 	{
 		cy = 0;
 		if (bsel)
-			OnVScroll(SB_LINEUP, 0, NULL);	//¸ó­¶¿ï¨ú¡A±²°Ê
+			OnVScroll(SB_LINEUP, 0, NULL);	//è·¨é é¸å–ï¼Œæ²å‹•
 	}
 
 	int y2 = telnet->scroll_pos + cy;
@@ -846,15 +845,15 @@ void CTermView::OnMouseMove(UINT nFlags, CPoint point_In)
 	cx = (point.x / chw);
 	if (telnet->site_settings.auto_dbcs_mouse)
 	{
-		//-----------·sªº¤ä´©¤¤¤åªº®y¼Ğ­pºâ-----------
-		if (cx > 0 && IsBig5(tmpstr, cx - 1))	//¦pªG¿ï¾Ü¤¤¤å«á¥b¬q¡A´N¿ï¨ú¤U¤@­Ó¦r
+		//-----------æ–°çš„æ”¯æ´ä¸­æ–‡çš„åº§æ¨™è¨ˆç®—-----------
+		if (cx > 0 && IsBig5(tmpstr, cx - 1))	//å¦‚æœé¸æ“‡ä¸­æ–‡å¾ŒåŠæ®µï¼Œå°±é¸å–ä¸‹ä¸€å€‹å­—
 			cx++;
-		else if (!IsBig5(tmpstr, cx) && (point.x % chw)*2 > chw)	//¦pªG¤]¤£¬O¤¤¤å«e¥b¡A¤~¬O­^¤å
+		else if (!IsBig5(tmpstr, cx) && (point.x % chw)*2 > chw)	//å¦‚æœä¹Ÿä¸æ˜¯ä¸­æ–‡å‰åŠï¼Œæ‰æ˜¯è‹±æ–‡
 			cx++;
 	}
 	else
 	{
-		//------------¤£¦Ò¼{Âù¦ì¤¸²Õªº®y¼Ğ­pºâ-----------
+		//------------ä¸è€ƒæ…®é›™ä½å…ƒçµ„çš„åº§æ¨™è¨ˆç®—-----------
 		if ((point.x % chw)*2 > chw)
 			cx++;
 	}
@@ -951,7 +950,7 @@ void CTermView::OnMouseMove(UINT nFlags, CPoint point_In)
 
 void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 {
-//	¶W³sµ²¿ï³æ
+//	è¶…é€£çµé¸å–®
 	/*	char text[32];
 		MENUITEMINFO inf;
 		inf.cbSize=sizeof(inf);
@@ -997,7 +996,8 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		}
 	}
 
-	char* link = NULL;
+	const char* link = NULL;
+	CString contextUrl;
 	int len;
 	if (telnet)
 	{
@@ -1006,13 +1006,14 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		ScreenToClient(&pt);
 		PtToLineCol(pt, x, y, false);
 
-		if ((link = HyperLinkHitTest(pt, len)))	//¦pªG°»´ú¨ì¬O¶W³sµ²
+		if ((link = HyperLinkHitTest(pt, len)))	//å¦‚æœåµæ¸¬åˆ°æ˜¯è¶…é€£çµ
 		{
 			InsertMenu(parent->edit_menu, 0, MF_SEPARATOR | MF_BYPOSITION, 0, 0);
 			InsertMenu(parent->edit_menu, 0, MF_STRING | MF_BYPOSITION, ID_EDIT_COPYURL, LoadString(IDS_COPY_URL));
 		}
 	}
 
+	if (link) contextUrl.SetString(link, len); // Popup messages may update/free terminal rows.
 	int c = GetMenuItemCount(parent->edit_menu);
 	AppendMenu(parent->edit_menu, MF_SEPARATOR, 0, NULL);
 	HMENU config = GetSubMenu(parent->main_menu, 2);
@@ -1031,7 +1032,7 @@ void CTermView::OnContextMenu(CWnd* pWnd, CPoint point)
 		RemoveMenu(parent->edit_menu, 0, MF_BYPOSITION);
 		if (cmd == ID_EDIT_COPYURL)
 		{
-			CClipboard::SetText(m_hWnd, link, len);
+			CClipboard::SetText(m_hWnd, contextUrl);
 			return;
 		}
 	}
@@ -1340,7 +1341,7 @@ BOOL CTermView::Connect(CAddress address, CString name, LPCTSTR cfg_path)
 	if (name.IsEmpty())
 		return FALSE;
 
-	CConn* ncon = NewConn(address, name, cfg_path);	//²£¥Í¤F·sªº³s½uµe­±¡A§¹¦¨©Ò¦³³]©w
+	CConn* ncon = NewConn(address, name, cfg_path);	//ç”¢ç”Ÿäº†æ–°çš„é€£ç·šç•«é¢ï¼Œå®Œæˆæ‰€æœ‰è¨­å®š
 	if (!ncon)
 		return FALSE;
 
@@ -1348,7 +1349,7 @@ BOOL CTermView::Connect(CAddress address, CString name, LPCTSTR cfg_path)
 	if ((ncon->is_ansi_editor))
 		return TRUE;
 
-//¶}©l³s±µsocket
+//é–‹å§‹é€£æ¥socket
 	ConnectSocket((CTelnetConn*)ncon);
 	return TRUE;
 }
@@ -1358,7 +1359,7 @@ LRESULT CTermView::OnDNSLookupEnd(WPARAM found, LPARAM lparam)
 	DNSLookupData* data = (DNSLookupData*)lparam;
 	CTelnetConn* new_telnet = data->new_telnet;
 	SOCKADDR_IN& sockaddr = data->sockaddr;
-//³]©w¦n¬ÛÃö¸ê°T
+//è¨­å®šå¥½ç›¸é—œè³‡è¨Š
 	sockaddr.sin_family = AF_INET;
 	// XXX: This path only serves telnet, but we might server others as well later.
 	// Don't hard code default port 23.
@@ -1429,7 +1430,7 @@ void CTermView::ReConnect(CTelnetConn *retelnet)
 		retelnet->Close();
 		retelnet->ClearScreen(2);
 		retelnet->site_settings.Load(retelnet->cfg_path);
-		//¤£¥Î­«·s¸ü¤JÁä½L¹ïÀ³
+		//ä¸ç”¨é‡æ–°è¼‰å…¥éµç›¤å°æ‡‰
 
 		ConnectSocket(retelnet);
 	}
@@ -1589,7 +1590,7 @@ CString CTermView::GetSelAnsi()
 		else	//select several line
 		{
 			int x, x2;
-			if (telnet->sel_block)	//¨Ï¥Î°Ï¶ô¿ï¨ú
+			if (telnet->sel_block)	//ä½¿ç”¨å€å¡Šé¸å–
 			{
 				x = telnet->sel_start.x;
 				x2 = telnet->sel_end.x;
@@ -1929,10 +1930,10 @@ CConn* CTermView::NewConn(CAddress address, CString name, LPCTSTR cfg_path)
 
 		new_telnet->cfg_path = cfg_path;
 
-		//¬°·sªºsocket¸ü¤J³]©w­È
-		if (!new_telnet->site_settings.Load(new_telnet->cfg_path))	//¦pªG¸ü¤J³]©wµo¥Í¿ù»~
+		//ç‚ºæ–°çš„socketè¼‰å…¥è¨­å®šå€¼
+		if (!new_telnet->site_settings.Load(new_telnet->cfg_path))	//å¦‚æœè¼‰å…¥è¨­å®šç™¼ç”ŸéŒ¯èª¤
 		{
-			//³o«Ü¦³¥i¯à·|¦b±K½X¿é¤J¿ù»~ªº®É­Ôµo¥Í!
+			//é€™å¾ˆæœ‰å¯èƒ½æœƒåœ¨å¯†ç¢¼è¼¸å…¥éŒ¯èª¤çš„æ™‚å€™ç™¼ç”Ÿ!
 			delete new_telnet;
 			return NULL;
 		}
@@ -2054,14 +2055,14 @@ void CTermView::ConnectTcp(CTelnetConn* new_telnet, CString host, unsigned short
 		new_telnet->Connect((SOCKADDR*)&sockaddr, sizeof(SOCKADDR_IN));
 		return;
 	}
-//	¦pªG¤£¬OIP¡A¥²¶·´M§ä¥D¾÷
+//	å¦‚æœä¸æ˜¯IPï¼Œå¿…é ˆå°‹æ‰¾ä¸»æ©Ÿ
 	new_telnet->is_lookup_host = true;
-//	¥[¤J·s°õ¦æºü
+//	åŠ å…¥æ–°åŸ·è¡Œç·’
 	DNSLookupData *newfind = new DNSLookupData;
 	newfind->new_telnet = new_telnet;
 	newfind->address = host;
 	DWORD tid;
-//	¶}©l·sªº°õ¦æºü
+//	é–‹å§‹æ–°çš„åŸ·è¡Œç·’
 	memset(&sockaddr, 0, sizeof(SOCKADDR_IN));
 	newfind->hTask = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)DNSLookupThread,
 								  newfind, 0, &tid);
@@ -2134,7 +2135,7 @@ inline void CTermView::DrawScreen(CDC &dc)
 	int y = top_margin;
 	HANDLE fold = SelectObject(dc.m_hDC, fnt.m_hObject);
 
-	//­pºâ¿ï¨ú°Ï¡A±N­Ë¸mªº¿ï¨ú°ÏÁÙ­ì
+	//è¨ˆç®—é¸å–å€ï¼Œå°‡å€’ç½®çš„é¸å–å€é‚„åŸ
 	long selstarty = telnet->sel_start.y;		long selendy = telnet->sel_end.y;
 	long selstartx = telnet->sel_start.x;		long selendx = telnet->sel_end.x;
 	if (telnet->sel_block)
@@ -2155,8 +2156,8 @@ inline void CTermView::DrawScreen(CDC &dc)
 			swap(selstartx, selendx);
 	}
 
-	BYTE* pline_selstart;	//³]¬°³Ì¤j
-	BYTE* pline_selend;	//³]¬°³Ì¤p
+	BYTE* pline_selstart;	//è¨­ç‚ºæœ€å¤§
+	BYTE* pline_selend;	//è¨­ç‚ºæœ€å°
 	const int displayStart = telnet->sync_output.Active() ? telnet->sync_scroll_pos : telnet->scroll_pos;
 	int last_line = displayStart + telnet->site_settings.lines_per_page;
 	for (int i = displayStart ; i < last_line; i++)
@@ -2164,11 +2165,11 @@ inline void CTermView::DrawScreen(CDC &dc)
 		LPSTR displayLine = telnet->sync_output.Active() ?
 			telnet->sync_output.Row(i - displayStart) : telnet->screen[i];
 		LPBYTE atbline = telnet->GetLineAttr(displayLine);
-		if (i >= selstarty && i <= selendy)	//¦pªG¦b¿ï¨ú°Ï¤º
+		if (i >= selstarty && i <= selendy)	//å¦‚æœåœ¨é¸å–å€å…§
 		{
-			pline_selstart = (BYTE*)0xffffffff;	//³]¬°³Ì¤j
-			pline_selend	= (BYTE*)0x00000000;	//³]¬°³Ì¤p
-			if (telnet->sel_block)	//°Ï¶ô¿ï¨ú
+			pline_selstart = (BYTE*)0xffffffff;	//è¨­ç‚ºæœ€å¤§
+			pline_selend	= (BYTE*)0x00000000;	//è¨­ç‚ºæœ€å°
+			if (telnet->sel_block)	//å€å¡Šé¸å–
 			{
 				pline_selstart = atbline + selstartx;
 				pline_selend = atbline + selendx;
@@ -2193,13 +2194,13 @@ inline void CTermView::DrawScreen(CDC &dc)
 	}
 	SelectObject(dc.m_hDC, fold);
 
-//-----------¶ñº¡µe­±©P³ò-------------
+//-----------å¡«æ»¿ç•«é¢å‘¨åœ-------------
 	int right_margin = left_margin + telnet->site_settings.cols_per_page * chw;
 	CRect rc;	GetClientRect(rc);
-	int t = rc.bottom;	rc.bottom = top_margin;	FillBkRect(dc, rc, 0);	//¤W
-	rc.bottom = t;	rc.top = y;	FillBkRect(dc, rc, 0);	//¤U
-	t = rc.right;		rc.right = left_margin;	rc.top = top_margin;	rc.bottom = y;	FillBkRect(dc, rc, 0);	//¥ª
-	rc.right = t;		rc.left = right_margin;	FillBkRect(dc, rc, 0);	//¥k
+	int t = rc.bottom;	rc.bottom = top_margin;	FillBkRect(dc, rc, 0);	//ä¸Š
+	rc.bottom = t;	rc.top = y;	FillBkRect(dc, rc, 0);	//ä¸‹
+	t = rc.right;		rc.right = left_margin;	rc.top = top_margin;	rc.bottom = y;	FillBkRect(dc, rc, 0);	//å·¦
+	rc.right = t;		rc.left = right_margin;	FillBkRect(dc, rc, 0);	//å³
 }
 
 
@@ -2230,11 +2231,11 @@ void CTermView::DrawLine(CDC &dc, LPCSTR line, BYTE* pline_selstart, BYTE* pline
 
 		int dx = chw * w;
 		rc.right = rc.left + dx;
-		if (w == 2)	//¦pªG¬OÂù¦ì¤¸²Õ¦r¡AÀË¬d¬O§_¬°Âù¦â¦r
+		if (w == 2)	//å¦‚æœæ˜¯é›™ä½å…ƒçµ„å­—ï¼Œæª¢æŸ¥æ˜¯å¦ç‚ºé›™è‰²å­—
 		{
 			bool bsel2 = ((patb + 1) >= pline_selstart && (patb + 1) < pline_selend);
-			//¦pªG¬OÂù¦â¦r¡A©Î¬O¤¤¤å«e«á¥b¿ï¨úª¬ºA¤£¦P
-			if (patb[0] != patb[1] || bsel != bsel2)	//¥ı¿é¥X¾ã­Ó¤å¦r¡A¦A¿é¥X«e¥b
+			//å¦‚æœæ˜¯é›™è‰²å­—ï¼Œæˆ–æ˜¯ä¸­æ–‡å‰å¾ŒåŠé¸å–ç‹€æ…‹ä¸åŒ
+			if (patb[0] != patb[1] || bsel != bsel2)	//å…ˆè¼¸å‡ºæ•´å€‹æ–‡å­—ï¼Œå†è¼¸å‡ºå‰åŠ
 			{
 				if (patb[1] != prevatb || bsel2 != prevbsel)
 				{
@@ -2281,10 +2282,10 @@ void CTermView::DrawLineBlink(CDC &dc, LPCSTR line, int y)
 		rc.right = rc.left + dx;
 		bool update = IsAttrBlink(patb[0]);
 
-		if (w == 2)	//¦pªG¬OÂù¦ì¤¸²Õ¦r¡AÀË¬d¬O§_¬°Âù¦â¦r
+		if (w == 2)	//å¦‚æœæ˜¯é›™ä½å…ƒçµ„å­—ï¼Œæª¢æŸ¥æ˜¯å¦ç‚ºé›™è‰²å­—
 		{
-			//¦pªG¬OÂù¦â¦r
-			if (patb[0] != patb[1])	//¥ı¿é¥X¾ã­Ó¤å¦r¡A¦A¿é¥X«e¥b
+			//å¦‚æœæ˜¯é›™è‰²å­—
+			if (patb[0] != patb[1])	//å…ˆè¼¸å‡ºæ•´å€‹æ–‡å­—ï¼Œå†è¼¸å‡ºå‰åŠ
 			{
 				if (IsAttrBlink(patb[1]))
 				{
@@ -2322,16 +2323,41 @@ void CTermView::DrawLineBlink(CDC &dc, LPCSTR line, int y)
 
 inline void CTermView::DrawLink(CDC &dc, LPSTR line, LPBYTE atbline, int y)
 {
-	if (!telnet->GetHyperLink(line))
+	const OscHyperlinks& explicitLinks = telnet->sync_output.Active() ? telnet->osc_snapshot : telnet->osc_links;
+	const int width = telnet->site_settings.cols_per_page;
+	if (!telnet->GetHyperLink(line) && !explicitLinks.Overlaps(line, 0, width))
 		return;
 
 	int start, len;
 	HPEN pen = NULL;
 	y += lineh - 1;
+	for (int column = 0; column < width;)
+	{
+		const auto target = explicitLinks.At(line, column);
+		int end = column + 1;
+		while (end < width && explicitLinks.At(line, end) == target) ++end;
+		if (target && !target->empty())
+		{
+			const int type = AppConfig.hyper_links.GetURLType(target->c_str());
+			const COLORREF color = type >= 0 ? AppConfig.hyper_links.links[type].color : RGB(0, 102, 255);
+			pen = CreatePen(PS_SOLID, 1, color);
+			HGDIOBJ old = SelectObject(dc.m_hDC, pen);
+			dc.MoveTo(left_margin + column * chw, y);
+			dc.LineTo(left_margin + end * chw, y);
+			SelectObject(dc.m_hDC, old);
+			DeleteObject(pen);
+		}
+		column = end;
+	}
 	const char* plink = line;
 	const char* eol = line + telnet->site_settings.cols_per_page;
 	while ((plink < eol) && (plink = AppConfig.hyper_links.FindHyperLink(plink, len)))
 	{
+		if (explicitLinks.Overlaps(line, static_cast<int>(plink - line), len))
+		{
+			plink += len;
+			continue;
+		}
 		start = (int(plink) - int(line)) * chw + left_margin;
 		char tmp = plink[len];	((char*)plink)[len] = 0;
 		int t = AppConfig.hyper_links.GetURLType(plink);
@@ -2448,9 +2474,9 @@ BOOL CTermView::OpenAnsFile(LPCTSTR filepath)
 }
 
 
-void CTermView::SendAnsiString(CString data)	//°e¥XESCÂà´««áªºANSI¦r¦ê
+void CTermView::SendAnsiString(CString data)	//é€å‡ºESCè½‰æ›å¾Œçš„ANSIå­—ä¸²
 {
-//¨Ï¥Î±m¦â¶K¤W§t¦³±±¨î½X¡A­n¼È®ÉÃö³¬¦Û°Ê´«¦æ¥\¯à
+//ä½¿ç”¨å½©è‰²è²¼ä¸Šå«æœ‰æ§åˆ¶ç¢¼ï¼Œè¦æš«æ™‚é—œé–‰è‡ªå‹•æ›è¡ŒåŠŸèƒ½
 	BOOL tmp_autowrap = AppConfig.site_settings.paste_autowrap;
 	AppConfig.site_settings.paste_autowrap = 0;
 
@@ -2476,7 +2502,7 @@ void CTermView::SendAnsiString(CString data)	//°e¥XESCÂà´««áªºANSI¦r¦ê
 	}
 	telnet->SendString(data);
 
-//­«·s«ì´_¦Û°Ê´«¦æ
+//é‡æ–°æ¢å¾©è‡ªå‹•æ›è¡Œ
 	AppConfig.site_settings.paste_autowrap = tmp_autowrap;
 }
 
@@ -2508,8 +2534,8 @@ void CMainFrame::SendFreqStr(CString str, BYTE inf)
 
 	if (inf & 1 << 7)
 	{
-		if (!(inf & 1 << 6))	//¨S°µ±±¨î½XÂà´«
-			str.Replace("^[[", "\x1b[");		//Âà´« ^[ ¦¨ ESC
+		if (!(inf & 1 << 6))	//æ²’åšæ§åˆ¶ç¢¼è½‰æ›
+			str.Replace("^[[", "\x1b[");		//è½‰æ› ^[ æˆ ESC
 
 		view.SendAnsiString(str);
 	}
@@ -2544,9 +2570,9 @@ LRESULT CTermView::OnFind(WPARAM w, LPARAM l)
 	bool first_time = (telnet->sel_start.x == telnet->sel_end.x) || (find_str != find_text);
 
 	int first_line = pfinddlg->MatchWholeWord() ? 0 : telnet->first_line;
-	if (pfinddlg->SearchDown())	//¦V«á·j´M
+	if (pfinddlg->SearchDown())	//å‘å¾Œæœå°‹
 	{
-		if (first_time)	//²Ä¤@¦¸´M§ä
+		if (first_time)	//ç¬¬ä¸€æ¬¡å°‹æ‰¾
 		{
 			telnet->sel_start.y = telnet->sel_end.y = first_line;
 			telnet->sel_start.x = telnet->sel_end.x = 0;
@@ -2575,10 +2601,10 @@ LRESULT CTermView::OnFind(WPARAM w, LPARAM l)
 			line = telnet->screen[y];
 		}
 	}
-	else	//¦V«e·j´M
+	else	//å‘å‰æœå°‹
 	{
 		strnrstrfunc pstrnrstr = pfinddlg->MatchCase() ? strnrstr : strnrstri;
-		if (first_time)	//²Ä¤@¦¸´M§ä
+		if (first_time)	//ç¬¬ä¸€æ¬¡å°‹æ‰¾
 		{
 			telnet->sel_start.y = telnet->sel_end.y = telnet->last_line;
 			telnet->sel_start.x = telnet->sel_end.x = telnet->site_settings.cols_per_page;
@@ -2596,17 +2622,17 @@ LRESULT CTermView::OnFind(WPARAM w, LPARAM l)
 		}
 	}
 
-	if (found)	//¦pªG¦³§ä¨ì
+	if (found)	//å¦‚æœæœ‰æ‰¾åˆ°
 	{
-		InvalidateRect(&rc, FALSE);	//²M°£­ì¥»ªºÂÂ¿ï¨ú°Ï
+		InvalidateRect(&rc, FALSE);	//æ¸…é™¤åŸæœ¬çš„èˆŠé¸å–å€
 		startx = (found - telnet->screen[y]);
 		telnet->sel_start.x = startx;
 		telnet->sel_end.y = telnet->sel_start.y = y;
 		telnet->sel_end.x = startx + find_str.GetLength();
 
-		if (telnet->scroll_pos > y || y >= telnet->scroll_pos + telnet->site_settings.lines_per_page)	//¦pªG¤£¦b¥Ø«eµø³¥¤º
+		if (telnet->scroll_pos > y || y >= telnet->scroll_pos + telnet->site_settings.lines_per_page)	//å¦‚æœä¸åœ¨ç›®å‰è¦–é‡å…§
 		{
-			int pg = (y / telnet->site_settings.lines_per_page);	//§ä¥X©Ò¦bªº­¶¼Æ
+			int pg = (y / telnet->site_settings.lines_per_page);	//æ‰¾å‡ºæ‰€åœ¨çš„é æ•¸
 			telnet->scroll_pos = pg * telnet->site_settings.lines_per_page;
 			SetScrollPos(SB_VERT, telnet->scroll_pos);
 			Invalidate(FALSE);
@@ -2629,7 +2655,7 @@ LRESULT CTermView::OnFind(WPARAM w, LPARAM l)
 #include <dlgs.h>
 
 //	AUTOCHECKBOX    "Match &whole word only", chx1, 4, 26, 100, 12, WS_GROUP
-//	°½°½­É¥ÎFindDialogªºMatch Case§@¬°´M§ä¥ş³¡½w½Ä°Ïªº¿ï¶µ :)
+//	å·å·å€Ÿç”¨FindDialogçš„Match Caseä½œç‚ºå°‹æ‰¾å…¨éƒ¨ç·©è¡å€çš„é¸é … :)
 
 void CTermView::FindStart()
 {
@@ -2640,7 +2666,7 @@ void CTermView::FindStart()
 		pfinddlg = new CFindReplaceDialog;
 		pfinddlg->m_fr.lpstrFindWhat = (LPTSTR)(LPCTSTR)find_text;
 		pfinddlg->Create(TRUE, NULL, NULL, FR_DOWN, this);
-		pfinddlg->GetDlgItem(chx1)->SetWindowText(LoadString(IDS_FIND_IN_ALL_BUF));	//"´M§ä¾ã­Ó½w½Ä°Ï(&B)"
+		pfinddlg->GetDlgItem(chx1)->SetWindowText(LoadString(IDS_FIND_IN_ALL_BUF));	//"å°‹æ‰¾æ•´å€‹ç·©è¡å€(&B)"
 		pfinddlg->ShowWindow(SW_SHOW);
 	}
 	else
@@ -2663,15 +2689,15 @@ void CTermView::PtToLineCol(POINT pt, int &x, int &y, bool adjust_x)
 	{
 		if (telnet->site_settings.auto_dbcs_mouse)
 		{
-			//-----------·sªº¤ä´©¤¤¤åªº®y¼Ğ­pºâ-----------
-			if (x > 0 && IsBig5(curstr, x - 1))	//¦pªG¿ï¾Ü¤¤¤å«á¥b¬q¡A´N¿ï¨ú¤U¤@­Ó¦r
+			//-----------æ–°çš„æ”¯æ´ä¸­æ–‡çš„åº§æ¨™è¨ˆç®—-----------
+			if (x > 0 && IsBig5(curstr, x - 1))	//å¦‚æœé¸æ“‡ä¸­æ–‡å¾ŒåŠæ®µï¼Œå°±é¸å–ä¸‹ä¸€å€‹å­—
 				x++;
-			else if (!IsBig5(curstr, x) && (pt.x % chw)*2 > chw)	//¦pªG¤]¤£¬O¤¤¤å«e¥b¡A¤~¬O­^¤å
+			else if (!IsBig5(curstr, x) && (pt.x % chw)*2 > chw)	//å¦‚æœä¹Ÿä¸æ˜¯ä¸­æ–‡å‰åŠï¼Œæ‰æ˜¯è‹±æ–‡
 				x++;
 		}
 		else
 		{
-			//------------¤£¦Ò¼{Âù¦ì¤¸²Õªº®y¼Ğ­pºâ-----------
+			//------------ä¸è€ƒæ…®é›™ä½å…ƒçµ„çš„åº§æ¨™è¨ˆç®—-----------
 			if ((pt.x % chw)*2 > chw)
 				x++;
 		}
@@ -2694,11 +2720,11 @@ CRect CTermView::TextRect() const
 }
 
 
-char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤W¬YÂI¬O§_¬°¶W³sµ²
-//x,y¬°²×ºİ¾÷¦æ¦C®y¼Ğ¡A¦Ó¤£¬O·Æ¹«®y¼Ğ
+const char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//ç”¨ä¾†æ¸¬è©¦ç•«é¢ä¸ŠæŸé»æ˜¯å¦ç‚ºè¶…é€£çµ
+//x,yç‚ºçµ‚ç«¯æ©Ÿè¡Œåˆ—åº§æ¨™ï¼Œè€Œä¸æ˜¯æ»‘é¼ åº§æ¨™
 {
-	CRect text_rect = TextRect();
 	if (!telnet || telnet->sync_output.Active()) return nullptr;
+	CRect text_rect = TextRect();
 	if (!PtInRect(&text_rect, client_point))
 		return nullptr;
 
@@ -2706,6 +2732,12 @@ char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤
 	PtToLineCol(client_point, x, y, false);
 	y += telnet->scroll_pos;
 	const char* plink = telnet->screen[y];
+	const auto target = telnet->osc_links.At(plink, x);
+	if (target)
+	{
+		len = static_cast<int>(target->size());
+		return target->empty() ? nullptr : target->c_str();
+	}
 
 	if (!telnet->GetHyperLink(plink))
 		return nullptr;
@@ -2715,7 +2747,8 @@ char* CTermView::HyperLinkHitTest(CPoint client_point, int& len)	//¥Î¨Ó´ú¸Õµe­±¤
 	{
 		char* px = telnet->screen[y] + x;
 		if (px >= plink && px < plink + len)
-			return (char*)plink;
+			return telnet->osc_links.Overlaps(telnet->screen[y],
+				static_cast<int>(plink - telnet->screen[y]), len) ? nullptr : plink;
 		plink += len;
 	}
 	return nullptr;
@@ -2726,9 +2759,9 @@ void CTermView::OnCurConSettings()
 	CPropertySheet dlg(IDS_CUR_CON_SETTINGS);
 	CSiteSettings tmpset;
 
-	if (!telnet->cfg_path.IsEmpty())	//¹Á¸Õ¸ü¤J­Ó§O³]©w
+	if (!telnet->cfg_path.IsEmpty())	//å˜—è©¦è¼‰å…¥å€‹åˆ¥è¨­å®š
 		tmpset.Load(telnet->cfg_path);
-	tmpset = telnet->site_settings;	//¨Ã¨Ï¥Î¥Ø«e³]©w­ÈÂĞ»\µLªk¸ü¤Jªº³¡¤À
+	tmpset = telnet->site_settings;	//ä¸¦ä½¿ç”¨ç›®å‰è¨­å®šå€¼è¦†è“‹ç„¡æ³•è¼‰å…¥çš„éƒ¨åˆ†
 
 	CSitePage page1;
 	page1.psettings = &tmpset;
@@ -2742,10 +2775,10 @@ void CTermView::OnCurConSettings()
 		if (!telnet->cfg_path.IsEmpty())
 			tmpset.Save(telnet->cfg_path);
 
-		//­«·s¸ü¤J¦r¦êÄ²µo
+		//é‡æ–°è¼‰å…¥å­—ä¸²è§¸ç™¼
 		telnet->site_settings.triggers.CopyFrom(tmpset.triggers);
 
-		if (strncmp(telnet->site_settings.key_map_name, tmpset.key_map_name, 10))	//¦pªGÁä½L¹ï¬M§ó§ï
+		if (strncmp(telnet->site_settings.key_map_name, tmpset.key_map_name, 10))	//å¦‚æœéµç›¤å°æ˜ æ›´æ”¹
 		{
 			telnet->key_map->Release();
 			telnet->key_map = CKeyMap::Load(tmpset.key_map_name);
@@ -2807,7 +2840,7 @@ CString CTermView::GetSelText()
 			tmp = telnet->sel_end.y;
 			telnet->sel_end.y = telnet->sel_start.y;
 			telnet->sel_start.y = tmp;
-			//x¤]»İ­n­Ë¹L¨Ó
+			//xä¹Ÿéœ€è¦å€’éä¾†
 			tmp = telnet->sel_end.x;
 			telnet->sel_end.x = telnet->sel_start.x;
 			telnet->sel_start.x = tmp;
@@ -2834,14 +2867,14 @@ CString CTermView::GetSelText()
 			data = ret.GetBuffer(len + 1);
 			memset(data, 0, len + 1);
 			strncpy(data, telnet->screen[selstarty] + telnet->sel_start.x, len);
-			if (telnet->sel_block)	//¦pªG°Ï¶ô¿ï¨ú
+			if (telnet->sel_block)	//å¦‚æœå€å¡Šé¸å–
 				paste_block = TRUE;
 			strstriptail(data);
 		}
 		else	//select several line
 		{
 			char crlf[] = {13, 10, 0};
-			if (telnet->sel_block)	//¦pªG°Ï¶ô¿ï¨ú
+			if (telnet->sel_block)	//å¦‚æœå€å¡Šé¸å–
 			{
 				paste_block = TRUE;
 				int oll = telnet->sel_end.x - telnet->sel_start.x;
@@ -2922,7 +2955,7 @@ LRESULT CTermView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 void CTermView::AdjustFont(int cx, int cy)
 {
-//-----°ÊºA¦rÅé½Õ¾ã------
+//-----å‹•æ…‹å­—é«”èª¿æ•´------
 	int cols_per_page = telnet ? telnet->site_settings.cols_per_page : AppConfig.site_settings.cols_per_page;
 	int lines_per_page = telnet ? telnet->site_settings.lines_per_page : AppConfig.site_settings.lines_per_page;
 	if (AppConfig.auto_font)
@@ -2944,7 +2977,7 @@ void CTermView::AdjustFont(int cx, int cy)
 
 		CWindowDC dc(this);
 		CGdiObject* pold = dc.SelectObject(&fnt);
-		CSize &sz = dc.GetTextExtent("¡@", 2);
+		CSize &sz = dc.GetTextExtent("ã€€", 2);
 		chw = sz.cx / 2;
 //		lineh=y;
 		lineh = sz.cy;
@@ -3001,23 +3034,23 @@ void CTermView::DrawLineOld(CDC &dc, LPSTR line,
 	LPSTR hol = line;	//head of line
 	LPSTR eol = line + telnet->site_settings.cols_per_page;	//end of line
 	LPBYTE patb = atbline;	//attributes
-	int l;	//¨C¦¸¿é¥Xªº¤å¦rªø«×
+	int l;	//æ¯æ¬¡è¼¸å‡ºçš„æ–‡å­—é•·åº¦
 	int x = left_margin;	//x position
-	CRect rc;	//¥Î¨Ó¿é¥X¤å¦rªºrect
+	CRect rc;	//ç”¨ä¾†è¼¸å‡ºæ–‡å­—çš„rect
 	rc.top = y;	rc.bottom = y + lineh;
 
-//	¶}©l¿é¥X¤å¦r
+//	é–‹å§‹è¼¸å‡ºæ–‡å­—
 	while (line < eol)
 	{
 		BYTE attr;	BOOL bsel;
 		for (attr = *patb, bsel = (patb >= pline_selstart && patb < pline_selend);
 			 attr == *patb && bsel == (patb >= pline_selstart && patb < pline_selend);
-			 patb++);	//¦pªG¬O¬Û¦PÄİ©Ê´N¦V«á²¾°Ê
+			 patb++);	//å¦‚æœæ˜¯ç›¸åŒå±¬æ€§å°±å‘å¾Œç§»å‹•
 
-		l = patb - atbline;	//¦r¦êªø«×
+		l = patb - atbline;	//å­—ä¸²é•·åº¦
 		UINT drawopt = AppConfig.bktype ? 0 : ETO_OPAQUE;
 		bool textout = (!IsAttrBlink(attr) || blight || telnet->sel_end != telnet->sel_start);
-		if (IsBig5(hol, line + l - 1))	//³Ì«á¤@­Ó¦r¦pªG¬O¤¤¤å«e¥b¬q
+		if (IsBig5(hol, line + l - 1))	//æœ€å¾Œä¸€å€‹å­—å¦‚æœæ˜¯ä¸­æ–‡å‰åŠæ®µ
 		{
 			int x2 = x + l * chw - chw;
 			rc.left = x2;
@@ -3032,7 +3065,7 @@ void CTermView::DrawLineOld(CDC &dc, LPSTR line,
 					FillBkRect(dc, rc, 0, bsel2);
 			}
 			if (!IsAttrBlink(*patb) || blight || telnet->sel_end != telnet->sel_start)
-				ExtTextOut(dc, x2, y, drawopt, rc, line + l - 1, 2);	//¥ı¿é¥X¾ã­Ó¤¤¤å¡A¦A¤Á±¼«e¥b
+				ExtTextOut(dc, x2, y, drawopt, rc, line + l - 1, 2);	//å…ˆè¼¸å‡ºæ•´å€‹ä¸­æ–‡ï¼Œå†åˆ‡æ‰å‰åŠ
 			else // only draw background
 				dc.ExtTextOut(x2, y, drawopt, rc, NULL, 0, NULL);
 
@@ -3088,10 +3121,10 @@ inline void CTermView::DrawLineBlinkOld(CDC &dc, LPSTR line, int y)
 		int pos = int(pblink - atbline);
 		x += chw * pos;
 		line += pos;
-		//¶}©l¿é¥X¤å¦r
+		//é–‹å§‹è¼¸å‡ºæ–‡å­—
 		CRect rc(x, y, 0, y + lineh);
 		UINT drawopt = 0;
-		//¦pªG²Ä¤@­Ó¦r¬O¤¤¤å«á¥b
+		//å¦‚æœç¬¬ä¸€å€‹å­—æ˜¯ä¸­æ–‡å¾ŒåŠ
 		if (hol != line && IsBig5(hol, line - 1))
 		{
 			rc.right = x + chw;
@@ -3114,7 +3147,7 @@ inline void CTermView::DrawLineBlinkOld(CDC &dc, LPSTR line, int y)
 			if (blight || !IsAttrBlink(tmpatb))
 				ExtTextOut(dc, rc.left, y, drawopt, rc, line - 1, 2);
 
-			//²¤¹L²Ä¤@­Ó¦rªºÄİ©Ê¦â±m©M¤å¦r¤º®e
+			//ç•¥éç¬¬ä¸€å€‹å­—çš„å±¬æ€§è‰²å½©å’Œæ–‡å­—å…§å®¹
 			line++;
 			x += chw;
 			l--;
@@ -3122,7 +3155,7 @@ inline void CTermView::DrawLineBlinkOld(CDC &dc, LPSTR line, int y)
 		}
 
 		drawopt = 0;
-		//¦pªG³Ì«á¤@­Ó¦r¬O¤¤¤å«e¥b
+		//å¦‚æœæœ€å¾Œä¸€å€‹å­—æ˜¯ä¸­æ–‡å‰åŠ
 		if (IsBig5(hol, line + l - 1))
 		{
 			rc.left = x + chw * l - chw;
@@ -3161,7 +3194,7 @@ inline void CTermView::DrawLineBlinkOld(CDC &dc, LPSTR line, int y)
 				ExtTextOut(dc, rc.left, y, drawopt, rc, line, l);
 		}
 
-		//¿é¥X¤å¦rµ²§ô
+		//è¼¸å‡ºæ–‡å­—çµæŸ
 
 		atbline = pblink + l;
 		line += l;
@@ -3200,7 +3233,7 @@ BOOL CTermView::ExtTextOut(CDC& dc, int x, int y, UINT nOptions, LPCRECT lpRect,
 		// FIXME: nCount is the number of half-width character on the screen,
 		// not size of bytes for the string to draw.
 
-		// in¥ş¬°dbcs, in[n]=out[n/2+1]; in¥ş¬°acsii, in[n]=out[n+1]
+		// inå…¨ç‚ºdbcs, in[n]=out[n/2+1]; inå…¨ç‚ºacsii, in[n]=out[n+1]
 		memset(wbuf, 0, (nCount + 1)*sizeof(wchar_t)); // <-- in bytes
 		::MultiByteToWideChar(cp_id, 0, lpszString, nCount, wbuf, nCount + 1);
 		return ::ExtTextOutW(dc.GetSafeHdc(), x, y, nOptions, lpRect, wbuf, wcslen(wbuf) , NULL);

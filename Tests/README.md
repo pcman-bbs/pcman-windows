@@ -1,18 +1,20 @@
-# CSI 解析測試
+# CSI／OSC 解析測試
 
 PTT 新介面（主選單、列表、空結果、看板資訊及自訂觸發器）的程式碼檢查與人工驗收，
 見 [新介面回歸驗證](../Docs/PTT-Interface-Regression.md)。此項不由工具自動登入操作。
 
-本次僅補強 7-bit `ESC [`（CSI）解析，保留現有基本指令處理。
+解析器補強 7-bit `ESC [`（CSI）解析，保留現有基本指令處理。
 DEC2026 現已加入專用同步處理，見 [同步更新驗收](../Docs/DEC2026-Validation.md)；
 SGR Mouse 仍忽略，CPR 仍由既有空函式處理，不回覆。
-這不是完整的 ECMA-48 終端機實作，OSC／DCS 字串協定未納入本次範圍。
+2026-10-17 已加入 OSC 字串解析與 OSC 8 目標點擊，見 [OSC 實作與驗收](../Docs/OSC-Validation.md)。
+這不是完整的 ECMA-48 終端機實作，DCS 字串協定尚未實作。
 不將 Big5／UAO／UTF-8 中的高位元組當成 8-bit C1 控制碼。
 
 2026-10-17 六則公告的程式碼評估與待補驗收，見 [近期公告評估](../Docs/PTT-Announcements-2026-10.md)。
-目前 OSC 8 會使 payload 流入文字路徑，不能把「未知 CSI 可略過」宣稱成「OSC 已安全吸收」。
+OSC 8 的 payload 不流入文字；完整命令以有界 payload 傳給目標模組，標籤可點擊、右鍵複製網址並優先於文字自動辨識。
 SGR 66 接收顯示降級與彩圖輸出遷移、DECAWM 折行、DECSTBM 邊界及 VCOL 新畫面均需對應驗證；
-N1～N6 是待辦，不是本輪新增或已通過的自動測試。
+N5 的解析／接收路徑已有自動測試；2026-10-17 使用者確認兩個 OSC 人工驗收腳本及流程皆正確，
+實際瀏覽 PTT 無特殊異常。本輪 OSC 人工驗收完成，其他 N1～N6 範圍仍依各項狀態記錄。
 
 ## 自動測試
 
@@ -30,6 +32,23 @@ MSBuild Tests/AnsiSequenceParserTests.vcxproj /t:Rebuild /p:Configuration=Releas
 63-byte 容量界線、數字超出 32767、ESC 重啟、CAN／SUB 取消、內嵌 C0、
 中文編碼位元組、每個可能的兩段切割位置及逐位元組輸入，以及不同連線的狀態隔離。
 過長、超出數字上限或不支援的序列會整段忽略，不執行截斷後的內容。
+
+OSC 測試涵蓋 ST 所有切點、BEL、CAN／SUB、未知 OSC、內嵌 CSI／DEC2026、高位元組、
+未終止與 1 MiB 輸入，以及每連線隔離和 Reset。最多保留 4096-byte 命令；超長仍吸收到結尾，不建立截斷網址。
+2026-10-17 最終版：Debug／Release 各通過 OSC 目標 1,343、解析器 11,451、Keep-Alive 2,318、同步 100、文章 810 項。
+
+OSC 目標與畫面範圍的獨立測試：
+
+```powershell
+MSBuild Tests/OscHyperlinkTests.vcxproj /t:Rebuild /p:Configuration=Debug /p:Platform=Win32
+./Tests/bin/Debug/OscHyperlinkTests.exe
+MSBuild Tests/OscHyperlinkTests.vcxproj /t:Rebuild /p:Configuration=Release /p:Platform=Win32
+./Tests/bin/Release/OscHyperlinkTests.exe
+```
+
+使用正式 `AnsiSequenceParser.h`／`OscHyperlinks.h`，不開啟瀏覽器；驗證 HTTP／HTTPS、非法協定、
+顯示網址與真正目標不同、相鄰／多位元組標籤、覆寫與搬移、快照、重設與 URL 額度。
+這些不直接操作 MFC 滑鼠／繪圖，實際點擊與右鍵選單使用下方人工驗收。
 
 此測試驗證解析結果，**不等於驗證 MFC 畫面繪製或實際 Telnet／WSS 連線**。
 完整程式另以 `PCMan.sln` 的 Debug／Release Win32 組態編譯。
@@ -50,6 +69,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tests/New-CsiVisualFixture.p
 其中第 3 行可重現舊版把 `ESC[>4;2m` 誤當 SGR 重設顏色的問題；
 第 4／5 行檢查未知指令不能誤移游標。畫面測試不驗證網路分段，
 分段處理由上述自動測試涵蓋。不要將測試檔貼上／傳送至 BBS。
+
+OSC 離線畫面另外使用 `Tests/New-OscVisualFixture.ps1` 產生 `Tests/fixtures/OscCompatibility.ans`，
+各行預期結果與人工驗收紀錄見 [OSC 實作與驗收](../Docs/OSC-Validation.md)。
+`Tests/Start-OscHyperlinkFixture.ps1` 提供只監聽 127.0.0.1:22328 的逐位元組／同步／捲動與重連測試；
+不需帳密，不會自動開啟 URL，Enter 步驟在 PowerShell 視窗操作。執行方式見同一份 OSC 驗收文件。
+2026-10-17 使用者確認上述兩個腳本及其驗收流程皆正確，實際瀏覽 PTT 也未發現特殊異常。
 
 ## 人工連線回歸測試
 
