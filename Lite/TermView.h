@@ -230,6 +230,7 @@ protected:
 private:
 	static const int kCaretHeight;
 	CStringW DecodeText(const CString& text);
+	BOOL CopyColorText(const CString& text);
 
 	inline void CreateCaret()
 	{

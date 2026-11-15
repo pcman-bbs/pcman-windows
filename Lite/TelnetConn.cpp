@@ -2348,6 +2348,8 @@ void CTelnetConn::CopyArticleComplete(bool cancel)
 			view->SetScrollBar();
 			view->UnlockWindowUpdate();
 		}
+		else if (get_article_with_ansi)
+			view->CopyColorText(downloaded_article);
 		else
 		{
 			// Use the same station encoding/UAO mapping as selection copy and search.

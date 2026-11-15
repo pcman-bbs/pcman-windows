@@ -2369,45 +2369,38 @@ void CMainFrame::OnPaste()
 	}
 
 	CString text;
-	if (!CClipboard::GetText(text))
-		return;
-
-	//偵測是否包含色彩碼
-	//如果有色彩碼，改成彩色貼上
-	if (IsContainAnsiCode(text))
-		view.SendAnsiString(text);
-	else	//否則正常貼上純文字
+	if (!CClipboard::GetStationText(text, view.GetCodePage()))
 	{
-		//並且如果不包含色彩碼，再重新從剪貼簿取一次字串 (改取Unicode字串)
-
 		wchar_t* pwstr = NULL;
 		if (CClipboard::GetTextW(&pwstr))
 		{
-			UINT cp_id = view.GetCodePage();
-			int len = wcslen(pwstr) * sizeof(wchar_t) + 1;
-			char* pstr = new char[ len ];
-			memset(pstr, 0, len);
-
+			const UINT cp_id = view.GetCodePage();
 			if (cp_id == 950)
 			{
+				const size_t chars = wcslen(pwstr);
+				if (chars >= INT_MAX / 2) { delete [] pwstr; return; }
+				const int capacity = static_cast<int>(chars * 2 + 1);
+				char* pstr = text.GetBuffer(capacity);
+				memset(pstr, 0, capacity);
 				g_ucs2conv.Ucs22Big5(pwstr, pstr);
+				text.ReleaseBuffer();
 			}
 			else
 			{
-				::WideCharToMultiByte(cp_id, 0, pwstr, -1, pstr, len, NULL, NULL);
+				const int size = ::WideCharToMultiByte(cp_id, 0, pwstr, -1, NULL, 0, NULL, NULL);
+				if (size > 0)
+				{
+					const int written = ::WideCharToMultiByte(cp_id, 0, pwstr, -1, text.GetBuffer(size), size, NULL, NULL);
+					text.ReleaseBuffer(written ? written - 1 : 0);
+				}
 			}
-
-			text.Empty();
-			text = pstr;
-			if (pstr)
-				delete [] pstr;
-			if (pwstr)
-				delete [] pwstr;
-			//考慮到 server 端實際接收資料的速度不快，
-			//所以這邊試圖忽略掉從剪貼簿取兩次資料的開銷損失
+			delete [] pwstr;
 		}
-		view.telnet->SendString(text);
+		else if (!CClipboard::GetText(text)) return;
 	}
+	if (text.IsEmpty()) return;
+	if (IsContainAnsiCode(text)) view.SendAnsiString(text);
+	else view.telnet->SendString(text);
 }
 
 void CMainFrame::OnSelAll()

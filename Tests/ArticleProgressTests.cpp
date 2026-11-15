@@ -7,6 +7,7 @@
 #include <iterator>
 #include <vector>
 #include "../Lite/ArticleProgress.h"
+#include "../Lite/Sgr66.h"
 #include "../Lite/SynchronizedOutput.h"
 
 static unsigned int checks = 0;
@@ -27,9 +28,17 @@ struct CUcs2Conv
 struct CClipboard
 {
     static CStringW text;
+    static CString stationBytes;
+    static UINT stationCP;
+    static BOOL SetStationText(HWND, const CStringW& value, const CString& bytes, UINT cp)
+    {
+        text = value; stationBytes = bytes; stationCP = cp; return TRUE;
+    }
     static void SetTextW(HWND, const wchar_t* value) { text = value; }
 };
 CStringW CClipboard::text = L"unchanged";
+CString CClipboard::stationBytes;
+UINT CClipboard::stationCP = 0;
 struct CTermView
 {
     HWND m_hWnd = nullptr;
@@ -38,6 +47,7 @@ struct CTermView
     int editorOpens = 0;
     UINT GetCodePage() { return codePage; }
     CStringW DecodeText(const CString&);
+    BOOL CopyColorText(const CString&);
     void OnAnsiEditor() { ++editorOpens; }
     void LockWindowUpdate() {}
     void UnlockWindowUpdate() {}
@@ -174,9 +184,18 @@ int main()
             c.downloaded_article = ansi ? CString("\x1b[31m") + body + "\x1b[m\r\n" : body + "\r\n";
             c.get_article_with_ansi = ansi;
             c.is_getting_article = true;
+            const CString original = c.downloaded_article;
             c.ProductionCopyArticleComplete();
             const CStringW expected = ansi ? CStringW(L"\x1b[31m") + expectedJapanese + L"\x1b[m\r\n" : expectedJapanese + L"\r\n";
             Check(CClipboard::text == expected, "article Unicode output preserves Japanese and ANSI escapes");
+            if (ansi)
+            {
+                Check(CClipboard::stationBytes == original && CClipboard::stationCP == cp,
+                    "colored article preserves exact editor input alongside Unicode");
+                c.testView.CopyColorText(original);
+                Check(CClipboard::text == expected && CClipboard::stationBytes == original,
+                    "selection clipboard exports the same two representations");
+            }
             Check(c.downloaded_article.IsEmpty() && !c.is_getting_article && !c.get_article_with_ansi,
                 "completion clears download state");
         }
@@ -195,6 +214,13 @@ int main()
         Check(CClipboard::text == L"keep clipboard", "cancel does not overwrite clipboard");
     }
     InterfaceRegression();
+    {
+        CTelnetConn c;
+        const CString split = "\xc7\x1b[32m\xd2";
+        c.testView.CopyColorText(split);
+        Check(CClipboard::text == L"\x1b[66;32m\u30d6" && CClipboard::stationBytes == split,
+            "split-color Big5 stays intact for legacy editor and readable in Unicode");
+    }
     const std::string valid = Footer(50, 1, 3);
     for (const char* bad : { "", "    ", "100%", "(101%) 1~3 \xa6\xe6", "(-1%) 1~3 \xa6\xe6",
         "(50%) 0~3 \xa6\xe6", "(50%) 4~3 \xa6\xe6", "(50%) 1~ \xa6\xe6",

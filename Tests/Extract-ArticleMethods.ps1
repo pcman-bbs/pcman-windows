@@ -29,6 +29,11 @@ while ($end -lt $source.Length -and $depth -gt 0) {
 if ($depth -ne 0) { throw 'Missing CopyArticleComplete end' }
 $parts += $source.Substring($start, $end - $start).Replace('CTelnetConn::CopyArticleComplete(', 'CTelnetConn::ProductionCopyArticleComplete(')
 $view = [Text.Encoding]::GetEncoding(950).GetString([IO.File]::ReadAllBytes((Join-Path $PSScriptRoot '../Lite/TermView.cpp')))
+$start = $view.IndexOf('BOOL CTermView::CopyColorText(', [StringComparison]::Ordinal)
+if ($start -lt 0) { throw 'Missing CopyColorText' }
+$end = $view.IndexOf('void CTermView::OnAnsiCopy()', $start, [StringComparison]::Ordinal)
+if ($end -le $start) { throw 'Missing OnAnsiCopy boundary' }
+$parts += $view.Substring($start, $end - $start)
 $start = $view.IndexOf('CStringW CTermView::DecodeText(', [StringComparison]::Ordinal)
 if ($start -lt 0) { throw 'Missing DecodeText' }
 $end = $view.IndexOf('LRESULT CTermView::WindowProc(', $start, [StringComparison]::Ordinal)
