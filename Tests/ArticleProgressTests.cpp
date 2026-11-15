@@ -8,6 +8,7 @@
 #include <vector>
 #include "../Lite/ArticleProgress.h"
 #include "../Lite/Sgr66.h"
+#include "../Lite/FrequentText.h"
 #include "../Lite/SynchronizedOutput.h"
 
 static unsigned int checks = 0;
@@ -23,6 +24,9 @@ class CTelnetConn;
 struct CUcs2Conv
 {
     unsigned char* m_Big52Ucs2_Tab = nullptr;
+    unsigned char* m_Ucs22Big5_Tab = nullptr;
+    int m_Ucs2TabSize = 0;
+    void Ucs22Big5(const wchar_t*, char*);
     size_t Big52Ucs2(const char*, wchar_t*, int);
 } g_ucs2conv;
 struct CClipboard
@@ -173,6 +177,21 @@ int main()
     g_ucs2conv.m_Big52Ucs2_Tab = table.data();
     const CString japanese = "\xc7\xd2\xc7\xe7\xc7\x7c\xc7\xa7MAD\xad\xb5\x92\x62\xb2\xbd";
     const CStringW expectedJapanese = L"ブルアカMAD音楽祭";
+    std::ifstream reverseFile("Lite/Release/PCMan/U2B", std::ios::binary);
+    std::vector<unsigned char> reverse((std::istreambuf_iterator<char>(reverseFile)), std::istreambuf_iterator<char>());
+    Check(!reverse.empty(), "shipped reverse UAO table");
+    g_ucs2conv.m_Ucs22Big5_Tab = reverse.data();
+    g_ucs2conv.m_Ucs2TabSize = static_cast<int>(reverse.size());
+    for (UINT cp : {950u, static_cast<UINT>(CP_UTF8)})
+    {
+        const CString body = cp == 950 ? japanese : CString(Encode(expectedJapanese.GetString(), cp).c_str());
+        const CString stored = CString("^[[31m") + body + "^[[m";
+        const CStringW label = FrequentText::Display(stored, true, cp, g_ucs2conv);
+        Check(label == CStringW(L"^[[31m") + expectedJapanese + L"^[[m", "FUS display preserves Japanese and visible ESC");
+        CString encoded;
+        Check(FrequentText::Encode(label, cp, g_ucs2conv, encoded) && encoded == stored,
+            "edited Unicode returns to exact station bytes for storage/send");
+    }
     for (UINT cp : { 950u, static_cast<UINT>(CP_UTF8) })
     {
         for (bool ansi : { false, true })

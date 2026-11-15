@@ -1659,6 +1659,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 void CMainFrame::OnShowFrequentlyUsedStr()
 {
 	CStringDlg dlg(this);
+	dlg.edit.codePage = view.GetCodePage();
 	if (dlg.DoModal() == IDOK)
 	{
 		if (!view.telnet || dlg.str.IsEmpty())

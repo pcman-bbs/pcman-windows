@@ -65,7 +65,7 @@ BEGIN_MESSAGE_MAP(CStringDlg, CDialog)
 	ON_WM_SIZE()
 	ON_WM_GETMINMAXINFO()
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, OnListItemchanged)
-	ON_NOTIFY(LVN_GETDISPINFO, IDC_LIST, OnListGetDispInfo)
+	ON_NOTIFY(LVN_GETDISPINFOW, IDC_LIST, OnListGetDispInfo)
 	ON_BN_CLICKED(IDC_NEWPAGE, OnNewPage)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB, OnSelchangeTab)
 	ON_BN_CLICKED(IDC_DELPAGE, OnDelPage)
@@ -99,7 +99,7 @@ void CStringDlg::OnAdd()
 	control.SetCheck(0);
 	edit.SetReadOnly(FALSE);
 	edit.SetFocus();
-	edit.SetWindowText(NULL);
+	edit.ShowBytes("", false);
 	list.EnableWindow(FALSE);
 	EnableOKCancel(FALSE);
 	inf = 0;
@@ -178,6 +178,7 @@ DLGLAYOUT CStringDlg_layout[] =
 
 BOOL CStringDlg::OnInitDialog()
 {
+	if (!edit.Install(m_hWnd, IDC_STREDIT)) { EndDialog(IDCANCEL); return FALSE; }
 	dlgl.Load(m_hWnd, CStringDlg_layout, sizeof(CStringDlg_layout) / sizeof(DLGLAYOUT));
 	SetIcon(GetParent()->GetIcon(TRUE), TRUE);
 	SetIcon(GetParent()->GetIcon(FALSE), FALSE);
@@ -185,7 +186,7 @@ BOOL CStringDlg::OnInitDialog()
 	data_changed = 0;
 
 	list.SubclassDlgItem(IDC_LIST, this);
-	edit.SubclassDlgItem(IDC_STREDIT, this);
+	list.SendMessage(CCM_SETUNICODEFORMAT, TRUE);
 	add.Attach(::GetDlgItem(m_hWnd, IDC_ADD));
 	modify.Attach(::GetDlgItem(m_hWnd, IDC_MODIFY));
 	del.Attach(::GetDlgItem(m_hWnd, IDC_DEL));
@@ -313,7 +314,12 @@ void CStringDlg::OnSave()
 		ninf |= (1 << 30);		//bcontrol: bit 30
 
 	CString tmp;
-	edit.GetWindowText(tmp);
+	if (!edit.ReadBytes(tmp))
+	{
+		::MessageBoxW(m_hWnd, L"文字含有目前站台編碼無法表示的字元，未儲存。", L"快速輸入常用文字", MB_ICONWARNING);
+		edit.SetFocus();
+		return;
+	}
 	if (tmp.IsEmpty())
 	{
 		MessageBox(LoadString(IDS_NOT_INPUT_YET), NULL, MB_OK | MB_ICONSTOP);
@@ -364,7 +370,7 @@ void CStringDlg::UpdateDisplay()
 	int sel = (int)list.GetFirstSelectedItemPosition() - 1;
 	if (sel == -1)
 	{
-		edit.SetWindowText(NULL);
+		edit.ShowBytes("", false);
 		hkedit.SetWindowText(NULL);
 		ansi.SetCheck(0);
 		control.SetCheck(0);
@@ -373,8 +379,8 @@ void CStringDlg::UpdateDisplay()
 	{
 		CString tmp;
 		tmp = stra->ElementAt(sel);
-		edit.SetWindowText(tmp);
 		inf = stra->inf.ElementAt(sel);
+		edit.ShowBytes(tmp, (inf & (1u << 31)) != 0);
 		ansi.SetCheck(inf & 1 << 31);
 		control.SetCheck(inf & 1 << 30);
 		BYTE fvirt = BYTE(HIWORD(inf) & ~(3 << 30));	// 11000000000....binary
@@ -415,17 +421,14 @@ void CStringDlg::OnListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 	if (!stra)
 		return;
-	LV_DISPINFO* pdi = (LV_DISPINFO*)pNMHDR;
-	pdi->item.mask = LVIF_TEXT;
-	if (pdi->item.iSubItem == 0 && stra)
-		pdi->item.pszText = LPSTR(LPCTSTR(stra->ElementAt(pdi->item.iItem)));
-	else if (pdi->item.iSubItem == 1)
-	{
-		DWORD dwinf = stra->inf.ElementAt(pdi->item.iItem);
-		WORD key = LOWORD(dwinf);
-		BYTE fvirt = BYTE(HIWORD(dwinf) & ~(1 << 31));
-		list.SetItemText(pdi->item.iItem, 1,::HotkeyToStr(fvirt , key));
-	}
+	LVITEMW& item = reinterpret_cast<NMLVDISPINFOW*>(pNMHDR)->item;
+	if (!(item.mask & LVIF_TEXT) || item.iItem < 0 || item.iItem >= stra->GetSize()
+		|| !item.pszText || item.cchTextMax <= 0) return;
+	const DWORD flags = stra->inf[item.iItem];
+	const CStringW label = item.iSubItem == 0
+		? edit.Display(stra->ElementAt(item.iItem), (flags & (1u << 31)) != 0)
+		: CStringW(::HotkeyToStr(BYTE(HIWORD(flags) & 0x3f), LOWORD(flags)));
+	::lstrcpynW(item.pszText, label, item.cchTextMax);
 }
 
 void CStringDlg::OnNewPage()
