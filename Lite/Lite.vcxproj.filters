@@ -271,6 +271,9 @@
     <ClInclude Include="FavMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FrequentText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="FileUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
