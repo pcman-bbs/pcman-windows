@@ -41,6 +41,62 @@ BOOL CClipboard::GetText(CString &str)
 	return TRUE;
 }
 
+// Unicode for other applications; exact station bytes for a lossless PCMan
+// round trip (including old-style SGRs embedded between Big5 lead/trail).
+static UINT StationFormat()
+{
+	static const UINT format = RegisterClipboardFormat(_T("PCMan.StationText.v1"));
+	return format;
+}
+
+BOOL CClipboard::SetStationText(HWND owner, const CStringW& unicode, const CString& bytes, UINT cp)
+{
+	if (unicode.IsEmpty() || bytes.IsEmpty()) return FALSE;
+	const SIZE_T wideSize = (static_cast<SIZE_T>(unicode.GetLength()) + 1) * sizeof(wchar_t);
+	const UINT count = bytes.GetLength();
+	HGLOBAL wide = GlobalAlloc(GMEM_MOVEABLE, wideSize);
+	HGLOBAL raw = GlobalAlloc(GMEM_MOVEABLE, sizeof(UINT) * 2 + count);
+	void* w = wide ? GlobalLock(wide) : NULL;
+	UINT* r = raw ? static_cast<UINT*>(GlobalLock(raw)) : NULL;
+	if (w) { memcpy(w, unicode.GetString(), wideSize); GlobalUnlock(wide); }
+	if (r) { r[0] = cp; r[1] = count; memcpy(r + 2, bytes.GetString(), count); GlobalUnlock(raw); }
+	BOOL ok = FALSE;
+	if (w && OpenClipboard(owner))
+	{
+		if (EmptyClipboard() && SetClipboardData(CF_UNICODETEXT, wide))
+		{
+			wide = NULL; ok = TRUE;
+			const UINT format = StationFormat();
+			if (r && format && SetClipboardData(format, raw)) raw = NULL;
+		}
+		CloseClipboard();
+	}
+	if (raw) GlobalFree(raw);
+	if (wide) GlobalFree(wide);
+	return ok;
+}
+
+BOOL CClipboard::GetStationText(CString& bytes, UINT cp)
+{
+	const UINT format = StationFormat();
+	if (!format || !IsClipboardFormatAvailable(format) || !OpenClipboard(NULL)) return FALSE;
+	HGLOBAL h = GetClipboardData(format);
+	const SIZE_T size = h ? GlobalSize(h) : 0;
+	const UINT* r = size >= 2 * sizeof(UINT) ? static_cast<const UINT*>(GlobalLock(h)) : NULL;
+	BOOL ok = FALSE;
+	if (r)
+	{
+		if (r[0] == cp && r[1] && r[1] < INT_MAX && r[1] <= size - 2 * sizeof(UINT))
+		{
+			bytes.SetString(reinterpret_cast<const char*>(r + 2), static_cast<int>(r[1]));
+			ok = TRUE;
+		}
+		GlobalUnlock(h);
+	}
+	CloseClipboard();
+	return ok;
+}
+
 BOOL CClipboard::GetTextW(wchar_t** ppwstr)
 {
 	if (!OpenClipboard(NULL))

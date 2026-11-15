@@ -1462,13 +1462,20 @@ void CTermView::OnHistory(UINT id)
 	}
 }
 
+BOOL CTermView::CopyColorText(const CString& text)
+{
+	const std::string intact = Sgr66::ConvertSplitBig5(std::string(text.GetString(), text.GetLength()), GetCodePage());
+	const CStringW unicode = DecodeText(CString(intact.data(), static_cast<int>(intact.size())));
+	return CClipboard::SetStationText(m_hWnd, unicode, text, GetCodePage());
+}
+
 void CTermView::OnAnsiCopy()
 {
 	if (!telnet || telnet->sync_output.Active())
 		return;
 
 	CString data = GetSelAnsi();
-	if (CClipboard::SetText(m_hWnd, data))
+	if (CopyColorText(data))
 		paste_block = telnet->sel_block;
 
 	if (AppConfig.auto_cancelsel)

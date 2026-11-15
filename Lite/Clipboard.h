@@ -12,6 +12,8 @@
 class CClipboard
 {
 public:
+	static BOOL SetStationText(HWND owner, const CStringW& unicode, const CString& bytes, UINT cp);
+	static BOOL GetStationText(CString& bytes, UINT cp);
 	static BOOL SetText(HWND owner, LPCTSTR str, int len);
 	static BOOL SetText(HWND owner, LPCTSTR str);
 	static BOOL SetTextW(HWND owner, const wchar_t* str, int len);
