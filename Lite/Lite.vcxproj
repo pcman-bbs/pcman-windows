@@ -529,6 +529,7 @@
     <ClInclude Include="ConnIO.h" />
     <ClInclude Include="FavMenu.h" />
     <ClInclude Include="FileUtil.h" />
+    <ClInclude Include="FrequentText.h" />
     <ClInclude Include="GeneralPage.h" />
     <ClInclude Include="Hotkey.h" />
     <ClInclude Include="HotkeyEdit.h" />

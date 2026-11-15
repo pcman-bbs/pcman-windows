@@ -40,7 +40,7 @@ $end = $view.IndexOf('LRESULT CTermView::WindowProc(', $start, [StringComparison
 if ($end -le $start) { throw 'Missing DecodeText boundary' }
 $parts += $view.Substring($start, $end - $start)
 $conversion = [Text.Encoding]::GetEncoding(950).GetString([IO.File]::ReadAllBytes((Join-Path $PSScriptRoot '../Lite/Ucs2Conv.cpp')))
-$start = $conversion.IndexOf('size_t CUcs2Conv::Big52Ucs2(', [StringComparison]::Ordinal)
+$start = $conversion.IndexOf('void CUcs2Conv::Ucs22Big5(', [StringComparison]::Ordinal)
 if ($start -lt 0) { throw 'Missing Big52Ucs2' }
 $end = $conversion.IndexOf('BOOL CUcs2Conv::InitBig52Ucs2Tab()', $start, [StringComparison]::Ordinal)
 if ($end -le $start) { throw 'Missing Big52Ucs2 boundary' }
