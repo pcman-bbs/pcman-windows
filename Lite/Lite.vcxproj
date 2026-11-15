@@ -521,6 +521,8 @@
     <ClInclude Include="Conn.h" />
     <ClInclude Include="ConnectPage.h" />
     <ClInclude Include="Scaler.h" />
+    <ClInclude Include="Debug_Kit.h" />
+    <ClInclude Include="Version.h" />
     <ClInclude Include="CtrlEdit.h" />
     <ClInclude Include="CustomizeDlg.h" />
     <ClInclude Include="CustomTabCtrl.h" />
@@ -575,16 +577,14 @@
     <Image Include="..\Resource\res\ansfile.ico" />
     <Image Include="..\Resource\res\idr_main.ico" />
     <Image Include="..\Resource\Res\toolbar1.bmp" />
-    <Image Include="res\ansfile.ico" />
-    <Image Include="res\idr_main.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resource\res\copy_cur.cur" />
     <None Include="..\Resource\res\drag_cur.cur" />
     <None Include="..\Resource\res\hand.cur" />
-    <None Include="res\copy_cur.cur" />
-    <None Include="res\drag_cur.cur" />
-    <None Include="res\hand.cur" />
+    <None Include="..\Resource\Version_Resource_Lite.rc2" />
+    <None Include="..\Resource\res\page_cur.cur" />
+    <None Include="..\Resource\res\topic_cur.cur" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(VCInstallDir)vcpkg\scripts\buildsystems\msbuild\vcpkg.targets" Condition="'$(PCManImportBundledVcpkg)' == 'true' And Exists('$(VCInstallDir)vcpkg\scripts\buildsystems\msbuild\vcpkg.targets')" />

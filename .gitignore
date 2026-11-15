@@ -12,6 +12,10 @@
 *.tlog
 *.vcxproj.FileListAbsolute.txt
 *.vcxproj.user
+*.aps
+*.obj.dt.d.json
+*.obj.dt.module.json
+*.obj.dt.module.json.command
 .vs/
 vcpkg_installed/
 /Lite/Release/PCMan/Config/History

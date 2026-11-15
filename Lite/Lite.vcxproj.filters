@@ -403,18 +403,39 @@
     <ClInclude Include="Scaler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Debug_Kit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnsiSequenceParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OscHyperlinks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sgr66.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeepAlive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticleProgress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SynchronizedOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeepAliveConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Resource\res\ansfile.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\ansfile.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\Resource\res\idr_main.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\idr_main.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Resource\Res\toolbar1.bmp">
@@ -425,19 +446,19 @@
     <None Include="..\Resource\res\copy_cur.cur">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\copy_cur.cur">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\drag_cur.cur">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\Resource\res\drag_cur.cur">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Resource\res\hand.cur">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\hand.cur">
+    <None Include="..\Resource\Version_Resource_Lite.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resource\res\page_cur.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resource\res\topic_cur.cur">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
